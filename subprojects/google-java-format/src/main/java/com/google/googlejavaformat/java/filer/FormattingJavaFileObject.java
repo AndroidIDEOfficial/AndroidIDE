@@ -20,16 +20,13 @@ import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
-
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.io.IOException;
 import java.io.Writer;
-
-import jdkx.annotation.processing.Messager;
-import jdkx.tools.Diagnostic;
-import jdkx.tools.ForwardingJavaFileObject;
-import jdkx.tools.JavaFileObject;
+import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic;
+import javax.tools.ForwardingJavaFileObject;
+import javax.tools.JavaFileObject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A {@link JavaFileObject} decorator which {@linkplain Formatter formats} source code. */
 final class FormattingJavaFileObject extends ForwardingJavaFileObject<JavaFileObject> {
@@ -81,10 +78,8 @@ final class FormattingJavaFileObject extends ForwardingJavaFileObject<JavaFileOb
                 }
               });
         } catch (FormatterException e) {
-          // An exception will happen when the code being formatted has an error. It's
-          // better to
-          // log the exception and emit unformatted code so the developer can view the
-          // code which
+          // An exception will happen when the code being formatted has an error. It's better to
+          // log the exception and emit unformatted code so the developer can view the code which
           // caused a problem.
           try (Writer writer = fileObject.openWriter()) {
             writer.append(stringBuilder.toString());

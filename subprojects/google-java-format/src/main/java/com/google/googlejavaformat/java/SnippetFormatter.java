@@ -23,16 +23,71 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /** Formats a subset of a compilation unit. */
 public class SnippetFormatter {
 
+  /** The kind of snippet to format. */
+  public enum SnippetKind {
+    COMPILATION_UNIT,
+    CLASS_BODY_DECLARATIONS,
+    STATEMENTS,
+    EXPRESSION
+  }
+
+  private class SnippetWrapper {
+    int offset;
+    final StringBuilder contents = new StringBuilder();
+
+    public SnippetWrapper append(String str) {
+      contents.append(str);
+      return this;
+    }
+
+    public SnippetWrapper appendSource(String source) {
+      this.offset = contents.length();
+      contents.append(source);
+      return this;
+    }
+
+    public void closeBraces(int initialIndent) {
+      for (int i = initialIndent; --i >= 0; ) {
+        contents.append("\n").append(createIndentationString(i)).append("}");
+      }
+    }
+  }
+
   private static final int INDENTATION_SIZE = 2;
-  private static final CharMatcher NOT_WHITESPACE = CharMatcher.whitespace().negate();
   private final Formatter formatter = new Formatter();
+  private static final CharMatcher NOT_WHITESPACE = CharMatcher.whitespace().negate();
+
+  public String createIndentationString(int indentationLevel) {
+    Preconditions.checkArgument(
+        indentationLevel >= 0,
+        "Indentation level cannot be less than zero. Given: %s",
+        indentationLevel);
+    int spaces = indentationLevel * INDENTATION_SIZE;
+    StringBuilder buf = new StringBuilder(spaces);
+    for (int i = 0; i < spaces; i++) {
+      buf.append(' ');
+    }
+    return buf.toString();
+  }
+
+  private static Range<Integer> offsetRange(Range<Integer> range, int offset) {
+    range = range.canonical(DiscreteDomain.integers());
+    return Range.closedOpen(range.lowerEndpoint() + offset, range.upperEndpoint() + offset);
+  }
+
+  private static List<Range<Integer>> offsetRanges(List<Range<Integer>> ranges, int offset) {
+    List<Range<Integer>> result = new ArrayList<>();
+    for (Range<Integer> range : ranges) {
+      result.add(offsetRange(range, offset));
+    }
+    return result;
+  }
 
   /** Runs the Google Java formatter on the given source, with only the given ranges specified. */
   public ImmutableList<Replacement> format(
@@ -65,19 +120,6 @@ public class SnippetFormatter {
     return toReplacements(source, replacement).stream()
         .filter(r -> rangeSet.encloses(r.getReplaceRange()))
         .collect(toImmutableList());
-  }
-
-  private static List<Range<Integer>> offsetRanges(List<Range<Integer>> ranges, int offset) {
-    List<Range<Integer>> result = new ArrayList<>();
-    for (Range<Integer> range : ranges) {
-      result.add(offsetRange(range, offset));
-    }
-    return result;
-  }
-
-  private static Range<Integer> offsetRange(Range<Integer> range, int offset) {
-    range = range.canonical(DiscreteDomain.integers());
-    return Range.closedOpen(range.lowerEndpoint() + offset, range.upperEndpoint() + offset);
   }
 
   /**
@@ -168,49 +210,6 @@ public class SnippetFormatter {
         }
       default:
         throw new IllegalArgumentException("Unknown snippet kind: " + kind);
-    }
-  }
-
-  public String createIndentationString(int indentationLevel) {
-    Preconditions.checkArgument(
-        indentationLevel >= 0,
-        "Indentation level cannot be less than zero. Given: %s",
-        indentationLevel);
-    int spaces = indentationLevel * INDENTATION_SIZE;
-    StringBuilder buf = new StringBuilder(spaces);
-    for (int i = 0; i < spaces; i++) {
-      buf.append(' ');
-    }
-    return buf.toString();
-  }
-
-  /** The kind of snippet to format. */
-  public enum SnippetKind {
-    COMPILATION_UNIT,
-    CLASS_BODY_DECLARATIONS,
-    STATEMENTS,
-    EXPRESSION
-  }
-
-  private class SnippetWrapper {
-    final StringBuilder contents = new StringBuilder();
-    int offset;
-
-    public SnippetWrapper append(String str) {
-      contents.append(str);
-      return this;
-    }
-
-    public SnippetWrapper appendSource(String source) {
-      this.offset = contents.length();
-      contents.append(source);
-      return this;
-    }
-
-    public void closeBraces(int initialIndent) {
-      for (int i = initialIndent; --i >= 0; ) {
-        contents.append("\n").append(createIndentationString(i)).append("}");
-      }
     }
   }
 }

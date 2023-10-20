@@ -22,7 +22,6 @@ import static java.util.regex.Pattern.compile;
 
 import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.javadoc.JavadocLexer.LexException;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,18 +36,7 @@ import java.util.regex.Pattern;
  */
 public final class JavadocFormatter {
 
-  private static final Token STANDARD_BR_TOKEN = new Token(BR_TAG, "<br>");
-  private static final Token STANDARD_P_TOKEN = new Token(PARAGRAPH_OPEN_TAG, "<p>");
-  private static final Pattern SIMPLE_TAG_PATTERN = compile("^<\\w+\\s*/?\\s*>", CASE_INSENSITIVE);
-
-  /*
-   * TODO(cpovirk): Is this really the right location for the standardize* methods? Maybe the lexer
-   * should include them as part of its own postprocessing? Or even the writer could make sense.
-   */
-  private static final Pattern ONE_CONTENT_LINE_PATTERN = compile(" */[*][*]\n *[*] (.*)\n *[*]/");
   static final int MAX_LINE_LENGTH = 100;
-
-  private JavadocFormatter() {}
 
   /**
    * Formats the given Javadoc comment, which must start with ∕✱✱ and end with ✱∕. The output will
@@ -150,6 +138,11 @@ public final class JavadocFormatter {
     throw new AssertionError();
   }
 
+  /*
+   * TODO(cpovirk): Is this really the right location for the standardize* methods? Maybe the lexer
+   * should include them as part of its own postprocessing? Or even the writer could make sense.
+   */
+
   private static Token standardizeBrToken(Token token) {
     return standardize(token, STANDARD_BR_TOKEN);
   }
@@ -161,6 +154,12 @@ public final class JavadocFormatter {
   private static Token standardize(Token token, Token standardToken) {
     return SIMPLE_TAG_PATTERN.matcher(token.getValue()).matches() ? standardToken : token;
   }
+
+  private static final Token STANDARD_BR_TOKEN = new Token(BR_TAG, "<br>");
+  private static final Token STANDARD_P_TOKEN = new Token(PARAGRAPH_OPEN_TAG, "<p>");
+  private static final Pattern SIMPLE_TAG_PATTERN = compile("^<\\w+\\s*/?\\s*>", CASE_INSENSITIVE);
+
+  private static final Pattern ONE_CONTENT_LINE_PATTERN = compile(" */[*][*]\n *[*] (.*)\n *[*]/");
 
   /**
    * Returns the given string or a one-line version of it (e.g., "∕✱✱ Tests for foos. ✱∕") if it
@@ -191,4 +190,6 @@ public final class JavadocFormatter {
     }
     return true;
   }
+
+  private JavadocFormatter() {}
 }

@@ -20,31 +20,6 @@ package com.google.googlejavaformat.java.javadoc;
  * are in {@link JavadocLexer}.
  */
 final class Token {
-  private final Type type;
-  private final String value;
-
-  Token(Type type, String value) {
-    this.type = type;
-    this.value = value;
-  }
-
-  @Override
-  public String toString() {
-    return "\n" + getType() + ": " + getValue();
-  }
-
-  Type getType() {
-    return type;
-  }
-
-  String getValue() {
-    return value;
-  }
-
-  int length() {
-    return value.length();
-  }
-
   /**
    * Javadoc token type.
    *
@@ -127,5 +102,30 @@ final class Token {
      */
     LITERAL,
     ;
+  }
+
+  private final Type type;
+  private final String value;
+
+  Token(Type type, String value) {
+    this.type = type;
+    this.value = value;
+  }
+
+  Type getType() {
+    return type;
+  }
+
+  String getValue() {
+    return value;
+  }
+
+  int length() {
+    return value.length();
+  }
+
+  @Override
+  public String toString() {
+    return "\n" + getType() + ": " + getValue();
   }
 }

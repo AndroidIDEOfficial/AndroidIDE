@@ -54,7 +54,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.PeekingIterator;
 import com.google.googlejavaformat.java.javadoc.Token.Type;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -63,78 +62,6 @@ import java.util.regex.Pattern;
 
 /** Lexer for the Javadoc formatter. */
 final class JavadocLexer {
-  private static final Pattern NON_UNIX_LINE_ENDING = Pattern.compile("\r\n?");
-  private static final CharMatcher NEWLINE = CharMatcher.is('\n');
-  /*
-   * This also eats any trailing whitespace. We would be smart enough to ignore that, anyway --
-   * except in the case of <pre>/<table>, inside which we otherwise leave whitespace intact.
-   *
-   * We'd remove the trailing whitespace later on (in JavaCommentsHelper.rewrite), but I feel safer
-   * stripping it now: It otherwise might confuse our line-length count, which we use for wrapping.
-   */
-  private static final Pattern NEWLINE_PATTERN = compile("^[ \t]*\n[ \t]*[*]?[ \t]?");
-  // We ensure elsewhere that we match this only at the beginning of a line.
-  // Only match tags that start with a lowercase letter, to avoid false matches on unescaped
-  // annotations inside code blocks.
-  // Match "@param <T>" specially in case the <T> is a <P> or other HTML tag we treat specially.
-  private static final Pattern FOOTER_TAG_PATTERN = compile("^@(param\\s+<\\w+>|[a-z]\\w*)");
-  private static final Pattern MOE_BEGIN_STRIP_COMMENT_PATTERN =
-      compile("^<!--\\s*M" + "OE:begin_intracomment_strip\\s*-->");
-  private static final Pattern MOE_END_STRIP_COMMENT_PATTERN =
-      compile("^<!--\\s*M" + "OE:end_intracomment_strip\\s*-->");
-  private static final Pattern HTML_COMMENT_PATTERN = fullCommentPattern();
-  private static final Pattern PRE_OPEN_PATTERN = openTagPattern("pre");
-  private static final Pattern PRE_CLOSE_PATTERN = closeTagPattern("pre");
-  private static final Pattern CODE_OPEN_PATTERN = openTagPattern("code");
-  private static final Pattern CODE_CLOSE_PATTERN = closeTagPattern("code");
-  private static final Pattern TABLE_OPEN_PATTERN = openTagPattern("table");
-  private static final Pattern TABLE_CLOSE_PATTERN = closeTagPattern("table");
-  private static final Pattern LIST_OPEN_PATTERN = openTagPattern("ul|ol|dl");
-  private static final Pattern LIST_CLOSE_PATTERN = closeTagPattern("ul|ol|dl");
-  private static final Pattern LIST_ITEM_OPEN_PATTERN = openTagPattern("li|dt|dd");
-  private static final Pattern LIST_ITEM_CLOSE_PATTERN = closeTagPattern("li|dt|dd");
-  private static final Pattern HEADER_OPEN_PATTERN = openTagPattern("h[1-6]");
-  private static final Pattern HEADER_CLOSE_PATTERN = closeTagPattern("h[1-6]");
-  private static final Pattern PARAGRAPH_OPEN_PATTERN = openTagPattern("p");
-  private static final Pattern PARAGRAPH_CLOSE_PATTERN = closeTagPattern("p");
-  private static final Pattern BLOCKQUOTE_OPEN_PATTERN = openTagPattern("blockquote");
-  private static final Pattern BLOCKQUOTE_CLOSE_PATTERN = closeTagPattern("blockquote");
-  private static final Pattern BR_PATTERN = openTagPattern("br");
-  private static final Pattern INLINE_TAG_OPEN_PATTERN = compile("^[{]@\\w*");
-  /*
-   * We exclude < so that we don't swallow following HTML tags. This lets us fix up "foo<p>" (~400
-   * hits in Google-internal code). We will join unnecessarily split "words" (like "foo<b>bar</b>")
-   * in a later step. There's a similar story for braces. I'm not sure I actually need to exclude @
-   * or *. TODO(cpovirk): Try removing them.
-   *
-   * Thanks to the "rejoin" step in joinAdjacentLiteralsAndAdjacentWhitespace(), we could get away
-   * with matching only one character here. That would eliminate the need for the regex entirely.
-   * That might be faster or slower than what we do now.
-   */
-  private static final Pattern LITERAL_PATTERN = compile("^.[^ \t\n@<{}*]*", DOTALL);
-  private final CharStream input;
-  private final NestingCounter braceDepth = new NestingCounter();
-  private final NestingCounter preDepth = new NestingCounter();
-  private final NestingCounter codeDepth = new NestingCounter();
-  private final NestingCounter tableDepth = new NestingCounter();
-  private boolean somethingSinceNewline;
-
-  private JavadocLexer(CharStream input) {
-    this.input = checkNotNull(input);
-  }
-
-  private static Pattern fullCommentPattern() {
-    return compile("^<!--.*?-->", DOTALL);
-  }
-
-  private static Pattern openTagPattern(String namePattern) {
-    return compile(format("^<(?:%s)\\b[^>]*>", namePattern), CASE_INSENSITIVE);
-  }
-
-  private static Pattern closeTagPattern(String namePattern) {
-    return compile(format("^</(?:%s)\\b[^>]*>", namePattern), CASE_INSENSITIVE);
-  }
-
   /** Takes a Javadoc comment, including ∕✱✱ and ✱∕, and returns tokens, including ∕✱✱ and ✱∕. */
   static ImmutableList<Token> lex(String input) throws LexException {
     /*
@@ -153,6 +80,8 @@ final class JavadocLexer {
     return NON_UNIX_LINE_ENDING.matcher(input).replaceAll("\n");
   }
 
+  private static final Pattern NON_UNIX_LINE_ENDING = Pattern.compile("\r\n?");
+
   private static String stripJavadocBeginAndEnd(String input) {
     /*
      * We do this ahead of time so that the main part of the lexer need not say things like
@@ -161,6 +90,17 @@ final class JavadocLexer {
     checkArgument(input.startsWith("/**"), "Missing /**: %s", input);
     checkArgument(input.endsWith("*/") && input.length() > 4, "Missing */: %s", input);
     return input.substring("/**".length(), input.length() - "*/".length());
+  }
+
+  private final CharStream input;
+  private final NestingCounter braceDepth = new NestingCounter();
+  private final NestingCounter preDepth = new NestingCounter();
+  private final NestingCounter codeDepth = new NestingCounter();
+  private final NestingCounter tableDepth = new NestingCounter();
+  private boolean somethingSinceNewline;
+
+  private JavadocLexer(CharStream input) {
+    this.input = checkNotNull(input);
   }
 
   private ImmutableList<Token> generateTokens() throws LexException {
@@ -200,10 +140,8 @@ final class JavadocLexer {
       somethingSinceNewline = false;
       return preserveExistingFormatting ? FORCED_NEWLINE : WHITESPACE;
     } else if (input.tryConsume(" ") || input.tryConsume("\t")) {
-      // TODO(cpovirk): How about weird whitespace chars? Ideally we'd distinguish breaking
-      // vs. not.
-      // Returning LITERAL here prevent us from breaking a <pre> line. For more info, see
-      // LITERAL.
+      // TODO(cpovirk): How about weird whitespace chars? Ideally we'd distinguish breaking vs. not.
+      // Returning LITERAL here prevent us from breaking a <pre> line. For more info, see LITERAL.
       return preserveExistingFormatting ? LITERAL : WHITESPACE;
     }
 
@@ -377,8 +315,7 @@ final class JavadocLexer {
         output.add(new Token(WHITESPACE, seenWhitespace.toString()));
       }
 
-      // We have another token coming, possibly of type OTHER. Leave it for the next
-      // iteration.
+      // We have another token coming, possibly of type OTHER. Leave it for the next iteration.
     }
 
     /*
@@ -411,8 +348,7 @@ final class JavadocLexer {
           }
         }
       } else {
-        // TODO(cpovirk): Or just `continue` from the <p> case and move this out of the
-        // `else`?
+        // TODO(cpovirk): Or just `continue` from the <p> case and move this out of the `else`?
         output.add(tokens.next());
       }
     }
@@ -424,10 +360,6 @@ final class JavadocLexer {
      * right without special effort on our part. The reason: Line breaks inside a <pre> section are
      * of type FORCED_NEWLINE rather than WHITESPACE.
      */
-  }
-
-  private static boolean hasMultipleNewlines(String s) {
-    return NEWLINE.countIn(s) > 1;
   }
 
   /**
@@ -552,6 +484,73 @@ final class JavadocLexer {
     } else {
       output.add(new Token(FORCED_NEWLINE, "\n"));
     }
+  }
+
+  private static final CharMatcher NEWLINE = CharMatcher.is('\n');
+
+  private static boolean hasMultipleNewlines(String s) {
+    return NEWLINE.countIn(s) > 1;
+  }
+
+  /*
+   * This also eats any trailing whitespace. We would be smart enough to ignore that, anyway --
+   * except in the case of <pre>/<table>, inside which we otherwise leave whitespace intact.
+   *
+   * We'd remove the trailing whitespace later on (in JavaCommentsHelper.rewrite), but I feel safer
+   * stripping it now: It otherwise might confuse our line-length count, which we use for wrapping.
+   */
+  private static final Pattern NEWLINE_PATTERN = compile("^[ \t]*\n[ \t]*[*]?[ \t]?");
+
+  // We ensure elsewhere that we match this only at the beginning of a line.
+  // Only match tags that start with a lowercase letter, to avoid false matches on unescaped
+  // annotations inside code blocks.
+  // Match "@param <T>" specially in case the <T> is a <P> or other HTML tag we treat specially.
+  private static final Pattern FOOTER_TAG_PATTERN = compile("^@(param\\s+<\\w+>|[a-z]\\w*)");
+  private static final Pattern MOE_BEGIN_STRIP_COMMENT_PATTERN =
+      compile("^<!--\\s*M" + "OE:begin_intracomment_strip\\s*-->");
+  private static final Pattern MOE_END_STRIP_COMMENT_PATTERN =
+      compile("^<!--\\s*M" + "OE:end_intracomment_strip\\s*-->");
+  private static final Pattern HTML_COMMENT_PATTERN = fullCommentPattern();
+  private static final Pattern PRE_OPEN_PATTERN = openTagPattern("pre");
+  private static final Pattern PRE_CLOSE_PATTERN = closeTagPattern("pre");
+  private static final Pattern CODE_OPEN_PATTERN = openTagPattern("code");
+  private static final Pattern CODE_CLOSE_PATTERN = closeTagPattern("code");
+  private static final Pattern TABLE_OPEN_PATTERN = openTagPattern("table");
+  private static final Pattern TABLE_CLOSE_PATTERN = closeTagPattern("table");
+  private static final Pattern LIST_OPEN_PATTERN = openTagPattern("ul|ol|dl");
+  private static final Pattern LIST_CLOSE_PATTERN = closeTagPattern("ul|ol|dl");
+  private static final Pattern LIST_ITEM_OPEN_PATTERN = openTagPattern("li|dt|dd");
+  private static final Pattern LIST_ITEM_CLOSE_PATTERN = closeTagPattern("li|dt|dd");
+  private static final Pattern HEADER_OPEN_PATTERN = openTagPattern("h[1-6]");
+  private static final Pattern HEADER_CLOSE_PATTERN = closeTagPattern("h[1-6]");
+  private static final Pattern PARAGRAPH_OPEN_PATTERN = openTagPattern("p");
+  private static final Pattern PARAGRAPH_CLOSE_PATTERN = closeTagPattern("p");
+  private static final Pattern BLOCKQUOTE_OPEN_PATTERN = openTagPattern("blockquote");
+  private static final Pattern BLOCKQUOTE_CLOSE_PATTERN = closeTagPattern("blockquote");
+  private static final Pattern BR_PATTERN = openTagPattern("br");
+  private static final Pattern INLINE_TAG_OPEN_PATTERN = compile("^[{]@\\w*");
+  /*
+   * We exclude < so that we don't swallow following HTML tags. This lets us fix up "foo<p>" (~400
+   * hits in Google-internal code). We will join unnecessarily split "words" (like "foo<b>bar</b>")
+   * in a later step. There's a similar story for braces. I'm not sure I actually need to exclude @
+   * or *. TODO(cpovirk): Try removing them.
+   *
+   * Thanks to the "rejoin" step in joinAdjacentLiteralsAndAdjacentWhitespace(), we could get away
+   * with matching only one character here. That would eliminate the need for the regex entirely.
+   * That might be faster or slower than what we do now.
+   */
+  private static final Pattern LITERAL_PATTERN = compile("^.[^ \t\n@<{}*]*", DOTALL);
+
+  private static Pattern fullCommentPattern() {
+    return compile("^<!--.*?-->", DOTALL);
+  }
+
+  private static Pattern openTagPattern(String namePattern) {
+    return compile(format("^<(?:%s)\\b[^>]*>", namePattern), CASE_INSENSITIVE);
+  }
+
+  private static Pattern closeTagPattern(String namePattern) {
+    return compile(format("^</(?:%s)\\b[^>]*>", namePattern), CASE_INSENSITIVE);
   }
 
   static class LexException extends Exception {}

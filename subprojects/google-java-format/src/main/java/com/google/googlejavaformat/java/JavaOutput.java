@@ -31,7 +31,6 @@ import com.google.googlejavaformat.Input.Token;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.OpsBuilder.BlankLineWanted;
 import com.google.googlejavaformat.Output;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,31 +74,20 @@ public final class JavaOutput extends Output {
     kN = javaInput.getkN();
   }
 
-  public static String applyReplacements(String input, List<Replacement> replacements) {
-    replacements = new ArrayList<>(replacements);
-    replacements.sort(comparing((Replacement r) -> r.getReplaceRange().lowerEndpoint()).reversed());
-    StringBuilder writer = new StringBuilder(input);
-    for (Replacement replacement : replacements) {
-      writer.replace(
-          replacement.getReplaceRange().lowerEndpoint(),
-          replacement.getReplaceRange().upperEndpoint(),
-          replacement.getReplacementString());
+  @Override
+  public void blankLine(int k, BlankLineWanted wanted) {
+    if (blankLines.containsKey(k)) {
+      blankLines.put(k, blankLines.get(k).merge(wanted));
+    } else {
+      blankLines.put(k, wanted);
     }
-    return writer.toString();
-  }
-
-  /** The earliest position of any Tok in the Token, including leading whitespace. */
-  public static int startPosition(Token token) {
-    int min = token.getTok().getPosition();
-    for (Input.Tok tok : token.getToksBefore()) {
-      min = min(min, tok.getPosition());
-    }
-    return min;
   }
 
   @Override
-  public void indent(int indent) {
-    spacesPending.append(Strings.repeat(" ", indent));
+  public void markForPartialFormat(Token start, Token end) {
+    int lo = JavaOutput.startTok(start).getIndex();
+    int hi = JavaOutput.endTok(end).getIndex();
+    partialFormatRanges.add(Range.closed(lo, hi));
   }
 
   // TODO(user): Add invariant.
@@ -123,7 +111,7 @@ public final class JavaOutput extends Output {
        * there's a blank line here and it's a comment.
        */
       BlankLineWanted wanted = blankLines.getOrDefault(lastK, BlankLineWanted.NO);
-      if (isComment(text) ? sawNewlines : wanted.wanted().orElse(sawNewlines)) {
+      if ((sawNewlines && isComment(text)) || wanted.wanted().orElse(sawNewlines)) {
         ++newlinesPending;
       }
     }
@@ -190,67 +178,8 @@ public final class JavaOutput extends Output {
   }
 
   @Override
-  public void blankLine(int k, BlankLineWanted wanted) {
-    if (blankLines.containsKey(k)) {
-      blankLines.put(k, blankLines.get(k).merge(wanted));
-    } else {
-      blankLines.put(k, wanted);
-    }
-  }
-
-  // The following methods can be used after the Output has been built.
-
-  @Override
-  public void markForPartialFormat(Token start, Token end) {
-    int lo = JavaOutput.startTok(start).getIndex();
-    int hi = JavaOutput.endTok(end).getIndex();
-    partialFormatRanges.add(Range.closed(lo, hi));
-  }
-
-  @Override
-  public CommentsHelper getCommentsHelper() {
-    return commentsHelper;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("iLine", iLine)
-        .add("lastK", lastK)
-        .add("spacesPending", spacesPending.toString().replace("\t", "\\t"))
-        .add("newlinesPending", newlinesPending)
-        .add("blankLines", blankLines)
-        .add("super", super.toString())
-        .toString();
-  }
-
-  /** The earliest non-whitespace Tok in the Token. */
-  public static Input.Tok startTok(Token token) {
-    for (Input.Tok tok : token.getToksBefore()) {
-      if (tok.getIndex() >= 0) {
-        return tok;
-      }
-    }
-    return token.getTok();
-  }
-
-  /** The last non-whitespace Tok in the Token. */
-  public static Input.Tok endTok(Token token) {
-    for (int i = token.getToksAfter().size() - 1; i >= 0; i--) {
-      Input.Tok tok = token.getToksAfter().get(i);
-      if (tok.getIndex() >= 0) {
-        return tok;
-      }
-    }
-    return token.getTok();
-  }
-
-  private boolean isComment(String text) {
-    return text.startsWith("//") || text.startsWith("/*");
-  }
-
-  private static Range<Integer> union(Range<Integer> x, Range<Integer> y) {
-    return x.isEmpty() ? y : y.isEmpty() ? x : x.span(y).canonical(DiscreteDomain.integers());
+  public void indent(int indent) {
+    spacesPending.append(Strings.repeat(" ", indent));
   }
 
   /** Flush any incomplete last line, then add the EOF token into our data structures. */
@@ -266,6 +195,13 @@ public final class JavaOutput extends Output {
     }
     ranges.add(eofRange);
     setLines(ImmutableList.copyOf(mutableLines));
+  }
+
+  // The following methods can be used after the Output has been built.
+
+  @Override
+  public CommentsHelper getCommentsHelper() {
+    return commentsHelper;
   }
 
   /**
@@ -333,10 +269,8 @@ public final class JavaOutput extends Output {
         replaceTo = javaInput.getText().length();
       }
       // Replace trailing whitespace in the input with the whitespace from the formatted file.
-      // If the trailing whitespace in the input includes one or more line breaks, preserve
-      // the
-      // whitespace after the last newline to avoid re-indenting the line following the
-      // formatted
+      // If the trailing whitespace in the input includes one or more line breaks, preserve the
+      // whitespace after the last newline to avoid re-indenting the line following the formatted
       // line.
       int newline = -1;
       while (replaceTo < javaInput.getText().length()) {
@@ -347,8 +281,7 @@ public final class JavaOutput extends Output {
         int newlineLength = Newlines.hasNewlineAt(javaInput.getText(), replaceTo);
         if (newlineLength != -1) {
           newline = replaceTo;
-          // Skip over the entire newline; don't count the second character of \r\n as a
-          // newline.
+          // Skip over the entire newline; don't count the second character of \r\n as a newline.
           replaceTo += newlineLength;
         } else {
           replaceTo++;
@@ -400,5 +333,68 @@ public final class JavaOutput extends Output {
     loTok = partialFormatRanges.rangeContaining(loTok).lowerEndpoint();
     hiTok = partialFormatRanges.rangeContaining(hiTok).upperEndpoint();
     return Range.closedOpen(loTok, hiTok + 1);
+  }
+
+  public static String applyReplacements(String input, List<Replacement> replacements) {
+    replacements = new ArrayList<>(replacements);
+    replacements.sort(comparing((Replacement r) -> r.getReplaceRange().lowerEndpoint()).reversed());
+    StringBuilder writer = new StringBuilder(input);
+    for (Replacement replacement : replacements) {
+      writer.replace(
+          replacement.getReplaceRange().lowerEndpoint(),
+          replacement.getReplaceRange().upperEndpoint(),
+          replacement.getReplacementString());
+    }
+    return writer.toString();
+  }
+
+  /** The earliest position of any Tok in the Token, including leading whitespace. */
+  public static int startPosition(Token token) {
+    int min = token.getTok().getPosition();
+    for (Input.Tok tok : token.getToksBefore()) {
+      min = min(min, tok.getPosition());
+    }
+    return min;
+  }
+
+  /** The earliest non-whitespace Tok in the Token. */
+  public static Input.Tok startTok(Token token) {
+    for (Input.Tok tok : token.getToksBefore()) {
+      if (tok.getIndex() >= 0) {
+        return tok;
+      }
+    }
+    return token.getTok();
+  }
+
+  /** The last non-whitespace Tok in the Token. */
+  public static Input.Tok endTok(Token token) {
+    for (int i = token.getToksAfter().size() - 1; i >= 0; i--) {
+      Input.Tok tok = token.getToksAfter().get(i);
+      if (tok.getIndex() >= 0) {
+        return tok;
+      }
+    }
+    return token.getTok();
+  }
+
+  private boolean isComment(String text) {
+    return text.startsWith("//") || text.startsWith("/*");
+  }
+
+  private static Range<Integer> union(Range<Integer> x, Range<Integer> y) {
+    return x.isEmpty() ? y : y.isEmpty() ? x : x.span(y).canonical(DiscreteDomain.integers());
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("iLine", iLine)
+        .add("lastK", lastK)
+        .add("spacesPending", spacesPending.toString().replace("\t", "\\t"))
+        .add("newlinesPending", newlinesPending)
+        .add("blankLines", blankLines)
+        .add("super", super.toString())
+        .toString();
   }
 }

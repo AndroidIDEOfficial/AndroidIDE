@@ -22,54 +22,6 @@ import com.google.common.collect.ImmutableRangeMap;
 /** An input to the formatter. */
 public abstract class Input extends InputOutput {
   /**
-   * Get the input tokens.
-   *
-   * @return the input tokens
-   */
-  public abstract ImmutableList<? extends Token> getTokens();
-
-  /** A map from [start, end] position ranges to {@link Token}s. */
-  public abstract ImmutableRangeMap<Integer, ? extends Token> getPositionTokenMap();
-
-  public abstract ImmutableMap<Integer, Integer> getPositionToColumnMap();
-
-  public abstract String getText();
-
-  /**
-   * Get the number of toks.
-   *
-   * @return the number of toks, excluding the EOF tok
-   */
-  public abstract int getkN();
-
-  /**
-   * Get the Token by index.
-   *
-   * @param k the Tok index
-   */
-  public abstract Token getToken(int k);
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).add("super", super.toString()).toString();
-  }
-
-  /**
-   * Construct a diagnostic. Populates the input filename, and converts character offsets to
-   * numbers.
-   */
-  public FormatterDiagnostic createDiagnostic(int inputPosition, String message) {
-    return FormatterDiagnostic.create(
-        getLineNumber(inputPosition), getColumnNumber(inputPosition), message);
-  }
-
-  /** Converts a character offset in the input to a line number. */
-  public abstract int getLineNumber(int inputPosition);
-
-  /** Converts a character offset in the input to a 0-based column number. */
-  public abstract int getColumnNumber(int inputPosition);
-
-  /**
    * A {@code Tok} ("tock") is a token, or a comment, or a newline, or a maximal string of blanks. A
    * token {@code Tok} underlies a {@link Token}, and each other {@code Tok} is attached to a single
    * {@code Token}. Tokens and comments have indices; white space {@code Tok}s do not.
@@ -143,5 +95,53 @@ public abstract class Input extends InputOutput {
      * @return the later {@link Tok}s assigned to this {@code Token}
      */
     ImmutableList<? extends Tok> getToksAfter();
+  }
+
+  /**
+   * Get the input tokens.
+   *
+   * @return the input tokens
+   */
+  public abstract ImmutableList<? extends Token> getTokens();
+
+  /** A map from [start, end] position ranges to {@link Token}s. */
+  public abstract ImmutableRangeMap<Integer, ? extends Token> getPositionTokenMap();
+
+  public abstract ImmutableMap<Integer, Integer> getPositionToColumnMap();
+
+  public abstract String getText();
+
+  /**
+   * Get the number of toks.
+   *
+   * @return the number of toks, excluding the EOF tok
+   */
+  public abstract int getkN();
+
+  /**
+   * Get the Token by index.
+   *
+   * @param k the Tok index
+   */
+  public abstract Token getToken(int k);
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this).add("super", super.toString()).toString();
+  }
+
+  /** Converts a character offset in the input to a line number. */
+  public abstract int getLineNumber(int inputPosition);
+
+  /** Converts a character offset in the input to a 0-based column number. */
+  public abstract int getColumnNumber(int inputPosition);
+
+  /**
+   * Construct a diagnostic. Populates the input filename, and converts character offsets to
+   * numbers.
+   */
+  public FormatterDiagnostic createDiagnostic(int inputPosition, String message) {
+    return FormatterDiagnostic.create(
+        getLineNumber(inputPosition), getColumnNumber(inputPosition), message);
   }
 }

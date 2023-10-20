@@ -23,8 +23,7 @@ import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeMap;
 import com.google.googlejavaformat.Input.Tok;
 import com.google.googlejavaformat.Input.Token;
-import openjdk.tools.javac.parser.Tokens.TokenKind;
-
+import com.sun.tools.javac.parser.Tokens.TokenKind;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import jdkx.lang.model.element.Modifier;
+import javax.lang.model.element.Modifier;
 
 /** Fixes sequences of modifiers to be in JLS order. */
 final class ModifierOrderer {
@@ -112,7 +110,7 @@ final class ModifierOrderer {
   }
 
   /**
-   * Returns the given token as a {@link jdkx.lang.model.element.Modifier}, or {@code null} if it
+   * Returns the given token as a {@link javax.lang.model.element.Modifier}, or {@code null} if it
    * is not a modifier.
    */
   private static Modifier asModifier(Token token) {
@@ -159,8 +157,7 @@ final class ModifierOrderer {
   /** Applies replacements to the given string. */
   private static JavaInput applyReplacements(
       JavaInput javaInput, TreeRangeMap<Integer, String> replacementMap) throws FormatterException {
-    // process in descending order so the replacement ranges aren't perturbed if any
-    // replacements
+    // process in descending order so the replacement ranges aren't perturbed if any replacements
     // differ in size from the input
     Map<Range<Integer>, String> ranges = replacementMap.asDescendingMapOfRanges();
     if (ranges.isEmpty()) {

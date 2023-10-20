@@ -14,8 +14,6 @@
 
 package com.google.googlejavaformat.java;
 
-import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_VERSION;
-import static com.google.common.base.StandardSystemProperty.JAVA_SPECIFICATION_VERSION;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.collect.ImmutableList;
@@ -33,28 +31,25 @@ import com.google.googlejavaformat.FormattingError;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.Op;
 import com.google.googlejavaformat.OpsBuilder;
-import openjdk.tools.javac.file.JavacFileManager;
-import openjdk.tools.javac.parser.JavacParser;
-import openjdk.tools.javac.parser.ParserFactory;
-import openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
-import openjdk.tools.javac.util.Context;
-import openjdk.tools.javac.util.Log;
-import openjdk.tools.javac.util.Options;
-
+import com.sun.tools.javac.file.JavacFileManager;
+import com.sun.tools.javac.parser.JavacParser;
+import com.sun.tools.javac.parser.ParserFactory;
+import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
+import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.Log;
+import com.sun.tools.javac.util.Options;
 import java.io.IOError;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import jdkx.tools.Diagnostic;
-import jdkx.tools.DiagnosticCollector;
-import jdkx.tools.DiagnosticListener;
-import jdkx.tools.JavaFileObject;
-import jdkx.tools.SimpleJavaFileObject;
-import jdkx.tools.StandardLocation;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardLocation;
 
 /**
  * This is google-java-format, a new Java formatter that follows the Google Java Style Guide quite
@@ -107,111 +102,6 @@ public final class Formatter {
   }
 
   /**
-   * Converts zero-indexed, [closed, open) line ranges in the given source file to character ranges.
-   */
-  public static RangeSet<Integer> lineRangesToCharRanges(
-      String input, RangeSet<Integer> lineRanges) {
-    List<Integer> lines = new ArrayList<>();
-    Iterators.addAll(lines, Newlines.lineOffsetIterator(input));
-    lines.add(input.length() + 1);
-
-    final RangeSet<Integer> characterRanges = TreeRangeSet.create();
-    for (Range<Integer> lineRange :
-        lineRanges.subRangeSet(Range.closedOpen(0, lines.size() - 1)).asRanges()) {
-      int lineStart = lines.get(lineRange.lowerEndpoint());
-      // Exclude the trailing newline. This isn't strictly necessary, but handling blank lines
-      // as empty ranges is convenient.
-      int lineEnd = lines.get(lineRange.upperEndpoint()) - 1;
-      Range<Integer> range = Range.closedOpen(lineStart, lineEnd);
-      characterRanges.add(range);
-    }
-    return characterRanges;
-  }
-
-  private static int getJavaMajorVersion() {
-    try {
-      Method versionMethod = Runtime.class.getMethod("version");
-      Object version = versionMethod.invoke(null);
-      return (int) version.getClass().getMethod("major").invoke(version);
-    } catch (Exception e) {
-      // continue below
-    }
-    int version = (int) Double.parseDouble(JAVA_CLASS_VERSION.value());
-    if (49 <= version && version <= 52) {
-      return version - (49 - 5);
-    }
-    throw new IllegalStateException("Unknown Java version: " + JAVA_SPECIFICATION_VERSION.value());
-  }
-
-  /**
-   * Format the given input (a Java compilation unit) into the output stream.
-   *
-   * @throws FormatterException if the input cannot be parsed
-   */
-  public void formatSource(CharSource input, CharSink output)
-      throws FormatterException, IOException {
-    // TODO(cushon): proper support for streaming input/output. Input may
-    // not be feasible (parsing) but output should be easier.
-    output.write(formatSource(input.read()));
-  }
-
-  /**
-   * Format an input string (a Java compilation unit) into an output string.
-   *
-   * <p>Leaves import statements untouched.
-   *
-   * @param input the input string
-   * @return the output string
-   * @throws FormatterException if the input string cannot be parsed
-   */
-  public String formatSource(String input) throws FormatterException {
-    return formatSource(input, ImmutableList.of(Range.closedOpen(0, input.length())));
-  }
-
-  /**
-   * Format an input string (a Java compilation unit), for only the specified character ranges.
-   * These ranges are extended as necessary (e.g., to encompass whole lines).
-   *
-   * @param input the input string
-   * @param characterRanges the character ranges to be reformatted
-   * @return the output string
-   * @throws FormatterException if the input string cannot be parsed
-   */
-  public String formatSource(String input, Collection<Range<Integer>> characterRanges)
-      throws FormatterException {
-    return JavaOutput.applyReplacements(input, getFormatReplacements(input, characterRanges));
-  }
-
-  /**
-   * Emit a list of {@link Replacement}s to convert from input to output.
-   *
-   * @param input the input compilation unit
-   * @param characterRanges the character ranges to reformat
-   * @return a list of {@link Replacement}s, sorted from low index to high index, without overlaps
-   * @throws FormatterException if the input string cannot be parsed
-   */
-  public ImmutableList<Replacement> getFormatReplacements(
-      String input, Collection<Range<Integer>> characterRanges) throws FormatterException {
-    JavaInput javaInput = new JavaInput(input);
-
-    // TODO(cushon): this is only safe because the modifier ordering doesn't affect whitespace,
-    // and doesn't change the replacements that are output. This is not true in general for
-    // 'de-linting' changes (e.g. import ordering).
-    javaInput = ModifierOrderer.reorderModifiers(javaInput, characterRanges);
-
-    String lineSeparator = Newlines.guessLineSeparator(input);
-    JavaOutput javaOutput =
-        new JavaOutput(lineSeparator, javaInput, new JavaCommentsHelper(lineSeparator, options));
-    try {
-      format(javaInput, javaOutput, options);
-    } catch (FormattingError e) {
-      throw new FormatterException(e.diagnostics());
-    }
-    RangeSet<Integer> tokenRangeSet = javaInput.characterRangesToTokenRanges(characterRanges);
-    return javaOutput.getFormatReplacements(tokenRangeSet);
-  }
-
-  /**
    * Construct a {@code Formatter} given a Java compilation unit. Parses the code; builds a {@link
    * JavaInput} and the corresponding {@link JavaOutput}.
    *
@@ -246,9 +136,9 @@ public final class Formatter {
     JavacParser parser =
         parserFactory.newParser(
             javaInput.getText(),
-            /*keepDocComments=*/ true,
-            /*keepEndPos=*/ true,
-            /*keepLineMap=*/ true);
+            /* keepDocComments= */ true,
+            /* keepEndPos= */ true,
+            /* keepLineMap= */ true);
     unit = parser.parseCompilationUnit();
     unit.sourcefile = source;
 
@@ -260,7 +150,20 @@ public final class Formatter {
     }
     OpsBuilder builder = new OpsBuilder(javaInput, javaOutput);
     // Output the compilation unit.
-    JavaInputAstVisitor visitor = new JavaInputAstVisitor(builder, options.indentationMultiplier());
+    JavaInputAstVisitor visitor;
+    if (Runtime.version().feature() >= 17) {
+      try {
+        visitor =
+            Class.forName("com.google.googlejavaformat.java.java17.Java17InputAstVisitor")
+                .asSubclass(JavaInputAstVisitor.class)
+                .getConstructor(OpsBuilder.class, int.class)
+                .newInstance(builder, options.indentationMultiplier());
+      } catch (ReflectiveOperationException e) {
+        throw new LinkageError(e.getMessage(), e);
+      }
+    } else {
+      visitor = new JavaInputAstVisitor(builder, options.indentationMultiplier());
+    }
     visitor.scan(unit, null);
     builder.sync(javaInput.getText().length());
     builder.drain();
@@ -286,6 +189,31 @@ public final class Formatter {
   }
 
   /**
+   * Format the given input (a Java compilation unit) into the output stream.
+   *
+   * @throws FormatterException if the input cannot be parsed
+   */
+  public void formatSource(CharSource input, CharSink output)
+      throws FormatterException, IOException {
+    // TODO(cushon): proper support for streaming input/output. Input may
+    // not be feasible (parsing) but output should be easier.
+    output.write(formatSource(input.read()));
+  }
+
+  /**
+   * Format an input string (a Java compilation unit) into an output string.
+   *
+   * <p>Leaves import statements untouched.
+   *
+   * @param input the input string
+   * @return the output string
+   * @throws FormatterException if the input string cannot be parsed
+   */
+  public String formatSource(String input) throws FormatterException {
+    return formatSource(input, ImmutableList.of(Range.closedOpen(0, input.length())));
+  }
+
+  /**
    * Formats an input string (a Java compilation unit) and fixes imports.
    *
    * <p>Fixing imports includes ordering, spacing, and removal of unused import statements.
@@ -303,5 +231,72 @@ public final class Formatter {
     String formatted = formatSource(input);
     formatted = StringWrapper.wrap(formatted, this);
     return formatted;
+  }
+
+  /**
+   * Format an input string (a Java compilation unit), for only the specified character ranges.
+   * These ranges are extended as necessary (e.g., to encompass whole lines).
+   *
+   * @param input the input string
+   * @param characterRanges the character ranges to be reformatted
+   * @return the output string
+   * @throws FormatterException if the input string cannot be parsed
+   */
+  public String formatSource(String input, Collection<Range<Integer>> characterRanges)
+      throws FormatterException {
+    return JavaOutput.applyReplacements(input, getFormatReplacements(input, characterRanges));
+  }
+
+  /**
+   * Emit a list of {@link Replacement}s to convert from input to output.
+   *
+   * @param input the input compilation unit
+   * @param characterRanges the character ranges to reformat
+   * @return a list of {@link Replacement}s, sorted from low index to high index, without overlaps
+   * @throws FormatterException if the input string cannot be parsed
+   */
+  public ImmutableList<Replacement> getFormatReplacements(
+      String input, Collection<Range<Integer>> characterRanges) throws FormatterException {
+    JavaInput javaInput = new JavaInput(input);
+
+    // TODO(cushon): this is only safe because the modifier ordering doesn't affect whitespace,
+    // and doesn't change the replacements that are output. This is not true in general for
+    // 'de-linting' changes (e.g. import ordering).
+    if (options.reorderModifiers()) {
+      javaInput = ModifierOrderer.reorderModifiers(javaInput, characterRanges);
+    }
+
+    String lineSeparator = Newlines.guessLineSeparator(input);
+    JavaOutput javaOutput =
+        new JavaOutput(lineSeparator, javaInput, new JavaCommentsHelper(lineSeparator, options));
+    try {
+      format(javaInput, javaOutput, options);
+    } catch (FormattingError e) {
+      throw new FormatterException(e.diagnostics());
+    }
+    RangeSet<Integer> tokenRangeSet = javaInput.characterRangesToTokenRanges(characterRanges);
+    return javaOutput.getFormatReplacements(tokenRangeSet);
+  }
+
+  /**
+   * Converts zero-indexed, [closed, open) line ranges in the given source file to character ranges.
+   */
+  public static RangeSet<Integer> lineRangesToCharRanges(
+      String input, RangeSet<Integer> lineRanges) {
+    List<Integer> lines = new ArrayList<>();
+    Iterators.addAll(lines, Newlines.lineOffsetIterator(input));
+    lines.add(input.length() + 1);
+
+    final RangeSet<Integer> characterRanges = TreeRangeSet.create();
+    for (Range<Integer> lineRange :
+        lineRanges.subRangeSet(Range.closedOpen(0, lines.size() - 1)).asRanges()) {
+      int lineStart = lines.get(lineRange.lowerEndpoint());
+      // Exclude the trailing newline. This isn't strictly necessary, but handling blank lines
+      // as empty ranges is convenient.
+      int lineEnd = lines.get(lineRange.upperEndpoint()) - 1;
+      Range<Integer> range = Range.closedOpen(lineStart, lineEnd);
+      characterRanges.add(range);
+    }
+    return characterRanges;
   }
 }

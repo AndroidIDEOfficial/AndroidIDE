@@ -18,7 +18,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.collect.Range;
-
 import java.util.Objects;
 
 /**
@@ -29,6 +28,12 @@ import java.util.Objects;
  */
 public final class Replacement {
 
+  public static Replacement create(int startPosition, int endPosition, String replaceWith) {
+    checkArgument(startPosition >= 0, "startPosition must be non-negative");
+    checkArgument(startPosition <= endPosition, "startPosition cannot be after endPosition");
+    return new Replacement(Range.closedOpen(startPosition, endPosition), replaceWith);
+  }
+
   private final Range<Integer> replaceRange;
   private final String replacementString;
 
@@ -37,15 +42,14 @@ public final class Replacement {
     this.replacementString = checkNotNull(replacementString, "Null replacementString");
   }
 
-  public static Replacement create(int startPosition, int endPosition, String replaceWith) {
-    checkArgument(startPosition >= 0, "startPosition must be non-negative");
-    checkArgument(startPosition <= endPosition, "startPosition cannot be after endPosition");
-    return new Replacement(Range.closedOpen(startPosition, endPosition), replaceWith);
+  /** The range of characters in the original source to replace. */
+  public Range<Integer> getReplaceRange() {
+    return replaceRange;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(replaceRange, replacementString);
+  /** The string to replace the range of characters with. */
+  public String getReplacementString() {
+    return replacementString;
   }
 
   @Override
@@ -61,13 +65,8 @@ public final class Replacement {
     return false;
   }
 
-  /** The range of characters in the original source to replace. */
-  public Range<Integer> getReplaceRange() {
-    return replaceRange;
-  }
-
-  /** The string to replace the range of characters with. */
-  public String getReplacementString() {
-    return replacementString;
+  @Override
+  public int hashCode() {
+    return Objects.hash(replaceRange, replacementString);
   }
 }

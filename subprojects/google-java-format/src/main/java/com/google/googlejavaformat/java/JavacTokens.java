@@ -18,16 +18,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import openjdk.tools.javac.parser.JavaTokenizer;
-import openjdk.tools.javac.parser.Scanner;
-import openjdk.tools.javac.parser.ScannerFactory;
-import openjdk.tools.javac.parser.Tokens.Comment;
-import openjdk.tools.javac.parser.Tokens.Comment.CommentStyle;
-import openjdk.tools.javac.parser.Tokens.Token;
-import openjdk.tools.javac.parser.Tokens.TokenKind;
-import openjdk.tools.javac.parser.UnicodeReader;
-import openjdk.tools.javac.util.Context;
-
+import com.sun.tools.javac.parser.JavaTokenizer;
+import com.sun.tools.javac.parser.Scanner;
+import com.sun.tools.javac.parser.ScannerFactory;
+import com.sun.tools.javac.parser.Tokens.Comment;
+import com.sun.tools.javac.parser.Tokens.Comment.CommentStyle;
+import com.sun.tools.javac.parser.Tokens.Token;
+import com.sun.tools.javac.parser.Tokens.TokenKind;
+import com.sun.tools.javac.parser.UnicodeReader;
+import com.sun.tools.javac.util.Context;
 import java.util.Set;
 
 /** A wrapper around javac's lexer. */
@@ -36,6 +35,41 @@ class JavacTokens {
   /** The lexer eats terminal comments, so feed it one we don't care about. */
   // TODO(b/33103797): fix javac and remove the work-around
   private static final CharSequence EOF_COMMENT = "\n//EOF";
+
+  /** An unprocessed input token, including whitespace and comments. */
+  static class RawTok {
+    private final String stringVal;
+    private final TokenKind kind;
+    private final int pos;
+    private final int endPos;
+
+    RawTok(String stringVal, TokenKind kind, int pos, int endPos) {
+      this.stringVal = stringVal;
+      this.kind = kind;
+      this.pos = pos;
+      this.endPos = endPos;
+    }
+
+    /** The token kind, or {@code null} for whitespace and comments. */
+    public TokenKind kind() {
+      return kind;
+    }
+
+    /** The start position. */
+    public int pos() {
+      return pos;
+    }
+
+    /** The end position. */
+    public int endPos() {
+      return endPos;
+    }
+
+    /** The escaped string value of a literal, or {@code null} for other tokens. */
+    public String stringVal() {
+      return stringVal;
+    }
+  }
 
   /** Lex the input and return a list of {@link RawTok}s. */
   public static ImmutableList<RawTok> getTokens(
@@ -84,41 +118,6 @@ class JavacTokens {
       tokens.add(new RawTok(null, null, last, end));
     }
     return tokens.build();
-  }
-
-  /** An unprocessed input token, including whitespace and comments. */
-  static class RawTok {
-    private final String stringVal;
-    private final TokenKind kind;
-    private final int pos;
-    private final int endPos;
-
-    RawTok(String stringVal, TokenKind kind, int pos, int endPos) {
-      this.stringVal = stringVal;
-      this.kind = kind;
-      this.pos = pos;
-      this.endPos = endPos;
-    }
-
-    /** The token kind, or {@code null} for whitespace and comments. */
-    public TokenKind kind() {
-      return kind;
-    }
-
-    /** The start position. */
-    public int pos() {
-      return pos;
-    }
-
-    /** The end position. */
-    public int endPos() {
-      return endPos;
-    }
-
-    /** The escaped string value of a literal, or {@code null} for other tokens. */
-    public String stringVal() {
-      return stringVal;
-    }
   }
 
   /** A {@link JavaTokenizer} that saves comments. */
@@ -171,20 +170,6 @@ class JavacTokens {
       this.style = style;
     }
 
-    @Override
-    public String toString() {
-      return String.format("Comment: '%s'", getText());
-    }
-
-    @Override
-    public String getText() {
-      String text = this.text;
-      if (text == null) {
-        this.text = text = new String(reader.getRawCharacters());
-      }
-      return text;
-    }
-
     /**
      * Returns the source position of the character at index {@code index} in the comment text.
      *
@@ -206,6 +191,15 @@ class JavacTokens {
       return style;
     }
 
+    @Override
+    public String getText() {
+      String text = this.text;
+      if (text == null) {
+        this.text = text = new String(reader.getRawCharacters());
+      }
+      return text;
+    }
+
     /**
      * We don't care about {@code @deprecated} javadoc tags (see the DepAnn check).
      *
@@ -214,6 +208,11 @@ class JavacTokens {
     @Override
     public boolean isDeprecated() {
       return false;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("Comment: '%s'", getText());
     }
   }
 

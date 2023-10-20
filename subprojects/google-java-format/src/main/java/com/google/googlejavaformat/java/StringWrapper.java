@@ -26,22 +26,21 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeRangeMap;
 import com.google.googlejavaformat.Newlines;
-import openjdk.source.tree.BinaryTree;
-import openjdk.source.tree.LiteralTree;
-import openjdk.source.tree.MemberSelectTree;
-import openjdk.source.tree.Tree;
-import openjdk.source.tree.Tree.Kind;
-import openjdk.source.util.TreePath;
-import openjdk.source.util.TreePathScanner;
-import openjdk.tools.javac.file.JavacFileManager;
-import openjdk.tools.javac.parser.JavacParser;
-import openjdk.tools.javac.parser.ParserFactory;
-import openjdk.tools.javac.tree.JCTree;
-import openjdk.tools.javac.util.Context;
-import openjdk.tools.javac.util.Log;
-import openjdk.tools.javac.util.Options;
-import openjdk.tools.javac.util.Position;
-
+import com.sun.source.tree.BinaryTree;
+import com.sun.source.tree.LiteralTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.Tree.Kind;
+import com.sun.source.util.TreePath;
+import com.sun.source.util.TreePathScanner;
+import com.sun.tools.javac.file.JavacFileManager;
+import com.sun.tools.javac.parser.JavacParser;
+import com.sun.tools.javac.parser.ParserFactory;
+import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.Log;
+import com.sun.tools.javac.util.Options;
+import com.sun.tools.javac.util.Position;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -53,21 +52,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-
-import jdkx.tools.Diagnostic;
-import jdkx.tools.DiagnosticCollector;
-import jdkx.tools.DiagnosticListener;
-import jdkx.tools.JavaFileObject;
-import jdkx.tools.SimpleJavaFileObject;
-import jdkx.tools.StandardLocation;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardLocation;
 
 /** Wraps string literals that exceed the column limit. */
 public final class StringWrapper {
-  public static final CharMatcher STRING_CONCAT_DELIMITER =
-      CharMatcher.whitespace().or(CharMatcher.anyOf("\"+"));
-
-  private StringWrapper() {}
-
   /** Reflows long string literals in the given Java source code. */
   public static String wrap(String input, Formatter formatter) throws FormatterException {
     return StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, input, formatter);
@@ -87,8 +80,7 @@ public final class StringWrapper {
     String firstPass = formatter.formatSource(input, replacements.asMapOfRanges().keySet());
 
     if (!firstPass.equals(input)) {
-      // If formatting the replacement ranges resulted in a change, recalculate the
-      // replacements on
+      // If formatting the replacement ranges resulted in a change, recalculate the replacements on
       // the updated input.
       input = firstPass;
       replacements = getReflowReplacements(columnLimit, input);
@@ -98,14 +90,15 @@ public final class StringWrapper {
 
     {
       // We really don't want bugs in this pass to change the behaviour of programs we're
-      // formatting, so check that the pretty-printed AST is the same before and after
-      // reformatting.
+      // formatting, so check that the pretty-printed AST is the same before and after reformatting.
       String expected = parse(input, /* allowStringFolding= */ true).toString();
       String actual = parse(result, /* allowStringFolding= */ true).toString();
       if (!expected.equals(actual)) {
         throw new FormatterException(
             String.format(
-                "Something has gone terribly wrong. Please file a bug: "
+                "Something has gone terribly wrong. We planned to make the below formatting change,"
+                    + " but have aborted because it would unexpectedly change the AST.\n"
+                    + "Please file a bug: "
                     + "https://github.com/google/google-java-format/issues/new"
                     + "\n\n=== Actual: ===\n%s\n=== Expected: ===\n%s\n",
                 actual, expected));
@@ -158,8 +151,7 @@ public final class StringWrapper {
       // i.e. `ONE + TWO + THREE`
       // We need this information to handle continuation indents.
       AtomicBoolean first = new AtomicBoolean(false);
-      // Finds the set of string literals in the concat expression that includes the one that
-      // needs
+      // Finds the set of string literals in the concat expression that includes the one that needs
       // to be wrapped.
       List<Tree> flat = flatten(input, unit, path, enclosing, first);
       // Zero-indexed start column
@@ -250,7 +242,7 @@ public final class StringWrapper {
    * @param columnLimit the number of columns to wrap at
    * @param startColumn the column position of the beginning of the original text
    * @param trailing extra space to leave after the last line, to accommodate a ; or )
-   * @param components the text to reflow. This is a list of "words" of a single literal. Its first
+   * @param components the text to reflow. This is a list of “words” of a single literal. Its first
    *     and last quotes have been stripped
    * @param first0 true if the text includes the beginning of its enclosing concat chain
    */
@@ -270,8 +262,7 @@ public final class StringWrapper {
     while (!input.isEmpty()) {
       int length = 0;
       List<String> line = new ArrayList<>();
-      // If we know this is going to be the last line, then remove a bit of width to account
-      // for the
+      // If we know this is going to be the last line, then remove a bit of width to account for the
       // trailing characters.
       if (input.stream().mapToInt(String::length).sum() <= width) {
         // This isn’t quite optimal, but arguably good enough. See b/179561701
@@ -357,12 +348,28 @@ public final class StringWrapper {
         input.subSequence(getEndPosition(unit, one), getStartPosition(two)));
   }
 
+  public static final CharMatcher STRING_CONCAT_DELIMITER =
+      CharMatcher.whitespace().or(CharMatcher.anyOf("\"+"));
+
+  private static int getEndPosition(JCTree.JCCompilationUnit unit, Tree tree) {
+    return ((JCTree) tree).getEndPosition(unit.endPositions);
+  }
+
   private static int getStartPosition(Tree tree) {
     return ((JCTree) tree).getStartPosition();
   }
 
-  private static int getEndPosition(JCTree.JCCompilationUnit unit, Tree tree) {
-    return ((JCTree) tree).getEndPosition(unit.endPositions);
+  /** Returns true if any lines in the given Java source exceed the column limit. */
+  private static boolean longLines(int columnLimit, String input) {
+    // TODO(cushon): consider adding Newlines.lineIterable?
+    Iterator<String> it = Newlines.lineIterator(input);
+    while (it.hasNext()) {
+      String line = it.next();
+      if (line.length() > columnLimit) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Parses the given Java source. */
@@ -391,7 +398,7 @@ public final class StringWrapper {
     ParserFactory parserFactory = ParserFactory.instance(context);
     JavacParser parser =
         parserFactory.newParser(
-            source, /*keepDocComments=*/ true, /*keepEndPos=*/ true, /*keepLineMap=*/ true);
+            source, /* keepDocComments= */ true, /* keepEndPos= */ true, /* keepLineMap= */ true);
     unit = parser.parseCompilationUnit();
     unit.sourcefile = sjfo;
     Iterable<Diagnostic<? extends JavaFileObject>> errorDiagnostics =
@@ -403,24 +410,10 @@ public final class StringWrapper {
     return unit;
   }
 
-  /** Returns true if any lines in the given Java source exceed the column limit. */
-  private static boolean longLines(int columnLimit, String input) {
-    // TODO(cushon): consider adding Newlines.lineIterable?
-    Iterator<String> it = Newlines.lineIterator(input);
-    while (it.hasNext()) {
-      String line = it.next();
-      if (line.length() > columnLimit) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /** Applies replacements to the given string. */
   private static String applyReplacements(
       String javaInput, TreeRangeMap<Integer, String> replacementMap) throws FormatterException {
-    // process in descending order so the replacement ranges aren't perturbed if any
-    // replacements
+    // process in descending order so the replacement ranges aren't perturbed if any replacements
     // differ in size from the input
     Map<Range<Integer>, String> ranges = replacementMap.asDescendingMapOfRanges();
     if (ranges.isEmpty()) {
@@ -433,4 +426,6 @@ public final class StringWrapper {
     }
     return sb.toString();
   }
+
+  private StringWrapper() {}
 }

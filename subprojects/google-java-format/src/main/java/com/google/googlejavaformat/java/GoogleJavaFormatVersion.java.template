@@ -16,7 +16,7 @@ package com.google.googlejavaformat.java;
 
 class GoogleJavaFormatVersion {
 
-    static String version() {
-        return "%VERSION%";
-    }
+  static String version() {
+    return "%VERSION%";
+  }
 }

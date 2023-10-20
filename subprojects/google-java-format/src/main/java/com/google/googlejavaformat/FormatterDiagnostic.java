@@ -23,12 +23,6 @@ public class FormatterDiagnostic {
   private final String message;
   private final int column;
 
-  private FormatterDiagnostic(int lineNumber, int column, String message) {
-    this.lineNumber = lineNumber;
-    this.column = column;
-    this.message = message;
-  }
-
   public static FormatterDiagnostic create(String message) {
     return new FormatterDiagnostic(-1, -1, message);
   }
@@ -38,6 +32,12 @@ public class FormatterDiagnostic {
     checkArgument(column >= 0);
     checkNotNull(message);
     return new FormatterDiagnostic(lineNumber, column, message);
+  }
+
+  private FormatterDiagnostic(int lineNumber, int column, String message) {
+    this.lineNumber = lineNumber;
+    this.column = column;
+    this.message = message;
   }
 
   /**
@@ -67,8 +67,7 @@ public class FormatterDiagnostic {
       sb.append(lineNumber).append(':');
     }
     if (column >= 0) {
-      // internal column numbers are 0-based, but diagnostics use 1-based indexing by
-      // convention
+      // internal column numbers are 0-based, but diagnostics use 1-based indexing by convention
       sb.append(column + 1).append(':');
     }
     if (lineNumber >= 0 || column >= 0) {

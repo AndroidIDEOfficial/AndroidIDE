@@ -16,11 +16,12 @@ package com.google.googlejavaformat.java;
 
 import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Comparator.comparing;
 
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.googlejavaformat.FormatterDiagnostic;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
-
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,18 +30,25 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /** The main class for the Java formatter CLI. */
 public final class Main {
   private static final int MAX_THREADS = 20;
   private static final String STDIN_FILENAME = "<stdin>";
+
+  static String versionString() {
+    return "google-java-format: Version " + GoogleJavaFormatVersion.version();
+  }
+
   private final PrintWriter outWriter;
   private final PrintWriter errWriter;
   private final InputStream inStream;
@@ -75,7 +83,8 @@ public final class Main {
       return formatter.format(args);
     } catch (UsageException e) {
       err.print(e.getMessage());
-      return 0;
+      // We return exit code 2 to differentiate usage issues from code formatting issues.
+      return 2;
     } finally {
       err.flush();
       out.flush();
@@ -112,58 +121,59 @@ public final class Main {
     }
   }
 
-  static String versionString() {
-    return "google-java-format: Version " + GoogleJavaFormatVersion.version();
-  }
-
   private int formatFiles(CommandLineOptions parameters, JavaFormatterOptions options) {
     int numThreads = min(MAX_THREADS, parameters.files().size());
     ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
-    Map<Path, String> inputs = new LinkedHashMap<>();
-    Map<Path, Future<String>> results = new LinkedHashMap<>();
+    ExecutorCompletionService<FormatFileCallable.Result> cs =
+        new ExecutorCompletionService<>(executorService);
     boolean allOk = true;
 
+    int files = 0;
     for (String fileName : parameters.files()) {
       if (!fileName.endsWith(".java")) {
         errWriter.println("Skipping non-Java file: " + fileName);
         continue;
       }
       Path path = Paths.get(fileName);
-      String input;
       try {
-        input = new String(Files.readAllBytes(path), UTF_8);
-        inputs.put(path, input);
-        results.put(
-            path, executorService.submit(new FormatFileCallable(parameters, input, options)));
+        String input = new String(Files.readAllBytes(path), UTF_8);
+        cs.submit(new FormatFileCallable(parameters, path, input, options));
+        files++;
       } catch (IOException e) {
         errWriter.println(fileName + ": could not read file: " + e.getMessage());
         allOk = false;
       }
     }
 
-    for (Map.Entry<Path, Future<String>> result : results.entrySet()) {
-      Path path = result.getKey();
-      String formatted;
+    List<FormatFileCallable.Result> results = new ArrayList<>();
+    while (files > 0) {
       try {
-        formatted = result.getValue().get();
+        files--;
+        results.add(cs.take().get());
       } catch (InterruptedException e) {
         errWriter.println(e.getMessage());
         allOk = false;
         continue;
       } catch (ExecutionException e) {
-        if (e.getCause() instanceof FormatterException) {
-          for (FormatterDiagnostic diagnostic : ((FormatterException) e.getCause()).diagnostics()) {
-            errWriter.println(path + ":" + diagnostic);
-          }
-        } else {
-          errWriter.println(path + ": error: " + e.getCause().getMessage());
-          e.getCause().printStackTrace(errWriter);
+        errWriter.println("error: " + e.getCause().getMessage());
+        e.getCause().printStackTrace(errWriter);
+        allOk = false;
+        continue;
+      }
+    }
+    Collections.sort(results, comparing(FormatFileCallable.Result::path));
+    for (FormatFileCallable.Result result : results) {
+      Path path = result.path();
+      if (result.exception() != null) {
+        for (FormatterDiagnostic diagnostic : result.exception().diagnostics()) {
+          errWriter.println(path + ":" + diagnostic);
         }
         allOk = false;
         continue;
       }
-      boolean changed = !formatted.equals(inputs.get(path));
+      String formatted = result.output();
+      boolean changed = result.changed();
       if (changed && parameters.setExitIfChanged()) {
         allOk = false;
       }
@@ -186,6 +196,10 @@ public final class Main {
         outWriter.write(formatted);
       }
     }
+    if (!MoreExecutors.shutdownAndAwaitTermination(executorService, Duration.ofSeconds(5))) {
+      errWriter.println("Failed to shut down ExecutorService");
+      allOk = false;
+    }
     return allOk ? 0 : 1;
   }
 
@@ -198,9 +212,16 @@ public final class Main {
     }
     String stdinFilename = parameters.assumeFilename().orElse(STDIN_FILENAME);
     boolean ok = true;
-    try {
-      String output = new FormatFileCallable(parameters, input, options).call();
-      boolean changed = !input.equals(output);
+    FormatFileCallable.Result result =
+        new FormatFileCallable(parameters, null, input, options).call();
+    if (result.exception() != null) {
+      for (FormatterDiagnostic diagnostic : result.exception().diagnostics()) {
+        errWriter.println(stdinFilename + ":" + diagnostic);
+      }
+      ok = false;
+    } else {
+      String output = result.output();
+      boolean changed = result.changed();
       if (changed && parameters.setExitIfChanged()) {
         ok = false;
       }
@@ -211,12 +232,6 @@ public final class Main {
       } else {
         outWriter.write(output);
       }
-    } catch (FormatterException e) {
-      for (FormatterDiagnostic diagnostic : e.diagnostics()) {
-        errWriter.println(stdinFilename + ":" + diagnostic);
-      }
-      ok = false;
-      // TODO(cpovirk): Catch other types of exception (as we do in the formatFiles case).
     }
     return ok ? 0 : 1;
   }

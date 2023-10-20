@@ -20,7 +20,6 @@ import com.google.googlejavaformat.CommentsHelper;
 import com.google.googlejavaformat.Input.Tok;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.java.javadoc.JavadocFormatter;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,10 +29,6 @@ import java.util.regex.Pattern;
 /** {@code JavaCommentsHelper} extends {@link CommentsHelper} to rewrite Java comments. */
 public final class JavaCommentsHelper implements CommentsHelper {
 
-  // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
-  // contain leading spaces.
-  private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
-      Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
   private final String lineSeparator;
   private final JavaFormatterOptions options;
 
@@ -58,11 +53,13 @@ public final class JavaCommentsHelper implements CommentsHelper {
     }
     if (tok.isSlashSlashComment()) {
       return indentLineComments(lines, column0);
-    } else if (javadocShaped(lines)) {
-      return indentJavadoc(lines, column0);
-    } else {
-      return preserveIndentation(lines, column0);
     }
+    return CommentsHelper.reformatParameterComment(tok)
+        .orElseGet(
+            () ->
+                javadocShaped(lines)
+                    ? indentJavadoc(lines, column0)
+                    : preserveIndentation(lines, column0));
   }
 
   // For non-javadoc-shaped block comments, shift the entire block to the correct
@@ -106,6 +103,11 @@ public final class JavaCommentsHelper implements CommentsHelper {
     }
     return builder.toString();
   }
+
+  // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
+  // contain leading spaces.
+  private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
+      Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
 
   private List<String> wrapLineComments(List<String> lines, int column0) {
     List<String> result = new ArrayList<>();
@@ -179,3 +181,4 @@ public final class JavaCommentsHelper implements CommentsHelper {
     return true;
   }
 }
+
