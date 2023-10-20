@@ -15,9 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
 plugins {
-    id("java-library")
+    id("com.android.library")
+}
+
+android {
+    namespace = "com.google.googlejavaformat"
 }
 
 dependencies {

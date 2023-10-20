@@ -20,23 +20,6 @@
         </processorPath>
         <module name="ide.AndroidIDE.annotation-processors.main" />
       </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.4/90f9629eaa123f88551cc26a64bc386967ee24cc/auto-value-1.10.4.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.1.1/bfeb4c40087b49e23700f074807d3f2a6d36d2d1/auto-service-1.1.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service-annotations/1.1.1/da12a15cd058ba90a0ff55357fb521161af4736d/auto-service-annotations-1.1.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto/auto-common/1.2.1/f6da26895f759010f5f170c8044e84c1b17ef83e/auto-common-1.2.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/32.0.1-jre/6e5d51a72d142f2d40a57dfb897188b36a95b489/guava-32.0.1-jre.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.33.0/de2b60b62da487644fc11f734e73c8b0b431238f/checker-qual-3.33.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.18.0/89b684257096f548fa39a7df9fdaa409d4d4df91/error_prone_annotations-2.18.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/2.8/c85270e307e7b822f1086b93689124b89768e273/j2objc-annotations-2.8.jar" />
-        </processorPath>
-        <module name="google-java-format.AndroidIDE.subprojects.google-java-format.main" />
-      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="AndroidIDE.annotation-ksp" target="17" />
@@ -131,6 +114,7 @@
       <module name="AndroidIDE.subprojects.classfile" target="11" />
       <module name="AndroidIDE.subprojects.classfile.main" target="11" />
       <module name="AndroidIDE.subprojects.classfile.test" target="11" />
+      <module name="AndroidIDE.subprojects.google-java-format.test" target="11" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
       <module name="AndroidIDE.subprojects.tooling-api-config" target="11" />
