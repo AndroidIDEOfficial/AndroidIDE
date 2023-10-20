@@ -20,8 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.googlejavaformat.FormatterDiagnostic;
 import java.util.List;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 
 /** Checked exception class for formatter errors. */
 public final class FormatterException extends Exception {

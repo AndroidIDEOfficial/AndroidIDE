@@ -14,7 +14,7 @@
 
 package com.google.googlejavaformat.java.java17;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableListUtils.toImmutableList;
 import static com.google.common.collect.Iterables.getOnlyElement;
 
 import com.google.common.base.Verify;
@@ -22,27 +22,27 @@ import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.OpsBuilder;
 import com.google.googlejavaformat.OpsBuilder.BlankLineWanted;
 import com.google.googlejavaformat.java.JavaInputAstVisitor;
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.BindingPatternTree;
-import com.sun.source.tree.BlockTree;
-import com.sun.source.tree.CaseLabelTree;
-import com.sun.source.tree.CaseTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.InstanceOfTree;
-import com.sun.source.tree.ModifiersTree;
-import com.sun.source.tree.ModuleTree;
-import com.sun.source.tree.SwitchExpressionTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.tree.YieldTree;
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
-import com.sun.tools.javac.tree.TreeInfo;
 import java.util.List;
 import java.util.Optional;
-import javax.lang.model.element.Name;
+import jdkx.lang.model.element.Name;
+import openjdk.source.tree.AnnotationTree;
+import openjdk.source.tree.BindingPatternTree;
+import openjdk.source.tree.BlockTree;
+import openjdk.source.tree.CaseLabelTree;
+import openjdk.source.tree.CaseTree;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.InstanceOfTree;
+import openjdk.source.tree.ModifiersTree;
+import openjdk.source.tree.ModuleTree;
+import openjdk.source.tree.SwitchExpressionTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.tree.YieldTree;
+import openjdk.tools.javac.code.Flags;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
+import openjdk.tools.javac.tree.TreeInfo;
 
 /**
  * Extends {@link JavaInputAstVisitor} with support for AST nodes that were added or modified in

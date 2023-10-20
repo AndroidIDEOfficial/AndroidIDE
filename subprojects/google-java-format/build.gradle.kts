@@ -23,7 +23,9 @@ plugins {
 dependencies {
     implementation(libs.google.guava)
     implementation(libs.google.auto.value.annotations)
+    implementation(libs.google.auto.service.annotations)
     implementation(projects.subprojects.javac)
-    
+
     annotationProcessor(libs.google.auto.value.ap)
+    annotationProcessor(libs.google.auto.service)
 }

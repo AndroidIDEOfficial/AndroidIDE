@@ -14,7 +14,7 @@
 
 package com.google.googlejavaformat.java;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableListUtils.toImmutableList;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;

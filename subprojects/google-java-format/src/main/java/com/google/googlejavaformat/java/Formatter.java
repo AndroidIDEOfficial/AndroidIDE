@@ -31,25 +31,25 @@ import com.google.googlejavaformat.FormattingError;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.Op;
 import com.google.googlejavaformat.OpsBuilder;
-import com.sun.tools.javac.file.JavacFileManager;
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.ParserFactory;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Options;
+import openjdk.tools.javac.file.JavacFileManager;
+import openjdk.tools.javac.parser.JavacParser;
+import openjdk.tools.javac.parser.ParserFactory;
+import openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Log;
+import openjdk.tools.javac.util.Options;
 import java.io.IOError;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticCollector;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.SimpleJavaFileObject;
+import jdkx.tools.StandardLocation;
 
 /**
  * This is google-java-format, a new Java formatter that follows the Google Java Style Guide quite

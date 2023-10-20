@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /** The main class for the Java formatter CLI. */
 public final class Main {
@@ -196,7 +197,7 @@ public final class Main {
         outWriter.write(formatted);
       }
     }
-    if (!MoreExecutors.shutdownAndAwaitTermination(executorService, Duration.ofSeconds(5))) {
+    if (!MoreExecutors.shutdownAndAwaitTermination(executorService, 5, TimeUnit.SECONDS)) {
       errWriter.println("Failed to shut down ExecutorService");
       allOk = false;
     }

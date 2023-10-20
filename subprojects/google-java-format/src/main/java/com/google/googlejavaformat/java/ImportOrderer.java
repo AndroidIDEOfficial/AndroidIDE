@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableSortedSet;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.java.JavaFormatterOptions.Style;
 import com.google.googlejavaformat.java.JavaInput.Tok;
-import com.sun.tools.javac.parser.Tokens.TokenKind;
+import openjdk.tools.javac.parser.Tokens.TokenKind;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
