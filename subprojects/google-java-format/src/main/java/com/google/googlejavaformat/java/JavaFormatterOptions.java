@@ -58,6 +58,8 @@ public abstract class JavaFormatterOptions {
 
   public abstract boolean reorderModifiers();
 
+  public abstract boolean useJava17AstVisitor();
+
   /** Returns the code style. */
   public abstract Style style();
 
@@ -71,7 +73,8 @@ public abstract class JavaFormatterOptions {
     return new AutoValue_JavaFormatterOptions.Builder()
         .style(Style.GOOGLE)
         .formatJavadoc(true)
-        .reorderModifiers(true);
+        .reorderModifiers(true)
+        .useJava17AstVisitor(true);
   }
 
   /** A builder for {@link JavaFormatterOptions}. */
@@ -83,6 +86,8 @@ public abstract class JavaFormatterOptions {
     public abstract Builder formatJavadoc(boolean formatJavadoc);
 
     public abstract Builder reorderModifiers(boolean reorderModifiers);
+
+    public abstract Builder useJava17AstVisitor(boolean reorderModifiers);
 
     public abstract JavaFormatterOptions build();
   }

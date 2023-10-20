@@ -151,7 +151,7 @@ public final class Formatter {
     OpsBuilder builder = new OpsBuilder(javaInput, javaOutput);
     // Output the compilation unit.
     JavaInputAstVisitor visitor;
-    if (Runtime.version().feature() >= 17) {
+    if (options.useJava17AstVisitor()) {
       try {
         visitor =
             Class.forName("com.google.googlejavaformat.java.java17.Java17InputAstVisitor")
