@@ -490,7 +490,7 @@
   <string name="summary_anonymous_usage_stats">Анонимная статистика использования</string>
   <string name="idepref_stats_optIn_title">Сбор статистики</string>
   <string name="idepref_stats_optIn_summary">Разрешить сбор метрик установки и статистики устройств (полностью анонимно).</string>
-  <string name="title_unique_id">Уникальный ID</string>
+  <string name="title_unique_id">Уникальный идентификатор</string>
   <string name="title_device">Устройство</string>
   <string name="title_app_version">Версия приложения</string>
   <string name="title_country">Страна</string>
@@ -528,7 +528,7 @@
   <string name="err_cannot_determine_package">Невозможно запустить приложение. Не удалось определить имя пакета.</string>
   <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
   <string name="title_launch_app">Launch app</string>
-  <string name="msg_64bit_on_32bit_device">You are using 64-bit variant of AndroidIDE on a 32-bit-only device. This configuration is not supported. Please install the 32-bit variant of AndroidIDE.</string>
-  <string name="title_32bit_on_64bit_device">Configuration Warning</string>
-  <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="msg_64bit_on_32bit_device">Вы используете 64-битный вариант AndroidIDE на 32-битном устройстве. Эта конфигурация не поддерживается. Пожалуйста, установите 32-битный вариант AndroidIDE.</string>
+  <string name="title_32bit_on_64bit_device">Предупреждение о конфигурации</string>
+  <string name="msg_32bit_on_64bit_device">Вы используете 32-битный вариант AndroidIDE на 64-битном устройстве. Такая конфигурация может работать, но это приведёт к снижению производительности и возможным уязвимостям в системе безопасности. По возможности избегайте использования данной конфигурации.</string>
 </resources>
