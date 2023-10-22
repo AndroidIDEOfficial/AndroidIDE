@@ -17,11 +17,7 @@
 
 package com.itsaky.androidide.treesitter.api
 
-import com.itsaky.androidide.treesitter.TSNode
-import com.itsaky.androidide.treesitter.TSPoint
-import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryCursor
-import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.RecyclableObjectPool
 
@@ -30,8 +26,7 @@ import com.itsaky.androidide.utils.RecyclableObjectPool
  */
 class TreeSitterQueryCursor(
   pointer: Long = 0
-) : TSQueryCursor(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable(),
-  TSSynchronized by DefaultSynchronized() {
+) : TSQueryCursor(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {
 
@@ -43,43 +38,9 @@ class TreeSitterQueryCursor(
     }
   }
 
-  override fun exec(query: TSQuery?, node: TSNode?) {
-    withLock { super.exec(query, node) }
-  }
-
-  override fun didExceedMatchLimit(): Boolean {
-    return withLock { super.didExceedMatchLimit() }
-  }
-
-  override fun getMatchLimit(): Int {
-    return withLock { super.getMatchLimit() }
-  }
-
-  override fun setMatchLimit(newLimit: Int) {
-    withLock { super.setMatchLimit(newLimit) }
-  }
-
-  override fun setByteRange(start: Int, end: Int) {
-    withLock { super.setByteRange(start, end) }
-  }
-
-  override fun setPointRange(start: TSPoint?, end: TSPoint?) {
-    withLock { super.setPointRange(start, end) }
-  }
-
-  override fun nextMatch(): TSQueryMatch? {
-    return withLock { super.nextMatch() }
-  }
-
-  override fun removeMatch(id: Int) {
-    withLock { super.removeMatch(id) }
-  }
-
   override fun close() {
-    withLock {
-      super.close()
-      recycle()
-    }
+    super.close()
+    recycle()
   }
 
   override fun recycle() {

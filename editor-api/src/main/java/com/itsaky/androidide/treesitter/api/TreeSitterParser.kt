@@ -17,11 +17,7 @@
 
 package com.itsaky.androidide.treesitter.api
 
-import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSParser
-import com.itsaky.androidide.treesitter.TSRange
-import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.RecyclableObjectPool
 
@@ -30,8 +26,7 @@ import com.itsaky.androidide.utils.RecyclableObjectPool
  */
 class TreeSitterParser @JvmOverloads internal constructor(
   pointer: Long = 0
-) : TSParser(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable(),
-  TSSynchronized by DefaultSynchronized() {
+) : TSParser(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {
 
@@ -46,38 +41,8 @@ class TreeSitterParser @JvmOverloads internal constructor(
   }
 
   override fun close() {
-    withLock {
-      super.close()
-      recycle()
-    }
-  }
-
-  override fun setLanguage(language: TSLanguage?) {
-    withLock { super.setLanguage(language) }
-  }
-
-  override fun parseString(oldTree: TSTree?, source: UTF16String?): TSTree {
-    return withLock { super.parseString(oldTree, source) }
-  }
-
-  override fun setTimeout(microseconds: Long) {
-    withLock { super.setTimeout(microseconds) }
-  }
-
-  override fun getTimeout(): Long {
-    return withLock { super.getTimeout() }
-  }
-
-  override fun setIncludedRanges(ranges: Array<out TSRange>?): Boolean {
-    return withLock { super.setIncludedRanges(ranges) }
-  }
-
-  override fun getIncludedRanges(): Array<TSRange> {
-    return withLock { super.getIncludedRanges() }
-  }
-
-  override fun reset() {
-    withLock { super.reset() }
+    super.close()
+    recycle()
   }
 
   override fun recycle() {

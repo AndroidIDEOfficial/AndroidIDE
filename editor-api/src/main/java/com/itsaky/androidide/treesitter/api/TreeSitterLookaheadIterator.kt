@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.treesitter.api
 
-import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSLookaheadIterator
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.RecyclableObjectPool
@@ -26,8 +25,7 @@ import com.itsaky.androidide.utils.RecyclableObjectPool
  * @author Akash Yadav
  */
 class TreeSitterLookaheadIterator @JvmOverloads internal constructor(pointer: Long = 0) :
-  TSLookaheadIterator(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable(),
-  TSSynchronized by DefaultSynchronized() {
+  TSLookaheadIterator(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {
 
@@ -39,47 +37,9 @@ class TreeSitterLookaheadIterator @JvmOverloads internal constructor(pointer: Lo
     }
   }
 
-  override fun next(): Boolean {
-    return withLock {
-      super.next()
-    }
-  }
-
-  override fun getCurrentSymbol(): Short {
-    return withLock {
-      super.getCurrentSymbol()
-    }
-  }
-
-  override fun getCurrentSymbolName(): String {
-    return withLock {
-      super.getCurrentSymbolName()
-    }
-  }
-
-  override fun resetState(stateId: Short): Boolean {
-    return withLock {
-      super.resetState(stateId)
-    }
-  }
-
-  override fun reset(language: TSLanguage?, stateId: Short): Boolean {
-    return withLock {
-      super.reset(language, stateId)
-    }
-  }
-
-  override fun getLanguage(): TSLanguage {
-    return withLock {
-      super.getLanguage()
-    }
-  }
-
   override fun close() {
-    withLock {
-      super.close()
-      recycle()
-    }
+    super.close()
+    recycle()
   }
 
   override fun recycle() {

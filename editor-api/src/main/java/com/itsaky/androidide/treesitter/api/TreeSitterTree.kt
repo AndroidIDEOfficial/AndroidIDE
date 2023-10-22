@@ -17,23 +17,16 @@
 
 package com.itsaky.androidide.treesitter.api
 
-import com.itsaky.androidide.treesitter.TSInputEdit
-import com.itsaky.androidide.treesitter.TSLanguage
-import com.itsaky.androidide.treesitter.TSNode
-import com.itsaky.androidide.treesitter.TSRange
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.RecyclableObjectPool
-import java.util.concurrent.TimeUnit
 
 /**
  * @author Akash Yadav
  */
 class TreeSitterTree @JvmOverloads internal constructor(
-  pointer: Long = 0,
-  private val synchronized: DefaultSynchronized = DefaultSynchronized()
-) : TSTree(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable(),
-  TSSynchronized by synchronized {
+  pointer: Long = 0
+) : TSTree(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   private var ownerThread: Thread? = null
 
@@ -48,41 +41,10 @@ class TreeSitterTree @JvmOverloads internal constructor(
     }
   }
 
-  override fun getRootNode(): TSNode {
-    return withLock { super.getRootNode() }
-  }
-
-  override fun getChangedRanges(oldTree: TSTree?): Array<TSRange> {
-    return withLock { super.getChangedRanges(oldTree) }
-  }
-
-  override fun copy(): TSTree {
-    return withLock { super.copy() }
-  }
-
-  override fun edit(edit: TSInputEdit?) {
-    withLock { super.edit(edit) }
-  }
-
-  override fun getLanguage(): TSLanguage {
-    return withLock { super.getLanguage() }
-  }
-
-  override fun <T> withLock(timeout: Long, unit: TimeUnit, action: () -> T): T {
-//    check(ownerThread != null && Thread.currentThread() == ownerThread) {
-//      "TSTree instances are not thread-safe. Copy the tree if you need to use it on multiple threads." +
-//          "currentThread=${Thread.currentThread()} initialThread=$ownerThread"
-//    }
-
-    return synchronized.withLock(timeout, unit, action)
-  }
-
   override fun close() {
-    withLock {
-      super.close()
-      this.nativeObject = 0
-      recycle()
-    }
+    super.close()
+    this.nativeObject = 0
+    recycle()
   }
 
   override fun recycle() {

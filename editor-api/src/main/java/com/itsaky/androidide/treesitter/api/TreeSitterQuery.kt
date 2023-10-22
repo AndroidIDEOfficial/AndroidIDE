@@ -17,9 +17,7 @@
 
 package com.itsaky.androidide.treesitter.api
 
-import com.itsaky.androidide.treesitter.TSQuantifier
 import com.itsaky.androidide.treesitter.TSQuery
-import com.itsaky.androidide.treesitter.TSQueryPredicateStep
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.RecyclableObjectPool
 
@@ -28,8 +26,7 @@ import com.itsaky.androidide.utils.RecyclableObjectPool
  */
 class TreeSitterQuery @JvmOverloads internal constructor(
   pointer: Long = 0
-) : TSQuery(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable(),
-  TSSynchronized by DefaultSynchronized() {
+) : TSQuery(pointer), RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {
 
@@ -41,59 +38,9 @@ class TreeSitterQuery @JvmOverloads internal constructor(
     }
   }
 
-  override fun getCaptureCount(): Int {
-    return withLock { super.getCaptureCount() }
-  }
-
-  override fun getPatternCount(): Int {
-    return withLock { super.getPatternCount() }
-  }
-
-  override fun getStringCount(): Int {
-    return withLock { super.getStringCount() }
-  }
-
-  override fun getCaptureNames(): Array<String> {
-    return withLock { super.getCaptureNames() }
-  }
-
-  override fun getStartByteForPattern(pattern: Int): Int {
-    return withLock { super.getStartByteForPattern(pattern) }
-  }
-
-  override fun getPredicatesForPattern(pattern: Int): Array<TSQueryPredicateStep> {
-    return withLock { super.getPredicatesForPattern(pattern) }
-  }
-
-  override fun isPatternRooted(pattern: Int): Boolean {
-    return withLock { super.isPatternRooted(pattern) }
-  }
-
-  override fun isPatternNonLocal(pattern: Int): Boolean {
-    return withLock { super.isPatternNonLocal(pattern) }
-  }
-
-  override fun isPatternGuaranteedAtStep(offset: Int): Boolean {
-    return withLock { super.isPatternGuaranteedAtStep(offset) }
-  }
-
-  override fun getCaptureNameForId(id: Int): String {
-    return withLock { super.getCaptureNameForId(id) }
-  }
-
-  override fun getStringValueForId(id: Int): String {
-    return withLock { super.getStringValueForId(id) }
-  }
-
-  override fun getCaptureQuantifierForId(pattern: Int, capture: Int): TSQuantifier {
-    return withLock { super.getCaptureQuantifierForId(pattern, capture) }
-  }
-
   override fun close() {
-    withLock {
-      super.close()
-      recycle()
-    }
+    super.close()
+    recycle()
   }
 
   override fun recycle() {

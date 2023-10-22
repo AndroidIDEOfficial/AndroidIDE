@@ -41,8 +41,11 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
   onClosedOrEdited: (() -> Unit)? = null,
   debugName: String = "",
+  debugLogging: Boolean = false,
   action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
+
+  log.isEnabled = debugLogging
 
   if (tree == null || !tree.canAccess()) {
     log.debug("$debugName: Cannot execute query, tree is null or not accessible", "tree=$tree", "tree.canAccess=${tree?.canAccess()}")
@@ -69,6 +72,7 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     whileTrue = whileTrue,
     onClosedOrEdited = onClosedOrEdited,
     debugName = debugName,
+    debugLogging = debugLogging,
     action = action
   )
 }
@@ -88,6 +92,7 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
   onClosedOrEdited: (() -> Unit)? = null,
   debugName: String = "",
+  debugLogging: Boolean = false,
   action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
 
@@ -102,6 +107,7 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     whileTrue = whileTrue,
     onClosedOrEdited = onClosedOrEdited,
     debugName = debugName,
+    debugLogging = debugLogging,
     action = action)
 }
 
@@ -113,8 +119,11 @@ private fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
   whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
   onClosedOrEdited: (() -> Unit)? = null,
   debugName: String = "",
+  debugLogging: Boolean = false,
   action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
+
+  log.isEnabled = debugLogging
 
   if (!query.canAccess()) {
     log.debug("$debugName: Cannot execute query, query is not accessible")

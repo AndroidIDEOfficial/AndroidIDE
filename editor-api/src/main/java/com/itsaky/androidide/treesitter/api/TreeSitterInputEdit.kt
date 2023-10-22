@@ -30,7 +30,7 @@ class TreeSitterInputEdit @JvmOverloads internal constructor(
   oldEndPoint: TSPoint? = null,
   newEndPoint: TSPoint? = null
 ) : TSInputEdit(startByte, oldEndByte, newEndByte, startPoint, oldEndPoint, newEndPoint),
-  RecyclableObjectPool.Recyclable by DefaultRecyclable(), TSSynchronized by DefaultSynchronized() {
+  RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {
 
@@ -57,15 +57,13 @@ class TreeSitterInputEdit @JvmOverloads internal constructor(
   }
 
   override fun recycle() {
-    withLock {
-      this.startByte = 0
-      this.oldEndByte = 0
-      this.newEndByte = 0
-      this.startPoint = null
-      this.oldEndPoint = null
-      this.newEndPoint = null
+    this.startByte = 0
+    this.oldEndByte = 0
+    this.newEndByte = 0
+    this.startPoint = null
+    this.oldEndPoint = null
+    this.newEndPoint = null
 
-      returnToPool()
-    }
+    returnToPool()
   }
 }
