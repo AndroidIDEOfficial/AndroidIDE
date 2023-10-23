@@ -35,6 +35,12 @@ import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.utils.ILogger
 import java.util.Stack
 
+private typealias TSNodeIndices = Pair<Int, Int>
+
+private fun TSNode.indices() : TSNodeIndices {
+  return startByte to endByte
+}
+
 /**
  * Class for storing tree-sitter variables. This class tracks the positions and scopes
  * of variables and find definitions.
@@ -83,7 +89,11 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
 
         captures.sortBy { it.node.startByte }
         val scopeStack = Stack<Scope>()
-        var lastAddedVariableNode: TSNode? = null
+
+        // TSNode instance will be recycled after every iteration
+        // so we store the start and end bytes only
+        var lastAddedVariableNodeIndices: TSNodeIndices? = null
+
         scopeStack.push(rootScope)
         for (capture in captures) {
           val startIndex = capture.node.startByte / 2
@@ -111,12 +121,12 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
               scope.endIndex
             )
             scope.variables.add(scopedVar)
-            lastAddedVariableNode = capture.node
-          } else if (pattern !in spec.localsDefinitionValueIndices && pattern !in spec.localsReferenceIndices && lastAddedVariableNode != null) {
+            lastAddedVariableNodeIndices = capture.node.indices()
+          } else if (pattern !in spec.localsDefinitionValueIndices && pattern !in spec.localsReferenceIndices && lastAddedVariableNodeIndices != null) {
             val topVariables = scopeStack.peek().variables
             if (topVariables.isNotEmpty()) {
               val topVariable = topVariables.last()
-              if (lastAddedVariableNode.startByte / 2 == startIndex && lastAddedVariableNode.endByte / 2 == endIndex && topVariable.matchedHighlightPattern == -1) {
+              if (lastAddedVariableNodeIndices.first / 2 == startIndex && lastAddedVariableNodeIndices.second / 2 == endIndex && topVariable.matchedHighlightPattern == -1) {
                 topVariable.matchedHighlightPattern = pattern
               }
             }
