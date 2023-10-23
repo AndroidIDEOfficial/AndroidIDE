@@ -35,7 +35,6 @@ import io.github.rosemoe.sora.text.ContentReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,7 +54,6 @@ internal class TsAnalyzeWorker(
 ) {
 
   companion object {
-    private const val TS_PARSE_DELAY_MS = 300L
     private val log = ILogger.newInstance("TsAnalyzeWorker")
   }
 
@@ -63,7 +61,6 @@ internal class TsAnalyzeWorker(
 
   private val messageChannel = LinkedBlockingQueue<Message<*>>()
   private var analyzerJob: Job? = null
-  private var parseJob: Job? = null
 
   private var tree: TSTree? = null
   private val localText = UTF16StringFactory.newString()
@@ -94,7 +91,7 @@ internal class TsAnalyzeWorker(
       }
     }.also { job ->
       job.invokeOnCompletion { error ->
-        if (error != null) {
+        if (error != null && error !is CancellationException) {
           log.error("Analyzer job failed", error)
         } else {
           log.info("Analyzer job completed")
@@ -103,7 +100,7 @@ internal class TsAnalyzeWorker(
     }
   }
 
-  private suspend fun CoroutineScope.processNextMessage() {
+  private suspend fun processNextMessage() {
     val message = withContext(Dispatchers.IO) {
       messageChannel.take()
     }
@@ -114,13 +111,15 @@ internal class TsAnalyzeWorker(
         is Mod -> doMod(message)
       }
     } catch (err: Throwable) {
-      log.error("AnalyzeWorker[lang=${languageSpec.language.name}, pendingMsgs=${messageChannel.size}] crashed", err)
+      log.error(
+        "AnalyzeWorker[lang=${languageSpec.language.name}, pendingMsgs=${messageChannel.size}] crashed",
+        err)
     }
   }
 
   private fun doInit(init: Init) {
     if (parser.isParsing) {
-      parser.requestCancellation()
+      parser.requestCancellationAndWait()
     }
 
     check(localText.isEmpty()) {
@@ -132,7 +131,7 @@ internal class TsAnalyzeWorker(
     updateStyles()
   }
 
-  private fun CoroutineScope.doMod(mod: Mod) {
+  private fun doMod(mod: Mod) {
 
     check(localText.isNotEmpty()) {
       "'Init' must be the first message to TsAnalyzeWorker"
@@ -157,33 +156,13 @@ internal class TsAnalyzeWorker(
 
     (edit as? TreeSitterInputEdit?)?.recycle()
 
-    if (messageChannel.isNotEmpty()) {
-      // don't bother to parse if there are other messages to process
-      return
-    }
-
     if (parser.isParsing) {
-      parser.requestCancellation()
+      parser.requestCancellationAndWait()
     }
 
-    parseJob?.also {
-      if (it.isActive) {
-        it.cancel(CancellationException("Parse is not needed and must be cancelled"))
-      }
-    }
-
-    parseJob = launch {
-      delay(TS_PARSE_DELAY_MS)
-      tree = parser.parseString(oldTree, localText)
-      oldTree.close()
-      updateStyles()
-    }.also {
-      it.invokeOnCompletion { error ->
-        if (error != null && error !is CancellationException) {
-          log.error("Failed to parse source", error)
-        }
-      }
-    }
+    tree = parser.parseString(oldTree, localText)
+    oldTree.close()
+    updateStyles()
   }
 
   private fun updateStyles() {
