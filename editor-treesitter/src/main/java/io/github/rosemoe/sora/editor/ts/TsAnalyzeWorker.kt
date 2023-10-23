@@ -55,7 +55,7 @@ internal class TsAnalyzeWorker(
 ) {
 
   companion object {
-    private const val TS_PARSE_DELAY_MS = 500L
+    private const val TS_PARSE_DELAY_MS = 300L
     private val log = ILogger.newInstance("TsAnalyzeWorker")
   }
 
