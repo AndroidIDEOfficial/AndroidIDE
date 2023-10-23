@@ -61,7 +61,7 @@ open class TsLanguage(
   protected var tsTheme = TsThemeBuilder(languageSpec.tsQuery).apply { themeDescription() }.theme
 
   open val analyzer by lazy {
-    TsAnalyzeManager(languageSpec, tsTheme)
+    TSAnalyzeManager(languageSpec, tsTheme)
   }
 
   /**

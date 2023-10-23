@@ -18,6 +18,7 @@
 package com.itsaky.androidide.treesitter.api
 
 import com.itsaky.androidide.treesitter.TSNode
+import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
@@ -131,7 +132,7 @@ private fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
   }
 
   if (!node.canAccess() || node.hasChanges()) {
-    log.debug("$debugName: Cannot execute query, node is not accessible or has been edited", "node.canAccess=${node.canAccess()}", "node.hasChanges=${node.hasChanges()}")
+    log.debug("$debugName: Cannot execute query, node is not accessible or has been edited", "node.canAccess=${node.canAccess()}", "node.hasChanges=${node.canAccess() && node.hasChanges()}")
     return null
   }
 

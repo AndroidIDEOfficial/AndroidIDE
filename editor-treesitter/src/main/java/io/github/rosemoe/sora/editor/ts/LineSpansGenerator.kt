@@ -1,3 +1,20 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /*******************************************************************************
  *    sora-editor - the awesome code editor for Android
  *    https://github.com/Rosemoe/sora-editor
@@ -38,7 +55,6 @@ import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Spans generator for tree-sitter. Results are cached.
@@ -54,8 +70,6 @@ class LineSpansGenerator(
   private val spanFactory: TsSpanFactory
 ) : Spans {
 
-  private val isValid = AtomicBoolean(true)
-
   companion object {
 
     const val CACHE_THRESHOLD = 60
@@ -66,11 +80,6 @@ class LineSpansGenerator(
 
   fun edit(edit: TSInputEdit) {
     tree.edit(edit)
-
-    // node ranges change when the tree is edited
-    // in this case, the query cursor should be stopped in order to prevent SEGV_MAPERR
-    // when accessing the query matches
-    isValid.set(false)
   }
 
   fun queryCache(line: Int): MutableList<Span>? {
@@ -95,7 +104,7 @@ class LineSpansGenerator(
   fun captureRegion(startIndex: Int, endIndex: Int): MutableList<Span> {
     val list = mutableListOf<Span>()
 
-    if (!isValid.get() || !tree.canAccess()) {
+    if (!tree.canAccess()) {
       list.add(emptySpan(0))
       return list
     }
@@ -109,12 +118,10 @@ class LineSpansGenerator(
         query = languageSpec.tsQuery,
         tree = tree,
         recycleNodeAfterUse = true,
-        matchCondition = { isValid.get() },
-        onClosedOrEdited = {
-          captures.clear()
-          log.debug("Tree closed or edited while in captureRegion")
-                           },
-        debugName = "LineSpansGenerator.captureRegion"
+        matchCondition = null,
+        onClosedOrEdited = null,
+        debugLogging = false,
+        debugName = "LineSpansGenerator.captureRegion()"
       ) { match ->
         if (languageSpec.queryPredicator.doPredicate(
             languageSpec.predicates,
@@ -179,7 +186,6 @@ class LineSpansGenerator(
 
         (capture as? TreeSitterQueryCapture?)?.recycle()
       }
-
 
       if (lastIndex != endIndex) {
         list.add(emptySpan(lastIndex))

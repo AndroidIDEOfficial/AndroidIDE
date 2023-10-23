@@ -84,6 +84,9 @@ object TSJavaParser : IJavaParser<TSParseResult> {
     parser.reset()
     val watch = StopWatch("[TreeSitter] Parsing")
     val content = file.getCharContent(false).toString()
+    if (parser.isParsing) {
+      parser.requestCancellation()
+    }
     val parseTree = parser.parseString(content)
     watch.log()
 

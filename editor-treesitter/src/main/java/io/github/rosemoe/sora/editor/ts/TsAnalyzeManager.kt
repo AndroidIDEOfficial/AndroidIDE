@@ -32,9 +32,7 @@ import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.api.TreeSitterInputEdit
-import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
-import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
 import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory
@@ -55,7 +53,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
   var currentReceiver: StyleReceiver? = null
   var reference: ContentReference? = null
-  var extraArguments: Bundle? = null
   var thread: TsLooperThread? = null
   var spanFactory: TsSpanFactory = DefaultSpanFactory()
 
@@ -74,7 +71,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
   override fun reset(content: ContentReference, extraArguments: Bundle) {
     reference = content
-    this.extraArguments = extraArguments
     rerun()
   }
 
@@ -95,6 +91,18 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
         insertedContent.toString()
       )
     )
+
+    (styles.spans as LineSpansGenerator?)?.apply {
+      lineCount = reference!!.lineCount
+      edit(TSInputEdit.create(
+        start.index * 2,
+        start.index * 2,
+        end.index * 2,
+        start.toTSPoint(),
+        start.toTSPoint(),
+        end.toTSPoint()
+      ))
+    }
   }
 
   override fun delete(start: CharPosition, end: CharPosition, deletedContent: CharSequence) {
@@ -114,6 +122,18 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
         null
       )
     )
+
+    (styles.spans as LineSpansGenerator?)?.apply {
+      lineCount = reference!!.lineCount
+      edit(TSInputEdit.create(
+        start.index * 2,
+        end.index * 2,
+        start.index * 2,
+        start.toTSPoint(),
+        end.toTSPoint(),
+        start.toTSPoint()
+      ))
+    }
   }
 
   override fun rerun() {
@@ -124,8 +144,8 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       }
     }
 
-    // thread should handle this
-    // (styles.spans as LineSpansGenerator?)?.tree?.close()
+
+    (styles.spans as LineSpansGenerator?)?.tree?.close()
 
     styles.spans = null
     val initText = reference?.reference?.toString() ?: ""
@@ -144,8 +164,8 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
         it.abort = true
       }
     }
-    // thread should handle this
-    // (styles.spans as LineSpansGenerator?)?.tree?.close()
+
+    (styles.spans as LineSpansGenerator?)?.tree?.close()
     spanFactory.close()
   }
 
@@ -175,7 +195,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       it.language = languageSpec.language
     }
     var tree: TSTree? = null
-    var spansGenerator: LineSpansGenerator? = null
 
     fun offerMessage(what: Int, obj: Any?) {
       val msg = Message.obtain()
@@ -190,7 +209,7 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
     }
 
     fun updateStyles() {
-      if (thread != this || !messageQueue.isEmpty()) {
+      if (thread != this || messageQueue.isNotEmpty()) {
         return
       }
 
@@ -205,9 +224,7 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
         languageSpec,
         scopedVariables,
         spanFactory
-      ).also {
-        spansGenerator = it
-      }
+      )
       val oldBlocks = styles.blocks
       updateCodeBlocks()
       if (oldBlocks != null) {
@@ -280,7 +297,7 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
           }
         }
       }
-      val distinct = blocks.distinct().toMutableList()
+      val distinct = blocks.asSequence().distinct().toMutableList()
       styles.blocks = distinct
       styles.finishBuilding()
     }
@@ -306,6 +323,9 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
           MSG_INIT -> {
             localText.append(msg.obj!! as String)
             if (!abort && !isInterrupted) {
+              if (parser.isParsing) {
+                parser.requestCancellation()
+              }
               tree = parser.parseString(localText)
               updateStyles()
             }
@@ -314,10 +334,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
           MSG_MOD -> {
             if (!abort && !isInterrupted) {
               val modification = msg.obj!! as TextModification
-              spansGenerator?.apply {
-                lineCount = reference!!.lineCount
-                edit(modification.tsEdition)
-              }
               val newText = modification.changedText
               val t = tree!!
               t.edit(modification.tsEdition)
@@ -331,6 +347,9 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
                 }
               }
               (modification.tsEdition as? TreeSitterInputEdit?)?.recycle()
+              if (tree != null && parser.isParsing) {
+                parser.requestCancellation()
+              }
               tree = parser.parseString(t, localText)
               t.close()
               updateStyles()
@@ -352,14 +371,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       parser.close()
       tree?.close()
       localText.close()
-
-      try {
-        spansGenerator?.tree?.close()
-      } catch (e: Exception) {
-        e.printStackTrace()
-      } finally {
-        spansGenerator = null
-      }
     }
 
   }
