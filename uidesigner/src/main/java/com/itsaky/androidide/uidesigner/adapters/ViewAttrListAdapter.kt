@@ -92,9 +92,11 @@ internal class ViewAttrListAdapter(
         message = context.getString(R.string.msg_confirm_delete, attribute.qualifiedName),
         positiveClickListener = { dialog, _ ->
           dialog.dismiss()
-          if (onDeleteAttr(attribute)) {
-            this.attributes.removeAt(position)
-            notifyItemRemoved(position)
+          if (position >= 0 || position < this.attributes.size) {
+            if (onDeleteAttr(attribute)) {
+              this.attributes.removeAt(position)
+              notifyItemRemoved(position)
+            }
           }
         }
       )
