@@ -18,7 +18,6 @@
 package com.itsaky.androidide.editor.language.treesitter
 
 import com.itsaky.androidide.editor.schemes.LanguageScheme
-import io.github.rosemoe.sora.editor.ts.TSAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
 import io.github.rosemoe.sora.editor.ts.TsTheme
@@ -32,7 +31,7 @@ import io.github.rosemoe.sora.lang.styling.Styles
 class TreeSitterAnalyzeManager(
   languageSpec: TsLanguageSpec,
   theme: TsTheme
-) : TSAnalyzeManager(languageSpec, theme) {
+) : TsAnalyzeManager(languageSpec, theme) {
 
   override var styles: Styles = Styles()
     set(value) {

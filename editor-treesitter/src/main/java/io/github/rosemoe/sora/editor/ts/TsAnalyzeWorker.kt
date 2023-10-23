@@ -32,7 +32,6 @@ import io.github.rosemoe.sora.lang.analysis.StyleReceiver
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Styles
 import io.github.rosemoe.sora.text.ContentReference
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,7 +46,7 @@ import java.util.concurrent.LinkedBlockingQueue
  * @author Akash Yadav
  */
 internal class TsAnalyzeWorker(
-  private val analyzer: TSAnalyzeManager,
+  private val analyzer: TsAnalyzeManager,
   private val languageSpec: TsLanguageSpec,
   private val theme: TsTheme,
   private val styles: Styles,
