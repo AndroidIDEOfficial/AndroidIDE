@@ -20,13 +20,11 @@ package com.itsaky.androidide.editor.ui
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Debug
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.StringRes
-import androidx.annotation.UiThread
 import com.blankj.utilcode.util.FileUtils
 import com.itsaky.androidide.editor.R.string
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter
@@ -80,7 +78,6 @@ import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
-import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher
 import io.github.rosemoe.sora.widget.IDEEditorSearcher
@@ -108,15 +105,17 @@ open class IDEEditor @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null,
   defStyleAttr: Int = 0,
-  defStyleRes: Int = 0
-) : CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor, ILspEditor {
+  defStyleRes: Int = 0,
+  private val editorFeatures: EditorFeatures = EditorFeatures()
+) : CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
+
+  internal var _file: File? = null
 
   private var _actionsMenu: EditorActionsMenu? = null
   private var _signatureHelpWindow: SignatureHelpWindow? = null
   private var _diagnosticWindow: DiagnosticWindow? = null
-  private var file: File? = null
   private var fileVersion = 0
-  private var isModified = false
+  internal var isModified = false
 
   private val selectionChangeHandler = Handler(Looper.getMainLooper())
   private var selectionChangeRunner: Runnable? = Runnable {
@@ -172,7 +171,7 @@ open class IDEEditor @JvmOverloads constructor(
 
     private const val SELECTION_CHANGE_DELAY = 500L
 
-    private val log = ILogger.newInstance("IDEEditor")
+    internal val log = ILogger.newInstance("IDEEditor")
 
     /**
      * Create input type flags for the editor.
@@ -188,11 +187,10 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   init {
-    initEditor()
-  }
-
-  override fun getFile(): File? {
-    return this.file
+    run {
+      editorFeatures.editor = this
+      initEditor()
+    }
   }
 
   /**
@@ -203,133 +201,10 @@ open class IDEEditor @JvmOverloads constructor(
       return
     }
 
-    this.file = file
+    this._file = file
     file?.also {
       dispatchDocumentOpenEvent()
     }
-  }
-
-  override fun isModified(): Boolean {
-    return this.isModified
-  }
-
-  override fun setSelection(position: Position) {
-    if (isReleased) {
-      return
-    }
-    setSelection(position.line, position.column)
-  }
-
-  override fun setSelection(start: Position, end: Position) {
-    if (isReleased) {
-      return
-    }
-    if (!isValidPosition(start, true) || !isValidPosition(end, true)) {
-      log.warn("Invalid selection range: start=$start end=$end")
-      return
-    }
-
-    setSelectionRegion(start.line, start.column, end.line, end.column)
-  }
-
-  override fun getCursorLSPRange(): Range {
-    val end = cursor.right().let {
-      Position(line = it.line, column = it.column, index = it.index)
-    }
-    return Range(cursorLSPPosition, end)
-  }
-
-  override fun getCursorLSPPosition(): Position {
-    return cursor.left().let {
-      Position(line = it.line, column = it.column, index = it.index)
-    }
-  }
-
-  override fun validateRange(range: Range) {
-    if (isReleased) {
-      return
-    }
-    val start = range.start
-    val end = range.end
-    val text = text
-    val lineCount = text.lineCount
-
-    start.line = 0.coerceAtLeast(start.line).coerceAtMost(lineCount - 1)
-    start.column = 0.coerceAtLeast(start.column).coerceAtMost(text.getColumnCount(start.line))
-
-    end.line = 0.coerceAtLeast(end.line).coerceAtMost(lineCount - 1)
-    end.column = 0.coerceAtLeast(end.column).coerceAtMost(text.getColumnCount(end.line))
-  }
-
-  override fun isValidRange(range: Range?, allowColumnEqual: Boolean): Boolean {
-    if (isReleased) {
-      return false
-    }
-    if (range == null) {
-      return false
-    }
-    val start = range.start
-    val end = range.end
-    return isValidPosition(start, allowColumnEqual)
-        // make sure start position is before end position
-        && isValidPosition(end, allowColumnEqual) && start < end
-  }
-
-  override fun isValidPosition(position: Position?, allowColumnEqual: Boolean): Boolean {
-    if (isReleased) {
-      return false
-    }
-    return if (position == null) {
-      false
-    } else isValidLine(position.line) &&
-        isValidColumn(position.line, position.column, allowColumnEqual)
-  }
-
-  override fun isValidLine(line: Int): Boolean {
-    if (isReleased) {
-      return false
-    }
-    return line >= 0 && line < text.lineCount
-  }
-
-  override fun isValidColumn(line: Int, column: Int, allowEqual: Boolean): Boolean {
-    val columnCount = text.getColumnCount(line)
-    return column >= 0 && (column < columnCount || allowEqual && column == columnCount)
-  }
-
-  override fun append(text: CharSequence?): Int {
-    if (isReleased) {
-      return 0
-    }
-    val content = getText()
-    if (lineCount <= 0) {
-      return 0
-    }
-    val line = lineCount - 1
-    var col = content.getColumnCount(line)
-    if (col < 0) {
-      col = 0
-    }
-    content.insert(line, col, text)
-    return line
-  }
-
-  @UiThread
-  override fun replaceContent(newContent: CharSequence?) {
-    if (isReleased) {
-      return
-    }
-    val lastLine = text.lineCount - 1
-    val lastColumn = text.getColumnCount(lastLine)
-    text.replace(0, 0, lastLine, lastColumn, newContent ?: "")
-  }
-
-  override fun goToEnd() {
-    if (isReleased) {
-      return
-    }
-    val line = text.lineCount - 1
-    setSelection(line, 0)
   }
 
   override fun setLanguageServer(server: ILanguageServer?) {
@@ -498,9 +373,11 @@ open class IDEEditor @JvmOverloads constructor(
     languageServer = null
     languageClient = null
 
-    file = null
+    _file = null
     fileVersion = 0
     markUnmodified()
+
+    editorFeatures.editor = null
 
     selectionChangeRunner?.also { selectionChangeHandler.removeCallbacks(it) }
     selectionChangeRunner = null
@@ -622,10 +499,10 @@ open class IDEEditor @JvmOverloads constructor(
     if (isReleased) {
       return
     }
-    if (getFile() == null) {
+    if (file == null) {
       return
     }
-    val saveEvent = DocumentSaveEvent(getFile()!!.toPath())
+    val saveEvent = DocumentSaveEvent(file!!.toPath())
     EventBus.getDefault().post(saveEvent)
   }
 
@@ -636,7 +513,7 @@ open class IDEEditor @JvmOverloads constructor(
   @Suppress("unused")
   @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
   open fun onColorSchemeInvalidated(event: ColorSchemeInvalidatedEvent?) {
-    val file = getFile() ?: return
+    val file = file ?: return
     setupLanguage(file)
   }
 
@@ -817,7 +694,7 @@ open class IDEEditor @JvmOverloads constructor(
     }
 
     val (file1, range) = locations[0]
-    if (DocumentUtils.isSameFile(file1, getFile()!!.toPath())) {
+    if (DocumentUtils.isSameFile(file1, file!!.toPath())) {
       setSelection(range)
       return@withContext
     }
