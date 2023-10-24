@@ -64,9 +64,6 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
 import com.itsaky.androidide.progress.ICancelChecker
-import com.itsaky.androidide.projects.FileManager.onDocumentClose
-import com.itsaky.androidide.projects.FileManager.onDocumentContentChange
-import com.itsaky.androidide.projects.FileManager.onDocumentOpen
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.cancelIfActive
@@ -132,6 +129,7 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected val editorScope = CoroutineScope(Dispatchers.Default)
+  protected val eventDispatcher = EditorEventDispatcher()
 
   var languageServer: ILanguageServer? = null
     private set
@@ -189,6 +187,8 @@ open class IDEEditor @JvmOverloads constructor(
   init {
     run {
       editorFeatures.editor = this
+      eventDispatcher.editor = this
+      eventDispatcher.init(editorScope)
       initEditor()
     }
   }
@@ -378,6 +378,9 @@ open class IDEEditor @JvmOverloads constructor(
     markUnmodified()
 
     editorFeatures.editor = null
+    eventDispatcher.editor = null
+
+    eventDispatcher.destroy()
 
     selectionChangeRunner?.also { selectionChangeHandler.removeCallbacks(it) }
     selectionChangeRunner = null
@@ -502,8 +505,7 @@ open class IDEEditor @JvmOverloads constructor(
     if (file == null) {
       return
     }
-    val saveEvent = DocumentSaveEvent(file!!.toPath())
-    EventBus.getDefault().post(saveEvent)
+    eventDispatcher.dispatch(DocumentSaveEvent(file!!.toPath()))
   }
 
   /**
@@ -757,9 +759,7 @@ open class IDEEditor @JvmOverloads constructor(
       fileVersion
     )
 
-    // Notify FileManager first
-    onDocumentOpen(openEvent)
-    EventBus.getDefault().post(openEvent)
+    eventDispatcher.dispatch(openEvent)
   }
 
   protected open fun dispatchDocumentChangeEvent(event: ContentChangeEvent) {
@@ -786,9 +786,7 @@ open class IDEEditor @JvmOverloads constructor(
     val changeEvent = DocumentChangeEvent(file, changedText, text.toString(),
       ++fileVersion, type, changeDelta, changeRange)
 
-    // Notify FileManager first
-    onDocumentContentChange(changeEvent)
-    EventBus.getDefault().post(changeEvent)
+    eventDispatcher.dispatch(changeEvent)
   }
 
   protected open fun dispatchDocumentSelectedEvent() {
@@ -796,8 +794,7 @@ open class IDEEditor @JvmOverloads constructor(
       return
     }
     val file = file ?: return
-    val selectedEvent = DocumentSelectedEvent(file.toPath())
-    EventBus.getDefault().post(selectedEvent)
+    eventDispatcher.dispatch(DocumentSelectedEvent(file.toPath()))
   }
 
   protected open fun dispatchDocumentCloseEvent() {
@@ -805,11 +802,8 @@ open class IDEEditor @JvmOverloads constructor(
       return
     }
     val file = file ?: return
-    val closeEvent = DocumentCloseEvent(file.toPath(), cursorLSPRange)
 
-    // Notify FileManager first
-    onDocumentClose(closeEvent)
-    EventBus.getDefault().post(closeEvent)
+    eventDispatcher.dispatch(DocumentCloseEvent(file.toPath(), cursorLSPRange))
   }
 
   /**
