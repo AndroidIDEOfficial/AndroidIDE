@@ -23,11 +23,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.adapters.SymbolInputAdapter;
 import com.itsaky.androidide.editor.ui.IDEEditor;
+import com.itsaky.androidide.models.Symbol;
 import com.itsaky.androidide.utils.Symbols;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SymbolInputView extends RecyclerView {
-
-  private SymbolInputAdapter adapter;
 
   public SymbolInputView(Context context) {
     this(context, null);
@@ -42,55 +44,16 @@ public class SymbolInputView extends RecyclerView {
     setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
   }
 
-  public void bindEditor(IDEEditor editor) {
-    adapter = new SymbolInputAdapter(editor);
-    setAdapter(adapter);
-  }
-
-  public void setSymbols(Symbol... symbols) {
-    if (adapter != null) {
-      if (symbols.length == 0) {
-        symbols = Symbols.INSTANCE.plainTextSymbols();
-      }
-
-      adapter.setSymbols(true, symbols);
-    }
-  }
-
-  public static class Symbol {
-
-    private final String label;
-    private final String commit;
-    private final int offset;
-
-    public Symbol(String both) {
-      this(both, 1);
+  public void refresh(IDEEditor editor, List<Symbol> symbols) {
+    if (symbols == null || symbols.isEmpty()) {
+      symbols = Symbols.INSTANCE.getPlainTextSymbols();
     }
 
-    public Symbol(String both, int offset) {
-      this(both, both, offset);
-    }
-
-    public Symbol(String label, String commit, int offset) {
-      this.label = label;
-      this.commit = commit;
-      this.offset = offset;
-    }
-
-    public Symbol(String label, String commit) {
-      this(label, commit, 1);
-    }
-
-    public String getLabel() {
-      return label;
-    }
-
-    public String getCommit() {
-      return commit;
-    }
-
-    public int getOffset() {
-      return offset;
+    final var adapter = getAdapter();
+    if (adapter instanceof SymbolInputAdapter) {
+      ((SymbolInputAdapter) adapter).refresh(editor, symbols);
+    } else {
+      setAdapter(new SymbolInputAdapter(editor));
     }
   }
 }

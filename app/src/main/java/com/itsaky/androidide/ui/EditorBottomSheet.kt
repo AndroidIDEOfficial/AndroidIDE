@@ -244,8 +244,7 @@ constructor(
   }
 
   fun refreshSymbolInput(editor: CodeEditorView) {
-    binding.symbolInput.bindEditor(editor.editor)
-    binding.symbolInput.setSymbols(*forFile(editor.file))
+    binding.symbolInput.refresh(editor.editor, forFile(editor.file))
   }
 
   fun onSoftInputChanged() {

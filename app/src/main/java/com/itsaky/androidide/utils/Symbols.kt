@@ -17,28 +17,29 @@
  */
 package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.ui.SymbolInputView.Symbol
+import com.itsaky.androidide.models.Symbol
 import java.io.File
 
 object Symbols {
 
   @JvmStatic
-  fun forFile(file: File?): Array<Symbol?> {
+  fun forFile(file: File?): List<Symbol> {
     if (file == null || !file.isFile) {
-      return emptyArray()
+      return emptyList()
     }
 
     return when (file.extension) {
       "java",
       "gradle",
-      "kt" -> javaSymbols()
-      "xml" -> xmlSymbols()
-      else -> plainTextSymbols()
+      "kt" -> javaSymbols
+
+      "xml" -> xmlSymbols
+      else -> plainTextSymbols
     }
   }
 
-  fun javaSymbols(): Array<Symbol?> {
-    return arrayOf(
+  private val javaSymbols by lazy {
+    listOf(
       TabSymbol(),
       Symbol("{", "{}"),
       Symbol("}"),
@@ -64,8 +65,8 @@ object Symbols {
     )
   }
 
-  fun xmlSymbols(): Array<Symbol?> {
-    return arrayOf(
+  private val xmlSymbols by lazy {
+    listOf(
       TabSymbol(),
       Symbol("<", "<>"),
       Symbol(">"),
@@ -93,8 +94,8 @@ object Symbols {
     )
   }
 
-  fun plainTextSymbols(): Array<Symbol?> {
-    return arrayOf(
+  val plainTextSymbols by lazy {
+    listOf(
       TabSymbol(),
       Symbol("{", "{}"),
       Symbol("}"),
@@ -121,12 +122,11 @@ object Symbols {
   }
 
   private class TabSymbol : Symbol("↹") {
-    override fun getCommit(): String {
-      return "\t"
-    }
 
-    override fun getOffset(): Int {
-      return 1
-    }
+    override val commit: String
+      get() = "\t"
+
+    override val offset: Int
+      get() = 1
   }
 }

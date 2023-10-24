@@ -23,17 +23,17 @@ import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
-import com.itsaky.androidide.ui.SymbolInputView.Symbol;
 import com.itsaky.androidide.editor.ui.IDEEditor;
-
+import com.itsaky.androidide.models.Symbol;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.VH> {
 
@@ -49,24 +49,54 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     pairs.add('>');
   }
 
-  private final IDEEditor editor;
-  private Symbol[] symbols;
+  private IDEEditor editor;
+  private List<Symbol> symbols;
 
   public SymbolInputAdapter(IDEEditor editor) {
     this(editor, null);
   }
 
-  public SymbolInputAdapter(IDEEditor editor, Symbol[] symbols) {
+  public SymbolInputAdapter(IDEEditor editor, List<Symbol> symbols) {
     this.editor = editor;
-    this.symbols = symbols == null ? new Symbol[0] : symbols;
+    this.symbols = symbols == null ? Collections.emptyList() : symbols;
+    setHasStableIds(true);
   }
+  public void refresh(IDEEditor editor, List<Symbol> newSymbols) {
+    this.editor = Objects.requireNonNull(editor);
 
-  @SuppressLint("NotifyDataSetChanged")
-  public void setSymbols(boolean notify, Symbol... symbols) {
-    this.symbols = symbols;
-    if (notify) {
-      notifyDataSetChanged();
+    if (this.symbols.equals(newSymbols)) {
+      // no need to update symbols
+      return;
     }
+
+    Objects.requireNonNull(newSymbols, "Symbol list cannot be null");
+
+    final var callback = new DiffUtil.Callback() {
+      @Override
+      public int getOldListSize() {
+        return symbols.size();
+      }
+
+      @Override
+      public int getNewListSize() {
+        return newSymbols.size();
+      }
+
+      @Override
+      public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+        return Objects.equals(symbols.get(oldItemPosition), newSymbols.get(newItemPosition));
+      }
+
+      @Override
+      public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+        return areItemsTheSame(oldItemPosition, newItemPosition);
+      }
+    };
+
+    final var result = DiffUtil.calculateDiff(callback);
+
+    this.symbols = newSymbols;
+    result.dispatchUpdatesTo(this);
   }
 
   @NonNull
@@ -78,8 +108,10 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 
   @Override
   public void onBindViewHolder(@NonNull VH holder, int position) {
-    if (symbols == null || symbols[position] == null) return;
-    final Symbol symbol = symbols[position];
+    if (symbols == null || symbols.get(position) == null) {
+      return;
+    }
+    final Symbol symbol = symbols.get(position);
     holder.binding.symbol.setText(symbol.getLabel());
     holder.binding.symbol.setTextColor(
         resolveAttr(holder.binding.symbol.getContext(), R.attr.colorOnSurface));
@@ -88,8 +120,13 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
   }
 
   @Override
+  public long getItemId(int position) {
+    return symbols.get(position).hashCode();
+  }
+
+  @Override
   public int getItemCount() {
-    return symbols == null ? 0 : symbols.length;
+    return symbols == null ? 0 : symbols.size();
   }
 
   void insertSymbol(String text, int selectionOffset) {
@@ -131,6 +168,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
   }
 
   public static class VH extends RecyclerView.ViewHolder {
+
     LayoutSymbolItemBinding binding;
 
     public VH(LayoutSymbolItemBinding binding) {
