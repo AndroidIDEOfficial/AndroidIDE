@@ -100,7 +100,6 @@ public class NBParserFactory extends ParserFactory {
       } else if (KEEP_COMMENTS_OVERRIDE_KEEP.equals(this.keepCommentsOverride)) {
         keepDocCommentsOverride = true;
       }
-      LOG.debug("'keepComments' overridden to ", this.keepCommentsOverride);
     }
 
     Lexer lexer = scannerFactory.newScanner(input, keepDocCommentsOverride);

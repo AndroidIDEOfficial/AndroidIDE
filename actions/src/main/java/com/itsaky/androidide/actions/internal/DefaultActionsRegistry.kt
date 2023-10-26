@@ -197,7 +197,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
   /** Executes the given action item with the given */
   fun executeAction(action: ActionItem, data: ActionData) : Job {
     val onMainThread = action.requiresUIThread
-    val context = if (onMainThread) Dispatchers.Main else Dispatchers.Default
+    val context = if (onMainThread) Dispatchers.Main.immediate else Dispatchers.Default
     return actionsCoroutineScope.launch(context) {
       val result = withStopWatch("Action '${action.id}'") {
         action.execAction(data)
@@ -211,7 +211,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
       if (onMainThread) {
         post()
       } else {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.Main.immediate) {
           post()
         }
       }
