@@ -52,15 +52,10 @@ fun getCaptureContent(
   captureName: String,
   text: CharSequence
 ) = match.captures.filter { tsQuery.getCaptureNameForId(it.index) == captureName }
-  .map {
-    if (text is UTF16String) {
-      val utf16Name = text.subseqChars(it.node.startByte / 2, it.node.endByte / 2)
-      val name = utf16Name.toString()
-      utf16Name.close()
-      name
-    } else if (text is Content) {
-      text.substring(it.node.startByte / 2, it.node.endByte / 2)
-    } else {
-      text.substring(it.node.startByte / 2, it.node.endByte / 2)
+  .map { capture ->
+    when (text) {
+      is UTF16String -> text.subseqBytes(capture.node.startByte, capture.node.endByte).use(UTF16String::toString)
+      is Content -> text.substring(capture.node.startByte shr 1, capture.node.endByte shr 1)
+      else -> text.substring(capture.node.startByte shr 1, capture.node.endByte shr 1)
     }
   }

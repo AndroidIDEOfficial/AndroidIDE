@@ -5,7 +5,7 @@ gradle-tooling = "8.3"
 junit-jupiter = "5.10.0"
 kotlin = "1.9.10"
 kotlin-coroutines = "1.7.3"
-tree-sitter = "4.0.0-internal.1+branch.dev.commit.1bfacde.timestamp.20231023182724-SNAPSHOT"
+tree-sitter = "4.0.0-internal.1+branch.dev.commit.3936b64.timestamp.20231025142931-SNAPSHOT"
 editor = "0.22.1-f7ee449-SNAPSHOT"
 glide = "4.16.0"
 androidx-vectordrawable = "1.1.0"
@@ -20,12 +20,12 @@ retrofit = "2.9.0"
 
 # AndroidIDE
 androidide-javac = { module = "io.github.itsaky:nb-javac-android", version = "17.0.0.4-SNAPSHOT" }
-androidide-ts = { module = "com.itsaky.androidide:android-tree-sitter", version.ref = "tree-sitter" }
-androidide-ts-java = { module = "com.itsaky.androidide:tree-sitter-java", version.ref = "tree-sitter" }
-androidide-ts-json = { module = "com.itsaky.androidide:tree-sitter-json", version.ref = "tree-sitter" }
-androidide-ts-kotlin = { module = "com.itsaky.androidide:tree-sitter-kotlin", version.ref = "tree-sitter" }
-androidide-ts-log = { module = "com.itsaky.androidide:tree-sitter-log", version.ref = "tree-sitter" }
-androidide-ts-xml = { module = "com.itsaky.androidide:tree-sitter-xml", version.ref = "tree-sitter" }
+androidide-ts = { module = "com.itsaky.androidide.treesitter:android-tree-sitter", version.ref = "tree-sitter" }
+androidide-ts-java = { module = "com.itsaky.androidide.treesitter:tree-sitter-java", version.ref = "tree-sitter" }
+androidide-ts-json = { module = "com.itsaky.androidide.treesitter:tree-sitter-json", version.ref = "tree-sitter" }
+androidide-ts-kotlin = { module = "com.itsaky.androidide.treesitter:tree-sitter-kotlin", version.ref = "tree-sitter" }
+androidide-ts-log = { module = "com.itsaky.androidide.treesitter:tree-sitter-log", version.ref = "tree-sitter" }
+androidide-ts-xml = { module = "com.itsaky.androidide.treesitter:tree-sitter-xml", version.ref = "tree-sitter" }
 
 # Common
 common-editor = { module = "io.github.Rosemoe.sora-editor:editor", version.ref = "editor" }

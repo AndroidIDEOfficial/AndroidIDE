@@ -32,6 +32,7 @@ import io.github.rosemoe.sora.lang.analysis.StyleReceiver
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Styles
 import io.github.rosemoe.sora.text.ContentReference
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -54,11 +55,13 @@ internal class TsAnalyzeWorker(
 ) {
 
   companion object {
+
     private val log = ILogger.newInstance("TsAnalyzeWorker")
   }
 
   var stylesReceiver: StyleReceiver? = null
 
+  private val analyzerScope = CoroutineScope(Dispatchers.Default + CoroutineName("TsAnalyzeWorker"))
   private val messageChannel = LinkedBlockingQueue<Message<*>>()
   private var analyzerJob: Job? = null
 
@@ -77,15 +80,15 @@ internal class TsAnalyzeWorker(
   }
 
   fun stop() {
-    analyzerJob?.cancel(CancellationException("Analyzer is being rerun"))
     messageChannel.clear()
-    parser.close()
-    tree?.close()
+    analyzerJob?.cancel(CancellationException("Requested to be stopped"))
     localText.close()
+    tree?.close()
+    parser.close()
   }
 
-  fun start(scope: CoroutineScope) {
-    analyzerJob = scope.launch(Dispatchers.Default) {
+  fun start() {
+    analyzerJob = analyzerScope.launch(Dispatchers.Default) {
       while (isActive) {
         processNextMessage()
       }
@@ -101,9 +104,7 @@ internal class TsAnalyzeWorker(
   }
 
   private suspend fun processNextMessage() {
-    val message = withContext(Dispatchers.IO) {
-      messageChannel.take()
-    }
+    val message = withContext(Dispatchers.IO) { messageChannel.take() }
 
     try {
       when (message) {
@@ -111,8 +112,14 @@ internal class TsAnalyzeWorker(
         is Mod -> doMod(message)
       }
     } catch (err: Throwable) {
+      val langName = languageSpec.language.name
+      val msgType = message.javaClass.simpleName
+      val msgTypeSuffix = if (message is Mod) {
+        "[start=${message.data.start}, end=${message.data.end}, type=${if (message.data.changedText == null) "delete" else "insert"}]"
+      } else ""
+      val pendingMsgs = messageChannel.size
       log.error(
-        "AnalyzeWorker[lang=${languageSpec.language.name}, pendingMsgs=${messageChannel.size}] crashed",
+        "AnalyzeWorker[lang=$langName, message=${msgType}${msgTypeSuffix}], pendingMsgs=$pendingMsgs] crashed",
         err)
     }
   }
@@ -145,7 +152,7 @@ internal class TsAnalyzeWorker(
     oldTree.edit(edit)
 
     if (newText == null) {
-      localText.delete(textMod.start, textMod.end)
+      localText.deleteBytes(edit.startByte, edit.oldEndByte)
     } else {
       if (textMod.start == localText.length) {
         localText.append(newText)

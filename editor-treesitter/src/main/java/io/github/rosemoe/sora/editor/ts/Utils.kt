@@ -32,7 +32,7 @@ import io.github.rosemoe.sora.text.CharPosition
 /**
  * Convert a [CharPosition] object to a [TSPoint] object
  */
-fun CharPosition.toTSPoint() = TSPoint.create(line, column * 2)
+fun CharPosition.toTSPoint(): TSPoint = TSPoint.create(line, column shl 1)!!
 
 fun TSQuery.validateOrThrow(name: String = "unknown") {
   if (errorType != TSQueryError.None) {

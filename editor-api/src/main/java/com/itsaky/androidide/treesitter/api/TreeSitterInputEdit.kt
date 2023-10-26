@@ -41,9 +41,9 @@ class TreeSitterInputEdit @JvmOverloads internal constructor(
     fun obtain(startByte: Int,
       oldEndByte: Int,
       newEndByte: Int,
-      startPoint: TSPoint?,
-      oldEndPoint: TSPoint?,
-      newEndPoint: TSPoint?): TreeSitterInputEdit {
+      startPoint: TSPoint,
+      oldEndPoint: TSPoint,
+      newEndPoint: TSPoint): TreeSitterInputEdit {
 
       return obtainFromPool<TreeSitterInputEdit>().apply {
         this.startByte = startByte

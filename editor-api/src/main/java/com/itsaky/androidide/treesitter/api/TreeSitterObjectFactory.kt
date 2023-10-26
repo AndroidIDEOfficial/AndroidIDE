@@ -32,6 +32,8 @@ import com.itsaky.androidide.treesitter.TSRange
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.TSTreeCursor
 import com.itsaky.androidide.treesitter.TSTreeCursorNode
+import com.itsaky.androidide.treesitter.string.SynchronizedUTF16String
+import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.treesitter.util.TSObjectFactory
 
 /**
@@ -42,7 +44,7 @@ import com.itsaky.androidide.treesitter.util.TSObjectFactory
 class TreeSitterObjectFactory : TSObjectFactory {
 
   override fun createInputEdit(startByte: Int, oldEndByte: Int, newEndByte: Int,
-    startPoint: TSPoint?, oldEndPoint: TSPoint?, newEndPoint: TSPoint?): TSInputEdit {
+    startPoint: TSPoint, oldEndPoint: TSPoint, newEndPoint: TSPoint): TSInputEdit {
     return TreeSitterInputEdit.obtain(
       startByte,
       oldEndByte,
@@ -123,5 +125,9 @@ class TreeSitterObjectFactory : TSObjectFactory {
 
   override fun createLanguage(name: String?, pointers: LongArray?): TSLanguage {
     return TreeSitterNativeLanguage.obtain(name, pointers)
+  }
+
+  override fun createString(pointer: Long, isSynchronized: Boolean): UTF16String {
+    return if (isSynchronized) SynchronizedUTF16String(pointer) else UTF16String(pointer)
   }
 }

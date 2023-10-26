@@ -42,8 +42,6 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
   open var styles = Styles()
 
   private var analyzeWorker: TsAnalyzeWorker? = null
-  protected val analyzerScope = CoroutineScope(
-    Dispatchers.Default + CoroutineName("TsAnalyzeManager"))
 
   open fun updateTheme(theme: TsTheme) {
     this.theme = theme
@@ -63,8 +61,14 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
   }
 
   override fun insert(start: CharPosition, end: CharPosition, insertedContent: CharSequence) {
-    val edit = TSInputEdit.create(start.index shl 1, start.index shl 1, end.index shl 1,
-      start.toTSPoint(), start.toTSPoint(), end.toTSPoint())
+    val edit = TSInputEdit.create(
+      start.index shl 1,
+      start.index shl 1,
+      end.index shl 1,
+      start.toTSPoint(),
+      start.toTSPoint(),
+      end.toTSPoint()
+    )!!
     (styles.spans as LineSpansGenerator?)?.apply {
       lineCount = reference!!.lineCount
       edit(edit)
@@ -73,8 +77,14 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
   }
 
   override fun delete(start: CharPosition, end: CharPosition, deletedContent: CharSequence) {
-    val edit = TSInputEdit.create(start.index shl 1, start.index shl 1, end.index shl 1,
-      start.toTSPoint(), start.toTSPoint(), end.toTSPoint())
+    val edit = TSInputEdit.create(
+      start.index shl 1,
+      end.index shl 1,
+      start.index shl 1,
+      start.toTSPoint(),
+      end.toTSPoint(),
+      start.toTSPoint()
+    )!!
     (styles.spans as LineSpansGenerator?)?.apply {
       lineCount = reference!!.lineCount
       edit(edit)
@@ -96,7 +106,7 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
     analyzeWorker!!.apply {
       this.stylesReceiver = this@TsAnalyzeManager.stylesReceiver
       init(Init(initText))
-      start(analyzerScope)
+      start()
     }
   }
 
