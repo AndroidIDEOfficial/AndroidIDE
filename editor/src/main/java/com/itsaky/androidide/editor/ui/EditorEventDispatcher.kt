@@ -22,6 +22,7 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent
+import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent
 import com.itsaky.androidide.projects.FileManager.onDocumentClose
 import com.itsaky.androidide.projects.FileManager.onDocumentContentChange
 import com.itsaky.androidide.projects.FileManager.onDocumentOpen
@@ -87,6 +88,7 @@ class EditorEventDispatcher(
       is DocumentChangeEvent -> dispatchChange(event)
       is DocumentSaveEvent -> dispatchSave(event)
       is DocumentCloseEvent -> dispatchClose(event)
+      is DocumentSelectedEvent -> dispatchSelected(event)
       else -> throw IllegalArgumentException("Unknown document event: $event")
     }
   }
@@ -107,6 +109,10 @@ class EditorEventDispatcher(
 
   private fun dispatchClose(event: DocumentCloseEvent) {
     onDocumentClose(event)
+    post(event)
+  }
+
+  private fun dispatchSelected(event: DocumentSelectedEvent) {
     post(event)
   }
 
