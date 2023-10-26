@@ -83,7 +83,7 @@
     android:layout_above="@id/space_bottom"
     android:layout_alignParentEnd="true"
     android:layout_margin="16dp"
-    android:src="@drawable/ic_close" />
+    android:src="@drawable/ic_sweep_delete" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/share_output_fab"
