@@ -69,6 +69,8 @@ androidx-transition = { module = "androidx.transition:transition-ktx", version =
 androidx-nav-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
 androidx-nav-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
 androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
+androidx-tracing = { module = "androidx.tracing:tracing", version = "1.1.0" }
+androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.1.0" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 

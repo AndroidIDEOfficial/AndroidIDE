@@ -33,7 +33,9 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
-    
+    implementation(libs.androidx.tracing)
+    implementation(libs.androidx.tracing.ktx)
+
     implementation(libs.common.utilcode)
     
     implementation(libs.google.material)

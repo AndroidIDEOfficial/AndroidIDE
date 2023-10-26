@@ -134,7 +134,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       }
 
       // wait for the indexing to finish
-      runBlocking { jobs.toList().awaitAll() }
+      jobs.toList().awaitAll()
     }
   }
 
