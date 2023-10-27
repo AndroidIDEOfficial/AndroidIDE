@@ -134,7 +134,11 @@ abstract class BaseEditorActivity :
       }
     }
 
+  private var optionsMenuInvalidator: Runnable? = null
+
   companion object {
+
+    private const val OPTIONS_MENU_INVALIDATION_DELAY = 150L
 
     const val EDITOR_CONTAINER_SCALE_FACTOR = 0.87f
     const val KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown"
@@ -154,6 +158,12 @@ abstract class BaseEditorActivity :
   internal abstract fun doConfirmProjectClose()
 
   protected open fun preDestroy() {
+    optionsMenuInvalidator?.also {
+      ThreadUtils.getMainHandler().removeCallbacks(it)
+    }
+
+    optionsMenuInvalidator = null
+
     installationCallback?.destroy()
     installationCallback = null
 
@@ -198,6 +208,8 @@ abstract class BaseEditorActivity :
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    this.optionsMenuInvalidator = Runnable { super.invalidateOptionsMenu() }
 
     registerLanguageServers()
 
@@ -258,6 +270,14 @@ abstract class BaseEditorActivity :
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putString(KEY_PROJECT_PATH, IProjectManager.getInstance().projectDirPath)
     super.onSaveInstanceState(outState)
+  }
+
+  override fun invalidateOptionsMenu() {
+    val mainHandler = ThreadUtils.getMainHandler()
+    optionsMenuInvalidator?.also {
+      mainHandler.removeCallbacks(it)
+      mainHandler.postDelayed(it, OPTIONS_MENU_INVALIDATION_DELAY)
+    }
   }
 
   override fun onTabSelected(tab: Tab) {

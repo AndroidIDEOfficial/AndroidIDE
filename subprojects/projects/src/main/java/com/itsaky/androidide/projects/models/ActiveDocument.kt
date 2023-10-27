@@ -17,15 +17,10 @@
 
 package com.itsaky.androidide.projects.models
 
-import com.itsaky.androidide.eventbus.events.editor.ChangeType
-import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
-import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedInputStream
 import java.io.BufferedReader
-import java.io.Closeable
 import java.nio.file.Path
 import java.time.Instant
-import java.util.concurrent.Semaphore
 
 /**
  * A document that is opened in the editor.
@@ -38,6 +33,7 @@ open class ActiveDocument(
   var modified: Instant,
   content: String = ""
 ) {
+
   var content: String = content
     internal set
 

@@ -16,7 +16,6 @@
  */
 package com.itsaky.androidide.actions.internal
 
-import android.content.Context
 import android.view.Menu
 import android.view.MenuItem
 import com.google.auto.service.AutoService
@@ -167,23 +166,23 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
     item.icon = action.icon?.apply {
       colorFilter = action.createColorFilter(data)
+      alpha = if (action.enabled) 255 else 76
     }
 
-    if (item.icon != null) {
-      item.icon!!.alpha = if (action.enabled) 255 else 76
-      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-    } else {
-      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-    }
-
-    val showAsAction = action.getShowAsActionFlags(data)
-    if (showAsAction != -1) {
-      item.setShowAsAction(showAsAction)
+    var showAsAction = action.getShowAsActionFlags(data)
+    if (showAsAction == -1) {
+      showAsAction = if (action.icon != null) {
+        MenuItem.SHOW_AS_ACTION_IF_ROOM
+      } else {
+        MenuItem.SHOW_AS_ACTION_NEVER
+      }
     }
 
     if (!action.enabled) {
-      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+      showAsAction = MenuItem.SHOW_AS_ACTION_NEVER
     }
+
+    item.setShowAsAction(showAsAction)
 
     action.createActionView(data)?.let { item.actionView = it }
 
@@ -195,7 +194,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
   }
 
   /** Executes the given action item with the given */
-  fun executeAction(action: ActionItem, data: ActionData) : Job {
+  fun executeAction(action: ActionItem, data: ActionData): Job {
     val onMainThread = action.requiresUIThread
     val context = if (onMainThread) Dispatchers.Main.immediate else Dispatchers.Default
     return actionsCoroutineScope.launch(context) {

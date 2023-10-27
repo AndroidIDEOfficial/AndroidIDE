@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.SparseArray
 import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.util.forEach
@@ -64,8 +65,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.collections.set
 
 /**
@@ -138,14 +137,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
   }
 
-  @SuppressLint("RestrictedApi")
-  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    if (menu is MenuBuilder) {
-      menu.setOptionalIconsVisible(true)
-    }
-    return true
-  }
-
   override fun onPause() {
     super.onPause()
 
@@ -210,8 +201,70 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-    ensureToolbarMenu(menu)
+    prepareOptionsMenu(menu)
     return true
+  }
+
+  @SuppressLint("RestrictedApi")
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    if (menu is MenuBuilder) {
+      menu.setOptionalIconsVisible(true)
+    }
+
+    val data = createToolbarActionData()
+    getInstance().fillMenu(FillMenuParams(data, EDITOR_TOOLBAR, menu))
+    return true
+  }
+
+  open fun prepareOptionsMenu(menu: Menu) {
+    val data = createToolbarActionData()
+    val actions = getInstance().getActions(EDITOR_TOOLBAR)
+    actions.forEach { (_, action) ->
+      menu.findItem(action.itemId)?.let { item ->
+        action.prepare(data)
+
+        item.isVisible = action.visible
+        item.isEnabled = action.enabled
+        item.title = action.label
+
+        item.icon = action.icon?.apply {
+          colorFilter = action.createColorFilter(data)
+          alpha = if (action.enabled) 255 else 76
+        }
+
+        var showAsAction = action.getShowAsActionFlags(data)
+        if (showAsAction == -1) {
+          showAsAction = if (action.icon != null) {
+            MenuItem.SHOW_AS_ACTION_IF_ROOM
+          } else {
+            MenuItem.SHOW_AS_ACTION_NEVER
+          }
+        }
+
+        if (!action.enabled) {
+          showAsAction = MenuItem.SHOW_AS_ACTION_NEVER
+        }
+
+        item.setShowAsAction(showAsAction)
+
+        action.createActionView(data)?.let { item.actionView = it }
+      }
+    }
+    binding.editorToolbar.updateMenuDisplay()
+  }
+
+  private fun createToolbarActionData(): ActionData {
+    val data = ActionData()
+    val currentEditor = getCurrentEditor()
+
+    data.put(Context::class.java, this)
+    data.put(CodeEditorView::class.java, currentEditor)
+
+    if (currentEditor != null) {
+      data.put(IDEEditor::class.java, currentEditor.editor)
+      data.put(File::class.java, currentEditor.file)
+    }
+    return data
   }
 
   override fun getCurrentEditor(): CodeEditorView? {
@@ -483,24 +536,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     } else {
       notifyFilesUnsaved(unsavedFiles) { closeOthers() }
     }
-  }
-
-  open fun ensureToolbarMenu(menu: Menu) {
-    menu.clear()
-
-    val data = ActionData()
-    val currentEditor = getCurrentEditor()
-
-    data.put(Context::class.java, this)
-    data.put(CodeEditorView::class.java, currentEditor)
-
-    if (currentEditor != null) {
-      data.put(IDEEditor::class.java, currentEditor.editor)
-      data.put(File::class.java, currentEditor.file)
-    }
-
-    getInstance().fillMenu(FillMenuParams(data, EDITOR_TOOLBAR, menu))
-    binding.editorToolbar.updateMenuDisplay()
   }
 
   override fun closeAll(runAfter: () -> Unit) {
