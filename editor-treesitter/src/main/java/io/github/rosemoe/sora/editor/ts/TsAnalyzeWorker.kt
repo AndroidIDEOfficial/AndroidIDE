@@ -65,6 +65,8 @@ internal class TsAnalyzeWorker(
   private val messageChannel = LinkedBlockingQueue<Message<*>>()
   private var analyzerJob: Job? = null
 
+  private var isInitialized = false
+
   private var tree: TSTree? = null
   private val localText = UTF16StringFactory.newString()
   private val parser = TSParser.create().also {
@@ -129,18 +131,20 @@ internal class TsAnalyzeWorker(
       parser.requestCancellationAndWait()
     }
 
-    check(localText.isEmpty()) {
+    check(!isInitialized) {
       "'Init' must be the first message to TsAnalyzeWorker"
     }
 
     localText.append(init.data)
     tree = parser.parseString(localText)
     updateStyles()
+
+    isInitialized = true
   }
 
   private fun doMod(mod: Mod) {
 
-    check(localText.isNotEmpty()) {
+    check(isInitialized) {
       "'Init' must be the first message to TsAnalyzeWorker"
     }
 
