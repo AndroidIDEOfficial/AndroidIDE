@@ -31,6 +31,7 @@ import com.google.googlejavaformat.FormattingError;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.Op;
 import com.google.googlejavaformat.OpsBuilder;
+import com.google.googlejavaformat.java.java17.Java17InputAstVisitor;
 import openjdk.tools.javac.file.JavacFileManager;
 import openjdk.tools.javac.parser.JavacParser;
 import openjdk.tools.javac.parser.ParserFactory;
@@ -152,15 +153,7 @@ public final class Formatter {
     // Output the compilation unit.
     JavaInputAstVisitor visitor;
     if (options.useJava17AstVisitor()) {
-      try {
-        visitor =
-            Class.forName("com.google.googlejavaformat.java.java17.Java17InputAstVisitor")
-                .asSubclass(JavaInputAstVisitor.class)
-                .getConstructor(OpsBuilder.class, int.class)
-                .newInstance(builder, options.indentationMultiplier());
-      } catch (ReflectiveOperationException e) {
-        throw new LinkageError(e.getMessage(), e);
-      }
+      visitor = new Java17InputAstVisitor(builder, options.indentationMultiplier());
     } else {
       visitor = new JavaInputAstVisitor(builder, options.indentationMultiplier());
     }
