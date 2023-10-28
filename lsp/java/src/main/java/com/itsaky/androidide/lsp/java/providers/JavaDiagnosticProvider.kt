@@ -61,10 +61,12 @@ class JavaDiagnosticProvider {
       return cachedDiagnostics
     }
 
-    if (analyzing.get() && analyzingThread != null) {
-      log.debug("Cancelling currently analyzing thread...")
-      ProgressManager.instance.cancel(analyzingThread!!)
-      analyzingThread = null
+    analyzingThread?.let { analyzingThread ->
+      if (analyzing.get()) {
+        log.debug("Cancelling currently analyzing thread...")
+        ProgressManager.instance.cancel(analyzingThread)
+        this.analyzingThread = null
+      }
     }
 
     analyzing.set(true)
