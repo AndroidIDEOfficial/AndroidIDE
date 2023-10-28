@@ -24,7 +24,6 @@ import static com.itsaky.androidide.resources.R.string;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity;
@@ -48,9 +47,11 @@ import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.ui.CodeEditorView;
 import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
+import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
+import io.github.rosemoe.sora.text.Content;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,12 +63,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
-import io.github.rosemoe.sora.text.Content;
 import kotlin.Unit;
 
-/** AndroidIDE specific implementation of the LanguageClient */
+/**
+ * AndroidIDE specific implementation of the LanguageClient
+ */
 public class IDELanguageClientImpl implements ILanguageClient {
 
   public static final int MAX_DIAGNOSTIC_FILES = 10;
@@ -129,7 +129,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
     }
 
     File file = result.getFile().toFile();
-    if (!file.exists() || !file.isFile()) return;
+    if (!file.exists() || !file.isFile()) {
+      return;
+    }
 
     final var editorView = activity().getEditorForFile(file);
     if (editorView != null) {
@@ -153,7 +155,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   protected EditorHandlerActivity activity() {
-    if (activity == null) return null;
+    if (activity == null) {
+      return null;
+    }
     return activity;
   }
 
@@ -176,14 +180,14 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "Unable to perform code action",
           "activity=" + activity(),
           "action=" + action);
-      FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
+      FlashbarUtilsKt.flashError(string.msg_cannot_perform_fix);
       return;
     }
 
     if (activity.isFinishing()
-      || activity.isDestroyed()
-      || activity.getSupportFragmentManager().isDestroyed()
-      || activity.getSupportFragmentManager().isStateSaved()) {
+        || activity.isDestroyed()
+        || activity.getSupportFragmentManager().isDestroyed()
+        || activity.getSupportFragmentManager().isStateSaved()) {
       LOG.error("Cannot perform code action. Activity is in an invalid state.");
       // Should we try to show the error message to the user?
       return;
@@ -323,7 +327,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> map) {
     final var groups = new ArrayList<DiagnosticGroup>();
     var diagnosticMap = map;
-    if (diagnosticMap == null || diagnosticMap.size() == 0) return groups;
+    if (diagnosticMap == null || diagnosticMap.size() == 0) {
+      return groups;
+    }
 
     if (diagnosticMap.size() > 10) {
       LOG.warn("Limiting the diagnostics to 10 files");
@@ -332,7 +338,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     for (File file : diagnosticMap.keySet()) {
       var fileDiagnostics = diagnosticMap.get(file);
-      if (fileDiagnostics == null || fileDiagnostics.size() == 0) continue;
+      if (fileDiagnostics == null || fileDiagnostics.size() == 0) {
+        continue;
+      }
 
       // Trim the diagnostics list if we have too many diagnostic items.
       // Including a lot of diagnostic items will result in UI lag when they are shown
@@ -394,7 +402,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
     return result;
   }
 
-  /** Called by {@link IDEEditor IDEEditor} to show locations in EditorActivity */
+  /**
+   * Called by {@link IDEEditor IDEEditor} to show locations in EditorActivity
+   */
   @Override
   public void showLocations(List<Location> locations) {
 
@@ -422,11 +432,16 @@ public class IDELanguageClientImpl implements ILanguageClient {
         }
 
         final File file = loc.getFile().toFile();
-        if (!file.exists() || !file.isFile()) continue;
+        if (!file.exists() || !file.isFile()) {
+          continue;
+        }
         var frag = findEditorByFile(file);
         Content content;
-        if (frag != null && frag.getEditor() != null) content = frag.getEditor().getText();
-        else content = new Content(FileIOUtils.readFile2String(file));
+        if (frag != null && frag.getEditor() != null) {
+          content = frag.getEditor().getText();
+        } else {
+          content = new Content(FileIOUtils.readFile2String(file));
+        }
         final List<SearchResult> matches =
             results.containsKey(file) ? results.get(file) : new ArrayList<>();
         Objects.requireNonNull(matches)
