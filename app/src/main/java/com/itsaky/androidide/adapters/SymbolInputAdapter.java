@@ -20,7 +20,6 @@ package com.itsaky.androidide.adapters;
 import static com.itsaky.androidide.preferences.utils.EditorUtilKt.getIndentationString;
 import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -59,8 +58,8 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
   public SymbolInputAdapter(IDEEditor editor, List<Symbol> symbols) {
     this.editor = editor;
     this.symbols = symbols == null ? Collections.emptyList() : symbols;
-    setHasStableIds(true);
   }
+
   public void refresh(IDEEditor editor, List<Symbol> newSymbols) {
     this.editor = Objects.requireNonNull(editor);
 
@@ -117,11 +116,6 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
         resolveAttr(holder.binding.symbol.getContext(), R.attr.colorOnSurface));
     holder.binding.symbol.setOnClickListener(
         __ -> insertSymbol(symbol.getCommit(), symbol.getOffset()));
-  }
-
-  @Override
-  public long getItemId(int position) {
-    return symbols.get(position).hashCode();
   }
 
   @Override
