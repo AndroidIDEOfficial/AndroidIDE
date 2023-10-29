@@ -67,6 +67,10 @@ class JarFsClasspathReader : IClasspathReader {
 
               name = name.substringBeforeLast(".class")
 
+              if (name.isBlank()) {
+                return CONTINUE
+              }
+
               if (name.startsWith('/')) {
                 name = name.substring(1)
               }
