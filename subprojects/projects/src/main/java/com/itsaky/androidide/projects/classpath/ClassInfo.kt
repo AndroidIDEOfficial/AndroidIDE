@@ -37,7 +37,7 @@ private constructor(
   companion object {
 
     @JvmStatic
-    fun create(name: String): ClassInfo {
+    fun create(name: String): ClassInfo? {
       val isTopLevel = name.indexOf('$') == -1
 
       val simpleName =
@@ -48,6 +48,10 @@ private constructor(
         } else {
           name
         }
+
+      if (simpleName.isBlank()) {
+        return null
+      }
 
       val packageName =
         if (name.contains('.')) {

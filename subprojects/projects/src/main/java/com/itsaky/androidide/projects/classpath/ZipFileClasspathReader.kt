@@ -53,8 +53,10 @@ class ZipFileClasspathReader : IClasspathReader {
           if (name.contains('/')) {
             name = name.replace('/', '.')
           }
-        
-          classes.add(ClassInfo.create(name))
+
+          ClassInfo.create(name)?.also { classInfo ->
+            classes.add(classInfo)
+          }
         }
       }
     }
