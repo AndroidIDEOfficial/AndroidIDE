@@ -20,6 +20,7 @@ package com.itsaky.androidide.adapters;
 import static com.itsaky.androidide.preferences.utils.EditorUtilKt.getIndentationString;
 import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -49,7 +50,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
   }
 
   private IDEEditor editor;
-  private List<Symbol> symbols;
+  private final List<Symbol> symbols;
 
   public SymbolInputAdapter(IDEEditor editor) {
     this(editor, null);
@@ -57,7 +58,18 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 
   public SymbolInputAdapter(IDEEditor editor, List<Symbol> symbols) {
     this.editor = editor;
-    this.symbols = symbols == null ? Collections.emptyList() : symbols;
+    this.symbols = new ArrayList<>();
+    this.updateItems(symbols);
+  }
+
+  private void updateItems(List<Symbol> symbols) {
+    if (symbols == null) {
+      return;
+    }
+
+    this.symbols.clear();
+    this.symbols.addAll(symbols);
+    this.symbols.removeIf(Objects::isNull);
   }
 
   public void refresh(IDEEditor editor, List<Symbol> newSymbols) {
@@ -94,7 +106,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 
     final var result = DiffUtil.calculateDiff(callback);
 
-    this.symbols = newSymbols;
+    updateItems(newSymbols);
     result.dispatchUpdatesTo(this);
   }
 
@@ -107,9 +119,6 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 
   @Override
   public void onBindViewHolder(@NonNull VH holder, int position) {
-    if (symbols == null || symbols.get(position) == null) {
-      return;
-    }
     final Symbol symbol = symbols.get(position);
     holder.binding.symbol.setText(symbol.getLabel());
     holder.binding.symbol.setTextColor(
@@ -120,7 +129,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 
   @Override
   public int getItemCount() {
-    return symbols == null ? 0 : symbols.size();
+    return symbols.size();
   }
 
   void insertSymbol(String text, int selectionOffset) {
