@@ -31,7 +31,8 @@ object Symbols {
     return when (file.extension) {
       "java",
       "gradle",
-      "kt" -> javaSymbols
+      "kt",
+      "kts" -> javaSymbols
 
       "xml" -> xmlSymbols
       else -> plainTextSymbols
