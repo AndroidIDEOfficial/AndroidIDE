@@ -51,6 +51,7 @@ import com.itsaky.androidide.preferences.internal.FLAG_WS_LEADING
 import com.itsaky.androidide.preferences.internal.FLAG_WS_TRAILING
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
+import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
 import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
 import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.USE_ICU
@@ -65,6 +66,7 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
+import com.itsaky.androidide.preferences.internal.pinLineNumbers
 import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
 import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.useIcu
@@ -363,6 +365,7 @@ class CodeEditorView(
     onDeleteEmptyLinesPrefChanged()
     onDeleteTabsPrefChanged()
     onStickyScrollEnabeldPrefChanged()
+    onPinLineNumbersPrefChanged()
   }
 
   private fun onMagnifierPrefChanged() {
@@ -433,6 +436,10 @@ class CodeEditorView(
     binding.editor.props.stickyScroll = stickyScrollEnabled
   }
 
+  private fun onPinLineNumbersPrefChanged() {
+    binding.editor.setPinLineNumber(pinLineNumbers)
+  }
+
   /**
    * For internal use only!
    *
@@ -479,6 +486,7 @@ class CodeEditorView(
       DELETE_EMPTY_LINES -> onDeleteEmptyLinesPrefChanged()
       DELETE_TABS_ON_BACKSPACE -> onDeleteTabsPrefChanged()
       STICKY_SCROLL_ENABLED -> onStickyScrollEnabeldPrefChanged()
+      PIN_LINE_NUMBERS -> onPinLineNumbersPrefChanged()
     }
   }
 

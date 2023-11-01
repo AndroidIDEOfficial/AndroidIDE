@@ -33,6 +33,7 @@ import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
 import com.itsaky.androidide.preferences.internal.HIDE_FILE_TREE_BUTTON
+import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
@@ -54,6 +55,7 @@ import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.preferences.internal.hideFileTreeButton
+import com.itsaky.androidide.preferences.internal.pinLineNumbers
 import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useCustomFont
@@ -106,6 +108,7 @@ private class CommonConfigurations(
     addPreference(DeleteEmptyLines())
     addPreference(DeleteTabs())
     addPreference(StickyScrollEnabled())
+    addPreference(PinLineNumbersEnabled())
     addPreference(CompletionsMatchLower())
   }
 }
@@ -349,3 +352,11 @@ private class StickyScrollEnabled(
   override val summary: Int? = R.string.idepref_editor_stickyScroll_summary,
   override val icon: Int? = drawable.ic_sticky_scroll
 ) : SwitchPreference(setValue = ::stickyScrollEnabled::set, getValue = ::stickyScrollEnabled::get)
+
+@Parcelize
+private class PinLineNumbersEnabled(
+  override val key: String = PIN_LINE_NUMBERS,
+  override val title: Int = R.string.idepref_editor_pinLineNumbers_title,
+  override val summary: Int? = R.string.idepref_editor_pinLineNumbers_summary,
+  override val icon: Int? = drawable.ic_pin
+) : SwitchPreference(setValue = ::pinLineNumbers::set, getValue = ::pinLineNumbers::get)
