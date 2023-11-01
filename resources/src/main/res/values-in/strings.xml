@@ -531,6 +531,6 @@
   <string name="msg_64bit_on_32bit_device">Anda menggunakan AndroidIDE varian 64-bit pada perangkat 32-bit saja. Konfigurasi ini tidak didukung. Silakan instal AndroidIDE varian 32-bit.</string>
   <string name="title_32bit_on_64bit_device">Peringatan Konfigurasi</string>
   <string name="msg_32bit_on_64bit_device">Anda menggunakan AndroidIDE varian 32-bit pada perangkat 64-bit. Konfigurasi ini mungkin berfungsi, namun akan mengakibatkan penurunan kinerja dan kemungkinan kerentanan keamanan. Harap hindari penggunaan konfigurasi ini bila memungkinkan.</string>
-  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
-  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="idepref_editor_pinLineNumbers_title">Sematkan nomor baris</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Apakah editor harus menyematkan panel nomor baris saat digulir secara horizontal.</string>
 </resources>
