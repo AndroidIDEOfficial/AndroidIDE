@@ -252,18 +252,17 @@ constructor(
       return
     }
 
+    binding.symbolInput.itemAnimator?.endAnimations()
+
+    TransitionManager.beginDelayedTransition(
+      binding.root,
+      MaterialSharedAxis(MaterialSharedAxis.Y, false)
+    )
+
     val activity = context as Activity
     if (KeyboardUtils.isSoftInputVisible(activity)) {
-      TransitionManager.beginDelayedTransition(
-        binding.root,
-        MaterialSharedAxis(MaterialSharedAxis.Y, false)
-      )
       binding.headerContainer.displayedChild = CHILD_SYMBOL_INPUT
     } else {
-      TransitionManager.beginDelayedTransition(
-        binding.root,
-        MaterialSharedAxis(MaterialSharedAxis.Y, false)
-      )
       binding.headerContainer.displayedChild = CHILD_HEADER
     }
   }
