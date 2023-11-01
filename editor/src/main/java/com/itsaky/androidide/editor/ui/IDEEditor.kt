@@ -26,6 +26,7 @@ import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.StringRes
 import com.blankj.utilcode.util.FileUtils
+import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.editor.R.string
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter
 import com.itsaky.androidide.editor.api.IEditor
@@ -603,6 +604,9 @@ open class IDEEditor @JvmOverloads constructor(
    * Initialize the editor.
    */
   protected open fun initEditor() {
+
+    lineNumberMarginLeft = SizeUtils.dp2px(2f).toFloat()
+
     _actionsMenu = EditorActionsMenu(this).also {
       it.init()
     }
