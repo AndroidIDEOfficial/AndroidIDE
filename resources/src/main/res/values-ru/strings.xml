@@ -531,4 +531,6 @@
   <string name="msg_64bit_on_32bit_device">Вы используете 64-битный вариант AndroidIDE на 32-битном устройстве. Эта конфигурация не поддерживается. Пожалуйста, установите 32-битный вариант AndroidIDE.</string>
   <string name="title_32bit_on_64bit_device">Предупреждение о конфигурации</string>
   <string name="msg_32bit_on_64bit_device">Вы используете 32-битный вариант AndroidIDE на 64-битном устройстве. Такая конфигурация может работать, но это приведёт к снижению производительности и возможным уязвимостям в системе безопасности. По возможности избегайте использования данной конфигурации.</string>
+  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
 </resources>
