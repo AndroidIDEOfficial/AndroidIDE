@@ -531,6 +531,6 @@
   <string name="msg_64bit_on_32bit_device">您正在仅 32 位的设备上使用 AndroidIDE 的 64 位变体，不支持此配置，请安装 AndroidIDE 的 32 位变体。</string>
   <string name="title_32bit_on_64bit_device">配置警告</string>
   <string name="msg_32bit_on_64bit_device">您正在 64 位设备上使用 AndroidIDE 的 32 位变体，此配置可能有效，但会使性能降低并可能导致安全漏洞，请尽可能避免使用此配置。</string>
-  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
-  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="idepref_editor_pinLineNumbers_title">固定行号</string>
+  <string name="idepref_editor_pinLineNumbers_summary">编辑器是否应在水平滚动时固定行号栏。</string>
 </resources>
