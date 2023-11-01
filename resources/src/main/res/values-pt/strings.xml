@@ -531,6 +531,6 @@
   <string name="msg_64bit_on_32bit_device">Você está usando a variante 64 bits do AndroidIDE em um dispositivo de somente 32 bits. Esta configuração não é suportada. Por favor, instale a variante 32 bits do AndroidIDE.</string>
   <string name="title_32bit_on_64bit_device">Aviso de configuração</string>
   <string name="msg_32bit_on_64bit_device">Você está usando uma variante de 32 bits do AndroidIDE em um dispositivo de 64 bits. Esta configuração pode funcionar, mas resultará em desempenho reduzido e possíveis vulnerabilidades de segurança. Por favor, evite usar essa configuração sempre que possível.</string>
-  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
-  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="idepref_editor_pinLineNumbers_title">Fixar linha de números</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Se o editor deve fixar o painel de linha de números quando rolado horizontalmente.</string>
 </resources>
