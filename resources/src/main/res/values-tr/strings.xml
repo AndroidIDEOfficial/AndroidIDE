@@ -531,4 +531,6 @@
   <string name="msg_64bit_on_32bit_device">Yalnızca 32 bit bir cihazda AndroidIDE\'nin 64 bit varyantını kullanıyorsunuz. Bu yapılandırma desteklenmemektedir. Lütfen AndroidIDE\'nin 32 bit sürümünü yükleyin.</string>
   <string name="title_32bit_on_64bit_device">Yapılandırma Uyarısı</string>
   <string name="msg_32bit_on_64bit_device">64-bit bir cihazda AndroidIDE\'nin 32-bit varyantını kullanıyorsunuz. Bu yapılandırma işe yarayabilir, ancak düşük performansa ve olası güvenlik açıklarına neden olacaktır. Lütfen mümkün olduğunca bu yapılandırmayı kullanmaktan kaçının.</string>
+  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
 </resources>
