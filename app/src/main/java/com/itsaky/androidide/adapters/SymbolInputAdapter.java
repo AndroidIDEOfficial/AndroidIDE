@@ -72,6 +72,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     this.symbols.removeIf(Objects::isNull);
   }
 
+  @SuppressLint("NotifyDataSetChanged")
   public void refresh(IDEEditor editor, List<Symbol> newSymbols) {
     this.editor = Objects.requireNonNull(editor);
 
@@ -80,34 +81,8 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
       return;
     }
 
-    Objects.requireNonNull(newSymbols, "Symbol list cannot be null");
-
-    final var callback = new DiffUtil.Callback() {
-      @Override
-      public int getOldListSize() {
-        return symbols.size();
-      }
-
-      @Override
-      public int getNewListSize() {
-        return newSymbols.size();
-      }
-
-      @Override
-      public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return Objects.equals(symbols.get(oldItemPosition), newSymbols.get(newItemPosition));
-      }
-
-      @Override
-      public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return areItemsTheSame(oldItemPosition, newItemPosition);
-      }
-    };
-
-    final var result = DiffUtil.calculateDiff(callback);
-
     updateItems(newSymbols);
-    result.dispatchUpdatesTo(this);
+    notifyDataSetChanged();
   }
 
   @NonNull
