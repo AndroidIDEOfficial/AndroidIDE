@@ -21,7 +21,6 @@ import android.content.Context
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.text.TextUtils
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
@@ -34,14 +33,12 @@ import com.itsaky.androidide.models.ApkMetadata
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -132,7 +129,11 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     taskName: String
   ) {
 
-    val buildService = this.buildService ?: return
+    val buildService = this.buildService ?: run {
+      log.error("Cannot execute task '$taskName'. BuildService not found.")
+      return
+    }
+
     if (!buildService.isToolingServerStarted()) {
       flashError(string.msg_tooling_server_unavailable)
       return
@@ -141,7 +142,8 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     val activity =
       data.getActivity()
         ?: run {
-          log.debug("Cannot start build. Activity instance not provided in ActionData.")
+          log.error(
+            "Cannot execute task '$taskName'. Activity instance not provided in ActionData.")
           return
         }
 
@@ -151,6 +153,8 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       val result = withContext(Dispatchers.IO) {
         buildService.executeTasks(taskName).get()
       }
+
+      log.debug("Task execution result:", result)
 
       if (result?.isSuccessful != true) {
         log.error("Tasks failed to execute: '$taskName'")
@@ -198,7 +202,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     variant: BasicAndroidVariantMetadata
   ) {
     if (result == null || !result.isSuccessful) {
-      log.debug("Cannot install APK. Task execution result:", result)
+      log.debug("Cannot install APK. Task execution failed.")
       return
     }
 
