@@ -453,7 +453,8 @@
   <string name="uiMode_light">Light</string>
   <string name="uiMode_dark">Dark</string>
   <string name="uiMode_system">Ikuti sistem</string>
-  <string name="idepref_general_materialYou_summary">Nikmati pengalaman yang lebih dekat dengan perangkat Anda (perlu dimulai ulang).</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
   <string name="msg_app_launch_failed">Gagal meluncurkan aplikasi. Lihat log IDE untuk info lebih lanjut.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostik diaktifkan</string>
@@ -533,4 +534,7 @@
   <string name="msg_32bit_on_64bit_device">Anda menggunakan AndroidIDE varian 32-bit pada perangkat 64-bit. Konfigurasi ini mungkin berfungsi, namun akan mengakibatkan penurunan kinerja dan kemungkinan kerentanan keamanan. Harap hindari penggunaan konfigurasi ini bila memungkinkan.</string>
   <string name="idepref_editor_pinLineNumbers_title">Sematkan nomor baris</string>
   <string name="idepref_editor_pinLineNumbers_summary">Apakah editor harus menyematkan panel nomor baris saat digulir secara horizontal.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
 </resources>
