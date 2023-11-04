@@ -20,6 +20,7 @@ package com.itsaky.androidide.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import kotlin.io.path.PathsKt;
 
 /**
  * @author Akash Yadav
@@ -27,8 +28,10 @@ import java.nio.file.Path;
 public class DocumentUtils {
 
   public static boolean isJavaFile(Path file) {
-    String name = file.getFileName().toString();
-    return name.endsWith(".java")
+    final var name = PathsKt.getName(file);
+    final var extension = PathsKt.getExtension(file);
+
+    return extension.equals("java")
         && Files.exists(file)
         && !Files.isDirectory(file)
         && !name.equals("module-info.java")
@@ -36,8 +39,7 @@ public class DocumentUtils {
   }
 
   public static boolean isXmlFile(Path file) {
-    String name = file.getFileName().toString();
-    return name.endsWith(".xml") && Files.exists(file) && !Files.isDirectory(file);
+    return PathsKt.getExtension(file).equals("xml") && Files.exists(file) && !Files.isDirectory(file);
   }
 
   public static boolean isSameFile(Path first, Path second) {
