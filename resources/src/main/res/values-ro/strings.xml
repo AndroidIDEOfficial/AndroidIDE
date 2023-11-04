@@ -453,7 +453,8 @@
   <string name="uiMode_light">Luminos</string>
   <string name="uiMode_dark">Întunecat</string>
   <string name="uiMode_system">Ca în sistemă</string>
-  <string name="idepref_general_materialYou_summary">Bucurați-vă de o experiență mai aproape de dispozitiv (necesită repornire).</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Configurarea proiectului</string>
   <string name="msg_app_launch_failed">Nu a reușit să lanseze aplicația. Consultați jurnalele IDE pentru mai multe informații.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnosticarea activată</string>
@@ -533,4 +534,7 @@
   <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
   <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
   <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
 </resources>
