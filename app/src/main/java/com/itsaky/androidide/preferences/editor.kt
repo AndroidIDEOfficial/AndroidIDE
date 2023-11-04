@@ -191,7 +191,7 @@ private class TabSize(
     tabSize = size
   }
 
-  override fun getSelectedItem(): Int {
+  override fun getSelectedItem(context: Context): Int {
     var current = tabSize / 2 - 1
     if (current < 0 || current >= choices.size) {
       current = 1
@@ -217,7 +217,7 @@ private class ColorSchemePreference(
     return schemes.map { it.name }.toTypedArray()
   }
 
-  override fun getSelectedItem(): Int {
+  override fun getSelectedItem(context: Context): Int {
     return schemes.indexOfFirst { it.key == colorScheme }
   }
 

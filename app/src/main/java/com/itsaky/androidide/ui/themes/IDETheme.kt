@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.ui.themes
 
+import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import com.itsaky.androidide.R
 
@@ -27,18 +28,26 @@ import com.itsaky.androidide.R
  */
 enum class IDETheme(
   @StyleRes val styleLight: Int,
-  @StyleRes val styleDark: Int
+  @StyleRes val styleDark: Int,
+  @StringRes val title: Int
 ) {
 
   /**
-   * Bluish theme.
+   * Blue Wave theme.
    */
-  BLUE_WAVE(R.style.Theme_AndroidIDE_BlueWave, R.style.Theme_AndroidIDE_BlueWave_Dark),
+  BLUE_WAVE(R.style.Theme_AndroidIDE_BlueWave, R.style.Theme_AndroidIDE_BlueWave_Dark,
+    R.string.theme_blue_wave),
 
   /**
-   * Yellowish theme.
+   * Sunny Glow theme.
    */
-  SUNNY_GLOW(R.style.Theme_AndroidIDE_SunnyGlow, R.style.Theme_AndroidIDE_SunnyGlow_Dark);
+  SUNNY_GLOW(R.style.Theme_AndroidIDE_SunnyGlow, R.style.Theme_AndroidIDE_SunnyGlow_Dark,
+    R.string.theme_sunny_glow),
+
+  /**
+   * Material You theme.
+   */
+  MATERIAL_YOU(-1, -1, R.string.theme_material_you);
 
   companion object {
 

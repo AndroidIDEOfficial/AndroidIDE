@@ -18,8 +18,7 @@
 package com.itsaky.androidide.ui.themes
 
 import android.app.Activity
-import com.itsaky.androidide.managers.PreferenceManager
-import com.itsaky.androidide.preferences.internal.enableMaterialYou
+import com.itsaky.androidide.preferences.internal.selectedTheme
 import com.itsaky.androidide.utils.isSystemInDarkMode
 
 /**
@@ -29,19 +28,17 @@ import com.itsaky.androidide.utils.isSystemInDarkMode
  */
 object ThemeManager {
 
-  const val KEY_CURRENT_THEME = "ide.preferences.currentTheme"
-
   /**
-   * Apply the current theme to the given activity. Does nothing if [Material You][enableMaterialYou] is enabled.
+   * Apply the current theme to the given activity. Does nothing if theme is set to [Material You][IDETheme.MATERIAL_YOU].
    */
   fun applyTheme(activity: Activity) {
 
-    // Don't apply theme if Material You is enabled
-    if (enableMaterialYou) {
+    val theme = getCurrentTheme()
+    if (theme == IDETheme.MATERIAL_YOU) {
+      // No need to apply Material You theme
       return
     }
 
-    val theme = getCurrentTheme(activity)
     val style = if (activity.isSystemInDarkMode()) {
       theme.styleDark
     } else {
@@ -54,10 +51,7 @@ object ThemeManager {
   /**
    * Get the currently selected theme.
    */
-  fun getCurrentTheme(activity: Activity): IDETheme {
-    val preferences = PreferenceManager(activity, "ide.preferences.theme")
-
-    return preferences.getString(KEY_CURRENT_THEME, null)?.let { IDETheme.valueOf(it) }
-      ?: IDETheme.DEFAULT
+  fun getCurrentTheme(): IDETheme {
+    return selectedTheme?.let { IDETheme.valueOf(it) } ?: IDETheme.DEFAULT
   }
 }

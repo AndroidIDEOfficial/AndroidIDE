@@ -45,7 +45,6 @@ import com.itsaky.androidide.events.ProjectsApiEventsIndex
 import com.itsaky.androidide.preferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS
 import com.itsaky.androidide.preferences.dumpLogs
 import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
-import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.stats.AndroidIDEStats
@@ -53,6 +52,8 @@ import com.itsaky.androidide.stats.StatUploadWorker
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
+import com.itsaky.androidide.ui.themes.IDETheme
+import com.itsaky.androidide.ui.themes.ThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
@@ -108,7 +109,7 @@ class IDEApplication : BaseApplication() {
 
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
-    if (enableMaterialYou) {
+    if (ThemeManager.getCurrentTheme() == IDETheme.MATERIAL_YOU) {
       DynamicColors.applyToActivitiesIfAvailable(this)
     }
 

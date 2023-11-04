@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.preferences
 
+import android.content.Context
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -31,11 +32,12 @@ abstract class SingleChoicePreference : DialogPreference(), PreferenceChoices {
    * Get the index of the selected item.
    * @see MaterialAlertDialogBuilder.setSingleChoiceItems
    */
-  abstract fun getSelectedItem(): Int
+  abstract fun getSelectedItem(context: Context): Int
 
   override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     super.onConfigureDialog(preference, dialog)
-    dialog.setSingleChoiceItems(getChoices(preference.context), getSelectedItem()) { dialogInterface, position ->
+    dialog.setSingleChoiceItems(getChoices(preference.context),
+      getSelectedItem(preference.context)) { dialogInterface, position ->
       dialogInterface.dismiss()
       onItemSelected(position)
     }
