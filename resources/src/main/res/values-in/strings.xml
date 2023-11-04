@@ -453,8 +453,8 @@
   <string name="uiMode_light">Light</string>
   <string name="uiMode_dark">Dark</string>
   <string name="uiMode_system">Ikuti sistem</string>
-  <string name="idepref_general_themeSelector_title">Theme</string>
-  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
+  <string name="idepref_general_themeSelector_title">Tema</string>
+  <string name="idepref_general_themeSelector_summary">Pilih tema untuk AndroidIDE (memerlukan restart).</string>
   <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
   <string name="msg_app_launch_failed">Gagal meluncurkan aplikasi. Lihat log IDE untuk info lebih lanjut.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostik diaktifkan</string>
