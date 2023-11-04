@@ -453,7 +453,8 @@
   <string name="uiMode_light">Claro</string>
   <string name="uiMode_dark">Escuro</string>
   <string name="uiMode_system">Seguir o sistema</string>
-  <string name="idepref_general_materialYou_summary">Aproveite uma experiência mais próxima do seu dispositivo (requer reinicialização).</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Configuração do projeto</string>
   <string name="msg_app_launch_failed">Falha ao iniciar o aplicativo. Consulte os logs da IDE para obter mais informações.</string>
   <string name="idepref_java_diagnosticEnabled_title">Habilitar diagnósticos</string>
@@ -533,4 +534,7 @@
   <string name="msg_32bit_on_64bit_device">Você está usando uma variante de 32 bits do AndroidIDE em um dispositivo de 64 bits. Esta configuração pode funcionar, mas resultará em desempenho reduzido e possíveis vulnerabilidades de segurança. Por favor, evite usar essa configuração sempre que possível.</string>
   <string name="idepref_editor_pinLineNumbers_title">Fixar linha de números</string>
   <string name="idepref_editor_pinLineNumbers_summary">Se o editor deve fixar o painel de linha de números quando rolado horizontalmente.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
 </resources>
