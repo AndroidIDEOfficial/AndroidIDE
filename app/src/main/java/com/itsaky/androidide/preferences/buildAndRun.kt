@@ -46,6 +46,7 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
@@ -112,15 +113,18 @@ private class GradleCommands(
     )
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    when (position) {
-      0 -> isStacktraceEnabled = isSelected
-      1 -> isInfoEnabled = isSelected
-      2 -> isDebugEnabled = isSelected
-      3 -> isScanEnabled = isSelected
-      4 -> isWarningModeAllEnabled = isSelected
-      5 -> isBuildCacheEnabled = isSelected
-      6 -> isOfflineEnabled = isSelected
+  override fun onChoicesConfirmed(selectedPositions: List<Int>) {
+    for (position in selectedPositions) {
+      when (position) {
+        0 -> ::isStacktraceEnabled
+        1 -> ::isInfoEnabled
+        2 -> ::isDebugEnabled
+        3 -> ::isScanEnabled
+        4 -> ::isWarningModeAllEnabled
+        5 -> ::isBuildCacheEnabled
+        6 -> ::isOfflineEnabled
+        else -> null
+      }?.set(true)
     }
   }
 }

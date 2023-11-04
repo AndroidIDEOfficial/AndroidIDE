@@ -227,7 +227,7 @@ private class EmptyElementsBehavior(
 ) : SingleChoicePreference() {
   override val dialogCancellable = true
 
-  override fun getSelectedItem(context: Context): Int {
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
     return EmptyElements.valueOf(emptyElementsBehavior).ordinal
   }
 
@@ -235,7 +235,7 @@ private class EmptyElementsBehavior(
     return EmptyElements.values().map { it.toString() }.toTypedArray()
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
+  override fun onChoiceConfirmed(position: Int) {
     emptyElementsBehavior = EmptyElements.values()[position].toString()
   }
 }

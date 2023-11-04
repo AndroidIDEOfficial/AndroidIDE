@@ -28,11 +28,24 @@ interface PreferenceChoices {
 
   /** Get the choices to show in the preference. */
   fun getChoices(context: Context): Array<String>
-  
+
   /**
    * Called when an item is selected from the single choice list.
    *
    * @param position The position of the selected item.
+   * @param isSelected Whether the item is selected.
    */
-  fun onItemSelected(position: Int, isSelected: Boolean = true)
+  fun onSelectionChanged(position: Int, isSelected: Boolean)
+
+  /**
+   * Called when the user confirms the selections.
+   *
+   * @param selectedPositions The positions of the selected items.
+   */
+  fun onChoicesConfirmed(selectedPositions: List<Int>)
+
+  /**
+   * Called when the user cancels the selections.
+   */
+  fun onChoicesCancelled()
 }

@@ -183,20 +183,20 @@ private class TabSize(
     return choices
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    var size = (position + 1) * 2
-    if (size < 2 || size > 8) {
-      size = 4
-    }
-    tabSize = size
-  }
-
-  override fun getSelectedItem(context: Context): Int {
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
     var current = tabSize / 2 - 1
     if (current < 0 || current >= choices.size) {
       current = 1
     }
     return current
+  }
+
+  override fun onChoiceConfirmed(position: Int) {
+    var size = (position + 1) * 2
+    if (size < 2 || size > 8) {
+      size = 4
+    }
+    tabSize = size
   }
 }
 
@@ -217,14 +217,12 @@ private class ColorSchemePreference(
     return schemes.map { it.name }.toTypedArray()
   }
 
-  override fun getSelectedItem(context: Context): Int {
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
     return schemes.indexOfFirst { it.key == colorScheme }
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    if (isSelected) {
-      colorScheme = schemes[position].key
-    }
+  override fun onChoiceConfirmed(position: Int) {
+    colorScheme = schemes[position].key
   }
 }
 
@@ -240,16 +238,6 @@ private class NonPrintablePaintingFlags(
     return arrayOf("Leading", "Trailing", "Inner", "Empty lines", "Line breaks")
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    when (position) {
-      0 -> drawLeadingWs = isSelected
-      1 -> drawTrailingWs = isSelected
-      2 -> drawInnerWs = isSelected
-      3 -> drawEmptyLineWs = isSelected
-      4 -> drawLineBreak = isSelected
-    }
-  }
-
   override fun getCheckedItems(): BooleanArray {
     return booleanArrayOf(
       drawLeadingWs,
@@ -258,6 +246,19 @@ private class NonPrintablePaintingFlags(
       drawEmptyLineWs,
       drawLineBreak
     )
+  }
+
+  override fun onChoicesConfirmed(selectedPositions: List<Int>) {
+    for (position in selectedPositions) {
+      when (position) {
+        0 -> ::drawLeadingWs
+        1 -> ::drawTrailingWs
+        2 -> ::drawInnerWs
+        3 -> ::drawEmptyLineWs
+        4 -> ::drawLineBreak
+        else -> null
+      }?.set(true)
+    }
   }
 }
 

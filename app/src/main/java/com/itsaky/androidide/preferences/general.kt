@@ -110,7 +110,7 @@ class UiMode(
     )
   }
 
-  override fun getSelectedItem(context: Context): Int {
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
     return when (uiMode) {
       AppCompatDelegate.MODE_NIGHT_NO -> 0
       AppCompatDelegate.MODE_NIGHT_YES -> 1
@@ -118,15 +118,11 @@ class UiMode(
     }
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    if (isSelected) {
-      val mode =
-        when (position) {
-          0 -> AppCompatDelegate.MODE_NIGHT_NO
-          1 -> AppCompatDelegate.MODE_NIGHT_YES
-          else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-      uiMode = mode
+  override fun onChoiceConfirmed(position: Int) {
+    uiMode = when (position) {
+      0 -> AppCompatDelegate.MODE_NIGHT_NO
+      1 -> AppCompatDelegate.MODE_NIGHT_YES
+      else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
   }
 }
@@ -146,14 +142,12 @@ class ThemeSelector(
     return themes.map { context.getString(it.title) }.toTypedArray()
   }
 
-  override fun getSelectedItem(context: Context): Int {
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
     return themes.indexOf(ThemeManager.getCurrentTheme())
   }
 
-  override fun onItemSelected(position: Int, isSelected: Boolean) {
-    if (isSelected) {
-      selectedTheme = themes[position].name
-    }
+  override fun onChoiceConfirmed(position: Int) {
+    selectedTheme = themes[position].name
   }
 }
 
