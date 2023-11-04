@@ -453,7 +453,8 @@
   <string name="uiMode_light">लाइट</string>
   <string name="uiMode_dark">डार्क</string>
   <string name="uiMode_system">सिस्टम का पालन करें</string>
-  <string name="idepref_general_materialYou_summary">अपने डिवाइस के करीब एक अनुभव का आनंद लें (पुनः आरंभ करने की आवश्यकता है)।</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">प्रोजेक्ट कॉन्फ़िगरेशन</string>
   <string name="msg_app_launch_failed">एप्लिकेशन लॉन्च करने में विफल। अधिक जानकारी के लिए IDE लॉग देखें।</string>
   <string name="idepref_java_diagnosticEnabled_title">Java सोर्स कोड विश्लेषण सक्षम करें</string>
@@ -533,4 +534,7 @@
   <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
   <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
   <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
 </resources>
