@@ -453,7 +453,8 @@
   <string name="uiMode_light">Aydınlık</string>
   <string name="uiMode_dark">Karanlık</string>
   <string name="uiMode_system">Sistemi takip et</string>
-  <string name="idepref_general_materialYou_summary">Cihazınıza daha yakın bir deneyimin tadını çıkarın (yeniden başlatma gerektirir).</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Proje yapılandırması</string>
   <string name="msg_app_launch_failed">Uygulama başlatılamadı. IDE günlüklerini inceleyerek detayları görün.</string>
   <string name="idepref_java_diagnosticEnabled_title">Tanılamalar etkin</string>
@@ -533,4 +534,7 @@
   <string name="msg_32bit_on_64bit_device">64-bit bir cihazda AndroidIDE\'nin 32-bit varyantını kullanıyorsunuz. Bu yapılandırma işe yarayabilir, ancak düşük performansa ve olası güvenlik açıklarına neden olacaktır. Lütfen mümkün olduğunca bu yapılandırmayı kullanmaktan kaçının.</string>
   <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
   <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
 </resources>
