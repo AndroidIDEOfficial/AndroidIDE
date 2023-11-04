@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.messages.LogMessageParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
@@ -31,8 +31,8 @@ import java.util.concurrent.CompletableFuture
  */
 class ForwardingToolingApiClient(var client: IToolingApiClient?) : IToolingApiClient {
 
-  override fun logMessage(line: LogLine) {
-    client?.logMessage(line)
+  override fun logMessage(params: LogMessageParams) {
+    client?.logMessage(params)
   }
 
   override fun logOutput(line: String) {

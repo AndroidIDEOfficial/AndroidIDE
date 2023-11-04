@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.messages.LogMessageParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
@@ -38,9 +38,9 @@ interface IToolingApiClient {
   /**
    * Log the given log message.
    *
-   * @param line The [LogLine] to log.
+   * @param params The parameters to log the message.
    */
-  @JsonNotification fun logMessage(line: LogLine)
+  @JsonNotification fun logMessage(params: LogMessageParams)
 
   /**
    * Log the build output received from Gradle.

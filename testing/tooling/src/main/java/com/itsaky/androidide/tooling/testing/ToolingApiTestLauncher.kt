@@ -17,16 +17,17 @@
 
 package com.itsaky.androidide.tooling.testing
 
-import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.GradleDistributionParams
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.LogMessageParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.FileProvider
@@ -150,7 +151,8 @@ class ToolingApiTestLauncher {
         "DO NOT EDIT - Automatically generated file"
     }
 
-    override fun logMessage(line: LogLine) {
+    override fun logMessage(params: LogMessageParams) {
+      val line = params.toLogLine()
       log.log(line.priority, line.formattedTagAndMessage())
     }
 

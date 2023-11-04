@@ -21,6 +21,7 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
+import com.itsaky.androidide.tooling.api.messages.LogMessageParams;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
@@ -126,7 +127,7 @@ public class Main {
 
   private static void onLog(Priority priority, String tag, String message) {
     if (client != null) {
-      client.logMessage(LogLine.obtain(priority, tag, message));
+      client.logMessage(new LogMessageParams(priority.priorityChar, tag, message));
     }
   }
 

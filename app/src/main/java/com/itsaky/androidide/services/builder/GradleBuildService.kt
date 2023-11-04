@@ -29,7 +29,6 @@ import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.managers.ToolsManager
-import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.preferences.internal.isBuildCacheEnabled
 import com.itsaky.androidide.preferences.internal.isDebugEnabled
 import com.itsaky.androidide.preferences.internal.isInfoEnabled
@@ -51,6 +50,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.LogSenderConfig.PROPERTY_LOGSENDER_ENABLED
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.LogMessageParams
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
@@ -58,6 +58,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
@@ -233,7 +234,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     return _toolingApiClient!!
   }
 
-  override fun logMessage(line: LogLine) {
+  override fun logMessage(params: LogMessageParams) {
+    val line = params.toLogLine()
     serverLogger.log(line.priority, line.formattedTagAndMessage())
   }
 
