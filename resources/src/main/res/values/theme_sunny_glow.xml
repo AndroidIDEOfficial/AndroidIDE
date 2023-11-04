@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+  <!--========================================================-->
+  <!--  Base theme -->
+  <!--========================================================-->
+
+  <color name="_sunny_glow_light_colorPrimary">#ff6f5a4a</color>
+  <color name="_sunny_glow_light_colorPrimaryContainer">#fff9ddc9</color>
+  <color name="_sunny_glow_light_colorPrimaryDark">#fffffbff</color>
+  <color name="_sunny_glow_light_colorPrimaryInverse">#ffdcc2ae</color>
+  <color name="_sunny_glow_light_colorOnPrimary">#ffffffff</color>
+  <color name="_sunny_glow_light_colorOnPrimaryContainer">#ff27190c</color>
+
+  <color name="_sunny_glow_light_colorSecondary">#ff6a5c51</color>
+  <color name="_sunny_glow_light_colorSecondaryContainer">#fff3dfd1</color>
+  <color name="_sunny_glow_light_colorOnSecondary">#ffffffff</color>
+  <color name="_sunny_glow_light_colorOnSecondaryContainer">#ff231a11</color>
+
+  <color name="_sunny_glow_light_colorTertiary">#ff735943</color>
+  <color name="_sunny_glow_light_colorTertiaryContainer">#ffffdcc1</color>
+  <color name="_sunny_glow_light_colorOnTertiary">#ffffffff</color>
+  <color name="_sunny_glow_light_colorOnTertiaryContainer">#ff2a1707</color>
+
+  <color name="_sunny_glow_light_colorError">#ffb3261e</color>
+  <color name="_sunny_glow_light_colorErrorContainer">#fff9dedc</color>
+  <color name="_sunny_glow_light_colorOnError">#ffffffff</color>
+  <color name="_sunny_glow_light_colorOnErrorContainer">#ff410e0b</color>
+
+  <color name="_sunny_glow_light_colorBackground">#fffffbff</color>
+  <color name="_sunny_glow_light_colorOnBackground">#ff1e1b19</color>
+
+  <color name="_sunny_glow_light_colorSurface">#fffffbff</color>
+  <color name="_sunny_glow_light_colorSurfaceInverse">#ff33302e</color>
+  <color name="_sunny_glow_light_colorSurfaceVariant">#ffe8e1dd</color>
+  <color name="_sunny_glow_light_colorOnSurface">#ff1e1b19</color>
+  <color name="_sunny_glow_light_colorOnSurfaceInverse">#fff7efec</color>
+  <color name="_sunny_glow_light_colorOnSurfaceVariant">#ff4a4644</color>
+
+  <color name="_sunny_glow_light_colorOutline">#ff7a7572</color>
+
+  <style name="Theme.AndroidIDE.SunnyGlow" parent="Theme.AndroidIDE">
+    <item name="colorPrimary">@color/_sunny_glow_light_colorPrimary</item>
+    <item name="colorPrimaryContainer">@color/_sunny_glow_light_colorPrimaryContainer</item>
+    <item name="colorPrimaryDark">@color/_sunny_glow_light_colorPrimaryDark</item>
+    <item name="colorPrimaryInverse">@color/_sunny_glow_light_colorPrimaryInverse</item>
+
+    <item name="colorOnPrimary">@color/_sunny_glow_light_colorOnPrimary</item>
+    <item name="colorOnPrimaryContainer">@color/_sunny_glow_light_colorOnPrimaryContainer</item>
+
+    <item name="colorSecondary">@color/_sunny_glow_light_colorSecondary</item>
+    <item name="colorSecondaryContainer">@color/_sunny_glow_light_colorSecondaryContainer</item>
+    <item name="colorOnSecondary">@color/_sunny_glow_light_colorOnSecondary</item>
+    <item name="colorOnSecondaryContainer">@color/_sunny_glow_light_colorOnSecondaryContainer</item>
+
+    <item name="colorTertiary">@color/_sunny_glow_light_colorTertiary</item>
+    <item name="colorTertiaryContainer">@color/_sunny_glow_light_colorTertiaryContainer</item>
+    <item name="colorOnTertiary">@color/_sunny_glow_light_colorOnTertiary</item>
+    <item name="colorOnTertiaryContainer">@color/_sunny_glow_light_colorOnTertiaryContainer</item>
+
+    <item name="colorError">@color/_sunny_glow_light_colorError</item>
+    <item name="colorErrorContainer">@color/_sunny_glow_light_colorErrorContainer</item>
+    <item name="colorOnError">@color/_sunny_glow_light_colorOnError</item>
+    <item name="colorOnErrorContainer">@color/_sunny_glow_light_colorOnErrorContainer</item>
+
+    <item name="android:colorBackground">@color/_sunny_glow_light_colorBackground</item>
+    <item name="colorOnBackground">@color/_sunny_glow_light_colorOnBackground</item>
+
+    <item name="colorSurface">@color/_sunny_glow_light_colorSurface</item>
+    <item name="colorSurfaceInverse">@color/_sunny_glow_light_colorSurfaceInverse</item>
+    <item name="colorSurfaceVariant">@color/_sunny_glow_light_colorSurfaceVariant</item>
+    <item name="colorOnSurface">@color/_sunny_glow_light_colorOnSurface</item>
+    <item name="colorOnSurfaceInverse">@color/_sunny_glow_light_colorOnSurfaceInverse</item>
+    <item name="colorOnSurfaceVariant">@color/_sunny_glow_light_colorOnSurfaceVariant</item>
+
+    <item name="colorOutline">@color/_sunny_glow_light_colorOutline</item>
+  </style>
+
+  <!--========================================================-->
+  <!--  Dark variant-->
+  <!--========================================================-->
+
+  <color name="_sunny_glow_dark_colorPrimary">#ffdcc2ae</color>
+  <color name="_sunny_glow_dark_colorPrimaryContainer">#ff564334</color>
+  <color name="_sunny_glow_dark_colorPrimaryDark">#ff201a1a</color>
+  <color name="_sunny_glow_dark_colorPrimaryInverse">#ff6f5a4a</color>
+  <color name="_sunny_glow_dark_colorOnPrimary">#ff3d2d1f</color>
+  <color name="_sunny_glow_dark_colorOnPrimaryContainer">#fff9ddc9</color>
+
+  <color name="_sunny_glow_dark_colorSecondary">#ffd6c3b6</color>
+  <color name="_sunny_glow_dark_colorSecondaryContainer">#ff51443a</color>
+  <color name="_sunny_glow_dark_colorOnSecondary">#ff3a2e25</color>
+  <color name="_sunny_glow_dark_colorOnSecondaryContainer">#fff3dfd1</color>
+
+  <color name="_sunny_glow_dark_colorTertiary">#ffe2c0a5</color>
+  <color name="_sunny_glow_dark_colorTertiaryContainer">#ff5a422d</color>
+  <color name="_sunny_glow_dark_colorOnTertiary">#ff412c19</color>
+  <color name="_sunny_glow_dark_colorOnTertiaryContainer">#ffffdcc1</color>
+
+  <color name="_sunny_glow_dark_colorError">#fff2b8b5</color>
+  <color name="_sunny_glow_dark_colorErrorContainer">#ff8c1d18</color>
+  <color name="_sunny_glow_dark_colorOnError">#ff601410</color>
+  <color name="_sunny_glow_dark_colorOnErrorContainer">#fff2b8b5</color>
+
+  <color name="_sunny_glow_dark_colorBackground">#ff1e1b19</color>
+  <color name="_sunny_glow_dark_colorOnBackground">#ffe8e1dd</color>
+
+  <color name="_sunny_glow_dark_colorSurface">#ff1e1b19</color>
+  <color name="_sunny_glow_dark_colorSurfaceInverse">#ffe8e1dd</color>
+  <color name="_sunny_glow_dark_colorSurfaceVariant">#ff4a4644</color>
+  <color name="_sunny_glow_dark_colorOnSurface">#ffe8e1dd</color>
+  <color name="_sunny_glow_dark_colorOnSurfaceInverse">#ff33302e</color>
+  <color name="_sunny_glow_dark_colorOnSurfaceVariant">#ffccc5c2</color>
+
+  <color name="_sunny_glow_dark_colorOutline">#ff95908d</color>
+
+  <style name="Theme.AndroidIDE.SunnyGlow.Dark" parent="Theme.AndroidIDE.SunnyGlow">
+    <item name="colorPrimary">@color/_sunny_glow_dark_colorPrimary</item>
+    <item name="colorPrimaryDark">@color/_sunny_glow_dark_colorPrimaryDark</item>
+    <item name="colorOnPrimary">@color/_sunny_glow_dark_colorOnPrimary</item>
+    <item name="colorPrimaryContainer">@color/_sunny_glow_dark_colorPrimaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/_sunny_glow_dark_colorOnPrimaryContainer</item>
+    <item name="colorSecondary">@color/_sunny_glow_dark_colorSecondary</item>
+    <item name="colorOnSecondary">@color/_sunny_glow_dark_colorOnSecondary</item>
+    <item name="colorSecondaryContainer">@color/_sunny_glow_dark_colorSecondaryContainer</item>
+    <item name="colorOnSecondaryContainer">@color/_sunny_glow_dark_colorOnSecondaryContainer</item>
+    <item name="colorTertiary">@color/_sunny_glow_dark_colorTertiary</item>
+    <item name="colorOnTertiary">@color/_sunny_glow_dark_colorOnTertiary</item>
+    <item name="colorTertiaryContainer">@color/_sunny_glow_dark_colorTertiaryContainer</item>
+    <item name="colorOnTertiaryContainer">@color/_sunny_glow_dark_colorOnTertiaryContainer</item>
+    <item name="colorError">@color/_sunny_glow_dark_colorError</item>
+    <item name="colorErrorContainer">@color/_sunny_glow_dark_colorErrorContainer</item>
+    <item name="colorOnError">@color/_sunny_glow_dark_colorOnError</item>
+    <item name="colorOnErrorContainer">@color/_sunny_glow_dark_colorOnErrorContainer</item>
+
+    <item name="android:colorBackground">@color/_sunny_glow_dark_colorBackground</item>
+    <item name="colorOnBackground">@color/_sunny_glow_dark_colorOnBackground</item>
+
+    <item name="colorSurface">@color/_sunny_glow_dark_colorSurface</item>
+    <item name="colorOnSurface">@color/_sunny_glow_dark_colorOnSurface</item>
+    <item name="colorSurfaceVariant">@color/_sunny_glow_dark_colorSurfaceVariant</item>
+    <item name="colorOnSurfaceVariant">@color/_sunny_glow_dark_colorOnSurfaceVariant</item>
+    <item name="colorOutline">@color/_sunny_glow_dark_colorOutline</item>
+    <item name="colorOnSurfaceInverse">@color/_sunny_glow_dark_colorOnSurfaceInverse</item>
+    <item name="colorSurfaceInverse">@color/_sunny_glow_dark_colorSurfaceInverse</item>
+    <item name="colorPrimaryInverse">@color/_sunny_glow_dark_colorPrimaryInverse</item>
+  </style>
+
+</resources>

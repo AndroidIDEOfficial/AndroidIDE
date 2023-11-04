@@ -17,11 +17,13 @@
 
 package com.itsaky.androidide.app
 
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
 import com.itsaky.androidide.preferences.internal.UI_MODE
 import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.ui.themes.ThemeManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -39,6 +41,11 @@ abstract class IDEActivity : BaseIDEActivity() {
   override fun onStop() {
     super.onStop()
     EventBus.getDefault().unregister(this)
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    ThemeManager.applyTheme(this)
+    super.onCreate(savedInstanceState)
   }
 
   @Subscribe(threadMode = MAIN)

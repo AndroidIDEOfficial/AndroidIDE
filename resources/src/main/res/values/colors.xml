@@ -1,74 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <color name="light_colorPrimary">#ff6f5a4a</color>
-  <color name="light_colorPrimaryContainer">#fff9ddc9</color>
-  <color name="light_colorPrimaryDark">#fffffbff</color>
-  <color name="light_colorPrimaryInverse">#ffdcc2ae</color>
-  <color name="light_colorOnPrimary">#ffffffff</color>
-  <color name="light_colorOnPrimaryContainer">#ff27190c</color>
-
-  <color name="light_colorSecondary">#ff6a5c51</color>
-  <color name="light_colorSecondaryContainer">#fff3dfd1</color>
-  <color name="light_colorOnSecondary">#ffffffff</color>
-  <color name="light_colorOnSecondaryContainer">#ff231a11</color>
-
-  <color name="light_colorTertiary">#ff735943</color>
-  <color name="light_colorTertiaryContainer">#ffffdcc1</color>
-  <color name="light_colorOnTertiary">#ffffffff</color>
-  <color name="light_colorOnTertiaryContainer">#ff2a1707</color>
-
-  <color name="light_colorError">#ffb3261e</color>
-  <color name="light_colorErrorContainer">#fff9dedc</color>
-  <color name="light_colorOnError">#ffffffff</color>
-  <color name="light_colorOnErrorContainer">#ff410e0b</color>
-
-  <color name="light_colorBackground">#fffffbff</color>
-  <color name="light_colorOnBackground">#ff1e1b19</color>
-
-  <color name="light_colorSurface">#fffffbff</color>
-  <color name="light_colorSurfaceInverse">#ff33302e</color>
-  <color name="light_colorSurfaceVariant">#ffe8e1dd</color>
-  <color name="light_colorOnSurface">#ff1e1b19</color>
-  <color name="light_colorOnSurfaceInverse">#fff7efec</color>
-  <color name="light_colorOnSurfaceVariant">#ff4a4644</color>
-
-  <color name="light_colorOutline">#ff7a7572</color>
-
-  <color name="dark_colorPrimary">#ffdcc2ae</color>
-  <color name="dark_colorPrimaryContainer">#ff564334</color>
-  <color name="dark_colorPrimaryDark">#ff201a1a</color>
-  <color name="dark_colorPrimaryInverse">#ff6f5a4a</color>
-  <color name="dark_colorOnPrimary">#ff3d2d1f</color>
-  <color name="dark_colorOnPrimaryContainer">#fff9ddc9</color>
-
-  <color name="dark_colorSecondary">#ffd6c3b6</color>
-  <color name="dark_colorSecondaryContainer">#ff51443a</color>
-  <color name="dark_colorOnSecondary">#ff3a2e25</color>
-  <color name="dark_colorOnSecondaryContainer">#fff3dfd1</color>
-
-  <color name="dark_colorTertiary">#ffe2c0a5</color>
-  <color name="dark_colorTertiaryContainer">#ff5a422d</color>
-  <color name="dark_colorOnTertiary">#ff412c19</color>
-  <color name="dark_colorOnTertiaryContainer">#ffffdcc1</color>
-
-  <color name="dark_colorError">#fff2b8b5</color>
-  <color name="dark_colorErrorContainer">#ff8c1d18</color>
-  <color name="dark_colorOnError">#ff601410</color>
-  <color name="dark_colorOnErrorContainer">#fff2b8b5</color>
-
-  <color name="dark_colorBackground">#ff1e1b19</color>
-  <color name="dark_colorOnBackground">#ffe8e1dd</color>
-
-  <color name="dark_colorSurface">#ff1e1b19</color>
-  <color name="dark_colorSurfaceInverse">#ffe8e1dd</color>
-  <color name="dark_colorSurfaceVariant">#ff4a4644</color>
-  <color name="dark_colorOnSurface">#ffe8e1dd</color>
-  <color name="dark_colorOnSurfaceInverse">#ff33302e</color>
-  <color name="dark_colorOnSurfaceVariant">#ffccc5c2</color>
-
-  <color name="dark_colorOutline">#ff95908d</color>
-
   <!--  other colors-->
   <color name="primaryColor">#121212</color>
   <color name="primaryTextColor">#ffffff</color>
@@ -92,5 +24,7 @@
 
   <color name="color_toast_background">#90424242</color>
   <color name="color_picker_default_color">#f44336</color>
+
+  <color name="splash_icon_tint">@android:color/black</color>
 
 </resources>

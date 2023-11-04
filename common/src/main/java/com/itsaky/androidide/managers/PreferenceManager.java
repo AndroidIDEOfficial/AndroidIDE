@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceRemoveEvent;
+import kotlin.text.StringsKt;
 import org.greenrobot.eventbus.EventBus;
 
 public class PreferenceManager {
@@ -28,9 +29,21 @@ public class PreferenceManager {
   public static final String KEY_TP_FIX = "idepref_build_tagPointersFix";
   private final SharedPreferences prefs;
 
-  @SuppressLint("CommitPrefEdits")
   public PreferenceManager(Context ctx) {
-    this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+    this(ctx, null);
+  }
+
+  public PreferenceManager(Context ctx, String preferenceMode) {
+    this(ctx, preferenceMode, Context.MODE_PRIVATE);
+  }
+
+  @SuppressLint("CommitPrefEdits")
+  public PreferenceManager(Context ctx, String preferenceName, int prefMode) {
+    if (preferenceName == null || StringsKt.isBlank(preferenceName)) {
+      this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+    } else {
+      this.prefs = ctx.getSharedPreferences(preferenceName, prefMode);
+    }
   }
 
   public PreferenceManager remove(String key) {

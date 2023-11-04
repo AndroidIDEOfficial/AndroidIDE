@@ -1,6 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-  <!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -17,11 +15,6 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-  <style name="Theme.AndroidIDE.Material3" parent="Theme.Material3.Dark.NoActionBar"/>
-
-  <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
-  </style>
-
+<resources>
+  <color name="splash_icon_tint">@android:color/white</color>
 </resources>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+  <!--========================================================-->
+  <!--  Base theme -->
+  <!--========================================================-->
+
+  <color name="_blue_wave_light_colorPrimary">#ff485d92</color>
+  <color name="_blue_wave_light_colorPrimaryContainer">#ffdae2ff</color>
+  <color name="_blue_wave_light_colorPrimaryDark">#ff485d92</color>
+  <color name="_blue_wave_light_colorPrimaryInverse">#ffb1c5ff</color>
+  <color name="_blue_wave_light_colorOnPrimary">#ffffffff</color>
+  <color name="_blue_wave_light_colorOnPrimaryContainer">#ff001847</color>
+  <color name="_blue_wave_light_colorSecondary">#ff585e71</color>
+  <color name="_blue_wave_light_colorSecondaryContainer">#ffdce2f9</color>
+  <color name="_blue_wave_light_colorOnSecondary">#ffffffff</color>
+  <color name="_blue_wave_light_colorOnSecondaryContainer">#ff151b2c</color>
+  <color name="_blue_wave_light_colorTertiary">#ff735472</color>
+  <color name="_blue_wave_light_colorTertiaryContainer">#fffed7f9</color>
+  <color name="_blue_wave_light_colorOnTertiary">#ffffffff</color>
+  <color name="_blue_wave_light_colorOnTertiaryContainer">#ff2b122c</color>
+  <color name="_blue_wave_light_colorError">#ffb3261e</color>
+  <color name="_blue_wave_light_colorErrorContainer">#fff9dedc</color>
+  <color name="_blue_wave_light_colorOnError">#ffffffff</color>
+  <color name="_blue_wave_light_colorOnErrorContainer">#ff410e0b</color>
+  <color name="_blue_wave_light_colorBackground">#fffefbff</color>
+  <color name="_blue_wave_light_colorOnBackground">#ff1b1b1f</color>
+  <color name="_blue_wave_light_colorSurface">#fffefbff</color>
+  <color name="_blue_wave_light_colorSurfaceInverse">#ff303034</color>
+  <color name="_blue_wave_light_colorSurfaceVariant">#ffe1e2ec</color>
+  <color name="_blue_wave_light_colorOnSurface">#ff1b1b1f</color>
+  <color name="_blue_wave_light_colorOnSurfaceInverse">#fff2f0f4</color>
+  <color name="_blue_wave_light_colorOnSurfaceVariant">#ff44464f</color>
+  <color name="_blue_wave_light_colorOutline">#ff74767f</color>
+
+  <style name="Theme.AndroidIDE.BlueWave" parent="Theme.AndroidIDE">
+    <item name="colorPrimary">@color/_blue_wave_light_colorPrimary</item>
+    <item name="colorPrimaryContainer">@color/_blue_wave_light_colorPrimaryContainer</item>
+    <item name="colorPrimaryDark">@color/_blue_wave_light_colorPrimaryDark</item>
+    <item name="colorPrimaryInverse">@color/_blue_wave_light_colorPrimaryInverse</item>
+
+    <item name="colorOnPrimary">@color/_blue_wave_light_colorOnPrimary</item>
+    <item name="colorOnPrimaryContainer">@color/_blue_wave_light_colorOnPrimaryContainer</item>
+
+    <item name="colorSecondary">@color/_blue_wave_light_colorSecondary</item>
+    <item name="colorSecondaryContainer">@color/_blue_wave_light_colorSecondaryContainer</item>
+    <item name="colorOnSecondary">@color/_blue_wave_light_colorOnSecondary</item>
+    <item name="colorOnSecondaryContainer">@color/_blue_wave_light_colorOnSecondaryContainer</item>
+
+    <item name="colorTertiary">@color/_blue_wave_light_colorTertiary</item>
+    <item name="colorTertiaryContainer">@color/_blue_wave_light_colorTertiaryContainer</item>
+    <item name="colorOnTertiary">@color/_blue_wave_light_colorOnTertiary</item>
+    <item name="colorOnTertiaryContainer">@color/_blue_wave_light_colorOnTertiaryContainer</item>
+
+    <item name="colorError">@color/_blue_wave_light_colorError</item>
+    <item name="colorErrorContainer">@color/_blue_wave_light_colorErrorContainer</item>
+    <item name="colorOnError">@color/_blue_wave_light_colorOnError</item>
+    <item name="colorOnErrorContainer">@color/_blue_wave_light_colorOnErrorContainer</item>
+
+    <item name="android:colorBackground">@color/_blue_wave_light_colorBackground</item>
+    <item name="colorOnBackground">@color/_blue_wave_light_colorOnBackground</item>
+
+    <item name="colorSurface">@color/_blue_wave_light_colorSurface</item>
+    <item name="colorSurfaceInverse">@color/_blue_wave_light_colorSurfaceInverse</item>
+    <item name="colorSurfaceVariant">@color/_blue_wave_light_colorSurfaceVariant</item>
+    <item name="colorOnSurface">@color/_blue_wave_light_colorOnSurface</item>
+    <item name="colorOnSurfaceInverse">@color/_blue_wave_light_colorOnSurfaceInverse</item>
+    <item name="colorOnSurfaceVariant">@color/_blue_wave_light_colorOnSurfaceVariant</item>
+
+    <item name="colorOutline">@color/_blue_wave_light_colorOutline</item>
+  </style>
+
+  <!--========================================================-->
+  <!--  Dark variant-->
+  <!--========================================================-->
+
+  <color name="_blue_wave_dark_colorPrimary">#ffb1c5ff</color>
+  <color name="_blue_wave_dark_colorPrimaryContainer">#ff304578</color>
+  <color name="_blue_wave_dark_colorPrimaryDark">#ffb1c5ff</color>
+  <color name="_blue_wave_dark_colorPrimaryInverse">#ff485d92</color>
+  <color name="_blue_wave_dark_colorOnPrimary">#ff172e60</color>
+  <color name="_blue_wave_dark_colorOnPrimaryContainer">#ffdae2ff</color>
+  <color name="_blue_wave_dark_colorSecondary">#ffc0c6dd</color>
+  <color name="_blue_wave_dark_colorSecondaryContainer">#ff404659</color>
+  <color name="_blue_wave_dark_colorOnSecondary">#ff2a3042</color>
+  <color name="_blue_wave_dark_colorOnSecondaryContainer">#ffdce2f9</color>
+  <color name="_blue_wave_dark_colorTertiary">#ffe1bbdd</color>
+  <color name="_blue_wave_dark_colorTertiaryContainer">#ff5a3d59</color>
+  <color name="_blue_wave_dark_colorOnTertiary">#ff412742</color>
+  <color name="_blue_wave_dark_colorOnTertiaryContainer">#fffed7f9</color>
+  <color name="_blue_wave_dark_colorError">#fff2b8b5</color>
+  <color name="_blue_wave_dark_colorErrorContainer">#ff8c1d18</color>
+  <color name="_blue_wave_dark_colorOnError">#ff601410</color>
+  <color name="_blue_wave_dark_colorOnErrorContainer">#fff9dedc</color>
+  <color name="_blue_wave_dark_colorBackground">#ff1b1b1f</color>
+  <color name="_blue_wave_dark_colorOnBackground">#ffe4e2e6</color>
+  <color name="_blue_wave_dark_colorSurface">#ff1b1b1f</color>
+  <color name="_blue_wave_dark_colorSurfaceInverse">#ffe4e2e6</color>
+  <color name="_blue_wave_dark_colorSurfaceVariant">#ff44464f</color>
+  <color name="_blue_wave_dark_colorOnSurface">#ffe4e2e6</color>
+  <color name="_blue_wave_dark_colorOnSurfaceInverse">#ff303034</color>
+  <color name="_blue_wave_dark_colorOnSurfaceVariant">#ffc5c6d0</color>
+  <color name="_blue_wave_dark_colorOutline">#ff8f9099</color>
+
+  <style name="Theme.AndroidIDE.BlueWave.Dark" parent="Theme.AndroidIDE.BlueWave">
+    <item name="colorPrimary">@color/_blue_wave_dark_colorPrimary</item>
+    <item name="colorPrimaryContainer">@color/_blue_wave_dark_colorPrimaryContainer</item>
+    <item name="colorPrimaryDark">@color/_blue_wave_dark_colorPrimaryDark</item>
+    <item name="colorPrimaryInverse">@color/_blue_wave_dark_colorPrimaryInverse</item>
+
+    <item name="colorOnPrimary">@color/_blue_wave_dark_colorOnPrimary</item>
+    <item name="colorOnPrimaryContainer">@color/_blue_wave_dark_colorOnPrimaryContainer</item>
+
+    <item name="colorSecondary">@color/_blue_wave_dark_colorSecondary</item>
+    <item name="colorSecondaryContainer">@color/_blue_wave_dark_colorSecondaryContainer</item>
+    <item name="colorOnSecondary">@color/_blue_wave_dark_colorOnSecondary</item>
+    <item name="colorOnSecondaryContainer">@color/_blue_wave_dark_colorOnSecondaryContainer</item>
+
+    <item name="colorTertiary">@color/_blue_wave_dark_colorTertiary</item>
+    <item name="colorTertiaryContainer">@color/_blue_wave_dark_colorTertiaryContainer</item>
+    <item name="colorOnTertiary">@color/_blue_wave_dark_colorOnTertiary</item>
+    <item name="colorOnTertiaryContainer">@color/_blue_wave_dark_colorOnTertiaryContainer</item>
+
+    <item name="colorError">@color/_blue_wave_dark_colorError</item>
+    <item name="colorErrorContainer">@color/_blue_wave_dark_colorErrorContainer</item>
+    <item name="colorOnError">@color/_blue_wave_dark_colorOnError</item>
+    <item name="colorOnErrorContainer">@color/_blue_wave_dark_colorOnErrorContainer</item>
+
+    <item name="android:colorBackground">@color/_blue_wave_dark_colorBackground</item>
+    <item name="colorOnBackground">@color/_blue_wave_dark_colorOnBackground</item>
+
+    <item name="colorSurface">@color/_blue_wave_dark_colorSurface</item>
+    <item name="colorSurfaceInverse">@color/_blue_wave_dark_colorSurfaceInverse</item>
+    <item name="colorSurfaceVariant">@color/_blue_wave_dark_colorSurfaceVariant</item>
+    <item name="colorOnSurface">@color/_blue_wave_dark_colorOnSurface</item>
+    <item name="colorOnSurfaceInverse">@color/_blue_wave_dark_colorOnSurfaceInverse</item>
+    <item name="colorOnSurfaceVariant">@color/_blue_wave_dark_colorOnSurfaceVariant</item>
+
+    <item name="colorOutline">@color/_blue_wave_dark_colorOutline</item>
+  </style>
+
+</resources>
