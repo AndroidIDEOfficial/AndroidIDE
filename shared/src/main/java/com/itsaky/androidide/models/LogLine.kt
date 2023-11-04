@@ -19,7 +19,6 @@ package com.itsaky.androidide.models
 import com.itsaky.androidide.utils.DefaultRecyclable
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.LogTagUtils
-import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.newRecyclableObjectPool
 
 class LogLine private constructor() : DefaultRecyclable() {
@@ -41,7 +40,7 @@ class LogLine private constructor() : DefaultRecyclable() {
 
   fun toSimpleString(): String {
     return if (formatted) String.format(
-      "%-25s %-2s %s", LogTagUtils.trimTagIfNeeded(tag, 25), ILogger.priorityChar(priority),
+      "%-25s %-2s %s", LogTagUtils.trimTagIfNeeded(tag, 25), priority?.priorityChar ?: 'U',
       message) else unformatted!!
   }
 
@@ -70,7 +69,7 @@ class LogLine private constructor() : DefaultRecyclable() {
   override fun toString(): String {
     return if (formatted) String.format(
       "%s %s %s %s %-2s %-25s %s",
-      date, time, pid, tid, ILogger.priorityChar(priority), LogTagUtils.trimTagIfNeeded(tag, 25),
+      date, time, pid, tid, priority?.priorityChar ?: 'U', LogTagUtils.trimTagIfNeeded(tag, 25),
       message) else unformatted!!
   }
 
@@ -133,7 +132,7 @@ class LogLine private constructor() : DefaultRecyclable() {
       val logLine = logLinePool.obtain()
       try {
         val split = log.split("\\s".toRegex(), limit = 7).toTypedArray()
-        logLine.priority = ILogger.priority(split[4][0].uppercaseChar())
+        logLine.priority = ILogger.Priority.forChar(split[4][0])
         logLine.date = split[0]
         logLine.time = split[1] // time
         logLine.pid = split[2] // process id

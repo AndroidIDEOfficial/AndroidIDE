@@ -58,7 +58,6 @@ public abstract class ILogger {
   private static final List<LogListener> logListeners = new ArrayList<>();
   private static final Map<String, ILogger> cachedLoggers = new WeakHashMap<>();
 
-  private static ILogger instance;
   protected final String TAG;
 
   protected boolean isEnabled = true;
@@ -89,23 +88,6 @@ public abstract class ILogger {
 
   public static ILogger newInstance(String tag) {
     return createInstance(tag);
-  }
-
-  public static Priority priority(char priorityChar) {
-    for (var priority : Priority.values()) {
-      if (priorityChar(priority) == priorityChar) {
-        return priority;
-      }
-    }
-    throw new IllegalArgumentException("Invalid priority character: " + priorityChar);
-  }
-
-  public static char priorityChar(Priority priority) {
-    return Character.toUpperCase(priorityText(priority).charAt(0));
-  }
-
-  public static String priorityText(Priority priority) {
-    return priority.name();
   }
 
   /**
@@ -255,7 +237,29 @@ public abstract class ILogger {
    * Logging priority.
    */
   public enum Priority {
-    DEBUG, WARNING, ERROR, INFO, VERBOSE
+
+    DEBUG('D'),
+    WARNING('W'),
+    ERROR('E'),
+    INFO('I'),
+    VERBOSE('V');
+
+    public final char priorityChar;
+
+    Priority(char priorityChar) {
+      this.priorityChar = priorityChar;
+    }
+
+    public static Priority forChar(char c) {
+      c = Character.toUpperCase(c);
+      for (Priority value : values()) {
+        if (value.priorityChar == c) {
+          return value;
+        }
+      }
+
+      throw new IllegalArgumentException("Invalid priority char " + c);
+    }
   }
 
   /**

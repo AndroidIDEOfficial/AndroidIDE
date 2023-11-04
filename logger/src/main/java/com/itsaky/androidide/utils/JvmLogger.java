@@ -40,7 +40,7 @@ public class JvmLogger extends ILogger {
       System.err.printf(
           "%-25s %-2s %s%n",
           trimTagIfNeeded(TAG, 25),
-          ILogger.priorityChar(priority),
+          priority.priorityChar,
           message
       );
     }
