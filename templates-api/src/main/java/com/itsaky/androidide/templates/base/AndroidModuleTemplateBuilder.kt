@@ -54,7 +54,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
   /**
    * Configure the properties for `AndroidManifest.xml` file.
    */
-  fun manifest(block: AndroidManifestBuilder.() -> Unit) {
+  inline fun manifest(crossinline block: AndroidManifestBuilder.() -> Unit) {
     manifest.apply(block)
   }
 
@@ -81,7 +81,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    *
    * @param configure Function to configure the resources.
    */
-  fun RecipeExecutor.res(configure: AndroidModuleResManager.() -> Unit) {
+  inline fun RecipeExecutor.res(crossinline configure: AndroidModuleResManager.() -> Unit) {
     res.apply(configure)
   }
 
@@ -97,8 +97,8 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    *
    * @param name The name of the class.
    */
-  fun RecipeExecutor.createActivity(name: String = "MainActivity",
-                                    configure: TypeSpec.Builder.() -> Unit
+  inline fun RecipeExecutor.createActivity(name: String = "MainActivity",
+                                    crossinline configure: TypeSpec.Builder.() -> Unit
   ) {
     sources {
       createClass(data.packageName, name, configure)

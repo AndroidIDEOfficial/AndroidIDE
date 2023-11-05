@@ -54,14 +54,14 @@ internal fun AndroidModuleTemplateBuilder.templateAsset(name: String,
   return "templates/${name}/${path}"
 }
 
-internal fun baseProjectImpl(
+internal inline fun baseProjectImpl(
   projectName: StringParameter = projectNameParameter(),
   packageName: StringParameter = packageNameParameter(),
   useKts: BooleanParameter = useKtsParameter(),
   minSdk: EnumParameter<Sdk> = minSdkParameter(),
   language: EnumParameter<Language> = projectLanguageParameter(),
   projectVersionData: ProjectVersionData = ProjectVersionData(),
-  block: ProjectTemplateBuilder.() -> Unit
+  crossinline block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate =
   baseProject(projectName = projectName, packageName = packageName,
     useKts = useKts, minSdk = minSdk, language = language,

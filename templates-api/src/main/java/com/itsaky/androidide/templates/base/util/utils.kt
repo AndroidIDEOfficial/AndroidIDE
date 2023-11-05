@@ -32,7 +32,7 @@ internal fun BaseTemplateData.optonallyKts(file: String): String {
   return if (useKts) "${file}.kts" else file
 }
 
-internal fun ProjectTemplateData.moduleNameToDir(name: String): File {
+fun ProjectTemplateData.moduleNameToDir(name: String): File {
   return File(this.projectDir, moduleNameToDirName(name).replace(':', '/').trim { it == '/' })
 }
 

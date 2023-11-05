@@ -86,12 +86,12 @@ class AndroidModuleResManager {
    * @param srcSet The source set.
    * @param config The configuration for the resource type.
    */
-  fun AndroidModuleTemplateBuilder.createValuesResource(name: String,
+  inline fun AndroidModuleTemplateBuilder.createValuesResource(name: String,
                                                         type: ResourceType = VALUES,
                                                         srcSet: SrcSet = Main,
                                                         config: ConfigDescription = ConfigDescription(),
                                                         selfClose: Boolean = false,
-                                                        configure: XmlBuilder.() -> Unit
+                                                        crossinline configure: XmlBuilder.() -> Unit
   ) {
     return createXmlResource(name, type, srcSet, config) {
       createElement(name = "resources", closeStartTag = true,
@@ -107,11 +107,11 @@ class AndroidModuleResManager {
    * @param srcSet The source set.
    * @param config The configuration for the resource type.
    */
-  fun AndroidModuleTemplateBuilder.createXmlResource(name: String,
+  inline fun AndroidModuleTemplateBuilder.createXmlResource(name: String,
                                                      type: ResourceType,
                                                      srcSet: SrcSet = SrcSet.Main,
                                                      config: ConfigDescription = ConfigDescription(),
-                                                     configure: XmlBuilder.() -> Unit = {}
+                                                     crossinline configure: XmlBuilder.() -> Unit = {}
   ) {
     val file = File(resDir(type, srcSet, config), "${name}.xml")
     val builder = IndentedXmlBuilder().apply(configure)
@@ -146,11 +146,11 @@ class AndroidModuleResManager {
    * @param config The configuration for the resource type.
    * @param source Function which returns the source code for the resource.
    */
-  fun AndroidModuleTemplateBuilder.writeXmlResource(name: String,
+  inline fun AndroidModuleTemplateBuilder.writeXmlResource(name: String,
                                                     type: ResourceType,
                                                     srcSet: SrcSet = SrcSet.Main,
                                                     config: ConfigDescription = ConfigDescription(),
-                                                    source: () -> String = { "" }
+                                                    crossinline source: () -> String = { "" }
   ) {
     writeXmlResource(name, type, srcSet, config, source())
   }

@@ -349,19 +349,19 @@ class EnumParameterBuilder<T : Enum<*>> : TextFieldParameterBuilder<T>() {
 /**
  * Create a new [StringParameter] for accepting string input.
  */
-fun stringParameter(block: StringParameterBuilder.() -> Unit
+inline fun stringParameter(crossinline block: StringParameterBuilder.() -> Unit
 ): StringParameter = StringParameterBuilder().apply(block).build()
 
 /**
  * Create a new [BooleanParameter] for accepting boolean input.
  */
-fun booleanParameter(block: BooleanParameterBuilder.() -> Unit
+inline fun booleanParameter(crossinline block: BooleanParameterBuilder.() -> Unit
 ): BooleanParameter = BooleanParameterBuilder().apply(block).build()
 
-fun <T : Enum<*>> enumParameter(block: EnumParameterBuilder<T>.() -> Unit
+inline fun <T : Enum<*>> enumParameter(crossinline block: EnumParameterBuilder<T>.() -> Unit
 ): EnumParameter<T> = EnumParameterBuilder<T>().apply(block).build()
 
-fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
+inline fun projectNameParameter(crossinline configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
     name = string.project_app_name
     default = "My Application"
@@ -371,7 +371,7 @@ fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
     configure()
   }
 
-fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
+inline fun packageNameParameter(crossinline configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
     name = string.package_name
     default = "com.example.myapplication"
@@ -381,8 +381,8 @@ fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
     configure()
   }
 
-fun projectLanguageParameter(
-  configure: EnumParameterBuilder<Language>.() -> Unit = {}
+inline fun projectLanguageParameter(
+  crossinline configure: EnumParameterBuilder<Language>.() -> Unit = {}
 ) = enumParameter<Language> {
   name = string.wizard_language
   default = Java
@@ -395,7 +395,7 @@ fun projectLanguageParameter(
   configure()
 }
 
-fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
+inline fun minSdkParameter(crossinline configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
   enumParameter<Sdk> {
     name = string.minimum_sdk
     default = Sdk.Lollipop
@@ -405,7 +405,7 @@ fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
     configure()
   }
 
-fun useKtsParameter(configure: BooleanParameterBuilder.() -> Unit = {}) =
+inline fun useKtsParameter(crossinline configure: BooleanParameterBuilder.() -> Unit = {}) =
   booleanParameter {
     name = string.msg_use_kts
     default = true

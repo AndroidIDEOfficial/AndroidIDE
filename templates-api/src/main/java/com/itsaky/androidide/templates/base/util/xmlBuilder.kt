@@ -25,7 +25,7 @@ import org.eclipse.lemminx.dom.builder.XmlBuilder
  * The [configure] function is used to configure everything inside the element and then
  * the element is automatically closed.
  */
-fun XmlBuilder.createElement(name: String, closeStartTag: Boolean = false, selfClose: Boolean = false, configure: XmlBuilder.() -> Unit) {
+inline fun XmlBuilder.createElement(name: String, closeStartTag: Boolean = false, selfClose: Boolean = false, crossinline configure: XmlBuilder.() -> Unit) {
   startElement(name, closeStartTag)
   configure()
   if (selfClose) {

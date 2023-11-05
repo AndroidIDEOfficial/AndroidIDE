@@ -52,8 +52,8 @@ internal fun ModuleTemplateBuilder.dependencies(): String {
  * @param name The name of the field.
  * @param configure A function to configure the field.
  */
-fun TypeSpec.Builder.createConstant(type: TypeName, name: String, isPublic: Boolean,
-                                    configure: FieldSpec.Builder.() -> Unit
+inline fun TypeSpec.Builder.createConstant(type: TypeName, name: String, isPublic: Boolean,
+                                    crossinline configure: FieldSpec.Builder.() -> Unit
 ) {
   val accessMod = if (isPublic) Modifier.PUBLIC else Modifier.PRIVATE
   FieldSpec.builder(type, name, accessMod, Modifier.STATIC, Modifier.FINAL)
@@ -68,8 +68,8 @@ fun TypeSpec.Builder.createConstant(type: TypeName, name: String, isPublic: Bool
  * @param name The name of the field.
  * @param configure A function to configure the field.
  */
-fun TypeSpec.Builder.createField(type: TypeName, name: String, vararg modifiers: Modifier,
-                                 configure: FieldSpec.Builder.() -> Unit
+inline fun TypeSpec.Builder.createField(type: TypeName, name: String, vararg modifiers: Modifier,
+                                 crossinline configure: FieldSpec.Builder.() -> Unit
 ) {
   FieldSpec.builder(type, name, *modifiers).apply(configure).build().also { addField(it) }
 }
@@ -79,7 +79,7 @@ fun TypeSpec.Builder.createField(type: TypeName, name: String, vararg modifiers:
  *
  * @param configure A function to configure the method.
  */
-fun TypeSpec.Builder.createConstructor(configure: MethodSpec.Builder.() -> Unit) {
+inline fun TypeSpec.Builder.createConstructor(crossinline configure: MethodSpec.Builder.() -> Unit) {
   MethodSpec.constructorBuilder().apply(configure).build().also { addMethod(it) }
 }
 
@@ -89,6 +89,6 @@ fun TypeSpec.Builder.createConstructor(configure: MethodSpec.Builder.() -> Unit)
  * @param name The name of the method.
  * @param configure A function to configure the method.
  */
-fun TypeSpec.Builder.createMethod(name: String, configure: MethodSpec.Builder.() -> Unit) {
+inline fun TypeSpec.Builder.createMethod(name: String, crossinline configure: MethodSpec.Builder.() -> Unit) {
   MethodSpec.methodBuilder(name).apply(configure).build().also { addMethod(it) }
 }

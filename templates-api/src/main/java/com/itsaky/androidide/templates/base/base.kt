@@ -60,13 +60,13 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
  *
  * @param block Function to configure the template.
  */
-fun baseProject(projectName: StringParameter = projectNameParameter(),
+inline fun baseProject(projectName: StringParameter = projectNameParameter(),
   packageName: StringParameter = packageNameParameter(),
   useKts: BooleanParameter = useKtsParameter(),
   minSdk: EnumParameter<Sdk> = minSdkParameter(),
   language: EnumParameter<Language> = projectLanguageParameter(),
   projectVersionData: ProjectVersionData = ProjectVersionData(),
-  block: ProjectTemplateBuilder.() -> Unit
+  crossinline block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
 
@@ -148,8 +148,8 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
  *
  * @param block The module configurator.
  */
-fun baseAndroidModule(isLibrary: Boolean = false,
-  block: AndroidModuleTemplateConfigurator
+inline fun baseAndroidModule(isLibrary: Boolean = false,
+  crossinline block: AndroidModuleTemplateConfigurator
 ): ModuleTemplate {
   return AndroidModuleTemplateBuilder().apply {
 
@@ -201,8 +201,8 @@ fun baseAndroidModule(isLibrary: Boolean = false,
  * @param configurator The configurator to configure the template.
  * @return The [FileTemplate].
  */
-fun <R : FileTemplateRecipeResult> baseFile(dir: File,
-  configurator: FileTemplateBuilder<R>.() -> Unit
+inline fun <R : FileTemplateRecipeResult> baseFile(dir: File,
+  crossinline configurator: FileTemplateBuilder<R>.() -> Unit
 ): FileTemplate<R> {
   return FileTemplateBuilder<R>(dir).apply(configurator)
     .build() as FileTemplate<R>

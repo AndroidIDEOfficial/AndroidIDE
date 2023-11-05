@@ -26,16 +26,16 @@ import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ExecutorDataTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 
-internal fun <R : TemplateRecipeResult> ExecutorDataTemplateBuilder<*, *>.createRecipe(
-  action: RecipeExecutor.() -> R
+internal inline fun <R : TemplateRecipeResult> ExecutorDataTemplateBuilder<*, *>.createRecipe(
+  crossinline action: RecipeExecutor.() -> R
 ): TemplateRecipe<R> {
   return TemplateRecipe {
     return@TemplateRecipe executor.run(action)
   }
 }
 
-internal fun AndroidModuleTemplateBuilder.createRecipe(
-  action: RecipeExecutor.() -> Unit
+internal inline fun AndroidModuleTemplateBuilder.createRecipe(
+  crossinline action: RecipeExecutor.() -> Unit
 ): TemplateRecipe<ModuleTemplateRecipeResult> {
   return TemplateRecipe {
     executor.run(action)
@@ -43,8 +43,8 @@ internal fun AndroidModuleTemplateBuilder.createRecipe(
   }
 }
 
-internal fun ProjectTemplateBuilder.createRecipe(
-  action: RecipeExecutor.() -> Unit
+internal inline fun ProjectTemplateBuilder.createRecipe(
+  crossinline action: RecipeExecutor.() -> Unit
 ): TemplateRecipe<ProjectTemplateRecipeResult> {
   return TemplateRecipe {
     executor.run(action)

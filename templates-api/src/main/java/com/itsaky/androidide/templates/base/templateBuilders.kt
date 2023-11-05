@@ -29,7 +29,10 @@ import com.itsaky.androidide.templates.TemplateRecipeResult
 sealed class PrePostRecipeTemplateBuilder<R : TemplateRecipeResult> :
   TemplateBuilder<R>() {
 
+  @PublishedApi
   internal var preRecipe: TemplateRecipeConfigurator = {}
+
+  @PublishedApi
   internal var postRecipe: TemplateRecipeFinalizer = {}
 
   private var _recipe: TemplateRecipe<R>? = null
@@ -56,7 +59,10 @@ sealed class PrePostRecipeTemplateBuilder<R : TemplateRecipeResult> :
 sealed class ExecutorDataTemplateBuilder<R : TemplateRecipeResult, D : TemplateData> :
   PrePostRecipeTemplateBuilder<R>() {
 
+  @PublishedApi
   internal var _executor: RecipeExecutor? = null
+
+  @PublishedApi
   internal var _data: D? = null
 
   val executor: RecipeExecutor

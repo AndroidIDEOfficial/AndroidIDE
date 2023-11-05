@@ -206,9 +206,9 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
     }.root
   }
 
-  private fun TextFieldParameter<*>.configureTextField(context: Context,
+  private inline fun TextFieldParameter<*>.configureTextField(context: Context,
                                                        root: TextInputLayout,
-                                                       onTextChanged: (String) -> Unit = {}
+                                                       crossinline onTextChanged: (String) -> Unit = {}
   ) {
     root.setHint(name)
     resetStartAndEndIcons(context, root)

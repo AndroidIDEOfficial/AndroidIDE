@@ -23,8 +23,8 @@ import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.util.SourceWriter
 import com.itsaky.androidide.templates.base.util.withXmlDecl
 
-internal fun AndroidModuleTemplateBuilder.writeMainActivity(
-  writer: SourceWriter, ktSrc: () -> String, javaSrc: () -> String
+internal inline fun AndroidModuleTemplateBuilder.writeMainActivity(
+  writer: SourceWriter, crossinline ktSrc: () -> String, crossinline javaSrc: () -> String
 ) {
   val className = "MainActivity"
   writer.apply {

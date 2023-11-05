@@ -42,14 +42,18 @@ abstract class ModuleTemplateBuilder :
 
   internal val platforms = hashSetOf<Dependency>()
   internal val dependencies = hashSetOf<Dependency>()
-  protected val sourceWriter = SourceWriter()
+
+  @PublishedApi
+  internal val sourceWriter = SourceWriter()
+
+  @PublishedApi
   internal var _name: String? = null
 
   val name: String
     get() = checkNotNull(_name) { "Name not set to module template" }
 
-  protected open fun RecipeExecutor.preConfig() {}
-  protected open fun RecipeExecutor.postConfig() {}
+  open fun RecipeExecutor.preConfig() {}
+  open fun RecipeExecutor.postConfig() {}
 
   /**
    * Get the asset path for base module project template.
@@ -123,7 +127,7 @@ abstract class ModuleTemplateBuilder :
    *
    * @param configure Function for configuring the source files.
    */
-  fun RecipeExecutor.sources(configure: SourceWriter.() -> Unit) {
+  inline fun RecipeExecutor.sources(crossinline configure: SourceWriter.() -> Unit) {
     sourceWriter.apply(configure)
   }
 
@@ -133,8 +137,8 @@ abstract class ModuleTemplateBuilder :
    * @param moduleData  Called after the base configuration is setup and before the [recipe] is executed. Caller can perform its own
    * pre-recipe configuration here. Returns the [ModuleTemplateData] instance.
    */
-  fun commonPreRecipe(extraConfig: TemplateRecipeConfigurator = {},
-                      moduleData: RecipeExecutor.() -> ModuleTemplateData
+  inline fun commonPreRecipe(crossinline extraConfig: TemplateRecipeConfigurator = {},
+                      crossinline moduleData: RecipeExecutor.() -> ModuleTemplateData
   ): TemplateRecipeConfigurator = {
     val data = moduleData()
 
