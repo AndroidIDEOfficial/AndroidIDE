@@ -24,7 +24,7 @@
 
 package io.github.rosemoe.sora.editor.ts
 
-import android.util.SparseLongArray
+import androidx.collection.MutableIntLongMap
 import com.itsaky.androidide.treesitter.TSQuery
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
@@ -45,7 +45,7 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 class TsTheme(private val tsQuery: TSQuery) {
 
   private val styles = mutableMapOf<String, Long>()
-  private val mapping = SparseLongArray()
+  private val mapping = MutableIntLongMap()
 
   /**
    * The text style for normal texts
@@ -71,10 +71,7 @@ class TsTheme(private val tsQuery: TSQuery) {
   fun eraseStyleRule(rule: String) = putStyleRule(rule, 0L)
 
   fun resolveStyleForPattern(pattern: Int): Long {
-    val index = mapping.indexOfKey(pattern)
-    return if (index >= 0) {
-      mapping.valueAt(index)
-    } else {
+    return mapping.getOrElse(pattern) {
       var mappedName = tsQuery.getCaptureNameForId(pattern)
       var style = styles[mappedName] ?: 0L
       while (style == 0L && mappedName.isNotEmpty()) {

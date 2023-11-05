@@ -8,24 +8,25 @@ android {
 }
 
 dependencies {
-    implementation(libs.common.editor)
-    implementation(libs.common.lang3)
-    implementation(libs.common.utilcode)
-    implementation(libs.google.guava)
-    implementation(libs.google.material)
+    api(libs.common.editor)
+    api(libs.common.lang3)
+    api(libs.common.utilcode)
+    api(libs.google.guava)
+    api(libs.google.material)
     
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.preference)
-    implementation(libs.androidx.vectors)
-    implementation(libs.androidx.animated.vectors)
+    api(libs.androidx.appcompat)
+    api(libs.androidx.collection)
+    api(libs.androidx.preference)
+    api(libs.androidx.vectors)
+    api(libs.androidx.animated.vectors)
     
-    implementation(libs.androidx.ktx)
-    implementation(libs.common.kotlin)
+    api(libs.androidx.ktx)
+    api(libs.common.kotlin)
     
-    implementation(projects.buildInfo)
-    implementation(projects.eventbusEvents)
-    implementation(projects.lexers)
-    implementation(projects.resources)
+    api(projects.buildInfo)
+    api(projects.eventbusEvents)
+    api(projects.lexers)
+    api(projects.resources)
     
     api(projects.shared)
     api(projects.logger)

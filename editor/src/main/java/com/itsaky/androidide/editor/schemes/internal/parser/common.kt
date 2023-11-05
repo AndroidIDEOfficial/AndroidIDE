@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.editor.schemes.internal.parser
 
-import android.graphics.Color
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken.STRING
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
@@ -101,12 +100,13 @@ fun IDEColorScheme.parseLanguage(
   }
 }
 
-private fun readerForFileRef(reader: JsonReader, scheme: String, resolveFileRef: (String) -> File): JsonReader {
+private fun readerForFileRef(reader: JsonReader, scheme: String,
+  resolveFileRef: (String) -> File): JsonReader {
   val value = reader.nextString()
   if (value.length <= 1 || value[0] != '@') {
     throw ParseException("Expected a $scheme scheme file reference but was '$value'")
   }
-  
+
   val langFile = resolveFileRef(value.substring(1))
   if (!langFile.exists() || !langFile.isFile) {
     throw ParseException("Referenced file does not exist or is not a file '$langFile'")

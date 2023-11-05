@@ -32,6 +32,7 @@ android {
 
 dependencies {
     implementation(libs.common.kotlin)
+    implementation(libs.androidx.collection)
     implementation(projects.logger)
     implementation(projects.subprojects.jaxp)
     

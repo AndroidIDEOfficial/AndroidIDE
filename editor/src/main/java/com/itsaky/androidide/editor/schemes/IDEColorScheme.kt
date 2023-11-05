@@ -17,12 +17,9 @@
 
 package com.itsaky.androidide.editor.schemes
 
-import android.util.SparseIntArray
-import androidx.core.util.containsKey
-import androidx.core.util.set
+import androidx.collection.MutableIntIntMap
 import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
-import com.itsaky.androidide.utils.getOrNull
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
@@ -30,8 +27,8 @@ import java.util.TreeSet
 
 class IDEColorScheme(internal val file: File, val key: String) : DynamicColorScheme() {
 
-  internal val colorIds = SparseIntArray()
-  internal val editorScheme = SparseIntArray()
+  internal val colorIds = MutableIntIntMap()
+  internal val editorScheme = MutableIntIntMap()
   internal val languages = mutableMapOf<String, LanguageScheme>()
 
   var name: String = ""
@@ -64,11 +61,14 @@ class IDEColorScheme(internal val file: File, val key: String) : DynamicColorSch
     return colorId
   }
 
-  @Suppress("UNNECESSARY_SAFE_CALL")
+  @Suppress("UNNECESSARY_SAFE_CALL", "USELESS_ELVIS")
   override fun getColor(type: Int): Int {
     // getColor is called in superclass constructor
     // in this case, the below properties will be null
-    return editorScheme?.getOrNull(type) ?: colorIds?.getOrNull(type) ?: super.getColor(type)
+    val defaultValue = super.getColor(type)
+    return editorScheme?.getOrElse(type) {
+      colorIds?.getOrDefault(type, defaultValue) ?: defaultValue
+    } ?: defaultValue
   }
 
   override fun isDark(): Boolean {
