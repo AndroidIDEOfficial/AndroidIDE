@@ -534,7 +534,10 @@
   <string name="msg_32bit_on_64bit_device">您正在 64 位设备上使用 AndroidIDE 的 32 位变体，此配置可能有效，但会使性能降低并可能导致安全漏洞，请尽可能避免使用此配置。</string>
   <string name="idepref_editor_pinLineNumbers_title">固定行号</string>
   <string name="idepref_editor_pinLineNumbers_summary">编辑器是否应在水平滚动时固定行号栏。</string>
-  <string name="theme_blue_wave">Blue Wave</string>
-  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_blue_wave">蓝色波浪</string>
+  <string name="theme_sunny_glow">阳光熠熠</string>
   <string name="theme_material_you">Material You</string>
+  <string name="idepref_general_localeSelector_title">Language</string>
+  <string name="idepref_general_localeSelector_summary">Select a language for AndroidIDE.</string>
+  <string name="locale_system_default">System Default</string>
 </resources>
