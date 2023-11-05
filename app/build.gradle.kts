@@ -2,7 +2,6 @@
 
 import androidx.navigation.safe.args.generator.ext.capitalize
 import com.android.build.gradle.BaseExtension
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.util.Base64
 import java.util.Locale
 
@@ -21,6 +20,10 @@ android {
   defaultConfig {
     applicationId = BuildConfig.packageName
     vectorDrawables.useSupportLibrary = true
+  }
+
+  androidResources {
+    generateLocaleConfig = true
   }
 
   compileOptions { isCoreLibraryDesugaringEnabled = true }
