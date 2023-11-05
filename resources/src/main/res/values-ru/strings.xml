@@ -453,8 +453,8 @@
   <string name="uiMode_light">Светлая</string>
   <string name="uiMode_dark">Тёмная</string>
   <string name="uiMode_system">Как в системе</string>
-  <string name="idepref_general_themeSelector_title">Theme</string>
-  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
+  <string name="idepref_general_themeSelector_title">Тема</string>
+  <string name="idepref_general_themeSelector_summary">Выберите тему оформления для AndroidIDE (требуется перезапуск).</string>
   <string name="idepref_general_projectConfig">Настройки проекта</string>
   <string name="msg_app_launch_failed">Ошибка запуска приложения. Обратитесь к логам IDE.</string>
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
@@ -532,12 +532,12 @@
   <string name="msg_64bit_on_32bit_device">Вы используете 64-битный вариант AndroidIDE на 32-битном устройстве. Эта конфигурация не поддерживается. Пожалуйста, установите 32-битный вариант AndroidIDE.</string>
   <string name="title_32bit_on_64bit_device">Предупреждение о конфигурации</string>
   <string name="msg_32bit_on_64bit_device">Вы используете 32-битный вариант AndroidIDE на 64-битном устройстве. Такая конфигурация может работать, но это приведёт к снижению производительности и возможным уязвимостям в системе безопасности. По возможности избегайте использования данной конфигурации.</string>
-  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
-  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
-  <string name="theme_blue_wave">Blue Wave</string>
-  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="idepref_editor_pinLineNumbers_title">Закрепить номера строк</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Оставлять панель с номерами строк видимой при горизонтальной прокрутке редактора.</string>
+  <string name="theme_blue_wave">Синяя волна</string>
+  <string name="theme_sunny_glow">Солнечный свет</string>
   <string name="theme_material_you">Material You</string>
-  <string name="idepref_general_localeSelector_title">Language</string>
-  <string name="idepref_general_localeSelector_summary">Select a language for AndroidIDE.</string>
-  <string name="locale_system_default">System Default</string>
+  <string name="idepref_general_localeSelector_title">Язык</string>
+  <string name="idepref_general_localeSelector_summary">Выберите язык AndroidIDE.</string>
+  <string name="locale_system_default">Как в системе</string>
 </resources>
