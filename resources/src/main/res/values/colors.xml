@@ -25,6 +25,7 @@
   <color name="color_toast_background">#90424242</color>
   <color name="color_picker_default_color">#f44336</color>
 
+  <color name="splash_bg">@android:color/white</color>
   <color name="splash_icon_tint">@android:color/black</color>
 
 </resources>

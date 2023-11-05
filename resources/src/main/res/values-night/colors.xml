@@ -16,5 +16,6 @@
   -->
 
 <resources>
+  <color name="splash_bg">@color/primaryColor</color>
   <color name="splash_icon_tint">@android:color/white</color>
 </resources>
