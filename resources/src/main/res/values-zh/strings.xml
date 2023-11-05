@@ -537,7 +537,7 @@
   <string name="theme_blue_wave">蓝色波浪</string>
   <string name="theme_sunny_glow">阳光熠熠</string>
   <string name="theme_material_you">Material You</string>
-  <string name="idepref_general_localeSelector_title">Language</string>
-  <string name="idepref_general_localeSelector_summary">Select a language for AndroidIDE.</string>
-  <string name="locale_system_default">System Default</string>
+  <string name="idepref_general_localeSelector_title">语言</string>
+  <string name="idepref_general_localeSelector_summary">选择 AndroidIDE 的语言。</string>
+  <string name="locale_system_default">系统默认</string>
 </resources>
