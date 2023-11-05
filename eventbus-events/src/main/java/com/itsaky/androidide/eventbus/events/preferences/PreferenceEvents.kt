@@ -26,7 +26,7 @@ import com.itsaky.androidide.eventbus.events.Event
  * @param value The new value of the preference.
  * @author Akash Yadav
  */
-data class PreferenceChangeEvent(val key: String, val value: Any) : Event()
+data class PreferenceChangeEvent(val key: String, val value: Any?) : Event()
 
 /**
  * Dispatched when a preference is removed from shared preferences.

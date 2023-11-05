@@ -16,7 +16,6 @@
  */
 
 import org.gradle.api.JavaVersion
-import org.gradle.api.Project
 
 /**
  * Build configuration for the IDE.

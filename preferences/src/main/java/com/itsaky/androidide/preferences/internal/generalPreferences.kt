@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatDelegate
 const val IS_FIRST_PROJECT_BUILD = "project_isFirstBuild"
 const val UI_MODE = "idepref_general_uiMode"
 const val SELECTED_THEME = "idpref_general_theme"
+const val SELECTED_LOCALE = "idpref_general_locale"
 const val OPEN_PROJECTS = "idepref_general_autoOpenProjects"
 const val CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen"
 const val TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell"
@@ -39,6 +40,12 @@ var selectedTheme: String?
   get() = prefManager.getString(SELECTED_THEME, null)
   set(value) {
     prefManager.putString(SELECTED_THEME, value)
+  }
+
+var selectedLocale: String?
+  get() = prefManager.getString(SELECTED_LOCALE, null)
+  set(value) {
+    prefManager.putString(SELECTED_LOCALE, value)
   }
 
 var isFirstBuild: Boolean

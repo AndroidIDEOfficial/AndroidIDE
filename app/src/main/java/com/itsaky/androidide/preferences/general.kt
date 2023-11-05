@@ -23,20 +23,24 @@ import androidx.preference.Preference
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.OPEN_PROJECTS
+import com.itsaky.androidide.preferences.internal.SELECTED_LOCALE
 import com.itsaky.androidide.preferences.internal.SELECTED_THEME
 import com.itsaky.androidide.preferences.internal.TERMINAL_USE_SYSTEM_SHELL
 import com.itsaky.androidide.preferences.internal.UI_MODE
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
+import com.itsaky.androidide.preferences.internal.selectedLocale
 import com.itsaky.androidide.preferences.internal.selectedTheme
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.preferences.internal.useSystemShell
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.ThemeManager
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.util.Locale
 
 @Parcelize
 class GeneralPreferences(
@@ -63,6 +67,7 @@ class InterfaceConfig(
   init {
     addPreference(UiMode())
     addPreference(ThemeSelector())
+    addPreference(LocaleSelector())
   }
 }
 
@@ -148,6 +153,42 @@ class ThemeSelector(
 
   override fun onChoiceConfirmed(position: Int) {
     selectedTheme = themes[position].name
+  }
+}
+
+@Parcelize
+class LocaleSelector(
+  override val key: String = SELECTED_LOCALE,
+  override val title: Int = R.string.idepref_general_localeSelector_title,
+  override val summary: Int? = R.string.idepref_general_localeSelector_summary,
+  override val icon: Int? = R.drawable.ic_translate
+) : SingleChoicePreference() {
+  
+  @IgnoredOnParcel
+  private val locales: Array<String>? = null
+
+  override fun getChoices(context: Context): Array<String> {
+    return locales ?: mutableListOf<String>().apply { 
+      add(context.getString(R.string.locale_system_default))
+      
+      LocaleProvider.SUPPORTED_LOCALES.map {
+        val locale = Locale.forLanguageTag(it)
+        locale.getDisplayName(locale)
+      }.also { addAll(it) }
+    }.toTypedArray()
+  }
+
+  override fun getInitiallySelectionItemPosition(context: Context): Int {
+    val applicationLocales = AppCompatDelegate.getApplicationLocales()
+    val locale = if (applicationLocales.size() > 0) {
+      applicationLocales.get(0)!!.language
+    } else selectedLocale ?: return 0 // Use system default if not set
+    return LocaleProvider.SUPPORTED_LOCALES.indexOf(locale) + 1
+  }
+
+  override fun onChoiceConfirmed(position: Int) {
+    // Reset to null if 'System Default' is selected
+    selectedLocale = if (position == 0) null else LocaleProvider.SUPPORTED_LOCALES[position - 1]
   }
 }
 

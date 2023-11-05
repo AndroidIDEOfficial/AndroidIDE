@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.buildinfo;
 
+/**
+ * Contains various information about the AndroidIDE build.
+ */
 public class BuildInfo {
 
   // ---------- Basic info -----------------
