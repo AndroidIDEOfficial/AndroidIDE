@@ -537,7 +537,7 @@
   <string name="theme_blue_wave">Blue Wave</string>
   <string name="theme_sunny_glow">Sunny Glow</string>
   <string name="theme_material_you">Material You</string>
-  <string name="idepref_general_localeSelector_title">Language</string>
-  <string name="idepref_general_localeSelector_summary">Select a language for AndroidIDE.</string>
-  <string name="locale_system_default">System Default</string>
+  <string name="idepref_general_localeSelector_title">Bahasa</string>
+  <string name="idepref_general_localeSelector_summary">Pilih bahasa untuk AndroidIDE.</string>
+  <string name="locale_system_default">Bawaan Sistem</string>
 </resources>
