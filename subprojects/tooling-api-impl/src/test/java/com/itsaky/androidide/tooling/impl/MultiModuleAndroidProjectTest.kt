@@ -28,6 +28,7 @@ import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
@@ -37,11 +38,22 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
+import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.nio.file.Paths
+import java.nio.file.attribute.PosixFilePermission
 import java.util.concurrent.CompletableFuture
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.deleteRecursively
+import kotlin.io.path.exists
+import kotlin.io.path.setPosixFilePermissions
+import kotlin.io.path.writeText
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -52,6 +64,26 @@ class MultiModuleAndroidProjectTest {
     val (server, project, result) = ToolingApiTestLauncher().launchServer()
     assertThat(result?.isSuccessful).isTrue()
     doAssertions(project, server)
+  }
+
+  @Test
+  fun `test non-existing project initialization`() {
+    val (_, _, result) = ToolingApiTestLauncher().launchServer(
+      projectDir = Paths.get("/directory/does/not/exist/"))
+    assertThat(result?.isSuccessful).isFalse()
+    assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_FOUND)
+  }
+
+  @Test
+  fun `test project initialization with file path`() {
+    val path = FileProvider.projectRoot().resolve("build").resolve("should-be-directory.txt")
+    path.deleteIfExists()
+    path.createFile()
+
+    val (_, _, result) = ToolingApiTestLauncher().launchServer(
+      projectDir = path)
+    assertThat(result?.isSuccessful).isFalse()
+    assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_DIRECTORY)
   }
 
   @Test

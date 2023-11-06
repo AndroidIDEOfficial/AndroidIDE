@@ -35,6 +35,10 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.BUILD_FAILED
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_CLOSED
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_ERROR
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_DIRECTORY_INACCESSIBLE
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_NOT_DIRECTORY
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_NOT_FOUND
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_NOT_INITIALIZED
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNKNOWN
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
@@ -57,7 +61,6 @@ import org.gradle.tooling.internal.consumer.DefaultGradleConnector
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
 
 /**
@@ -68,7 +71,6 @@ import kotlin.system.exitProcess
 internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   IToolingApiServer {
 
-  private val _isInitialized = AtomicBoolean(false)
   private var client: IToolingApiClient? = null
   private var connector: GradleConnector? = null
   private var connection: ProjectConnection? = null
@@ -79,9 +81,13 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   /**
    * Whether the project has been initialized or not.
    */
-  var isInitialized: Boolean
-    get() = _isInitialized.get()
-    private set(value) = _isInitialized.set(value)
+  var isInitialized: Boolean = false
+    private set
+
+  /**
+   * Whether a build or project synchronization is in progress.
+   */
+  private var isBuildInProgress: Boolean = false
 
   /**
    * Whether the server has a live connection to Gradle.
@@ -102,7 +108,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult> {
-    return CompletableFuture.supplyAsync {
+    return runBuild {
       try {
         log.debug("Got initialize request", params)
 
@@ -110,6 +116,14 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
         if (buildCancellationToken != null) {
           cancelCurrentBuild().get()
+        }
+
+        val projectDirectory = File(params.directory)
+        val failureReason = validateProjectDirectory(projectDirectory)
+
+        if (failureReason != null) {
+          log.error("Cannot initialize project: $failureReason")
+          return@runBuild InitializeResult(false, failureReason)
         }
 
         val stopWatch = StopWatch("Connection to project")
@@ -123,7 +137,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
           // or the project is being initialized with different parameters
           connector?.disconnect()
 
-          connector = GradleConnector.newConnector().forProjectDirectory(File(params.directory))
+          connector = GradleConnector.newConnector().forProjectDirectory(projectDirectory)
           setupConnectorForGradleInstallation(this.connector!!, params.gradleDistribution)
           stopWatch.lap("Connector created")
         }
@@ -163,13 +177,22 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         this.isInitialized = true
 
         notifyBuildSuccess(emptyList())
-        return@supplyAsync InitializeResult(true)
+        return@runBuild InitializeResult(true)
       } catch (err: Throwable) {
         log.error("Failed to initialize project", err)
         notifyBuildFailure(emptyList())
-        return@supplyAsync InitializeResult(false)
+        return@runBuild InitializeResult(false, getTaskFailureType(err))
       }
     }
+  }
+
+  private fun validateProjectDirectory(
+    projectDirectory: File
+  ) = when {
+    !projectDirectory.exists() -> PROJECT_NOT_FOUND
+    !projectDirectory.isDirectory -> PROJECT_NOT_DIRECTORY
+    !projectDirectory.canRead() -> PROJECT_DIRECTORY_INACCESSIBLE
+    else -> null
   }
 
   override fun isServerInitialized(): CompletableFuture<Boolean> {
@@ -184,8 +207,21 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult> {
-    return CompletableFuture.supplyAsync {
-      assertProjectInitialized()
+    return runBuild {
+      if (!isServerInitialized().get()) {
+        log.error("Cannot execute tasks: $PROJECT_NOT_INITIALIZED")
+        return@runBuild TaskExecutionResult(false, PROJECT_NOT_INITIALIZED)
+      }
+
+      val lastInitParams = this.lastInitParams
+      if (lastInitParams != null) {
+        val projectDirectory = File(lastInitParams.directory)
+        val failureReason = validateProjectDirectory(projectDirectory)
+        if (failureReason != null) {
+          log.error("Cannot execute tasks: $failureReason")
+          return@runBuild TaskExecutionResult(isSuccessful = false, failureReason)
+        }
+      }
 
       log.debug("Received request to run tasks.", message)
 
@@ -215,10 +251,10 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         builder.run()
         this.buildCancellationToken = null
         notifyBuildSuccess(message.tasks)
-        return@supplyAsync TaskExecutionResult.SUCCESS
+        return@runBuild TaskExecutionResult.SUCCESS
       } catch (error: Throwable) {
         notifyBuildFailure(message.tasks)
-        return@supplyAsync TaskExecutionResult(false, getTaskFailureType(error), error.message)
+        return@runBuild TaskExecutionResult(false, getTaskFailureType(error))
       }
     }
   }
@@ -328,6 +364,26 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
       is GradleConnectionException -> CONNECTION_ERROR
       is java.lang.IllegalStateException -> CONNECTION_CLOSED
       else -> UNKNOWN
+    }
+
+  private inline fun <T : Any?> supplyAsync(crossinline action: () -> T): CompletableFuture<T> =
+    CompletableFuture.supplyAsync {
+      action()
+    }
+
+  private inline fun <T : Any?> runBuild(crossinline action: () -> T): CompletableFuture<T> =
+    supplyAsync {
+      if (isBuildInProgress) {
+        log.error("Cannot run build, build is already in prorgess!")
+        throw IllegalStateException("Build is already in progress")
+      }
+
+      isBuildInProgress = true
+      try {
+        action()
+      } finally {
+        isBuildInProgress = false
+      }
     }
 
   private fun assertProjectInitialized() {

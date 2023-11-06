@@ -23,4 +23,4 @@ package com.itsaky.androidide.tooling.api.messages.result
  * @param isSuccessful Whether the project initialization was successful.
  * @author Akash Yadav
  */
-class InitializeResult(val isSuccessful: Boolean)
+class InitializeResult(val isSuccessful: Boolean, val failure: TaskExecutionResult.Failure? = TaskExecutionResult.Failure.UNKNOWN)

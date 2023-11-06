@@ -219,6 +219,10 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       return
     }
 
+    if (builder.isBuildInProgress) {
+      return
+    }
+
     val tasks = getAndroidModules().flatMap { module ->
       val variant = module.getSelectedVariant()
       if (variant == null) {
