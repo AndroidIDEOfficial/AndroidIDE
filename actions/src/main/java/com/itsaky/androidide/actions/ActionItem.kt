@@ -23,6 +23,7 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.Menu
 import android.view.View
+import androidx.annotation.CallSuper
 import com.itsaky.androidide.utils.resolveAttr
 
 /**
@@ -87,7 +88,11 @@ interface ActionItem {
    *
    * @param data The data containing various information about the event.
    */
-  fun prepare(data: ActionData)
+  @CallSuper
+  fun prepare(data: ActionData) {
+    visible = true
+    enabled = true
+  }
 
   /**
    * Execute the action. The action executed in a background thread by default.

@@ -54,6 +54,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   protected abstract val titleTextRes: Int
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (
       !data.hasRequiredData(Context::class.java, JavaLanguageServer::class.java, File::class.java)
     ) {

@@ -53,6 +53,7 @@ abstract class BaseFileTreeAction(
   }
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (!data.hasFileTreeData()) {
       markInvisible()
       return

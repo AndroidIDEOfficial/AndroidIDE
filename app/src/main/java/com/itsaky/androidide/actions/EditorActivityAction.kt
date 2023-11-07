@@ -41,6 +41,7 @@ abstract class EditorActivityAction : ActionItem {
       CoroutineName("${javaClass.simpleName}Scope")
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (!data.hasRequiredData(Context::class.java)) {
       markInvisible()
     }

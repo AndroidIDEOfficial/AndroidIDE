@@ -47,6 +47,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
   }
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     data.getActivity() ?: run {
       markInvisible()
       return

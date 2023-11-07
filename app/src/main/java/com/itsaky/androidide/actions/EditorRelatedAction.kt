@@ -26,6 +26,8 @@ abstract class EditorRelatedAction : EditorActivityAction(), EditorActionItem {
   override var requiresUIThread: Boolean = true
 
   override fun prepare(data: ActionData) {
+    super<EditorActionItem>.prepare(data)
+    super<EditorActivityAction>.prepare(data)
     val editor =
       data.getEditor()
         ?: run {

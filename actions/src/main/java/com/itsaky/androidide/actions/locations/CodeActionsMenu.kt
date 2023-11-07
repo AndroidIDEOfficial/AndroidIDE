@@ -42,6 +42,7 @@ object CodeActionsMenu : ActionMenu {
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (icon == null) {
       icon = ContextCompat.getDrawable(data[Context::class.java]!!, R.drawable.ic_code)
     }

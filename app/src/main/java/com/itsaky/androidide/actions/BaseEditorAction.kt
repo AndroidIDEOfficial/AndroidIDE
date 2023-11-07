@@ -33,6 +33,7 @@ abstract class BaseEditorAction : EditorActionItem {
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     getEditor(data)
       ?: kotlin.run {
         visible = false

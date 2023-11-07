@@ -18,7 +18,6 @@
 package com.itsaky.androidide.actions.sidebar
 
 import android.graphics.drawable.Drawable
-import android.view.Menu
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.SidebarActionItem
@@ -40,10 +39,6 @@ abstract class AbstractSidebarAction : SidebarActionItem {
   // when the object instance is initialized
   override var icon: Drawable? = null
   override var label: String = ""
-
-  // should not be needed
-  override fun prepare(data: ActionData) {
-  }
 
   override suspend fun execAction(data: ActionData): Any {
     return false

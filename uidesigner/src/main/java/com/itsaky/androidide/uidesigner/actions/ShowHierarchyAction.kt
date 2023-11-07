@@ -41,6 +41,7 @@ class ShowHierarchyAction(context: Context) : UiDesignerAction() {
   }
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (!data.hasRequiredData(Context::class.java, Fragment::class.java)) {
       markInvisible()
       return

@@ -40,6 +40,8 @@ class FindActionMenu(context: Context, override val order: Int) : EditorActivity
   }
 
   override fun prepare(data: ActionData) {
+    super<ActionMenu>.prepare(data)
+    super<EditorActivityAction>.prepare(data)
     visible = true
     enabled = children.size > 0
   }

@@ -36,11 +36,6 @@ class FileTreeAction(context: Context, override val order: Int) : EditorActivity
     icon = ContextCompat.getDrawable(context, R.drawable.ic_folder)
   }
 
-  override fun prepare(data: ActionData) {
-    visible = true
-    enabled = true
-  }
-
   override suspend fun execAction(data: ActionData): Boolean {
     val context = data.getActivity() ?: return false
 

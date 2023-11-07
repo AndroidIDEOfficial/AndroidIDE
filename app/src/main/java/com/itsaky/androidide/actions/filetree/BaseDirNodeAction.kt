@@ -34,6 +34,7 @@ abstract class BaseDirNodeAction(context: Context,
   @DrawableRes iconRes: Int? = null) : BaseFileTreeAction(context, labelRes, iconRes) {
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     if (!data.hasFileTreeData()) {
       markInvisible()
       return

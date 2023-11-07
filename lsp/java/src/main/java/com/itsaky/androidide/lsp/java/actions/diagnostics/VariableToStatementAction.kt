@@ -39,7 +39,6 @@ class VariableToStatementAction : BaseJavaCodeAction() {
 
   override val titleTextRes: Int = R.string.action_convert_to_statement
 
-  @Suppress("UNCHECKED_CAST")
   override fun prepare(data: ActionData) {
     super.prepare(data)
 

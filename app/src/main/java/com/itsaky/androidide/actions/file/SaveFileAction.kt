@@ -44,7 +44,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
   }
 
   override fun prepare(data: ActionData) {
-
+    super.prepare(data)
     val context =
       data.getActivity()
         ?: run {

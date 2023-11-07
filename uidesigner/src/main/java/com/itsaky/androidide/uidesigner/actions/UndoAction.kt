@@ -38,6 +38,7 @@ class UndoAction(context: Context) : UiDesignerAction() {
   }
   
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     visible = true
     enabled = data.requireWorkspace().undoManager.canUndo()
   }

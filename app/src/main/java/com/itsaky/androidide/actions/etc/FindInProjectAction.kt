@@ -40,6 +40,7 @@ class FindInProjectAction() : EditorActivityAction() {
   override val id: String = "ide.editor.find.inProject"
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     data.getActivity()
       ?: run {
         markInvisible()

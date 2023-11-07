@@ -33,6 +33,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
     get() = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
     val context = data.getActivity()
     if (context == null) {
       visible = false
