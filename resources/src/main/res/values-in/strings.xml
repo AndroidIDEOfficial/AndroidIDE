@@ -540,4 +540,7 @@
   <string name="idepref_general_localeSelector_title">Bahasa</string>
   <string name="idepref_general_localeSelector_summary">Pilih bahasa untuk AndroidIDE.</string>
   <string name="locale_system_default">Bawaan Sistem</string>
+  <string name="msg_project_dir_inaccessible">Direktori proyek tidak dapat diakses</string>
+  <string name="msg_file_is_not_dir">File yang dipilih bukan direktori</string>
+  <string name="msg_project_dir_doesnt_exist">Direktori proyek tidak ada</string>
 </resources>
