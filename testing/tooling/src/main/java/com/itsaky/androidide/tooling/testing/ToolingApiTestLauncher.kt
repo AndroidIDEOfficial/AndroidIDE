@@ -153,7 +153,7 @@ class ToolingApiTestLauncher {
 
     override fun logMessage(params: LogMessageParams) {
       val line = params.toLogLine()
-      log.log(line.priority, line.formattedTagAndMessage())
+      log.log(line.level, line.formattedTagAndMessage())
     }
 
     override fun logOutput(line: String) {

@@ -5,10 +5,10 @@
   (time) @err.time
   (pid) @err.pid
   (tid) @err.tid
-  (priority) @err.priority
+  (level) @err.level
   (tag) @err.tag
   (message) @err.msg
-  (#match? @err.priority "E")
+  (#match? @err.level "E")
 )
 
 (log_line
@@ -16,10 +16,10 @@
   (time) @warn.time
   (pid) @warn.pid
   (tid) @warn.tid
-  (priority) @warn.priority
+  (level) @warn.level
   (tag) @warn.tag
   (message) @warn.msg
-  (#match? @warn.priority "W")
+  (#match? @warn.level "W")
 )
 
 (log_line
@@ -27,10 +27,10 @@
   (time) @info.time
   (pid) @info.pid
   (tid) @info.tid
-  (priority) @info.priority
+  (level) @info.level
   (tag) @info.tag
   (message) @info.msg
-  (#match? @info.priority "I")
+  (#match? @info.level "I")
 )
 
 (log_line
@@ -38,10 +38,10 @@
   (time) @debug.time
   (pid) @debug.pid
   (tid) @debug.tid
-  (priority) @debug.priority
+  (level) @debug.level
   (tag) @debug.tag
   (message) @debug.msg
-  (#match? @debug.priority "D")
+  (#match? @debug.level "D")
 )
 
 (log_line
@@ -49,43 +49,43 @@
   (time) @verbose.time
   (pid) @verbose.pid
   (tid) @verbose.tid
-  (priority) @verbose.priority
+  (level) @verbose.level
   (tag) @verbose.tag
   (message) @verbose.msg
-  (#match? @verbose.priority "V")
+  (#match? @verbose.level "V")
 )
 
 (ide_log_line
   (ide_tag) @err.tag
-  (priority) @err.priority
+  (level) @err.level
   (message) @err.msg
-  (#match? @err.priority "E")
+  (#match? @err.level "E")
 )
 
 (ide_log_line
   (ide_tag) @warn.tag
-  (priority) @warn.priority
+  (level) @warn.level
   (message) @warn.msg
-  (#match? @warn.priority "W")
+  (#match? @warn.level "W")
 )
 
 (ide_log_line
   (ide_tag) @info.tag
-  (priority) @info.priority
+  (level) @info.level
   (message) @info.msg
-  (#match? @info.priority "I")
+  (#match? @info.level "I")
 )
 
 (ide_log_line
   (ide_tag) @debug.tag
-  (priority) @debug.priority
+  (level) @debug.level
   (message) @debug.msg
-  (#match? @debug.priority "D")
+  (#match? @debug.level "D")
 )
 
 (ide_log_line
   (ide_tag) @verbose.tag
-  (priority) @verbose.priority
+  (level) @verbose.level
   (message) @verbose.msg
-  (#match? @verbose.priority "V")
+  (#match? @verbose.level "V")
 )

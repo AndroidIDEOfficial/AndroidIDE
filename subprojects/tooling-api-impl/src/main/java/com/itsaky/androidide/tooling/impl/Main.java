@@ -19,14 +19,13 @@ package com.itsaky.androidide.tooling.impl;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
-import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.messages.LogMessageParams;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.ILogger.Priority;
+import com.itsaky.androidide.utils.ILogger.Level;
 import com.itsaky.androidide.utils.JvmLogger;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -125,9 +124,9 @@ public class Main {
     }
   }
 
-  private static void onLog(Priority priority, String tag, String message) {
+  private static void onLog(Level level, String tag, String message) {
     if (client != null) {
-      client.logMessage(new LogMessageParams(priority.priorityChar, tag, message));
+      client.logMessage(new LogMessageParams(level.levelChar, tag, message));
     }
   }
 

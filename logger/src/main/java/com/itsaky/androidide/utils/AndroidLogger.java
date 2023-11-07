@@ -31,8 +31,8 @@ public class AndroidLogger extends ILogger {
   }
 
   @Override
-  protected void doLog(Priority priority, String message) {
-    switch (priority) {
+  protected void doLog(Level level, String message) {
+    switch (level) {
       case ERROR:
         Log.e(TAG, message);
         break;

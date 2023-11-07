@@ -17,19 +17,19 @@
 package com.itsaky.androidide.lsp.api.util
 
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.ILogger.Priority
+import com.itsaky.androidide.utils.ILogger.Level
 
 /** @author Akash Yadav */
 class ReflectiveLogListener(private val receiver: Class<out Any>) : ILogger.LogListener {
-  override fun log(priority: Priority, tag: String, message: String) {
+  override fun log(level: Level, tag: String, message: String) {
     val method =
       receiver.getDeclaredMethod(
         "log",
-        Priority::class.java,
+        Level::class.java,
         String::class.java,
         String::class.java
       )
     method.isAccessible = true
-    method.invoke(null, priority, tag, message)
+    method.invoke(null, level, tag, message)
   }
 }

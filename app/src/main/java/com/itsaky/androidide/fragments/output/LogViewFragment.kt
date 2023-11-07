@@ -29,7 +29,7 @@ import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.ILogger.Priority
+import com.itsaky.androidide.utils.ILogger.Level
 import com.itsaky.androidide.utils.jetbrainsMono
 import io.github.rosemoe.sora.widget.style.CursorAnimator
 import java.util.concurrent.ArrayBlockingQueue
@@ -195,8 +195,8 @@ abstract class LogViewFragment :
 
   abstract fun isSimpleFormattingEnabled(): Boolean
 
-  protected open fun logLine(priority: Priority, tag: String, message: String) {
-    val line = LogLine.obtain(priority, tag, message)
+  protected open fun logLine(level: Level, tag: String, message: String) {
+    val line = LogLine.obtain(level, tag, message)
     appendLog(line)
   }
 

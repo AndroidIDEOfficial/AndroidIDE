@@ -236,7 +236,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   override fun logMessage(params: LogMessageParams) {
     val line = params.toLogLine()
-    serverLogger.log(line.priority, line.formattedTagAndMessage())
+    serverLogger.log(line.level, line.formattedTagAndMessage())
   }
 
   override fun logOutput(line: String) {

@@ -33,14 +33,14 @@ public class JvmLogger extends ILogger {
   }
 
   @Override
-  protected void doLog(Priority priority, String message) {
+  protected void doLog(Level level, String message) {
     if (interceptor != null) {
-      interceptor.onLog(priority, TAG, message);
+      interceptor.onLog(level, TAG, message);
     } else {
       System.err.printf(
           "%-25s %-2s %s%n",
           trimTagIfNeeded(TAG, 25),
-          priority.priorityChar,
+          level.levelChar,
           message
       );
     }
@@ -48,6 +48,6 @@ public class JvmLogger extends ILogger {
 
   public interface LogInterceptor {
 
-    void onLog(Priority priority, String tag, String message);
+    void onLog(Level level, String tag, String message);
   }
 }

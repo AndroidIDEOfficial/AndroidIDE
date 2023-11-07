@@ -5445,8 +5445,8 @@
              <p>Only a single non-rectangular clip can be applied on a View at any time. Circular
              clips from a
              {@link android.view.ViewAnimationUtils#createCircularReveal(View, int, int, float,
-             float)} circular reveal animation take priority over Outline clipping, and child
-             Outline clipping takes priority over Outline clipping done by a parent.
+             float)} circular reveal animation take level over Outline clipping, and child
+             Outline clipping takes level over Outline clipping done by a parent.
              <p>Note that this flag will only be respected if the View's Outline returns true from
              {@link android.graphics.Outline#canClip()}. -->
         <attr
@@ -10650,8 +10650,8 @@
                 name="bottom_to_top"
                 value="0x2" />
         </attr>
-        <!-- Priority of the rows and columns. When the priority is none,
-         both rows and columns have the same priority. When the priority is
+        <!-- Priority of the rows and columns. When the level is none,
+         both rows and columns have the same level. When the level is
          column, the animations will be applied on the columns first. The same
          goes for rows. -->
         <attr name="directionPriority">

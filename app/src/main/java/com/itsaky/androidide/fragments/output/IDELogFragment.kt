@@ -29,14 +29,14 @@ import com.itsaky.androidide.utils.ILogger
 class IDELogFragment : LogViewFragment() {
 
   private var logListener: ILogger.LogListener? =
-    ILogger.LogListener { priority, tag, message ->
+    ILogger.LogListener { level, tag, message ->
       if (message.contains("\n")) {
         val split = message.split("\n").toTypedArray()
         for (line in split) {
-          logLine(priority, tag, line)
+          logLine(level, tag, line)
         }
       } else {
-        logLine(priority, tag, message)
+        logLine(level, tag, message)
       }
     }
 

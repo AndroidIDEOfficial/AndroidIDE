@@ -44,16 +44,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.nio.file.Paths
-import java.nio.file.attribute.PosixFilePermission
 import java.util.concurrent.CompletableFuture
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.deleteIfExists
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
-import kotlin.io.path.setPosixFilePermissions
-import kotlin.io.path.writeText
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -363,7 +356,7 @@ class MultiModuleAndroidProjectTest {
 
     private val string = StringBuilder()
 
-    override fun doLog(priority: Priority?, message: String?) {
+    override fun doLog(level: Level?, message: String?) {
       string.append("${message?.trim()}${System.lineSeparator()}")
     }
 
