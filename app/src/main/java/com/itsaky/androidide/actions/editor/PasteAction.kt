@@ -32,7 +32,7 @@ class PasteAction(context: Context, override val order: Int) : BaseEditorAction(
     arr.recycle()
   }
 
-  override val id: String = "ideEditor_paste"
+  override val id: String = "ide.editor.code.text.paste"
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

@@ -35,7 +35,7 @@ import java.io.File
  */
 class GoToDefinitionAction : BaseJavaCodeAction() {
   override val titleTextRes: Int = R.string.action_goto_definition
-  override val id: String = "lsp_java_gotoDefinition"
+  override val id: String = "ide.editor.lsp.java.gotoDefinition"
   override var label: String = ""
   override var requiresUIThread: Boolean = true
   private val log = ILogger.newInstance(javaClass.simpleName)

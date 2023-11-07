@@ -34,7 +34,7 @@ import com.itsaky.androidide.utils.ILogger
 /** @author Akash Yadav */
 class FieldToBlockAction : BaseJavaCodeAction() {
 
-  override val id: String = "lsp_java_fieldToBlock"
+  override val id: String = "ide.editor.lsp.java.diagnostics.fieldToBlock"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
   private val log = ILogger.newInstance(javaClass.simpleName)

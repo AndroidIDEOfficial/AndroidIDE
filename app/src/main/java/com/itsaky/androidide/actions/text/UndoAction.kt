@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.EditorRelatedAction
 /** @author Akash Yadav */
 class UndoAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
-  override val id: String = "editor_undo"
+  override val id: String = "ide.editor.code.text.undo"
 
   init {
     label = context.getString(R.string.undo)

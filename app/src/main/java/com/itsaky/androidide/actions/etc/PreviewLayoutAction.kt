@@ -37,7 +37,7 @@ import java.io.File
 /** @author Akash Yadav */
 class PreviewLayoutAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
-  override val id: String = "editor_previewLayout"
+  override val id: String = "ide.editor.previewLayout"
 
   override var requiresUIThread: Boolean = false
 

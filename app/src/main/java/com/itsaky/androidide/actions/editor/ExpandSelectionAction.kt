@@ -30,7 +30,7 @@ import com.itsaky.androidide.actions.EditorRelatedAction
  * @author Akash Yadav
  */
 class ExpandSelectionAction(context: Context, override val order: Int) : EditorRelatedAction() {
-  override val id: String = "editor_expandSelection"
+  override val id: String = "ide.editor.code.actions.expandSelection"
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
   init {

@@ -34,7 +34,7 @@ import java.io.File
 class FindReferencesAction : BaseJavaCodeAction() {
 
   override val titleTextRes: Int = R.string.action_find_references
-  override val id: String = "lsp_java_findReferences"
+  override val id: String = "ide.editor.lsp.java.findReferences"
   override var label: String = ""
   override var requiresUIThread: Boolean = true
 

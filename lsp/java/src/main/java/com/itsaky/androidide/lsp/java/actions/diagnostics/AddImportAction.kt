@@ -40,7 +40,7 @@ import jdkx.tools.JavaFileObject
 /** @author Akash Yadav */
 class AddImportAction : BaseJavaCodeAction() {
 
-  override val id: String = "lsp_java_addImport"
+  override val id: String = "ide.editor.lsp.java.diagnostics.addImport"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.NOT_IMPORTED.id
   private val log = ILogger.newInstance("AddImportAction")

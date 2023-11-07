@@ -33,7 +33,7 @@ import kotlinx.coroutines.runBlocking
  */
 class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAction() {
 
-  override val id: String = "action_editor_syncProject"
+  override val id: String = "ide.editor.syncProject"
   override var requiresUIThread = false
 
   init {

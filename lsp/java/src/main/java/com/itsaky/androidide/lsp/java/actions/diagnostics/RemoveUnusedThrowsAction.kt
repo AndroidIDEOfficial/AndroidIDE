@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class RemoveUnusedThrowsAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_removeUnusedThrows"
+  override val id: String = "ide.editor.lsp.java.diagnostics.removeUnusedThrows"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_THROWS.id
   private val log = ILogger.newInstance(javaClass.simpleName)

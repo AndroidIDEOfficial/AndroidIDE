@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class GenerateMissingConstructorAction : BaseJavaCodeAction() {
-  override val id = "lsp_java_generateMissingConstructor"
+  override val id = "ide.editor.lsp.java.generator.missingConstructor"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
   private val log = ILogger.newInstance(javaClass.simpleName)

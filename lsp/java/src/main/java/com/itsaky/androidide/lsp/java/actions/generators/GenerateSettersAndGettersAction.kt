@@ -55,7 +55,7 @@ import java.util.concurrent.CompletableFuture
  * @author Akash Yadav
  */
 class GenerateSettersAndGettersAction : FieldBasedAction() {
-  override val id: String = "lsp_java_generateSettersAndGetters"
+  override val id: String = "ide.editor.lsp.java.generator.settersAndGetters"
   override var label: String = ""
   private val log = ILogger.newInstance(javaClass.simpleName)
 

@@ -32,7 +32,7 @@ import com.itsaky.androidide.actions.markInvisible
  */
 class LongSelectAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
-  override val id: String = "ide.editor.codeEditor.longSelect"
+  override val id: String = "ide.editor.code.text.longSelect"
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
   init {

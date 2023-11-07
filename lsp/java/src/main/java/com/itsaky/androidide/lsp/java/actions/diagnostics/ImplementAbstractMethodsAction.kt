@@ -30,7 +30,7 @@ import jdkx.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_implementAbstractMethods"
+  override val id: String = "ide.editor.lsp.java.diagnostics.implementAbstractMethods"
   override var label: String = ""
   private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id
   private val log = ILogger.newInstance(javaClass.simpleName)

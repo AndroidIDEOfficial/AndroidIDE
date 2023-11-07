@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class RemoveMethodAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_removeMethod"
+  override val id: String = "ide.editor.lsp.java.diagnostics.removeMethod"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_METHOD.id
   private val log = ILogger.newInstance(javaClass.simpleName)

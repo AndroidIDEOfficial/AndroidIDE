@@ -45,7 +45,7 @@ class AutoFixImportsAction : BaseJavaCodeAction() {
 
   private val log = ILogger.newInstance("AutoFixImportsAction")
   override val titleTextRes: Int = R.string.title_fix_imports
-  override val id: String = "ide.editor.lsp.java.autoFixImports"
+  override val id: String = "ide.editor.lsp.java.diagnostics.autoFixImports"
   override var label: String = ""
 
   override suspend fun execAction(data: ActionData): Result {

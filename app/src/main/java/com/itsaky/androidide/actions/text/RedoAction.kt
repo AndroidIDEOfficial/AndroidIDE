@@ -35,7 +35,7 @@ class RedoAction(context: Context, override val order: Int) : EditorRelatedActio
     icon = ContextCompat.getDrawable(context, R.drawable.ic_redo)
   }
 
-  override val id: String = "editor_redo"
+  override val id: String = "ide.editor.code.text.redo"
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

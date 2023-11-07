@@ -14,7 +14,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
 class RemoveUnusedImportsAction : BaseJavaCodeAction() {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
-  override val id: String = "lsp_java_remove_unused_imports"
+  override val id: String = "ide.editor.lsp.java.removeUnusedImports"
   override var label: String = ""
   override val titleTextRes: Int = string.action_remove_unused_imports
 

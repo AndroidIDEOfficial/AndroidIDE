@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class CreateMissingMethodAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_createMissingMethod"
+  override val id: String = "ide.editor.lsp.java.diagnostics.createMissingMethod"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.MISSING_METHOD.id
   private val log = ILogger.newInstance(javaClass.simpleName)

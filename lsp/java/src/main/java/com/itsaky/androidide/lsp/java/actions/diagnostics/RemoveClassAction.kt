@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class RemoveClassAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_removeClass"
+  override val id: String = "ide.editor.lsp.java.diagnostics.removeClass"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_CLASS.id
   private val log = ILogger.newInstance(javaClass.simpleName)

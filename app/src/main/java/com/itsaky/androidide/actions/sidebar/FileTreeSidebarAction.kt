@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
 class FileTreeSidebarAction(context: Context, override val order: Int) : AbstractSidebarAction() {
 
   companion object {
-    const val ID ="ide.editor.sidebar.projectFiles"
+    const val ID ="ide.editor.sidebar.fileTree"
   }
 
   override val id: String = ID

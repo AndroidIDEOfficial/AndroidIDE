@@ -29,7 +29,7 @@ import com.itsaky.androidide.actions.EditorActivityAction
 class FindActionMenu(context: Context, override val order: Int) : EditorActivityAction(), ActionMenu {
 
   override val children: MutableSet<ActionItem> = mutableSetOf()
-  override val id: String = "editor_findActions"
+  override val id: String = "ide.editor.find"
 
   init {
     label = context.getString(R.string.menu_find)

@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class SuppressUncheckedWarningAction : BaseJavaCodeAction() {
-  override val id = "lsp_java_suppressUncheckedWarning"
+  override val id = "ide.editor.lsp.java.diagnostics.suppressUncheckedWarning"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNCHECKED.id
   private val log = ILogger.newInstance(javaClass.simpleName)

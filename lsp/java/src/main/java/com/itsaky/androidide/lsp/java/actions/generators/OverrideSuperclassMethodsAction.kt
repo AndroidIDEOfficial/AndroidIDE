@@ -64,7 +64,7 @@ import java.util.concurrent.CompletableFuture
 class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
 
   override val titleTextRes: Int = R.string.action_override_superclass_methods
-  override val id: String = "lsp_java_overrideSuperclassMethods"
+  override val id: String = "ide.editor.lsp.java.generator.overrideSuperclassMethods"
   override var label: String = ""
   private val log = ILogger.newInstance(javaClass.simpleName)
   private var position: Long = -1

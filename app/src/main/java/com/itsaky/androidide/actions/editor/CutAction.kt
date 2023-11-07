@@ -43,7 +43,7 @@ class CutAction(context: Context, override val order: Int) : BaseEditorAction() 
     enabled = visible
   }
 
-  override val id: String = "ideEditor_cut"
+  override val id: String = "ide.editor.code.text.cut"
   override suspend fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data) ?: return false
     editor.cutText()

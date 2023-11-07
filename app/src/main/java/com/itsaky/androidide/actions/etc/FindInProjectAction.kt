@@ -37,7 +37,7 @@ class FindInProjectAction() : EditorActivityAction() {
     this.order = order
   }
 
-  override val id: String = "editor_findInProject"
+  override val id: String = "ide.editor.find.inProject"
 
   override fun prepare(data: ActionData) {
     data.getActivity()

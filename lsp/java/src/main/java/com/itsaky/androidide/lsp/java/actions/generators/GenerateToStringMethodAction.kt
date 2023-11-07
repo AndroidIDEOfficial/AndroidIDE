@@ -56,7 +56,7 @@ import openjdk.tools.javac.util.Names
  */
 class GenerateToStringMethodAction : FieldBasedAction() {
   override val titleTextRes: Int = R.string.action_generate_toString
-  override val id: String = "lsp_java_generateToString"
+  override val id: String = "ide.editor.lsp.java.generator.toString"
   override var label: String = ""
 
   private val log = ILogger.newInstance(javaClass.simpleName)

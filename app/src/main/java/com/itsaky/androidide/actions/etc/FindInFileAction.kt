@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.EditorRelatedAction
 /** @author Akash Yadav */
 class FindInFileAction() : EditorRelatedAction() {
 
-  override val id: String = "editor_findInFile"
+  override val id: String = "ide.editor.find.inFile"
   override var requiresUIThread: Boolean = true
 
   override var order: Int = 0

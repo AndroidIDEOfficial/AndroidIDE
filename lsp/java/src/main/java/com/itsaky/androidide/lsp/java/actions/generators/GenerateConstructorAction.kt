@@ -166,7 +166,7 @@ class GenerateConstructorAction : FieldBasedAction() {
   }
 
   override val titleTextRes: Int = string.action_generate_constructor
-  override val id: String = "lsp_java_generateConstructor"
+  override val id: String = "ide.editor.lsp.java.generator.constructor"
   override var label: String = ""
   private val log = ILogger.newInstance(javaClass.simpleName)
 }

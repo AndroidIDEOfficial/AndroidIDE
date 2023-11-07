@@ -29,7 +29,7 @@ import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 /** @author Akash Yadav */
 class FileTreeAction(context: Context, override val order: Int) : EditorActivityAction() {
 
-  override val id: String = "editor_fileTree"
+  override val id: String = "ide.editor.fileTree.open"
 
   init {
     label = context.getString(R.string.msg_file_tree)

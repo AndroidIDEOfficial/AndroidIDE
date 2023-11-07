@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class VariableToStatementAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_variableToStatement"
+  override val id: String = "ide.editor.lsp.java.diagnostics.variableToStatement"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_LOCAL.id
   private val log = ILogger.newInstance(javaClass.simpleName)

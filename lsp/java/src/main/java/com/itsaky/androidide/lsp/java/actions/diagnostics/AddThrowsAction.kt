@@ -33,7 +33,7 @@ import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class AddThrowsAction : BaseJavaCodeAction() {
-  override val id = "lsp_java_addThrows"
+  override val id = "ide.editor.lsp.java.diagnostics.addThrows"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
   private val log = ILogger.newInstance(javaClass.simpleName)

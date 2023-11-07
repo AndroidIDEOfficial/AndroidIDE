@@ -32,7 +32,7 @@ class SelectAllAction(context: Context, override val order: Int) : BaseEditorAct
     arr.recycle()
   }
 
-  override val id: String = "ideEditor_selectAll"
+  override val id: String = "ide.editor.code.text.selectAll"
 
   override suspend fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data) ?: return false

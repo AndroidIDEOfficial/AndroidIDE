@@ -30,7 +30,7 @@ import com.itsaky.androidide.actions.ActionData
  */
 class CloseAllFilesAction(context: Context, override val order: Int) : FileTabAction() {
 
-  override val id: String = "ide.editor.closeAllFiles"
+  override val id: String = "ide.editor.fileTab.close.all"
 
   init {
     label = context.getString(R.string.action_closeAll)

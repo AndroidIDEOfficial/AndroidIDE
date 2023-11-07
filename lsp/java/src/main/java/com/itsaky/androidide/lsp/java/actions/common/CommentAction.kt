@@ -23,7 +23,7 @@ import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 
 /** @author Akash Yadav */
 class CommentAction : BaseJavaCodeAction() {
-  override val id: String = "lsp_java_commentLine"
+  override val id: String = "ide.editor.lsp.java.commentLine"
   override var label: String = ""
 
   override val titleTextRes: Int = R.string.action_comment_line

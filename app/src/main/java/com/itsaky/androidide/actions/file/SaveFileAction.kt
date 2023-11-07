@@ -34,7 +34,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
 
   private val log = ILogger.newInstance("SaveFileAction")
 
-  override val id: String = "editor_saveFile"
+  override val id: String = "ide.editor.files.saveAll"
 
   override var requiresUIThread: Boolean = false
 
