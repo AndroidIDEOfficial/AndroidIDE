@@ -17,12 +17,24 @@
 
 package com.itsaky.androidide.lsp.java.utils;
 
+import androidx.annotation.Nullable;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationNamed;
 import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.Types;
 import openjdk.source.tree.ArrayTypeTree;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
@@ -38,19 +50,6 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Paths;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import jdkx.lang.model.element.Element;
-import jdkx.lang.model.element.ElementKind;
-import jdkx.lang.model.element.ExecutableElement;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.type.TypeMirror;
-import jdkx.lang.model.util.Types;
-
 public class FindHelper {
 
   public static String[] erasedParameterTypes(CompileTask task, ExecutableElement method) {
@@ -63,25 +62,47 @@ public class FindHelper {
     return erasedParameterTypes;
   }
 
+  /**
+   * Find the method with name <code>methodName</code> in class <code>clasName</code> with the given
+   * parameter types.
+   *
+   * @param task                 The parse task.
+   * @param className            The fully qualified class name.
+   * @param methodName           The name of method in class <code>className</code>.
+   * @param erasedParameterTypes The parameter types of the method (fully qualified class names).
+   * @return The {@link MethodTree} for the method, or <code>null</code> if method was not found.
+   */
+  @Nullable
   public static MethodTree findMethod(
       ParseTask task, String className, String methodName, String[] erasedParameterTypes) {
     ClassTree classTree = findType(task, className);
     for (Tree member : classTree.getMembers()) {
-      if (member.getKind() != Tree.Kind.METHOD) continue;
+      if (member.getKind() != Tree.Kind.METHOD) {
+        continue;
+      }
       MethodTree method = (MethodTree) member;
-      if (!method.getName().contentEquals(methodName)) continue;
-      if (!isSameMethodType(method, erasedParameterTypes)) continue;
+      if (!method.getName().contentEquals(methodName)) {
+        continue;
+      }
+      if (!isSameMethodType(method, erasedParameterTypes)) {
+        continue;
+      }
       return method;
     }
-    throw new RuntimeException("no method");
+
+    return null;
   }
 
   public static VariableTree findField(ParseTask task, String className, String memberName) {
     ClassTree classTree = findType(task, className);
     for (Tree member : classTree.getMembers()) {
-      if (member.getKind() != Tree.Kind.VARIABLE) continue;
+      if (member.getKind() != Tree.Kind.VARIABLE) {
+        continue;
+      }
       VariableTree variable = (VariableTree) member;
-      if (!variable.getName().contentEquals(memberName)) continue;
+      if (!variable.getName().contentEquals(memberName)) {
+        continue;
+      }
       return variable;
     }
     throw new RuntimeException("no variable");
@@ -98,7 +119,9 @@ public class FindHelper {
       return null;
     }
     for (Element member : type.getEnclosedElements()) {
-      if (member.getKind() != ElementKind.METHOD) continue;
+      if (member.getKind() != ElementKind.METHOD) {
+        continue;
+      }
       ExecutableElement method = (ExecutableElement) member;
       if (isSameMethod(task, method, className, methodName, erasedParameterTypes)) {
         return method;
@@ -115,13 +138,21 @@ public class FindHelper {
       String[] erasedParameterTypes) {
     Types types = task.task.getTypes();
     TypeElement parent = (TypeElement) method.getEnclosingElement();
-    if (!parent.getQualifiedName().contentEquals(className)) return false;
-    if (!method.getSimpleName().contentEquals(methodName)) return false;
-    if (method.getParameters().size() != erasedParameterTypes.length) return false;
+    if (!parent.getQualifiedName().contentEquals(className)) {
+      return false;
+    }
+    if (!method.getSimpleName().contentEquals(methodName)) {
+      return false;
+    }
+    if (method.getParameters().size() != erasedParameterTypes.length) {
+      return false;
+    }
     for (int i = 0; i < erasedParameterTypes.length; i++) {
       TypeMirror erasure = types.erasure(method.getParameters().get(i).asType());
       boolean same = erasure.toString().equals(erasedParameterTypes[i]);
-      if (!same) return false;
+      if (!same) {
+        return false;
+      }
     }
     return true;
   }
@@ -197,7 +228,9 @@ public class FindHelper {
     }
     if (candidate instanceof ArrayTypeTree) {
       ArrayTypeTree array = (ArrayTypeTree) candidate;
-      if (!erasedType.endsWith("[]")) return false;
+      if (!erasedType.endsWith("[]")) {
+        return false;
+      }
       String erasedElement = erasedType.substring(0, erasedType.length() - "[]".length());
       return typeMatches(array.getType(), erasedElement);
     }

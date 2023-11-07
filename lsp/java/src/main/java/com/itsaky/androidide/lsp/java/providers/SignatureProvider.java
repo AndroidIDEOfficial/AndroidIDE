@@ -240,21 +240,28 @@ public class SignatureProvider {
   }
 
   private void addSourceInfo(
-      CompileTask task, @NonNull ExecutableElement method, SignatureInformation info) {
-    TypeElement type = (TypeElement) method.getEnclosingElement();
-    String className = type.getQualifiedName().toString();
-    String methodName = method.getSimpleName().toString();
-    String[] erasedParameterTypes = FindHelper.erasedParameterTypes(task, method);
-    Optional<JavaFileObject> file = compiler.findAnywhere(className);
+      @NonNull CompileTask task,
+      @NonNull ExecutableElement method,
+      @NonNull SignatureInformation info
+  ) {
+    final var type = (TypeElement) method.getEnclosingElement();
+    final var className = type.getQualifiedName().toString();
+    final var methodName = method.getSimpleName().toString();
+    final var erasedParameterTypes = FindHelper.erasedParameterTypes(task, method);
+    final var file = compiler.findAnywhere(className);
 
     if (!file.isPresent()) {
       return;
     }
 
-    ParseTask parse = compiler.parse(file.get());
-    MethodTree source = FindHelper.findMethod(parse, className, methodName, erasedParameterTypes);
-    TreePath path = Trees.instance(task.task).getPath(parse.root, source);
-    DocCommentTree docTree = DocTrees.instance(task.task).getDocCommentTree(path);
+    final var parse = compiler.parse(file.get());
+    final var source = FindHelper.findMethod(parse, className, methodName, erasedParameterTypes);
+    if (source == null) {
+      return;
+    }
+
+    final var path = Trees.instance(task.task).getPath(parse.root, source);
+    final var docTree = DocTrees.instance(task.task).getDocCommentTree(path);
 
     if (docTree != null) {
       info.setDocumentation(MarkdownHelper.asMarkupContent(docTree));
