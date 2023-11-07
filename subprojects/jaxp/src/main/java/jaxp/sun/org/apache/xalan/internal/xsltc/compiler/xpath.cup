@@ -112,7 +112,7 @@ parser code {:
      * patterns are expanded as "*[namespace-uri() = 'uri']" and
      * "@*[namespace-uri() = 'uri']", respectively. This expansion considerably
      * simplifies the grouping of patterns in the Mode class. For this
-     * expansion to be correct, the level of the pattern/template must be
+     * expansion to be correct, the priority of the pattern/template must be
      * set to -0.25 (when no other predicates are present).
      */
     public StepPattern createStepPattern(int axis, Object test, Vector predicates) {
@@ -131,7 +131,7 @@ parser code {:
         }
         else {
 	    QName name = (QName)test;
-	    boolean setLevel = false;
+	    boolean setPriority = false;
 
 	    if (axis == Axis.NAMESPACE) {
 		nodeType = (name.toString().equals("*")) ? -1
@@ -150,7 +150,7 @@ parser code {:
 		    }
 
 		    // Priority is set by hand if no other predicates exist
-		    setLevel = (predicates.size() == 0);
+		    setPriority = (predicates.size() == 0);
 
 		    predicates.add(
 			new Predicate(
@@ -174,9 +174,9 @@ parser code {:
 
 	    final StepPattern result = new StepPattern(axis, nodeType, predicates);
 
-	    // Set level for case prefix:* and prefix:@* (no predicates)
-	    if (setLevel) {
-		result.setLevel(-0.25);
+	    // Set priority for case prefix:* and prefix:@* (no predicates)
+	    if (setPriority) {
+		result.setPriority(-0.25);
 	    }
 
 	    return result;
