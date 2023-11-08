@@ -168,7 +168,7 @@
   <string name="classtype_class">Sınıf</string>
   <string name="classtype_activity">Etkinlik</string>
   <string name="title_interface">Arayüz</string>
-  <string name="classtype_enum">Numaralandırma</string>
+  <string name="classtype_enum">Enum</string>
   <string name="msg_checking_storage_permissions">Depolama izni kontrol ediliyor</string>
   <string name="msg_failed_list_files">Proje dosyalarını listelerken hata!</string>
   <string name="msg_storage_denied">Depolama izni olmadan devam edilemez</string>
@@ -512,7 +512,7 @@
   <string name="msg_emptyview_buildoutput">"İnşa çıktısını burada görmek için uygulamayı inşa edin ya da bir görev çalıştırın. "</string>
   <string name="msg_codeaction_failed">Kod eylemi gerçekleştirilemedi</string>
   <string name="idepref_devOptions_enableLogsender_title">LogSender\'ı Etkinleştir</string>
-  <string name="idepref_devOptions_enableLogsender_summary">Devre dışı bırakıldığında, uygulamalardan gelen logolar Android\'de de görüntülenmeyecek</string>
+  <string name="idepref_devOptions_enableLogsender_summary">Devre dışı bırakıldığında, uygulamalardan gelen loglar AndroidIDE de görüntülenmeyecek</string>
   <string name="title_build_variants">İnşa türleri</string>
   <string name="title_apply">Uygula</string>
   <string name="title_discard">Vazgeç</string>
@@ -538,7 +538,7 @@
   <string name="theme_sunny_glow">Güneşli Parıltı</string>
   <string name="theme_material_you">Material You</string>
   <string name="idepref_general_localeSelector_title">Dil</string>
-  <string name="idepref_general_localeSelector_summary">AndroidIde için bir dil seç.</string>
+  <string name="idepref_general_localeSelector_summary">AndroidIDE için bir dil seç.</string>
   <string name="locale_system_default">Sistem varsayılanı</string>
   <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
   <string name="msg_file_is_not_dir">Selected file is not a directory</string>
