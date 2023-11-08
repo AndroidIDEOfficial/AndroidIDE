@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">অনুকরন</string>
-  <string name="text_to_search">পাঠ্য অনুসন্ধান</string>
+  <string name="text_to_search">অনুসন্ধান করার জন্য পাঠ্য</string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE-এর পছন্দ</string>
   <string name="discussions_on_telegram">টেলিগ্রামে আলোচনা</string>
   <string name="official_tg_channel">অফিসিয়াল টেলিগ্রাম চ্যানেল</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">কোনো তথ্য নেই</string>
   <string name="title_terminal">টার্মিনাল</string>
   <string name="reset">রিসেট করুন</string>
   <string name="app_logs">App লগ</string>
@@ -101,7 +101,7 @@
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">No AndroidX</string>
+  <string name="template_no_AndroidX">AndroidX বিহীন</string>
   <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
   <string name="save">সেভ</string>
   <string name="menu_find">খুঁজুন</string>
@@ -454,7 +454,8 @@
   <string name="uiMode_light">লাইট</string>
   <string name="uiMode_dark">ডার্ক</string>
   <string name="uiMode_system">সিস্টেম কে অনুসরন করুন</string>
-  <string name="idepref_general_materialYou_summary">আপনার ডিভাইসের কাছাকাছি একটি অভিজ্ঞতা উপভোগ করুন (আ্যপ এর রিস্টার্ট প্রয়োজন)।</string>
+  <string name="idepref_general_themeSelector_title">Theme</string>
+  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">প্রকল্প কনফিগারেশন</string>
   <string name="msg_app_launch_failed">অ্যাপ্লিকেশন শুরু করতে ব্যর্থ। আরো তথ্য জানার জন্য IDE লগ চেক করুন।</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostics সক্রিয়</string>
@@ -505,9 +506,42 @@
   <string name="idepref_group_debugging">ডিবাগিং</string>
   <string name="idepref_devOptions_dumpLogs_title">ডাম্প লগ</string>
   <string name="idepref_devOptions_dumpLogs_summary">AndroidIDE লগ ডাম্প করুন $HOME/.androidide/logs এ</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
-  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
-  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
-  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_emptyview_applogs">এখানে লগগুলি দেখার জন্য আপনার অ্যাপ্লিকেশনটির ডিবাগ ভ্যারিয়েন্ট টি রান করুন৷</string>
+  <string name="msg_logsender_disabled">LogSender নিষ্ক্রিয় করা হয়েছে। আপনি Preferences-এ গিয়ে এটিকে সক্রিয় করতে পারেন।</string>
+  <string name="msg_emptyview_idelogs">IDE লগস্ এখানে দেখানো হয়.</string>
+  <string name="msg_emptyview_diagnostics">কোনো ফাইল এর ডায়গনিস্টিক ফলাফল দেখার জন্য, সেটিকে খুলুন</string>
+  <string name="msg_emptyview_buildoutput">"এখানে বিল্ড আউটপুট দেখতে অ্যাপ্লিকেশনটি তৈরি করুন বা একটি টাস্ক চালান। "</string>
+  <string name="msg_codeaction_failed">কোড ক্রিয়া সম্পাদন করতে ব্যর্থ হয়েছে৷</string>
+  <string name="idepref_devOptions_enableLogsender_title">LogSender সক্রিয় করুন</string>
+  <string name="idepref_devOptions_enableLogsender_summary">নিষ্ক্রিয় করা হলে, অ্যাপ্লিকেশান থেকে লগগুলি AndroidIDE-এ দেখানো হবে না৷</string>
+  <string name="title_build_variants">Build variants</string>
+  <string name="title_apply">Apply</string>
+  <string name="title_discard">Discard</string>
+  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
+  <string name="title_choose_application">Choose application</string>
+  <string name="err_selected_variant_not_found">Selected build variant not found</string>
+  <string name="title_disconnect_log_senders">Disconnect log senders</string>
+  <string name="title_begin_long_select">Begin long select</string>
+  <string name="idepref_editor_stickScroll_title">Sticky scroll</string>
+  <string name="idepref_editor_stickyScroll_summary">Show the current scope at the top while scrolling the editor.</string>
+  <string name="idepref_launchAppAfterInstall_title">Launch app after installation</string>
+  <string name="idepref_launchAppAfterInstall_summary">If enabled, the IDE will (without confirmation) launch the application right after it is installed.</string>
+  <string name="title_run_options">Run options</string>
+  <string name="err_cannot_determine_package">Cannot run app. Unable to determine package name.</string>
+  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
+  <string name="title_launch_app">Launch app</string>
+  <string name="msg_64bit_on_32bit_device">You are using 64-bit variant of AndroidIDE on a 32-bit-only device. This configuration is not supported. Please install the 32-bit variant of AndroidIDE.</string>
+  <string name="title_32bit_on_64bit_device">Configuration Warning</string>
+  <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="idepref_editor_pinLineNumbers_title">Pin line numbers</string>
+  <string name="idepref_editor_pinLineNumbers_summary">Whether the editor should pin line number panel when scrolled horizontally.</string>
+  <string name="theme_blue_wave">Blue Wave</string>
+  <string name="theme_sunny_glow">Sunny Glow</string>
+  <string name="theme_material_you">Material You</string>
+  <string name="idepref_general_localeSelector_title">Language</string>
+  <string name="idepref_general_localeSelector_summary">Select a language for AndroidIDE.</string>
+  <string name="locale_system_default">System Default</string>
+  <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
+  <string name="msg_file_is_not_dir">Selected file is not a directory</string>
+  <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
 </resources>
