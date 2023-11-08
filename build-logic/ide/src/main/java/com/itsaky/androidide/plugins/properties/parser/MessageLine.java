@@ -28,49 +28,49 @@ package com.itsaky.androidide.plugins.properties.parser;
 import java.util.regex.Pattern;
 
 /**
- * A line of text within the message file.
- * The lines form a doubly linked list for simple navigation.
+ * A line of text within the message file. The lines form a doubly linked list for simple
+ * navigation.
  */
 public class MessageLine {
 
-    static final Pattern emptyOrCommentPattern = Pattern.compile("( *#.*)?");
-    static final Pattern typePattern = Pattern.compile("[-\\\\'A-Z\\.a-z ]+( \\([-A-Za-z 0-9]+\\))?");
-    static final Pattern infoPattern = Pattern.compile(String.format("# ([0-9]+: %s, )*[0-9]+: %s",
-            typePattern.pattern(), typePattern.pattern()));
+  static final Pattern emptyOrCommentPattern = Pattern.compile("( *#.*)?");
+  static final Pattern typePattern = Pattern.compile("[-\\\\'A-Z\\.a-z ]+( \\([-A-Za-z 0-9]+\\))?");
+  static final Pattern infoPattern = Pattern.compile(String.format("# ([0-9]+: %s, )*[0-9]+: %s",
+      typePattern.pattern(), typePattern.pattern()));
 
-    public String text;
-    MessageLine prev;
-    MessageLine next;
+  public String text;
+  MessageLine prev;
+  MessageLine next;
 
-    MessageLine(String text) {
-        this.text = text;
+  MessageLine(String text) {
+    this.text = text;
+  }
+
+  public boolean isEmptyOrComment() {
+    return emptyOrCommentPattern.matcher(text).matches();
+  }
+
+  public boolean isInfo() {
+    return infoPattern.matcher(text).matches();
+  }
+
+  boolean hasContinuation() {
+    return (next != null) && text.endsWith("\\");
+  }
+
+  MessageLine append(String text) {
+    MessageLine l = new MessageLine(text);
+    append(l);
+    return l;
+  }
+
+  void append(MessageLine l) {
+    assert l.prev == null && l.next == null;
+    l.prev = this;
+    l.next = next;
+    if (next != null) {
+      next.prev = l;
     }
-
-    public boolean isEmptyOrComment() {
-        return emptyOrCommentPattern.matcher(text).matches();
-    }
-
-    public boolean isInfo() {
-        return infoPattern.matcher(text).matches();
-    }
-
-    boolean hasContinuation() {
-        return (next != null) && text.endsWith("\\");
-    }
-
-    MessageLine append(String text) {
-        MessageLine l = new MessageLine(text);
-        append(l);
-        return l;
-    }
-
-    void append(MessageLine l) {
-        assert l.prev == null && l.next == null;
-        l.prev = this;
-        l.next = next;
-        if (next != null) {
-            next.prev = l;
-        }
-        next = l;
-    }
+    next = l;
+  }
 }

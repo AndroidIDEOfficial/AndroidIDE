@@ -18,10 +18,10 @@
 package com.itsaky.androidide.plugins
 
 import BuildConfig
-import java.io.File
 import org.antlr.v4.Tool
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.io.File
 
 /**
  * Generates lexers from the grammar files in 'src/main/antlr' directory of the project.
@@ -31,6 +31,7 @@ import org.gradle.api.Project
 class LexerGeneratorPlugin : Plugin<Project> {
 
   companion object {
+
     const val LEXER_BASE_PACKAGE = "${BuildConfig.packageName}.lexers"
     const val EXT_G4 = "g4"
   }
@@ -80,7 +81,7 @@ class LexerGeneratorPlugin : Plugin<Project> {
         "-Xexact-output-dir"
       )
     options.addAll(files)
-    
+
     Tool(options.toTypedArray()).processGrammarsOnCommandLine()
   }
 }

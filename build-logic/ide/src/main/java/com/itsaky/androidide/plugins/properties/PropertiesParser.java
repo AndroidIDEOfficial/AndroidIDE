@@ -25,94 +25,96 @@
 
 package com.itsaky.androidide.plugins.properties;
 
-import com.itsaky.androidide.plugins.properties.parser.MessageFile;
 import com.itsaky.androidide.plugins.properties.gen.ClassGenerator;
-
+import com.itsaky.androidide.plugins.properties.parser.MessageFile;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.TreeMap;
 
-/** Translates a .properties file into a .java file containing an enum-like Java class
- *  which defines static factory methods for all resource keys in a given resource file. <P>
- *
- *  Usage: java PropertiesParser -compile [path to .properties file] [output folder where .java file will be written]
+/**
+ * Translates a .properties file into a .java file containing an enum-like Java class which defines
+ * static factory methods for all resource keys in a given resource file. <P>
+ * <p>
+ * Usage: java PropertiesParser -compile [path to .properties file] [output folder where .java file
+ * will be written]
  *
  * @author mcimadamore
  */
 
 public class PropertiesParser {
 
-    public Logger logger;
+  public Logger logger;
 
-    public PropertiesParser(Logger logger) {
-        this.logger = logger;
-    }
+  public PropertiesParser(Logger logger) {
+    this.logger = logger;
+  }
 
-    public static void main(String[] args) {
-        boolean ok = run(args, System.out);
-        if ( !ok ) {
-            System.exit(1);
-        }
+  public static void main(String[] args) {
+    boolean ok = run(args, System.out);
+    if (!ok) {
+      System.exit(1);
     }
+  }
 
-    public static boolean run(String[] args, PrintStream out) {
-        PropertiesParser pp = new PropertiesParser(out::println);
-        return pp.run(args);
-    }
+  public static boolean run(String[] args, PrintStream out) {
+    PropertiesParser pp = new PropertiesParser(out::println);
+    return pp.run(args);
+  }
 
-    public static interface Logger {
-        void info(String msg);
-    }
+  public void info(String msg) {
+    logger.info(msg);
+  }
 
-    public void info(String msg) {
-        logger.info(msg);
+  public boolean run(String[] args) {
+    Map<String, String> optionsMap = parseOptions(args);
+    if (optionsMap.isEmpty()) {
+      usage();
+      return false;
     }
+    try {
+      optionsMap.forEach(this::compilePropertyFile);
+      return true;
+    } catch (RuntimeException ex) {
+      ex.printStackTrace();
+      return false;
+    }
+  }
 
-    public boolean run(String[] args) {
-        Map<String, String> optionsMap = parseOptions(args);
-        if (optionsMap.isEmpty()) {
-            usage();
-            return false;
-        }
-        try {
-            optionsMap.forEach(this::compilePropertyFile);
-            return true;
-        } catch (RuntimeException ex) {
-            ex.printStackTrace();
-            return false;
-        }
+  private void compilePropertyFile(String propertyPath, String outPath) {
+    try {
+      File propertyFile = new File(propertyPath);
+      String prefix = propertyFile.getName().split("\\.")[0];
+      MessageFile messageFile = new MessageFile(propertyFile, prefix);
+      new ClassGenerator().generateFactory(messageFile, new File(outPath));
+    } catch (Throwable ex) {
+      throw new RuntimeException(ex);
     }
+  }
 
-    private void compilePropertyFile(String propertyPath, String outPath) {
-        try {
-            File propertyFile = new File(propertyPath);
-            String prefix = propertyFile.getName().split("\\.")[0];
-            MessageFile messageFile = new MessageFile(propertyFile, prefix);
-            new ClassGenerator().generateFactory(messageFile, new File(outPath));
-        } catch (Throwable ex) {
-            throw new RuntimeException(ex);
-        }
+  private Map<String, String> parseOptions(String[] args) {
+    /* Use TreeMap to guarantee stable forEach iteration */
+    Map<String, String> optionsMap = new TreeMap<>();
+    for (int i = 0; i < args.length; i++) {
+      if ("-compile".equals(args[i]) && i + 2 < args.length) {
+        optionsMap.put(args[++i], args[++i]);
+      } else {
+        return new TreeMap<>();
+      }
     }
+    return optionsMap;
+  }
 
-    private Map<String, String> parseOptions(String args[]) {
-        /* Use TreeMap to guarantee stable forEach iteration */
-        Map<String, String> optionsMap = new TreeMap<>();
-        for ( int i = 0; i < args.length ; i++ ) {
-            if ( "-compile".equals(args[i]) && i+2 < args.length ) {
-                optionsMap.put(args[++i], args[++i]);
-            } else {
-                return new TreeMap<>();
-            }
-        }
-        return optionsMap;
-    }
+  private void usage() {
+    info("usage:");
+    info("    java PropertiesParser {-compile path_to_properties_file path_to_java_output_dir}");
+    info("");
+    info("Example:");
+    info("    java PropertiesParser -compile resources/test.properties resources");
+  }
 
-    private void usage() {
-        info("usage:");
-        info("    java PropertiesParser {-compile path_to_properties_file path_to_java_output_dir}");
-        info("");
-        info("Example:");
-        info("    java PropertiesParser -compile resources/test.properties resources");
-    }
+  public interface Logger {
+
+    void info(String msg);
+  }
 }

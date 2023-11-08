@@ -29,100 +29,102 @@ import com.itsaky.androidide.plugins.properties.parser.MessageType.CompoundType;
 import com.itsaky.androidide.plugins.properties.parser.MessageType.OrType;
 import com.itsaky.androidide.plugins.properties.parser.MessageType.SimpleType;
 import com.itsaky.androidide.plugins.properties.parser.MessageType.UnionType;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An object to represent the comment that may precede the property
- * specification in a Message.
- * The comment is modelled as a list of fields, where the fields correspond
- * to the placeholder values (e.g. {0}, {1}, etc) within the message value.
+ * An object to represent the comment that may precede the property specification in a Message. The
+ * comment is modelled as a list of fields, where the fields correspond to the placeholder values
+ * (e.g. {0}, {1}, etc) within the message value.
  */
 public final class MessageInfo {
 
-    /** The fields of the Info object. */
-    List<MessageType> types = new ArrayList<>();
+  /**
+   * Dummy message info to be used when no resource key comment is available.
+   */
+  static final MessageInfo dummyInfo = new MessageInfo(null);
+  /**
+   * The fields of the Info object.
+   */
+  List<MessageType> types = new ArrayList<>();
 
-    MessageInfo(String text) throws IllegalArgumentException {
-        if (text != null) {
-            if (!text.startsWith("# "))
-                throw new IllegalArgumentException();
-            String[] segs = text.substring(2).split(", ");
-            types = new ArrayList<>();
-            for (String seg : segs) {
-                types.add(parseType(seg));
-            }
+  MessageInfo(String text) throws IllegalArgumentException {
+    if (text != null) {
+        if (!text.startsWith("# ")) {
+            throw new IllegalArgumentException();
         }
+      String[] segs = text.substring(2).split(", ");
+      types = new ArrayList<>();
+      for (String seg : segs) {
+        types.add(parseType(seg));
+      }
     }
+  }
 
-    public List<MessageType> getTypes() {
-        return types;
+  public List<MessageType> getTypes() {
+    return types;
+  }
+
+  boolean isEmpty() {
+    return types.isEmpty();
+  }
+
+  @Override
+  public String toString() {
+    return types.toString();
+  }
+
+  /**
+   * Split the type comment into multiple alternatives (separated by 'or') - then parse each of them
+   * individually and form an 'or' type.
+   */
+  MessageType parseType(String text) {
+    int commentStart = text.indexOf("(");
+    if (commentStart != -1) {
+      //remove optional comment
+      text = text.substring(0, commentStart);
     }
-
-    boolean isEmpty() {
-        return types.isEmpty();
+    text = text.substring(text.indexOf(": ") + 2);
+    String[] alternatives = text.split(" " + OrType.OR_NAME + " ");
+    MessageType[] types = new MessageType[alternatives.length];
+    for (int i = 0; i < alternatives.length; i++) {
+      types[i] = parseAlternative(alternatives[i].trim());
     }
+    return types.length > 1 ?
+        new OrType(types) : types[0];
+  }
 
-    @Override
-    public String toString() {
-        return types.toString();
+  /**
+   * Parse a subset of the type comment; valid matches are simple types, compound types, union types
+   * and custom types.
+   */
+  MessageType parseAlternative(String text) {
+    //try with custom types
+    if (text.charAt(0) == '\'') {
+      int end = text.indexOf('\'', 1);
+      return new MessageType.CustomType(text.substring(1, end));
     }
-
-    /**
-     * Split the type comment into multiple alternatives (separated by 'or') - then parse each of them
-     * individually and form an 'or' type.
-     */
-    MessageType parseType(String text) {
-        int commentStart = text.indexOf("(");
-        if (commentStart != -1) {
-            //remove optional comment
-            text = text.substring(0, commentStart);
-        }
-        text = text.substring(text.indexOf(": ") + 2);
-        String[] alternatives = text.split(" " + OrType.OR_NAME + " ");
-        MessageType[] types = new MessageType[alternatives.length];
-        for (int i = 0 ; i < alternatives.length ; i++) {
-            types[i] = parseAlternative(alternatives[i].trim());
-        }
-        return types.length > 1 ?
-                new OrType(types) : types[0];
+    //try with simple types
+    for (SimpleType st : SimpleType.values()) {
+      if (text.equals(st.kindName())) {
+        return st;
+      }
     }
-
-    /**
-     * Parse a subset of the type comment; valid matches are simple types, compound types,
-     * union types and custom types.
-     */
-    MessageType parseAlternative(String text) {
-        //try with custom types
-        if (text.charAt(0) == '\'') {
-            int end = text.indexOf('\'', 1);
-            return new MessageType.CustomType(text.substring(1, end));
-        }
-        //try with simple types
-        for (SimpleType st : SimpleType.values()) {
-            if (text.equals(st.kindName())) {
-                return st;
-            }
-        }
-        //try with compound types
-        for (CompoundType.Kind ck : CompoundType.Kind.values()) {
-            if (text.startsWith(ck.kindName)) {
-                MessageType elemtype = parseAlternative(text.substring(ck.kindName.length() + 1).trim());
-                return new CompoundType(ck, elemtype);
-            }
-        }
-        //try with union types
-        for (UnionType.Kind uk : UnionType.Kind.values()) {
-            if (text.startsWith(uk.kindName)) {
-                return new UnionType(uk);
-            }
-        }
-        //no match - report a warning
-        System.err.println("WARNING - unrecognized type: " + text);
-        return SimpleType.UNKNOWN;
+    //try with compound types
+    for (CompoundType.Kind ck : CompoundType.Kind.values()) {
+      if (text.startsWith(ck.kindName)) {
+        MessageType elemtype = parseAlternative(text.substring(ck.kindName.length() + 1).trim());
+        return new CompoundType(ck, elemtype);
+      }
     }
-
-    /** Dummy message info to be used when no resource key comment is available. */
-    static final MessageInfo dummyInfo = new MessageInfo(null);
+    //try with union types
+    for (UnionType.Kind uk : UnionType.Kind.values()) {
+      if (text.startsWith(uk.kindName)) {
+        return new UnionType(uk);
+      }
+    }
+    //no match - report a warning
+    System.err.println("WARNING - unrecognized type: " + text);
+    return SimpleType.UNKNOWN;
+  }
 }
