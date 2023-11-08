@@ -40,6 +40,8 @@ object SigningKeyUtils {
       return
     }
 
+    signingKey.parentFile.mkdirs()
+
     getEnvOrProp(key = KEY_BIN, warn = false)?.also { bin ->
       val contents = Base64.getDecoder().decode(bin)
       signingKey.writeBytes(contents)
