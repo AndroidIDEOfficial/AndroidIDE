@@ -330,13 +330,7 @@ class CodeEditorView(
     // This will make sure that textDocument/didOpen is sent
     binding.editor.file = file
 
-    if (context is Activity) {
-      (context as Activity).invalidateOptionsMenu()
-
-      (context as? BaseEditorActivity?)?.apply {
-        binding.bottomSheet.refreshSymbolInput(this@CodeEditorView)
-      }
-    }
+    (context as? Activity?)?.invalidateOptionsMenu()
   }
 
   private fun createLanguageServer(file: File): ILanguageServer? {
