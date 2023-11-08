@@ -25,7 +25,6 @@ import android.view.LayoutInflater
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import com.blankj.utilcode.util.SizeUtils
-import com.itsaky.androidide.activities.editor.BaseEditorActivity
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding
