@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.utils
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.*
 
 /**
@@ -213,7 +214,7 @@ open class ClassTrie(val root: Node = Node()) {
 
     internal constructor() : this("", "")
 
-    val children: MutableMap<String, Node> = mutableMapOf()
+    val children: MutableMap<String, Node> = ConcurrentHashMap()
     var isClass = false
 
     open fun createChild(name: String, qualifiedName: String): Node {
