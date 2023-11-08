@@ -1,9 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
-import androidx.navigation.safe.args.generator.ext.capitalize
-import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
 import java.util.Base64
-import java.util.Locale
 
 plugins {
   id("com.android.application")
@@ -12,6 +10,10 @@ plugins {
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
   id("androidx.navigation.safeargs.kotlin")
+}
+
+apply {
+  plugin(AndroidIDEAssetsPlugin::class.java)
 }
 
 android {
@@ -208,65 +210,4 @@ fun getEnvOrProp(key: String): String? {
     return null
   }
   return value
-}
-
-tasks.create("generateInitScript") {
-  val out = file("src/main/assets/data/common/androidide.init.gradle")
-
-  if (out.exists()) {
-    out.delete()
-  }
-
-  doLast {
-    out.bufferedWriter().use {
-
-      it.write(
-        """
-      initscript {
-          repositories {
-              
-              // Always specify the snapshots repository first
-              maven {
-                  // Add snapshots repository for AndroidIDE CI builds
-                  url "${VersionUtils.SNAPSHOTS_REPO}"
-              }
-              
-              mavenCentral()
-              google()
-          }
-
-          dependencies {
-              classpath '${BuildConfig.packageName}:gradle-plugin:$downloadVersion'
-          }
-      }
-      
-      apply plugin: com.itsaky.androidide.gradle.AndroidIDEInitScriptPlugin
-    """
-          .trimIndent()
-      )
-    }
-  }
-}
-
-afterEvaluate {
-  extensions.getByType<BaseExtension>().apply {
-    val flavorNames = productFlavors.map { it.name.capitalize(Locale.getDefault()) }
-    val dependents =
-      listOf(
-        "merge@@DebugAssets",
-        "merge@@ReleaseAssets",
-        "lintAnalyze@@Debug",
-        "lintAnalyze@@Release",
-        "lintVitalAnalyze@@Release"
-      )
-
-    for (dependent in dependents) {
-      for (flavorName in flavorNames) {
-        tasks.getByName(dependent.replace("@@", flavorName)).apply {
-          dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
-          dependsOn("generateInitScript")
-        }
-      }
-    }
-  }
 }

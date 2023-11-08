@@ -26,17 +26,15 @@ tasks.withType<Jar> {
   manifest { attributes("Main-Class" to "${BuildConfig.packageName}.tooling.impl.Main") }
 }
 
-tasks.register<Copy>("copyJarToAssets") {
-  from(project.file("${project.buildDir}/libs/tooling-api-all.jar"))
-  into(project.rootProject.file("app/src/main/assets/data/common/"))
+tasks.register("deleteExistingJarFiles") {
+  delete {
+    delete(project.layout.buildDirectory.dir("libs"))
+  }
 }
 
-tasks.register("deleteExistingJarFiles") { delete { delete(project.buildDir.resolve("libs")) } }
-
 tasks.register("copyJar") {
-  finalizedBy("copyJarToAssets")
   doLast {
-    val libsDir = project.buildDir.resolve("libs")
+    val libsDir = project.layout.buildDirectory.dir("libs")
 
     copy {
       from(libsDir)
@@ -52,7 +50,9 @@ project.tasks.getByName("jar") {
   finalizedBy("shadowJar")
 }
 
-project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
+project.tasks.getByName("shadowJar") {
+  finalizedBy("copyJar")
+}
 
 dependencies {
   api(projects.subprojects.toolingApi)
