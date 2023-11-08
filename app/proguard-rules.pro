@@ -4,11 +4,6 @@
 -dontnote **
 -dontobfuscate
 
--keepattributes Signature
--keepattributes Exceptions
--keepattributes *Annotation*
--keepattributes SourceFile,LineNumberTable
-
 -keep class javax.** { *; }
 -keep class jdkx.** { *; }
 
