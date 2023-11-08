@@ -37,13 +37,18 @@ class AndroidIDEPlugin : Plugin<Project> {
       if (!project.buildFile.exists() || !project.buildFile.isFile) {
         return@run
       }
-      
+
+      val isAndroidModule = plugins.hasPlugin("com.android.application") ||
+          plugins.hasPlugin("com.android.library")
+
+      if (isAndroidModule) {
+        // setup signing configuration
+        plugins.apply(SigningConfigPlugin::class.java)
+      }
+
       val taskName = when {
         project.path == ":app" -> "testArm64-v8aDebugUnitTest"
-
-        plugins.hasPlugin("com.android.application") ||
-            plugins.hasPlugin("com.android.library") -> "testDebugUnitTest"
-
+        isAndroidModule -> "testDebugUnitTest"
         else -> "test"
       }
 

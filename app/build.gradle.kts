@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
-import java.util.Base64
 
 plugins {
   id("com.android.application")
@@ -28,31 +27,8 @@ android {
     generateLocaleConfig = true
   }
 
-  compileOptions { isCoreLibraryDesugaringEnabled = true }
-
-  downloadSigningKey()
-
-  // Keystore credentials
-  val alias = getEnvOrProp(KEY_ALIAS)
-  val storePass = getEnvOrProp(KEY_STORE_PASS)
-  val keyPass = getEnvOrProp(KEY_PASS)
-
-  if (alias != null && storePass != null && keyPass != null && signingKey.exists()) {
-    signingConfigs.create("common") {
-      storeFile = signingKey
-      keyAlias = alias
-      storePassword = storePass
-      keyPassword = keyPass
-    }
-
-    buildTypes {
-      debug { signingConfig = signingConfigs.getByName("common") }
-      release { signingConfig = signingConfigs.getByName("common") }
-    }
-  } else {
-    logger.warn(
-      "Signing info not configured. keystoreFile=$signingKey[exists=${signingKey.exists()}]"
-    )
+  compileOptions {
+    isCoreLibraryDesugaringEnabled = true
   }
 
   buildTypes { release { isShrinkResources = true } }
@@ -170,44 +146,4 @@ dependencies {
 
   testImplementation(projects.testing.unit)
   androidTestImplementation(projects.testing.android)
-}
-
-fun downloadSigningKey() {
-  if (signingKey.exists()) {
-    logger.info("Skipping download as ${signingKey.name} file already exists.")
-    return
-  }
-
-  getEnvOrProp(KEY_BIN)?.let { bin ->
-    val contents = Base64.getDecoder().decode(bin)
-    signingKey.writeBytes(contents)
-    return
-  }
-
-  // URL to download the signing key
-  val url = getEnvOrProp(KEY_URL) ?: return
-
-  // Username and password required to download the keystore
-  val user = getEnvOrProp(AUTH_USER) ?: return
-  val pass = getEnvOrProp(AUTH_PASS) ?: return
-
-  logger.info("Downloading signing key...")
-  val result = exec {
-    workingDir(rootProject.projectDir)
-    commandLine("bash", "./.tools/download_key.sh", signingKey.absolutePath, url, user, pass)
-  }
-
-  result.assertNormalExitValue()
-}
-
-fun getEnvOrProp(key: String): String? {
-  var value: String? = System.getenv(key)
-  if (value.isNullOrBlank()) {
-    value = project.properties[key] as? String?
-  }
-  if (value.isNullOrBlank()) {
-    logger.warn("$key is not set. Debug key will be used to sign the APK")
-    return null
-  }
-  return value
 }

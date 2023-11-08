@@ -16,7 +16,8 @@
  */
 
 import org.gradle.api.Project
-import java.io.File
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 
 const val KEY_ALIAS = "IDE_SIGNING_ALIAS"
 const val AUTH_PASS = "IDE_SIGNING_AUTH_PASS"
@@ -31,5 +32,5 @@ const val KEY_BIN = "IDE_SIGNING_KEY_BIN"
  */
 const val AGP_VERSION_MINIMUM = "7.2.0"
 
-val Project.signingKey: File
-  get() = rootProject.file("signing-key.jks")
+val Project.signingKey: Provider<RegularFile>
+  get() = rootProject.layout.buildDirectory.file("signing/signing-key.jks")
