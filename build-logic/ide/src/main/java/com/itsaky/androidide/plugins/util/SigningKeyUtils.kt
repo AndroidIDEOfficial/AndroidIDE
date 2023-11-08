@@ -40,7 +40,7 @@ object SigningKeyUtils {
       return
     }
 
-    getEnvOrProp(KEY_BIN)?.let { bin ->
+    getEnvOrProp(key = KEY_BIN, warn = false)?.also { bin ->
       val contents = Base64.getDecoder().decode(bin)
       signingKey.writeBytes(contents)
       return
@@ -62,14 +62,16 @@ object SigningKeyUtils {
     result.assertNormalExitValue()
   }
 
-  internal fun Project.getEnvOrProp(key: String): String? {
+  internal fun Project.getEnvOrProp(key: String, warn: Boolean = true): String? {
     var value: String? = System.getenv(key)
     if (value.isNullOrBlank()) {
       value = project.properties[key] as? String?
     }
 
     if (value.isNullOrBlank()) {
-      logger.warn("$key is not set. Debug key will be used to sign the APK")
+      if (warn) {
+        logger.warn("$key is not set. Debug key will be used to sign the APK")
+      }
       return null
     }
     return value
