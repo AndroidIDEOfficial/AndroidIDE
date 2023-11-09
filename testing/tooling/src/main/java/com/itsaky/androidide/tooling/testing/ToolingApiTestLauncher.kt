@@ -30,7 +30,7 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
-import com.itsaky.androidide.tooling.impl.util.ToolingProps
+import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader

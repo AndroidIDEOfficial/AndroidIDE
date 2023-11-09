@@ -36,7 +36,7 @@ import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
-import com.itsaky.androidide.tooling.impl.util.ToolingProps
+import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.AndroidPluginVersion

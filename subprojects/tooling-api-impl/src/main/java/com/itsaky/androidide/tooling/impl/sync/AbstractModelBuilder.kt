@@ -22,7 +22,7 @@ import com.itsaky.androidide.builder.model.DefaultSyncIssue
 import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.util.StopWatch
-import com.itsaky.androidide.tooling.impl.util.ToolingProps
+import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.utils.AndroidPluginVersion
 import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.MINIMUM_SUPPORTED
 import com.itsaky.androidide.utils.ILogger
