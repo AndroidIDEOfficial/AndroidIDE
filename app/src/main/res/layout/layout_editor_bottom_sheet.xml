@@ -74,6 +74,8 @@
     android:layout_height="match_parent"
     android:layout_above="@id/space_bottom"
     android:layout_below="@id/tabs"
+    android:clickable="true"
+    android:focusable="false"
     android:background="?attr/colorSurface" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
