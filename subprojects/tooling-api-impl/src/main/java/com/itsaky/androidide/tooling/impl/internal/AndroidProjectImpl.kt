@@ -42,6 +42,7 @@ import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier.copy
 import com.itsaky.androidide.tooling.api.util.compareSemanticVersions
 import com.itsaky.androidide.tooling.api.util.extractPackageName
+import com.itsaky.androidide.utils.AndroidPluginVersion
 import org.gradle.tooling.model.GradleProject
 import java.io.File
 import java.io.Serializable
@@ -163,7 +164,7 @@ internal class AndroidProjectImpl(
     return CompletableFuture.supplyAsync {
 
       // model sync files available only in v7.3.0 and later
-      return@supplyAsync if (compareSemanticVersions(versions.agp, "7.3.0") >= 0)
+      return@supplyAsync if (AndroidPluginVersion.parse(versions.agp) >= AndroidPluginVersion(7, 3, 0))
         copy(androidProject.modelSyncFiles)
       else emptyList()
     }
