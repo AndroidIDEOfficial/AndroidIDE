@@ -1,6 +1,6 @@
 [versions]
-agp = "8.2.0-rc02"
-agp-tooling = "8.1.0"
+agp = "8.1.3"
+agp-tooling = "8.2.0-rc02"
 gradle-tooling = "8.3"
 junit-jupiter = "5.10.0"
 kotlin = "1.9.10"
@@ -125,6 +125,11 @@ tests-mockk = { module = "io.mockk:mockk", version = "1.13.8" }
 tooling-builderModel = { module = "com.android.tools.build:builder-model", version.ref = "agp-tooling" }
 tooling-gradleApi = { module = "org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
 tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
+
+# Classpaths
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", version = "0.10.6" }
+nav-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

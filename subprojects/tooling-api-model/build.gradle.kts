@@ -32,8 +32,8 @@ dependencies {
 }
 
 tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
+  from (project.layout.buildDirectory.file("libs/tooling-api-model.jar"))
+  into (project.rootProject.mkdir ("tests/test-home/.androidide/init"))
   rename { "model.jar" }
 
   outputs.upToDateWhen { false }

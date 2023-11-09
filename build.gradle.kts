@@ -39,9 +39,9 @@ plugins {
 
 buildscript {
   dependencies {
-    classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
-    classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0")
+    classpath(libs.oss.licenses.plugin)
+    classpath(libs.kotlin.gradle.plugin)
+    classpath(libs.nav.safe.args.gradle.plugin)
   }
 }
 
@@ -212,8 +212,8 @@ val projectsRequiringMavenLocalForTests = arrayOf(":gradle-plugin")
 val mavenLocalRepos = hashMapOf<String, String>()
 
 fun Project.configureMavenLocal() {
-  val mavenLocalPath = "${buildDir}/maven-local"
-  mavenLocalRepos[project.path] = mavenLocalPath
+  val mavenLocalPath = layout.buildDirectory.dir("maven-local")
+  mavenLocalRepos[project.path] = mavenLocalPath.get().asFile.absolutePath
 
   extensions.findByType(PublishingExtension::class.java)?.run {
     repositories {
@@ -232,7 +232,7 @@ fun Project.configureMavenLocal() {
     tasks.withType<Test> {
       dependsOn(tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
       doFirst {
-        val file = File(mavenLocalPath, "repos.txt")
+        val file = mavenLocalPath.get().file("repos.txt").asFile
         file.writeText(mavenLocalRepos.values.joinToString(separator = File.pathSeparator))
       }
     }
@@ -245,4 +245,4 @@ fun Project.configureMavenLocal() {
   }
 }
 
-tasks.register<Delete>("clean") { delete(rootProject.buildDir) }
+tasks.register<Delete>("clean") { delete(rootProject.layout.buildDirectory) }

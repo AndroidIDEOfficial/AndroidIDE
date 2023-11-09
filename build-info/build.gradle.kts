@@ -24,18 +24,18 @@ plugins {
 
 description = "Information about the AndroidIDE build"
 
-val buildInfoGenDir = project.buildDir.resolve("generated/buildInfo").also { it.createDirectory() }
+val buildInfoGenDir: Provider<Directory> = project.layout.buildDirectory.dir("generated/buildInfo").also { it.get().asFile.createDirectory() }
 
 sourceSets { getByName("main").java.srcDir(buildInfoGenDir) }
 
 tasks.create("generateBuildInfo") {
   val buildInfoPath = "com/itsaky/androidide/buildinfo/BuildInfo.java"
-  val buildInfo = buildInfoGenDir.resolve(buildInfoPath)
+  val buildInfo = buildInfoGenDir.get().file(buildInfoPath)
   val buildInfoIn = project.file("src/main/java/${buildInfoPath}.in")
 
   doLast {
     buildInfoIn.replaceContents(
-      dest = buildInfo,
+      dest = buildInfo.asFile,
       comment = "//",
       candidates =
         arrayOf(

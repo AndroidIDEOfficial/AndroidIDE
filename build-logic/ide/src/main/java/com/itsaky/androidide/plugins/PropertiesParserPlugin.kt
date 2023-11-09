@@ -76,7 +76,7 @@ private val Project.resDir: File
   get() = file("src/main/resources")
 
 private val Project.propsDir: File
-  get() = File(buildDir, "generated/properties")
+  get() = layout.buildDirectory.dir( "generated/properties").get().asFile
 
 private fun Project.createParserOptions(): List<String> {
   val options = mutableListOf<String>()
