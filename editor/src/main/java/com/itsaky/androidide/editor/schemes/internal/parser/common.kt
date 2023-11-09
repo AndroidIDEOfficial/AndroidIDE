@@ -47,7 +47,7 @@ fun IDEColorScheme.parseColorValue(value: String?, colorId: Boolean = true): Int
     val refName = value.substring(1)
     val refValue =
       definitions[refName] ?: throw ParseException("Referenced color '$value' not found")
-    return if (colorId) refValue else colorIds.get(refValue)
+    return if (colorId) refValue else colorIds.getOrDefault(refValue, 0)
   }
 
   if (value[0] == '#') {
