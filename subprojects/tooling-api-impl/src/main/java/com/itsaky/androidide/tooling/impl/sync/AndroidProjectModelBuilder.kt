@@ -65,6 +65,9 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       ModelBuilderParameter::class.java) {
       it.variantName = configurationVariant
       it.dontBuildRuntimeClasspath = false
+      it.dontBuildAndroidTestRuntimeClasspath = true
+      it.dontBuildTestFixtureRuntimeClasspath = true
+      it.dontBuildUnitTestRuntimeClasspath = true
     }
 
     controller.findModel(module, ProjectSyncIssues::class.java)?.also { syncIssues ->

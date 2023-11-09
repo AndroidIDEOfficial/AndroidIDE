@@ -22,6 +22,7 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultJavaArtifact : JavaArtifact, Serializable {
+
   private val serialVersionUID = 1L
   override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
 
@@ -32,4 +33,5 @@ class DefaultJavaArtifact : JavaArtifact, Serializable {
   override var ideSetupTaskNames: Set<String> = emptySet()
   override var mockablePlatformJar: File? = null
   override var runtimeResourceFolder: File? = null
+  override val generatedClassPaths: Map<String, File> = emptyMap()
 }
