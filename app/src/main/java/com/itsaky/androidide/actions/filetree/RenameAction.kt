@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.actions.filetree
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.view.LayoutInflater
 import com.blankj.utilcode.util.FileUtils
@@ -67,7 +68,11 @@ class RenameAction(context: Context, override val order: Int) :
       _ ->
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
+      val progressDialog =
+          ProgressDialog.show(context, null, context.getString(com.itsaky.androidide.resources.R.string.please_wait), true, false)
       executeAsync({ name.length in 1..40 && FileUtils.rename(file, name) }) {
+        progressDialog.dismiss()
+
         val renamed = it ?: false
 
         flashMessage(
