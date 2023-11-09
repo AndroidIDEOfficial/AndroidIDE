@@ -30,6 +30,7 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
+import com.itsaky.androidide.tooling.impl.util.ToolingProps
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
@@ -72,14 +73,23 @@ class ToolingApiTestLauncher {
       projectDir.pathString,
       client.gradleDistParams
     ),
-    log: ILogger = ILogger.newInstance("BuildOutputLogger")
+    log: ILogger = ILogger.newInstance("BuildOutputLogger"),
+    sysProps: Map<String, String> = emptyMap(),
+    sysEnvs: Map<String, String> = emptyMap()
   ): Triple<IToolingApiServer, IProject, InitializeResult?> {
-    val builder = ProcessBuilder(createProcessCmd(FileProvider.implModule()
-      .resolve("build/libs/tooling-api-all.jar").pathString))
+    val cmdLine = createProcessCmd(
+      FileProvider.implModule()
+        .resolve("build/libs/tooling-api-all.jar").pathString,
+      sysProps
+    )
+
+    val builder = ProcessBuilder(cmdLine)
     val androidHome = findAndroidHome()
-    println("ANDROID_HOME=$androidHome")
+
     builder.environment()["ANDROID_SDK_ROOT"] = androidHome
     builder.environment()["ANDROID_HOME"] = androidHome
+    builder.environment().putAll(sysEnvs)
+
     val proc = builder.start()
 
     Thread(Reader(proc.errorStream, log)).start()
@@ -95,7 +105,10 @@ class ToolingApiTestLauncher {
     return Triple(server, project, result)
   }
 
-  private fun createProcessCmd(jar: String): List<String> {
+  private fun createProcessCmd(
+    jar: String,
+    sysProps: Map<String, String> = emptyMap()
+  ): List<String> {
     val cmd = mutableListOf("java")
     System.getenv("JAVA_HOME")?.let {
       val java = File(it, "bin/java")
@@ -116,6 +129,12 @@ class ToolingApiTestLauncher {
       cmd.add("--add-exports=${export.key}/${export.value}=ALL-UNNAMED")
     }
 
+    cmd.add("-D${ToolingProps.TESTING_IS_TEST_ENV}=true")
+
+    sysProps.forEach { (key, value) ->
+      cmd.add("-D$key=$value")
+    }
+
     Collections.addAll(cmd, "-jar", jar)
 
     println(
@@ -129,7 +148,7 @@ class ToolingApiTestLauncher {
     var agpVersion: String = DEFAULT_AGP_VERSION,
     var gradleVersion: String = DEFAULT_GRADLE_VERSION,
     private val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName),
-    private val extraArgs : List<String> = emptyList(),
+    private val extraArgs: List<String> = emptyList(),
     private var excludeUnresolvedDependency: Boolean = false
   ) : IToolingApiClient {
 
@@ -193,7 +212,8 @@ class ToolingApiTestLauncher {
     override fun onProgressEvent(event: ProgressEvent) {}
 
     override fun getBuildArguments(): CompletableFuture<List<String>> {
-      return CompletableFuture.completedFuture(mutableListOf("--stacktrace", "--info").also { it.addAll(extraArgs) })
+      return CompletableFuture.completedFuture(
+        mutableListOf("--stacktrace", "--info").also { it.addAll(extraArgs) })
     }
 
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =

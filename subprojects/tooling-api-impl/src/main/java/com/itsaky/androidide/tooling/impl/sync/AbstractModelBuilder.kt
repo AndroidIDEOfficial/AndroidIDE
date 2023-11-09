@@ -22,8 +22,8 @@ import com.itsaky.androidide.builder.model.DefaultSyncIssue
 import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.util.StopWatch
+import com.itsaky.androidide.tooling.impl.util.ToolingProps
 import com.itsaky.androidide.utils.AndroidPluginVersion
-import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.LATEST_TESTED
 import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.MINIMUM_SUPPORTED
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.LogUtils
@@ -78,9 +78,9 @@ abstract class AbstractModelBuilder<P, R>(
       }
 
       // Warn the user if the project is using a newer AGP version
-      if (!newerAgpWarned.get() && agpVersion > LATEST_TESTED) {
+      if (!newerAgpWarned.get() && agpVersion > ToolingProps.latestTestedAgpVersion) {
         val syncIssue = DefaultSyncIssue(
-          data = "${agpVersion.toStringSimple()}:${LATEST_TESTED.toStringSimple()}",
+          data = "${agpVersion.toStringSimple()}:${ToolingProps.latestTestedAgpVersion.toStringSimple()}",
           message = "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.",
           multiLineMessage = null,
           severity = SyncIssue.SEVERITY_WARNING,

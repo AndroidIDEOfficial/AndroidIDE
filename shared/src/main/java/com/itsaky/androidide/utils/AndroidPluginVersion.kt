@@ -228,7 +228,7 @@ class AndroidPluginVersion private constructor(
 
   fun toStringSimple(): String = "$major.$minor.$micro" +
       (if (previewType != null) "-$previewType" else "") +
-      (if (preview > 0) preview else "")
+      (if (preview > 0) if(preview < 10) "0$preview" else preview else "")
 
   companion object {
 

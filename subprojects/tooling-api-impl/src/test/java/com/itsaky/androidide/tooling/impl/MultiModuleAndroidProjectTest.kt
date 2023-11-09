@@ -36,8 +36,10 @@ import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
+import com.itsaky.androidide.tooling.impl.util.ToolingProps
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
+import com.itsaky.androidide.utils.AndroidPluginVersion
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import org.junit.Test
@@ -45,8 +47,10 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
+import kotlin.io.path.createDirectory
 import kotlin.io.path.createFile
 import kotlin.io.path.deleteIfExists
+import kotlin.io.path.exists
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -69,7 +73,8 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test project initialization with file path`() {
-    val path = FileProvider.projectRoot().resolve("build").resolve("should-be-directory.txt")
+    val path = FileProvider.projectRoot().resolve("build")
+      .also { if (!it.exists()) it.createDirectory() }.resolve("should-be-directory.txt")
     path.deleteIfExists()
     path.createFile()
 
@@ -294,9 +299,16 @@ class MultiModuleAndroidProjectTest {
   fun `test CI-only latest tested AGP version warning`() {
     ciOnlyTest {
       val log = CollectingLogger()
-      val agpVersion = "8.1.1"
-      val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "8.1", log = log)
-      val (_, project, result) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+      val agpVersion = AndroidPluginVersion.parse(BuildInfo.AGP_VERSION_LATEST)
+
+      val client = MultiVersionTestClient(agpVersion = agpVersion.toStringSimple(),
+        gradleVersion = "${agpVersion.major}.${agpVersion.minor}", log = log)
+      val (_, project, result) = ToolingApiTestLauncher().launchServer(
+        client = client,
+        log = log,
+        sysProps = mapOf(
+          ToolingProps.TESTING_LATEST_AGP_VERSION to MultiVersionTestClient.DEFAULT_AGP_VERSION)
+      )
       val output = log.toString()
 
       if (result?.isSuccessful != true) {
