@@ -27,6 +27,7 @@ import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.FileManager
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.FlashType
 import com.itsaky.androidide.utils.flashMessage
@@ -66,27 +67,30 @@ class RenameAction(context: Context, override val order: Int) :
       _ ->
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
-      val renamed = name.length in 1..40 && FileUtils.rename(file, name)
-      flashMessage(
-        if (renamed) com.itsaky.androidide.resources.R.string.renamed
-        else com.itsaky.androidide.resources.R.string.rename_failed,
-        if (renamed) FlashType.SUCCESS else FlashType.ERROR
-      )
-      if (!renamed) {
-        return@setPositiveButton
-      }
+      executeAsync({ name.length in 1..40 && FileUtils.rename(file, name) }) {
+        val renamed = it ?: false
 
-      notifyFileRenamed(file, name, context)
+        flashMessage(
+          if (renamed) com.itsaky.androidide.resources.R.string.renamed
+          else com.itsaky.androidide.resources.R.string.rename_failed,
+          if (renamed) FlashType.SUCCESS else FlashType.ERROR
+        )
+        if (!renamed) {
+          return@executeAsync
+        }
 
-      if (lastHeld != null) {
-        val parent = lastHeld.parent
-        parent.deleteChild(lastHeld)
-        val node = TreeNode(File(file.parentFile, name))
-        node.viewHolder = FileTreeViewHolder(context)
-        parent.addChild(node)
-        requestExpandNode(parent)
-      } else {
-        requestFileListing()
+        notifyFileRenamed(file, name, context)
+
+        if (lastHeld != null) {
+          val parent = lastHeld.parent
+          parent.deleteChild(lastHeld)
+          val node = TreeNode(File(file.parentFile, name))
+          node.viewHolder = FileTreeViewHolder(context)
+          parent.addChild(node)
+          requestExpandNode(parent)
+        } else {
+          requestFileListing()
+        }
       }
     }
     builder.create().show()
