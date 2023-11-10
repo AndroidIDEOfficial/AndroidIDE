@@ -174,6 +174,7 @@ private class TabSize(
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
 
+  @IgnoredOnParcel
   override val dialogCancellable = true
 
   @IgnoredOnParcel
@@ -208,6 +209,7 @@ private class ColorSchemePreference(
   override val icon: Int? = R.drawable.ic_color_scheme
 ) : SingleChoicePreference() {
 
+  @IgnoredOnParcel
   override val dialogCancellable = true
 
   @IgnoredOnParcel
@@ -238,7 +240,7 @@ private class NonPrintablePaintingFlags(
     return arrayOf("Leading", "Trailing", "Inner", "Empty lines", "Line breaks")
   }
 
-  override fun getCheckedItems(): BooleanArray {
+  override fun getCheckedItems(choices: Array<String>): BooleanArray? {
     return booleanArrayOf(
       drawLeadingWs,
       drawTrailingWs,
@@ -248,7 +250,7 @@ private class NonPrintablePaintingFlags(
     )
   }
 
-  override fun onChoicesConfirmed(selectedPositions: List<Int>) {
+  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {
     for (position in selectedPositions) {
       when (position) {
         0 -> ::drawLeadingWs

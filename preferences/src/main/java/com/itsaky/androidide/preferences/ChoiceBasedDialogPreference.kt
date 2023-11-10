@@ -27,21 +27,25 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  */
 abstract class ChoiceBasedDialogPreference : DialogPreference(), PreferenceChoices {
 
-  protected open var selectedPositions: MutableList<Int>? = null
+  private var checkedPositions = intArrayOf()
 
   final override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     val choices = getChoices(preference.context)
-    selectedPositions = MutableList(size = choices.size) { -1 }
+    val checkedItems = getCheckedItems(choices)
 
-    onConfigureDialogChoices(preference, dialog, choices)
+    checkedPositions = checkedItems?.map { if(it) 1 else 0 }?.toIntArray() ?: intArrayOf()
+
+    onConfigureDialogChoices(preference, dialog, choices, checkedItems)
 
     dialog.setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
       dialogInterface.dismiss()
 
-      val positions = selectedPositions?.also { positions ->
-        positions.removeIf { idx -> idx == -1 }
+      val selections = HashMap<String, Boolean>(choices.size)
+      for (i in 0..checkedPositions.lastIndex) {
+        selections[choices[i]] = checkedPositions[i] == 1
       }
-      onChoicesConfirmed(positions ?: emptyList())
+
+      onChoicesConfirmed(checkedPositions, selections)
     }
 
     dialog.setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
@@ -51,11 +55,11 @@ abstract class ChoiceBasedDialogPreference : DialogPreference(), PreferenceChoic
   }
 
   override fun onSelectionChanged(position: Int, isSelected: Boolean) {
-    if (isSelected) {
-      selectedPositions!!.add(position)
-    } else {
-      selectedPositions!!.removeAt(position)
+    if (position < 0 || position >= checkedPositions.size) {
+      return
     }
+
+    checkedPositions[position] = if (isSelected) 1 else 0
   }
 
   /**
@@ -64,10 +68,11 @@ abstract class ChoiceBasedDialogPreference : DialogPreference(), PreferenceChoic
   protected abstract fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>
+    choices: Array<String>,
+    checkedItems: BooleanArray?
   )
 
-  override fun onChoicesConfirmed(selectedPositions: List<Int>) {}
+  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {}
 
   override fun onChoicesCancelled() {}
 }

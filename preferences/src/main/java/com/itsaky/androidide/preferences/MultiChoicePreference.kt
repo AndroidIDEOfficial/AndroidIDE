@@ -31,22 +31,16 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  */
 abstract class MultiChoicePreference : ChoiceBasedDialogPreference(), PreferenceChoices {
 
-  /**
-   * Get the index of all the checked and unchecked items.
-   *
-   * @see MaterialAlertDialogBuilder.setMultiChoiceItems
-   */
-  abstract fun getCheckedItems(): BooleanArray
-
   override fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>
+    choices: Array<String>,
+    checkedItems: BooleanArray?
   ) {
 
     dialog.setMultiChoiceItems(
-      getChoices(preference.context),
-      getCheckedItems()
+      choices,
+      checkedItems!!
     ) { _, which, checked ->
       onSelectionChanged(which, checked)
     }

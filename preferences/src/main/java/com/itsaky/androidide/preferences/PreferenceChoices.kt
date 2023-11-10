@@ -18,6 +18,7 @@
 package com.itsaky.androidide.preferences
 
 import android.content.Context
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * A preference with choices.
@@ -28,6 +29,13 @@ interface PreferenceChoices {
 
   /** Get the choices to show in the preference. */
   fun getChoices(context: Context): Array<String>
+
+  /**
+   * Get all checked and unchecked items.
+   *
+   * @see MaterialAlertDialogBuilder.setMultiChoiceItems
+   */
+  fun getCheckedItems(choices: Array<String>): BooleanArray?
 
   /**
    * Called when an item is selected from the single choice list.
@@ -42,7 +50,7 @@ interface PreferenceChoices {
    *
    * @param selectedPositions The positions of the selected items.
    */
-  fun onChoicesConfirmed(selectedPositions: List<Int>)
+  fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>)
 
   /**
    * Called when the user cancels the selections.

@@ -44,14 +44,19 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
    */
   abstract fun getInitiallySelectionItemPosition(context: Context): Int
 
+  final override fun getCheckedItems(choices: Array<String>): BooleanArray? {
+    return null
+  }
+
   override fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>
+    choices: Array<String>,
+    checkedItems: BooleanArray?
   ) {
 
     dialog.setSingleChoiceItems(
-      getChoices(preference.context),
+      choices,
       getInitiallySelectionItemPosition(preference.context))
     { _, position ->
 
@@ -64,8 +69,11 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
     }
   }
 
-  final override fun onChoicesConfirmed(selectedPositions: List<Int>) {
-    selectedPositions.firstOrNull()?.let { onChoiceConfirmed(it) }
+  final override fun onChoicesConfirmed(
+    selectedPositions: IntArray,
+    selections: Map<String, Boolean>
+  ) {
+    onChoiceConfirmed(currentSelection)
   }
 
   protected open fun onChoiceConfirmed(position: Int) {}

@@ -89,42 +89,28 @@ private class GradleCommands(
   override val icon: Int? = drawable.ic_bash_commands,
 ) : MultiChoicePreference() {
 
-  override fun getCheckedItems(): BooleanArray {
-    return booleanArrayOf(
-      isStacktraceEnabled,
-      isInfoEnabled,
-      isDebugEnabled,
-      isScanEnabled,
-      isWarningModeAllEnabled,
-      isBuildCacheEnabled,
-      isOfflineEnabled
-    )
+  @IgnoredOnParcel
+  private val choices = linkedMapOf(
+    "--stacktrace" to ::isStacktraceEnabled,
+    "--info" to ::isInfoEnabled,
+    "--debug" to ::isDebugEnabled,
+    "--scan" to ::isScanEnabled,
+    "--warning-mode all" to ::isWarningModeAllEnabled,
+    "--build-cache" to ::isBuildCacheEnabled,
+    "--offline" to ::isOfflineEnabled,
+  )
+
+  override fun getCheckedItems(choices: Array<String>): BooleanArray {
+    return BooleanArray(choices.size) { this.choices[choices[it]]?.get() == true }
   }
 
   override fun getChoices(context: Context): Array<String> {
-    return arrayOf(
-      "--stacktrace",
-      "--info",
-      "--debug",
-      "--scan",
-      "--warning-mode all",
-      "--build-cache",
-      "--offline"
-    )
+    return choices.keys.toTypedArray()
   }
 
-  override fun onChoicesConfirmed(selectedPositions: List<Int>) {
-    for (position in selectedPositions) {
-      when (position) {
-        0 -> ::isStacktraceEnabled
-        1 -> ::isInfoEnabled
-        2 -> ::isDebugEnabled
-        3 -> ::isScanEnabled
-        4 -> ::isWarningModeAllEnabled
-        5 -> ::isBuildCacheEnabled
-        6 -> ::isOfflineEnabled
-        else -> null
-      }?.set(true)
+  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {
+    selections.forEach { (key, value) ->
+      choices[key]?.set(value)
     }
   }
 }
