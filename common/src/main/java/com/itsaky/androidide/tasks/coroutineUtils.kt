@@ -61,12 +61,12 @@ fun CoroutineScope.cancelIfActive(exception: CancellationException? = null) {
  * @param action The action to be executed.
  * @see CoroutineScope.launch
  */
-fun CoroutineScope.launchAsyncWithProgress(
+inline fun CoroutineScope.launchAsyncWithProgress(
   context: CoroutineContext = EmptyCoroutineContext,
   start: CoroutineStart = CoroutineStart.DEFAULT,
-  configureFlashbar: ((Flashbar.Builder, ICancelChecker) -> Unit)? = null,
-  invokeOnCompletion: ((Throwable?) -> Unit)? = null,
-  action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
+  crossinline configureFlashbar: (Flashbar.Builder, ICancelChecker) -> Unit = { _, _ -> },
+  crossinline invokeOnCompletion: (Throwable?) -> Unit = {},
+  crossinline action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
 ): Job? {
 
   val cancelChecker = object : ICancelChecker.Default() {
@@ -80,7 +80,7 @@ fun CoroutineScope.launchAsyncWithProgress(
   }
 
   return flashProgress({
-    configureFlashbar?.invoke(this, cancelChecker)
+    configureFlashbar(this, cancelChecker)
   }) { flashbar ->
     return@flashProgress launch(context = context, start = start) {
       cancelChecker.job = coroutineContext[Job]
@@ -88,7 +88,7 @@ fun CoroutineScope.launchAsyncWithProgress(
     }.also { job ->
       job.invokeOnCompletion { throwable ->
         runOnUiThread { flashbar.dismiss() }
-        invokeOnCompletion?.invoke(throwable)
+        invokeOnCompletion(throwable)
       }
     }
   }

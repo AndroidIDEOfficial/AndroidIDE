@@ -655,9 +655,9 @@ open class IDEEditor @JvmOverloads constructor(
     EventBus.getDefault().register(this)
   }
 
-  protected open fun launchCancellableAsyncWithProgress(
+  private inline fun launchCancellableAsyncWithProgress(
     @StringRes message: Int,
-    action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
+    crossinline action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
   ): Job? {
     if (isReleased) {
       return null
