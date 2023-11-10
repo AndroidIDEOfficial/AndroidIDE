@@ -46,18 +46,5 @@ object CodeActionsMenu : ActionMenu {
     if (icon == null) {
       icon = ContextCompat.getDrawable(data[Context::class.java]!!, R.drawable.ic_code)
     }
-    visible = children.size > 0 && atLeastOneChildVisible(data)
-    enabled = true
-  }
-
-  private fun atLeastOneChildVisible(data: ActionData): Boolean {
-    for (child in children) {
-      child.prepare(data)
-      if (child.visible) {
-        return true
-      }
-    }
-
-    return false
   }
 }

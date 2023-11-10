@@ -38,8 +38,22 @@ interface ActionMenu : ActionItem {
     return children.find { it.id == id }
   }
 
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+    visible = children.isNotEmpty() && isAtLeastOneChildVisible(data)
+    enabled = visible
+  }
+
   /** Action menus are not supposed to perform any action */
   override suspend fun execAction(data: ActionData): Boolean {
     return false
+  }
+
+  /**
+   * Calls [ActionItem.prepare] on each child action and returns `true` if at least one of them
+   * is [visible][ActionItem.visible].
+   */
+  fun isAtLeastOneChildVisible(data: ActionData) : Boolean {
+    return children.firstOrNull { it.prepare(data); it.visible } != null
   }
 }
