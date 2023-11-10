@@ -279,15 +279,18 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   override fun openFileAndSelect(file: File, selection: Range?) {
     openFile(file, selection)
 
-    getEditorForFile(file)?.editor?.also { editor ->
-      editor.postInLifecycle {
-        if (selection == null) {
-          editor.setSelection(0, 0)
-          return@postInLifecycle
-        }
+    getEditorForFile(file)?.also {
+      refreshSymbolInput(it)
+      it.editor?.also { editor ->
+        editor.postInLifecycle {
+          if (selection == null) {
+            editor.setSelection(0, 0)
+            return@postInLifecycle
+          }
 
-        editor.validateRange(selection)
-        editor.setSelection(selection)
+          editor.validateRange(selection)
+          editor.setSelection(selection)
+        }
       }
     }
   }

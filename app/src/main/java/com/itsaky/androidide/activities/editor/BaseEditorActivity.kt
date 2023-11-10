@@ -393,6 +393,10 @@ abstract class BaseEditorActivity :
     }
   }
 
+  protected fun refreshSymbolInput(editor: CodeEditorView) {
+    binding.bottomSheet.refreshSymbolInput(editor)
+  }
+
   private fun handleUiDesignerResult(result: ActivityResult) {
     if (result.resultCode != RESULT_OK || result.data == null) {
       log.warn("UI Designer returned invalid result", result.resultCode, result.data)
@@ -553,10 +557,6 @@ abstract class BaseEditorActivity :
       viewContainer.viewTreeObserver.addOnGlobalLayoutListener(observer)
       bottomSheet.setOffsetAnchor(editorToolbar)
     }
-  }
-
-  private fun refreshSymbolInput(editor: CodeEditorView) {
-    binding.bottomSheet.refreshSymbolInput(editor)
   }
 
   private fun setupDiagnosticInfo() {
