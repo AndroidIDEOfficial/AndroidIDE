@@ -538,7 +538,7 @@
   <string name="idepref_general_localeSelector_title">Dil</string>
   <string name="idepref_general_localeSelector_summary">AndroidIDE için bir dil seç.</string>
   <string name="locale_system_default">Sistem varsayılanı</string>
-  <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
-  <string name="msg_file_is_not_dir">Selected file is not a directory</string>
-  <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_project_dir_inaccessible">Proje dizini erişilemez</string>
+  <string name="msg_file_is_not_dir">Seçilen dosya bir dizin değil</string>
+  <string name="msg_project_dir_doesnt_exist">Proje dizini mevcut değil</string>
 </resources>
