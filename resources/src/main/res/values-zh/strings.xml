@@ -160,7 +160,7 @@
   <string name="action_closeThis">关闭当前</string>
   <string name="all_saved">所有文件已保存！</string>
   <string name="save_failed">文件保存失败</string>
-  <string name="msg_newfile_dest">目标: %s/</string>
+  <string name="msg_newfile_dest">位于：%s/</string>
   <string name="restype_drawable">可绘制资源</string>
   <string name="restype_layout">布局</string>
   <string name="restype_menu">菜单</string>
@@ -253,7 +253,7 @@
   <string name="idepref_editor_autoSave_summary">在关闭文件之前自动保存文件。这是一个实验性功能，您应该自己保存这些文件。</string>
   <string name="idepref_java_matchLower_summary">若启用，输入大小写字母都将提示类名及其作用域成员</string>
   <string name="idepref_editor_ligatures_title">连体字</string>
-  <string name="idepref_editor_ligatures_summary">启用/禁用 连体字</string>
+  <string name="idepref_editor_ligatures_summary">启用或禁用连体字</string>
   <string name="yes">是</string>
   <string name="no">否</string>
   <string name="msg_apk_install_intent_failed">无法启动 APK 安装程序</string>
@@ -389,7 +389,7 @@
   <string name="msg_package_not_valid_char_2">Android 应用的软件包名称中不允许使用字符“%1$s”</string>
   <string name="msg_package_mus_have_dot">软件包名称中必须至少有一个“.”分隔</string>
   <string name="action_import_classes">导入类</string>
-  <string name="action_generate_setters_getters">生成 set/get 方法</string>
+  <string name="action_generate_setters_getters">生成 setter/getter</string>
   <string name="action_add_throws">添加“throws”</string>
   <string name="action_comment_line">注释此行</string>
   <string name="action_create_missing_method">创建缺失方法</string>
@@ -499,7 +499,7 @@
   <string name="btn_opt_in">选择加入</string>
   <string name="btn_no_thanks">不用了，谢谢</string>
   <string name="title_developer_options">开发者选项</string>
-  <string name="idepref_devOptions_summary">AndroidIDE 的实验/调试选项</string>
+  <string name="idepref_devOptions_summary">AndroidIDE 的实验和调试选项</string>
   <string name="idepref_group_debugging">调试</string>
   <string name="idepref_devOptions_dumpLogs_title">转储日志</string>
   <string name="idepref_devOptions_dumpLogs_summary">将 AndroidIDE 日志转储到 $HOME/.androidide/logs</string>
