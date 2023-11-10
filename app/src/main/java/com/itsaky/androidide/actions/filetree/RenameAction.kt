@@ -76,6 +76,10 @@ class RenameAction(context: Context, override val order: Int) :
             val name: String = binding.name.editText!!.text.toString().trim()
             val renamed = name.length in 1..40 && FileUtils.rename(file, name)
 
+            if (renamed) {
+              notifyFileRenamed(file, name, context)
+            }
+
             withContext(Dispatchers.Main) {
               flashMessage(
                   if (renamed) com.itsaky.androidide.resources.R.string.renamed
@@ -84,8 +88,6 @@ class RenameAction(context: Context, override val order: Int) :
               if (!renamed) {
                 return@withContext
               }
-
-              notifyFileRenamed(file, name, context)
 
               if (lastHeld != null) {
                 val parent = lastHeld.parent
