@@ -284,8 +284,8 @@ open class IDEEditor @JvmOverloads constructor(
     val file = file ?: return
 
     launchCancellableAsyncWithProgress(string.msg_finding_definition) { _, cancelChecker ->
-      val params = DefinitionParams(file.toPath(), cursorLSPPosition)
-      val result = languageServer.findDefinition(params, cancelChecker)
+      val params = DefinitionParams(file.toPath(), cursorLSPPosition, cancelChecker)
+      val result = languageServer.findDefinition(params)
       onFindDefinitionResult(result)
     }
   }
@@ -298,8 +298,8 @@ open class IDEEditor @JvmOverloads constructor(
     val file = file ?: return
 
     launchCancellableAsyncWithProgress(string.msg_finding_references) { _, cancelChecker ->
-      val params = ReferenceParams(file.toPath(), cursorLSPPosition, true)
-      val result = languageServer.findReferences(params, cancelChecker)
+      val params = ReferenceParams(file.toPath(), cursorLSPPosition, true, cancelChecker)
+      val result = languageServer.findReferences(params)
       onFindReferencesResult(result)
     }
   }

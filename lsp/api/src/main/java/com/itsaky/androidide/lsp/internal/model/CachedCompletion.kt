@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.internal.model
 
 import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Paths
@@ -29,7 +30,7 @@ import java.nio.file.Paths
  */
 class CachedCompletion
 private constructor(
-  val params: com.itsaky.androidide.lsp.models.CompletionParams,
+  val params: CompletionParams,
   val result: com.itsaky.androidide.lsp.models.CompletionResult
 ) {
 
@@ -40,9 +41,9 @@ private constructor(
     @JvmField
     val EMPTY =
       cache(
-        com.itsaky.androidide.lsp.models.CompletionParams(
+        CompletionParams(
           com.itsaky.androidide.models.Position.NONE,
-          Paths.get("")
+          Paths.get(""), ICancelChecker.CANCELLED
         ),
         com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
       )
@@ -56,11 +57,11 @@ private constructor(
      */
     @JvmStatic
     fun cache(
-      _params: com.itsaky.androidide.lsp.models.CompletionParams,
+      _params: CompletionParams,
       result: com.itsaky.androidide.lsp.models.CompletionResult
     ): CachedCompletion {
       val params =
-        com.itsaky.androidide.lsp.models.CompletionParams(_params.position, _params.file).apply {
+        CompletionParams(_params.position, _params.file, ICancelChecker.CANCELLED).apply {
           prefix = _params.prefix ?: ""
           content = ""
         }
@@ -69,7 +70,7 @@ private constructor(
     }
   }
 
-  fun canUseCache(params: com.itsaky.androidide.lsp.models.CompletionParams): Boolean {
+  fun canUseCache(params: CompletionParams): Boolean {
     val partial = params.requirePrefix()
     val position = this.params.position
     val file = this.params.file

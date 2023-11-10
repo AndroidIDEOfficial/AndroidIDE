@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.models
 
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
+import com.itsaky.androidide.lsp.CancellableRequestParams
 import com.itsaky.androidide.lsp.edits.DefaultEditHandler
 import com.itsaky.androidide.lsp.edits.IEditHandler
 import com.itsaky.androidide.lsp.models.CompletionItemKind.NONE
@@ -29,6 +30,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_PREFIX
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.models.MatchLevel.PARTIAL_MATCH
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.progress.ICancelChecker
 import io.github.rosemoe.sora.lang.completion.snippet.CodeSnippet
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
@@ -38,7 +40,11 @@ import java.util.function.Consumer
 
 const val DEFAULT_MIN_MATCH_RATIO = 59
 
-data class CompletionParams(var position: Position, var file: Path) {
+data class CompletionParams(
+  var position: Position,
+  var file: Path,
+  override val cancelChecker: ICancelChecker
+) : CancellableRequestParams {
   var content: CharSequence? = null
   var prefix: String? = null
 

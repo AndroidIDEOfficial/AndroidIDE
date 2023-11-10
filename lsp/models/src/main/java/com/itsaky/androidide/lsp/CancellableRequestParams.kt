@@ -15,19 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.models
+package com.itsaky.androidide.lsp
 
-import com.itsaky.androidide.lsp.CancellableRequestParams
-import com.itsaky.androidide.models.Location
-import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ICancelChecker
-import java.nio.file.Path
 
-/** @author Akash Yadav */
-data class DefinitionParams(
-  var file: Path,
-  var position: Position,
-  override val cancelChecker: ICancelChecker
-) : CancellableRequestParams
+/**
+ * Parameters for requests which support cancellation.
+ *
+ * @author Akash Yadav
+ */
+interface CancellableRequestParams {
 
-data class DefinitionResult(var locations: List<Location>)
+  /**
+   * The cancel checker.
+   */
+  val cancelChecker: ICancelChecker
+}

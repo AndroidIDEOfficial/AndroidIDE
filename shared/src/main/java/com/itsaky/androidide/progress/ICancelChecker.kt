@@ -62,4 +62,19 @@ interface ICancelChecker {
       }
     }
   }
+
+  companion object {
+
+    /**
+     * A no-op cancel checker. The task is never cancelled.
+     */
+    @JvmField
+    val NOOP = Default(false)
+
+    /**
+     * An already cancelled cancel checker.
+     */
+    @JvmField
+    val CANCELLED = Default(true)
+  }
 }

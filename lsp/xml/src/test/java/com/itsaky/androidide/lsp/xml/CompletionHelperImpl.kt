@@ -26,7 +26,7 @@ class CompletionHelperImpl : CompletionHelper {
   override fun complete(transform: (CompletionItem) -> CharSequence): Pair<Boolean, List<CharSequence>> {
     return XMLLSPTest.run {
       val createCompletionParams = createCompletionParams()
-      val result = server.complete(createCompletionParams, ICancelChecker.Default())
+      val result = server.complete(createCompletionParams)
       result.isIncomplete to
         result.items
           .filter { it.label != null }
@@ -39,7 +39,7 @@ class CompletionHelperImpl : CompletionHelper {
   private fun createCompletionParams(): CompletionParams {
     return XMLLSPTest.run {
       val cursor = cursorPosition(true)
-      val completionParams = CompletionParams(cursor, file!!)
+      val completionParams = CompletionParams(cursor, file!!, ICancelChecker.NOOP)
       completionParams.position.index = this.cursor
       completionParams.content = contents
       completionParams

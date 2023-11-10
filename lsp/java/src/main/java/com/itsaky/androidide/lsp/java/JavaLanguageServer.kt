@@ -58,7 +58,6 @@ import com.itsaky.androidide.lsp.models.SignatureHelp
 import com.itsaky.androidide.lsp.models.SignatureHelpParams
 import com.itsaky.androidide.lsp.util.LSPEditorActions
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.projects.FileManager.getActiveDocumentCount
 import com.itsaky.androidide.projects.IProjectManager.Companion.getInstance
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -75,7 +74,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.nio.file.Path
 import java.util.Objects
-import java.util.concurrent.CompletableFuture
 
 class JavaLanguageServer : ILanguageServer {
 
@@ -98,6 +96,7 @@ class JavaLanguageServer : ILanguageServer {
   override val serverId: String = SERVER_ID
 
   companion object {
+
     const val SERVER_ID = "ide.lsp.java"
     private val LOG = ILogger.newInstance("JavaLanguageServer")
   }
@@ -161,8 +160,7 @@ class JavaLanguageServer : ILanguageServer {
     startOrRestartAnalyzeTimer()
   }
 
-  override fun complete(params: CompletionParams?,
-    cancelChecker: ICancelChecker?): CompletionResult {
+  override fun complete(params: CompletionParams?): CompletionResult {
     val compiler = getCompiler(params!!.file)
     if (!settings.completionsEnabled() || !completionProvider.canComplete(params.file)
     ) {
@@ -182,20 +180,18 @@ class JavaLanguageServer : ILanguageServer {
     return completionProvider.complete(params)
   }
 
-  override suspend fun findReferences(params: ReferenceParams,
-    cancelChecker: ICancelChecker?): ReferenceResult {
+  override suspend fun findReferences(params: ReferenceParams): ReferenceResult {
     val compiler = getCompiler(params.file)
     return if (!settings.referencesEnabled()) {
       ReferenceResult(emptyList())
-    } else ReferenceProvider(compiler, cancelChecker).findReferences(params)
+    } else ReferenceProvider(compiler, params.cancelChecker).findReferences(params)
   }
 
-  override suspend fun findDefinition(params: DefinitionParams,
-    cancelChecker: ICancelChecker?): DefinitionResult {
+  override suspend fun findDefinition(params: DefinitionParams): DefinitionResult {
     val compiler = getCompiler(params.file)
     return if (!settings.definitionsEnabled()) {
       DefinitionResult(emptyList())
-    } else DefinitionProvider(compiler, settings, cancelChecker).findDefinition(params)
+    } else DefinitionProvider(compiler, settings, params.cancelChecker).findDefinition(params)
   }
 
   override suspend fun expandSelection(params: ExpandSelectionParams): Range {

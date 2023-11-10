@@ -64,10 +64,10 @@ class CommonCompletionProvider(private val server: ILanguageServer,
         setupLookupForCompletion(file)
         val prefix = CompletionHelper.computePrefix(content, position) { prefixMatcher.test(it) }
         val params =
-          CompletionParams(Position(position.line, position.column, position.index), file)
+          CompletionParams(Position(position.line, position.column, position.index), file, cancelChecker)
         params.content = content
         params.prefix = prefix
-        server.complete(params, cancelChecker)
+        server.complete(params)
       } catch (e: Throwable) {
 
         if (e is ProcessCancelledException) {

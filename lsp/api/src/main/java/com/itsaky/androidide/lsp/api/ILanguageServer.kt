@@ -46,7 +46,6 @@ import com.itsaky.androidide.lsp.models.ReferenceResult
 import com.itsaky.androidide.lsp.models.SignatureHelp
 import com.itsaky.androidide.lsp.models.SignatureHelpParams
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.projects.api.Project
 import java.nio.file.Path
 
@@ -107,7 +106,7 @@ interface ILanguageServer {
    * @param cancelChecker
    * @return The completion provider.
    */
-  fun complete(params: CompletionParams?, cancelChecker: ICancelChecker?): CompletionResult
+  fun complete(params: CompletionParams?): CompletionResult
 
   /**
    * Find references using the given params.
@@ -116,7 +115,7 @@ interface ILanguageServer {
    * @param cancelChecker
    * @return The result of the computation.
    */
-  suspend fun findReferences(params: ReferenceParams, cancelChecker: ICancelChecker?): ReferenceResult
+  suspend fun findReferences(params: ReferenceParams): ReferenceResult
 
   /**
    * Find definition using the given params.
@@ -125,7 +124,7 @@ interface ILanguageServer {
    * @param cancelChecker
    * @return The result of the computation.
    */
-  suspend fun findDefinition(params: DefinitionParams, cancelChecker: ICancelChecker?): DefinitionResult
+  suspend fun findDefinition(params: DefinitionParams): DefinitionResult
 
   /**
    * Request the server to provide an expanded selection range for the current selection.
