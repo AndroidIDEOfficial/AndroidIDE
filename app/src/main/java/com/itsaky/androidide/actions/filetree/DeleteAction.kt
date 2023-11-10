@@ -25,11 +25,13 @@ import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.FlashType
 import com.itsaky.androidide.utils.flashMessage
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -51,38 +53,38 @@ class DeleteAction(context: Context, override val order: Int) :
       .setNegativeButton(R.string.no, null)
       .setPositiveButton(R.string.yes) { dialogInterface, _ ->
         dialogInterface.dismiss()
-        @Suppress("DEPRECATION")
-        val progressDialog =
-          ProgressDialog.show(context, null, context.getString(R.string.please_wait), true, false)
-        executeAsync({ FileUtils.delete(file) }) {
-          progressDialog.dismiss()
+        actionScope.launchAsyncWithProgress(
+              configureFlashbar = { builder, cancelChecker ->
+                builder.message(R.string.please_wait)
+              },
+              action = { _, _ ->
+                val deleted = FileUtils.delete(file)
 
-          val deleted = it ?: false
+                withContext(Dispatchers.Main) {
+                  flashMessage(
+                      if (deleted) R.string.deleted else R.string.delete_failed,
+                      if (deleted) FlashType.SUCCESS else FlashType.ERROR)
 
-          flashMessage(
-            if (deleted) R.string.deleted else R.string.delete_failed,
-            if (deleted) FlashType.SUCCESS else FlashType.ERROR
-          )
+                  if (!deleted) {
+                    return@withContext
+                  }
 
-          if (!deleted) {
-            return@executeAsync
-          }
+                  notifyFileDeleted(file, context)
 
-          notifyFileDeleted(file, context)
+                  if (lastHeld != null) {
+                    val parent = lastHeld.parent
+                    parent.deleteChild(lastHeld)
+                    requestExpandNode(parent)
+                  } else {
+                    requestFileListing()
+                  }
 
-          if (lastHeld != null) {
-            val parent = lastHeld.parent
-            parent.deleteChild(lastHeld)
-            requestExpandNode(parent)
-          } else {
-            requestFileListing()
-          }
-
-          val frag = context.getEditorForFile(file)
-          if (frag != null) {
-            context.closeFile(context.findIndexOfEditorByFile(frag.file))
-          }
-        }
+                  val frag = context.getEditorForFile(file)
+                  if (frag != null) {
+                    context.closeFile(context.findIndexOfEditorByFile(frag.file))
+                  }
+                }
+              })
       }
       .setTitle(R.string.title_confirm_delete)
       .setMessage(
