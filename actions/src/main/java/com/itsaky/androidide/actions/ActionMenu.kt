@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.actions
 
-import com.itsaky.androidide.actions.locations.CodeActionsMenu
-
 /**
  * An action menu is an action which can contain child actions.
  * @author Akash Yadav
