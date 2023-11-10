@@ -32,7 +32,6 @@ import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
-import com.itsaky.androidide.preferences.internal.HIDE_FILE_TREE_BUTTON
 import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
@@ -54,7 +53,6 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
-import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 import com.itsaky.androidide.preferences.internal.pinLineNumbers
 import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
 import com.itsaky.androidide.preferences.internal.tabSize
@@ -100,7 +98,6 @@ private class CommonConfigurations(
     addPreference(UseCustomFont())
     addPreference(UseSoftTab())
     addPreference(WordWrap())
-    addPreference(HideFileTreeButton())
     addPreference(UseMagnifier())
     addPreference(UseICU())
     addPreference(AutoSave())
@@ -271,14 +268,6 @@ private class WordWrap(
   override val summary: Int? = string.idepref_editor_word_wrap_summary,
   override val icon: Int? = drawable.ic_wrap_text,
 ) : SwitchPreference(setValue = ::wordwrap::set, getValue = ::wordwrap::get)
-
-@Parcelize
-private class HideFileTreeButton(
-  override val key: String = HIDE_FILE_TREE_BUTTON,
-  override val title: Int = string.idepref_editor_hide_file_tree_button_title,
-  override val summary: Int? = string.idepref_editor_hide_file_tree_button_summary,
-  override val icon: Int? = drawable.ic_folder,
-) : SwitchPreference(setValue = ::hideFileTreeButton::set, getValue = ::hideFileTreeButton::get)
 
 @Parcelize
 private class UseMagnifier(

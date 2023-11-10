@@ -17,9 +17,6 @@
 
 package com.itsaky.androidide.preferences.internal
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.NavigationBar
-
 const val COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower"
 
 const val FLAG_WS_LEADING = "idepref_editor_wsLeading"
@@ -34,7 +31,6 @@ const val AUTO_SAVE = "idepref_editor_autoSave"
 const val FONT_LIGATURES = "idepref_editor_fontLigatures"
 const val FLAG_PASSWORD = "idepref_editor_flagPassword"
 const val WORD_WRAP = "idepref_editor_word_wrap"
-const val HIDE_FILE_TREE_BUTTON = "idepref_hide_file_tree_button"
 const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
@@ -119,19 +115,6 @@ var wordwrap: Boolean
     prefManager.putBoolean(WORD_WRAP, value)
   }
 
-/** By default the File Tree button is hidden into the overflow menu on devices where
- * Gesture Navigation is enabled at the moment of accessing the preference.
- */
-var hideFileTreeButton: Boolean
-  get() {
-    val navigationMode = NavigationBar.getInteractionMode(BaseApplication.getBaseInstance())
-    val gestureNavigationDisabled = navigationMode != NavigationBar.MODE_GESTURES
-    return prefManager.getBoolean(HIDE_FILE_TREE_BUTTON, gestureNavigationDisabled)
-  }
-  set(value) {
-    prefManager.putBoolean(HIDE_FILE_TREE_BUTTON, value)
-  }
-
 var useMagnifier: Boolean
   get() = prefManager.getBoolean(USE_MAGNIFER, true)
   set(value) {
@@ -162,19 +145,19 @@ var colorScheme: String
     prefManager.putString(COLOR_SCHEME, value)
   }
 
-var deleteEmptyLines : Boolean
+var deleteEmptyLines: Boolean
   get() = prefManager.getBoolean(DELETE_EMPTY_LINES, true)
   set(value) {
     prefManager.putBoolean(DELETE_EMPTY_LINES, value)
   }
 
-var deleteTabsOnBackspace : Boolean
+var deleteTabsOnBackspace: Boolean
   get() = prefManager.getBoolean(DELETE_TABS_ON_BACKSPACE, true)
   set(value) {
     prefManager.putBoolean(DELETE_TABS_ON_BACKSPACE, value)
   }
 
-var stickyScrollEnabled : Boolean
+var stickyScrollEnabled: Boolean
   get() = prefManager.getBoolean(STICKY_SCROLL_ENABLED, false)
   set(value) {
     prefManager.putBoolean(STICKY_SCROLL_ENABLED, value)
