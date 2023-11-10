@@ -178,6 +178,7 @@ class CodeEditorView(
   fun updateFile(file: File) {
     val editor = _binding?.editor ?: return
     editor.file = file
+    postRead(file)
   }
 
   /**
