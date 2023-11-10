@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
   <string name="idepref_editor_word_wrap_title">Перенос слов</string>
   <string name="idepref_editor_word_wrap_summary">Используйте перенос слов в редакторе</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Скрыть кнопку дерева файлов</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Переместить кнопку \"Дерево файлов\" в меню переполнения панели инструментов редактора.</string>
   <string name="idepref_editor_use_magnifier_title">Включить лупу</string>
   <string name="idepref_editor_use_magnifier_summary">Увеличьте текст в положении курсора при выделении текста в редакторе</string>
   <string name="idepref_editor_title">Редактор</string>
