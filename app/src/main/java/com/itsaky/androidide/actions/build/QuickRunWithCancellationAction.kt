@@ -162,6 +162,10 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       }
 
       handleResult(data, result, module, variant)
+    }.invokeOnCompletion { error ->
+      if (error != null) {
+        log.error("Failed to run '$taskName'", error)
+      }
     }
   }
 
