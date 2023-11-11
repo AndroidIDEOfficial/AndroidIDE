@@ -31,6 +31,20 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
+ * An [ICancelChecker] which when cancelled, cancels the corresponding [Job].
+ */
+class JobCancelChecker @JvmOverloads constructor(
+  var job: Job? = null
+) : ICancelChecker.Default() {
+
+  override fun cancel() {
+    job?.cancel("Cancelled by user")
+    job = null
+    super.cancel()
+  }
+}
+
+/**
  * Calls [CoroutineScope.cancel] only if a job is active in the scope.
  *
  * @param message Optional message describing the cause of the cancellation.
@@ -69,15 +83,7 @@ inline fun CoroutineScope.launchAsyncWithProgress(
   crossinline action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
 ): Job? {
 
-  val cancelChecker = object : ICancelChecker.Default() {
-    var job: Job? = null
-
-    override fun cancel() {
-      job?.cancel("Cancelled by user")
-      job = null
-      super.cancel()
-    }
-  }
+  val cancelChecker = JobCancelChecker()
 
   return flashProgress({
     configureFlashbar(this, cancelChecker)

@@ -205,7 +205,7 @@ class JavaLanguageServer : ILanguageServer {
     val compiler = getCompiler(params.file)
     return if (!settings.signatureHelpEnabled()) {
       SignatureHelp(emptyList(), -1, -1)
-    } else SignatureProvider(compiler).signatureHelp(params)
+    } else SignatureProvider(compiler, params.cancelChecker).signatureHelp(params)
   }
 
   override suspend fun analyze(file: Path): DiagnosticResult {

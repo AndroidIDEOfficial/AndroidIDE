@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.lsp.models
 
+import com.itsaky.androidide.lsp.CancellableRequestParams
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.progress.ICancelChecker
 import java.nio.file.Path
 import java.util.*
 
@@ -39,4 +41,8 @@ data class SignatureHelp(
   var activeParameter: Int
 )
 
-data class SignatureHelpParams(var file: Path, var position: Position)
+data class SignatureHelpParams(
+  var file: Path,
+  var position: Position,
+  override val cancelChecker: ICancelChecker
+) : CancellableRequestParams

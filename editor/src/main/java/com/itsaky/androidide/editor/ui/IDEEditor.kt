@@ -51,6 +51,7 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent
 import com.itsaky.androidide.flashbar.Flashbar
 import com.itsaky.androidide.lsp.api.ILanguageClient
 import com.itsaky.androidide.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.DefinitionParams
 import com.itsaky.androidide.lsp.models.DefinitionResult
@@ -67,6 +68,7 @@ import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
 import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
+import com.itsaky.androidide.tasks.JobCancelChecker
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.utils.DocumentUtils
@@ -107,6 +109,7 @@ open class IDEEditor @JvmOverloads constructor(
   private val editorFeatures: EditorFeatures = EditorFeatures()
 ) : CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
 
+  @Suppress("PropertyName")
   internal var _file: File? = null
 
   private var _actionsMenu: EditorActionsMenu? = null
@@ -131,6 +134,8 @@ open class IDEEditor @JvmOverloads constructor(
 
   protected val editorScope = CoroutineScope(Dispatchers.Default)
   protected val eventDispatcher = EditorEventDispatcher()
+
+  private var sigHelpCancelChecker: ICancelChecker? = null
 
   var languageServer: ILanguageServer? = null
     private set
@@ -259,12 +264,27 @@ open class IDEEditor @JvmOverloads constructor(
 
     this.languageClient ?: return
 
+    sigHelpCancelChecker?.also { it.cancel() }
+
+    val cancelChecker = JobCancelChecker().also {
+      this.sigHelpCancelChecker = it
+    }
+
     editorScope.launch {
-      val params = SignatureHelpParams(file.toPath(), cursorLSPPosition)
+      cancelChecker.job = coroutineContext[Job]
+      val params = SignatureHelpParams(file.toPath(), cursorLSPPosition, cancelChecker)
       val help = languageServer.signatureHelp(params)
 
       withContext(Dispatchers.Main) {
         showSignatureHelp(help)
+      }
+    }.invokeOnCompletion { error ->
+      if (error != null) {
+        if (!CancelChecker.isCancelled(error)) {
+          log.error("Failed to compute signature help", error)
+        } else {
+          log.debug("Signature help request cancelled")
+        }
       }
     }
   }

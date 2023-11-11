@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
+import com.itsaky.androidide.progress.ICancelChecker;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.MethodInvocationTree;
 import openjdk.source.tree.NewClassTree;
@@ -29,20 +30,24 @@ import openjdk.source.util.Trees;
 public class FindInvocationAt extends TreePathScanner<TreePath, Long> {
 
   private final JavacTask task;
+  private final ICancelChecker cancelChecker;
   private CompilationUnitTree root;
 
-  public FindInvocationAt(JavacTask task) {
+  public FindInvocationAt(JavacTask task, ICancelChecker cancelChecker) {
     this.task = task;
+    this.cancelChecker = cancelChecker;
   }
 
   @Override
   public TreePath visitCompilationUnit(CompilationUnitTree t, Long find) {
+    cancelChecker.abortIfCancelled();
     root = t;
     return reduce(super.visitCompilationUnit(t, find), getCurrentPath());
   }
 
   @Override
   public TreePath visitMethodInvocation(MethodInvocationTree t, Long find) {
+    cancelChecker.abortIfCancelled();
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     long start = pos.getEndPosition(root, t.getMethodSelect()) + 1;
     long end = pos.getEndPosition(root, t) - 1;
@@ -54,6 +59,7 @@ public class FindInvocationAt extends TreePathScanner<TreePath, Long> {
 
   @Override
   public TreePath visitNewClass(NewClassTree t, Long find) {
+    cancelChecker.abortIfCancelled();
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     long start = pos.getEndPosition(root, t.getIdentifier()) + 1;
     long end = pos.getEndPosition(root, t) - 1;
@@ -65,6 +71,7 @@ public class FindInvocationAt extends TreePathScanner<TreePath, Long> {
 
   @Override
   public TreePath reduce(TreePath a, TreePath b) {
+    cancelChecker.abortIfCancelled();
     if (a != null) {
       return a;
     }

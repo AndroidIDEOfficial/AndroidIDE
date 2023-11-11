@@ -18,11 +18,9 @@
 package com.itsaky.androidide.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
-import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.lsp.java.utils.MarkdownHelper;
 import com.itsaky.androidide.lsp.java.utils.ScopeHelper;
@@ -32,7 +30,25 @@ import com.itsaky.androidide.lsp.models.ParameterInformation;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.models.SignatureInformation;
-import openjdk.source.doctree.DocCommentTree;
+import com.itsaky.androidide.progress.ICancelChecker;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.function.Predicate;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.element.VariableElement;
+import jdkx.lang.model.type.ArrayType;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.ErrorType;
+import jdkx.lang.model.type.PrimitiveType;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.type.TypeVariable;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.ExpressionTree;
 import openjdk.source.tree.IdentifierTree;
@@ -47,35 +63,14 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.function.Predicate;
-
-import jdkx.lang.model.element.Element;
-import jdkx.lang.model.element.ElementKind;
-import jdkx.lang.model.element.ExecutableElement;
-import jdkx.lang.model.element.Modifier;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.element.VariableElement;
-import jdkx.lang.model.type.ArrayType;
-import jdkx.lang.model.type.DeclaredType;
-import jdkx.lang.model.type.ErrorType;
-import jdkx.lang.model.type.PrimitiveType;
-import jdkx.lang.model.type.TypeMirror;
-import jdkx.lang.model.type.TypeVariable;
-import jdkx.tools.JavaFileObject;
-
-public class SignatureProvider {
+public class SignatureProvider extends CancelableServiceProvider {
 
   public static final SignatureHelp NOT_SUPPORTED =
       new SignatureHelp(Collections.emptyList(), -1, -1);
   private final CompilerProvider compiler;
 
-  public SignatureProvider(CompilerProvider compiler) {
+  public SignatureProvider(CompilerProvider compiler, ICancelChecker cancelChecker) {
+    super(cancelChecker);
     this.compiler = compiler;
   }
 
@@ -94,11 +89,14 @@ public class SignatureProvider {
 
     // TODO prune
     SynchronizedTask synchronizedTask = compiler.compile(file);
+    abortIfCancelled();
     return synchronizedTask.get(
         task -> {
           long cursor = task.root().getLineMap().getPosition(line, column);
-          TreePath path = new FindInvocationAt(task.task).scan(task.root(), cursor);
-          if (path == null) return NOT_SUPPORTED;
+          TreePath path = new FindInvocationAt(task.task, this).scan(task.root(), cursor);
+          if (path == null) {
+            return NOT_SUPPORTED;
+          }
           if (path.getLeaf() instanceof MethodInvocationTree) {
             MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
             List<ExecutableElement> overloads = methodOverloads(task, invoke);
@@ -133,6 +131,7 @@ public class SignatureProvider {
 
   private List<ExecutableElement> methodOverloads(
       CompileTask task, @NonNull MethodInvocationTree method) {
+    abortIfCancelled();
     if (method.getMethodSelect() instanceof IdentifierTree) {
       IdentifierTree id = (IdentifierTree) method.getMethodSelect();
       return scopeOverloads(task, id);
@@ -146,6 +145,7 @@ public class SignatureProvider {
 
   @NonNull
   private List<ExecutableElement> scopeOverloads(@NonNull CompileTask task, IdentifierTree method) {
+    abortIfCancelled();
     Trees trees = Trees.instance(task.task);
     TreePath path = trees.getPath(task.root(), method);
     Scope scope = trees.getScope(path);
@@ -163,6 +163,7 @@ public class SignatureProvider {
   @NonNull
   private List<ExecutableElement> memberOverloads(
       @NonNull CompileTask task, @NonNull MemberSelectTree method) {
+    abortIfCancelled();
     Trees trees = Trees.instance(task.task);
     TreePath path = trees.getPath(task.root(), method.getExpression());
     boolean isStatic = trees.getElement(path) instanceof TypeElement;
@@ -175,16 +176,25 @@ public class SignatureProvider {
 
     List<ExecutableElement> list = new ArrayList<>();
     for (Element member : task.task.getElements().getAllMembers(type)) {
-      if (member.getKind() != ElementKind.METHOD) continue;
-      if (!member.getSimpleName().contentEquals(method.getIdentifier())) continue;
-      if (isStatic != member.getModifiers().contains(Modifier.STATIC)) continue;
-      if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) continue;
+      if (member.getKind() != ElementKind.METHOD) {
+        continue;
+      }
+      if (!member.getSimpleName().contentEquals(method.getIdentifier())) {
+        continue;
+      }
+      if (isStatic != member.getModifiers().contains(Modifier.STATIC)) {
+        continue;
+      }
+      if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) {
+        continue;
+      }
       list.add((ExecutableElement) member);
     }
     return list;
   }
 
   private TypeElement typeElement(TypeMirror type) {
+    abortIfCancelled();
     if (type instanceof DeclaredType) {
       DeclaredType declared = (DeclaredType) type;
       return (TypeElement) declared.asElement();
@@ -199,14 +209,19 @@ public class SignatureProvider {
   @NonNull
   private List<ExecutableElement> constructorOverloads(
       @NonNull CompileTask task, @NonNull NewClassTree method) {
+    abortIfCancelled();
     Trees trees = Trees.instance(task.task);
     TreePath path = trees.getPath(task.root(), method.getIdentifier());
     Scope scope = trees.getScope(path);
     TypeElement type = (TypeElement) trees.getElement(path);
     List<ExecutableElement> list = new ArrayList<>();
     for (Element member : task.task.getElements().getAllMembers(type)) {
-      if (member.getKind() != ElementKind.CONSTRUCTOR) continue;
-      if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) continue;
+      if (member.getKind() != ElementKind.CONSTRUCTOR) {
+        continue;
+      }
+      if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) {
+        continue;
+      }
       list.add((ExecutableElement) member);
     }
     return list;
@@ -214,6 +229,7 @@ public class SignatureProvider {
 
   @NonNull
   private SignatureInformation info(@NonNull ExecutableElement method) {
+    abortIfCancelled();
     SignatureInformation info = new SignatureInformation();
     info.setLabel(method.getSimpleName().toString());
     if (method.getKind() == ElementKind.CONSTRUCTOR) {
@@ -225,6 +241,7 @@ public class SignatureProvider {
 
   @NonNull
   private List<ParameterInformation> parameters(@NonNull ExecutableElement method) {
+    abortIfCancelled();
     List<ParameterInformation> list = new ArrayList<>();
     for (VariableElement p : method.getParameters()) {
       list.add(parameter(p));
@@ -234,6 +251,7 @@ public class SignatureProvider {
 
   @NonNull
   private ParameterInformation parameter(@NonNull VariableElement p) {
+    abortIfCancelled();
     ParameterInformation info = new ParameterInformation();
     info.setLabel(ShortTypePrinter.NO_PACKAGE.print(p.asType()));
     return info;
@@ -244,6 +262,7 @@ public class SignatureProvider {
       @NonNull ExecutableElement method,
       @NonNull SignatureInformation info
   ) {
+    abortIfCancelled();
     final var type = (TypeElement) method.getEnclosingElement();
     final var className = type.getQualifiedName().toString();
     final var methodName = method.getSimpleName().toString();
@@ -271,6 +290,7 @@ public class SignatureProvider {
   }
 
   private void addFancyLabel(@NonNull SignatureInformation info) {
+    abortIfCancelled();
     StringJoiner join = new StringJoiner(", ");
     for (ParameterInformation p : info.getParameters()) {
       join.add(p.getLabel());
@@ -280,6 +300,7 @@ public class SignatureProvider {
 
   @NonNull
   private List<ParameterInformation> parametersFromSource(MethodTree source) {
+    abortIfCancelled();
     List<ParameterInformation> list = new ArrayList<>();
     for (VariableTree p : source.getParameters()) {
       ParameterInformation info = new ParameterInformation();
@@ -291,6 +312,7 @@ public class SignatureProvider {
 
   private int activeParameter(
       @NonNull CompileTask task, @NonNull List<? extends ExpressionTree> arguments, long cursor) {
+    abortIfCancelled();
     SourcePositions pos = Trees.instance(task.task).getSourcePositions();
     CompilationUnitTree root = task.root();
     for (int i = 0; i < arguments.size(); i++) {
@@ -307,6 +329,7 @@ public class SignatureProvider {
       TreePath invocation,
       List<? extends ExpressionTree> arguments,
       List<ExecutableElement> overloads) {
+    abortIfCancelled();
     for (int i = 0; i < overloads.size(); i++) {
       if (isCompatible(task, invocation, arguments, overloads.get(i))) {
         return i;
@@ -320,19 +343,27 @@ public class SignatureProvider {
       TreePath invocation,
       List<? extends ExpressionTree> arguments,
       ExecutableElement overload) {
-    if (arguments.size() > overload.getParameters().size()) return false;
+    abortIfCancelled();
+    if (arguments.size() > overload.getParameters().size()) {
+      return false;
+    }
     for (int i = 0; i < arguments.size(); i++) {
       ExpressionTree argument = arguments.get(i);
       TypeMirror argumentType =
           Trees.instance(task.task).getTypeMirror(new TreePath(invocation, argument));
       TypeMirror parameterType = overload.getParameters().get(i).asType();
-      if (!isCompatible(task, argumentType, parameterType)) return false;
+      if (!isCompatible(task, argumentType, parameterType)) {
+        return false;
+      }
     }
     return true;
   }
 
   private boolean isCompatible(CompileTask task, TypeMirror argument, TypeMirror parameter) {
-    if (argument instanceof ErrorType) return true;
+    abortIfCancelled();
+    if (argument instanceof ErrorType) {
+      return true;
+    }
     if (argument instanceof PrimitiveType) {
       argument = task.task.getTypes().boxedClass((PrimitiveType) argument).asType();
     }
@@ -340,13 +371,17 @@ public class SignatureProvider {
       parameter = task.task.getTypes().boxedClass((PrimitiveType) parameter).asType();
     }
     if (argument instanceof ArrayType) {
-      if (!(parameter instanceof ArrayType)) return false;
+      if (!(parameter instanceof ArrayType)) {
+        return false;
+      }
       ArrayType argumentA = (ArrayType) argument;
       ArrayType parameterA = (ArrayType) parameter;
       return isCompatible(task, argumentA.getComponentType(), parameterA.getComponentType());
     }
     if (argument instanceof DeclaredType) {
-      if (!(parameter instanceof DeclaredType)) return false;
+      if (!(parameter instanceof DeclaredType)) {
+        return false;
+      }
       argument = task.task.getTypes().erasure(argument);
       parameter = task.task.getTypes().erasure(parameter);
       return argument.toString().equals(parameter.toString());
