@@ -152,7 +152,7 @@ class JavaLanguageServer : ILanguageServer {
 
     // Cache classpath locations
     for (subModule in project.subProjects) {
-      if (subModule !is ModuleProject) {
+      if (subModule !is ModuleProject || subModule.path == project.rootProject.path) {
         continue
       }
       SourceFileManager.forModule(subModule)
