@@ -20,6 +20,7 @@ package com.itsaky.androidide.preferences
 import android.content.Context
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.lang.IndexOutOfBoundsException
 
 /**
  * A preference which allows selecting a single value from a list of values.
@@ -56,6 +57,9 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
   ) {
 
     this.currentSelection = getInitiallySelectionItemPosition(preference.context)
+    if (currentSelection < 0 || currentSelection >= choices.size) {
+      throw IndexOutOfBoundsException("Initial selection: $currentSelection, size=${choices.size}")
+    }
 
     dialog.setSingleChoiceItems(
       choices,
