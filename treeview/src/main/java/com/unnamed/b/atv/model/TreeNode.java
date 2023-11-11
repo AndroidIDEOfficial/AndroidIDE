@@ -54,11 +54,18 @@ public class TreeNode {
   }
 
   public TreeNode addChild(TreeNode childNode) {
+    return addChild(childNode, true);
+  }
+
+  public TreeNode addChild(TreeNode childNode, boolean sort) {
     childNode.mParent = this;
     childNode.mId = generateId();
     children.add(childNode);
-    Collections.sort(children, new SortFileName());
-    Collections.sort(children, new SortFolder());
+
+    if (sort) {
+      Collections.sort(children, new SortFileName());
+      Collections.sort(children, new SortFolder());
+    }
     return this;
   }
 

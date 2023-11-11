@@ -174,7 +174,7 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
     for (file in files) {
       val node = TreeNode(file)
       node.viewHolder = FileTreeViewHolder(context)
-      parent.addChild(node)
+      parent.addChild(node, false)
     }
   }
 
@@ -218,7 +218,7 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
 
     val projectRoot = TreeNode.root(projectDir)
     projectRoot.viewHolder = FileTreeViewHolder(context)
-    rootNode.addChild(projectRoot)
+    rootNode.addChild(projectRoot, false)
 
     binding!!.horizontalCroll.visibility = View.GONE
     binding!!.horizontalCroll.visibility = View.VISIBLE
