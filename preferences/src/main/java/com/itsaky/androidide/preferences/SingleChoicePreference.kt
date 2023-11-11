@@ -55,9 +55,12 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
     checkedItems: BooleanArray?
   ) {
 
+    this.currentSelection = getInitiallySelectionItemPosition(preference.context)
+
     dialog.setSingleChoiceItems(
       choices,
-      getInitiallySelectionItemPosition(preference.context))
+      currentSelection
+    )
     { _, position ->
 
       if (currentSelection != -1) {
