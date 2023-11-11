@@ -387,14 +387,18 @@ abstract class BaseEditorActivity :
     editorViewModel.statusGravity = gravity
   }
 
+  fun refreshSymbolInput() {
+    provideCurrentEditor()?.also { refreshSymbolInput(it) }
+  }
+
+  fun refreshSymbolInput(editor: CodeEditorView) {
+    binding.bottomSheet.refreshSymbolInput(editor)
+  }
+
   private fun checkIsDestroying() {
     if (!isDestroying && isFinishing) {
       isDestroying = true
     }
-  }
-
-  protected fun refreshSymbolInput(editor: CodeEditorView) {
-    binding.bottomSheet.refreshSymbolInput(editor)
   }
 
   private fun handleUiDesignerResult(result: ActivityResult) {

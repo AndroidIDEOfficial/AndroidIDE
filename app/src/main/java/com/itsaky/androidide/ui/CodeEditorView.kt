@@ -25,6 +25,7 @@ import android.view.LayoutInflater
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import com.blankj.utilcode.util.SizeUtils
+import com.itsaky.androidide.activities.editor.BaseEditorActivity
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding
@@ -330,6 +331,9 @@ class CodeEditorView(
     // This will make sure that textDocument/didOpen is sent
     binding.editor.file = file
 
+    // do not pass this editor instance
+    // symbol input must be updated for the current editor
+    (context as? BaseEditorActivity?)?.refreshSymbolInput()
     (context as? Activity?)?.invalidateOptionsMenu()
   }
 
