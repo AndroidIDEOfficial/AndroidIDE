@@ -7,6 +7,7 @@
 -keepattributes Signature
 -keepattributes Exceptions
 -keepattributes *Annotation*
+-keepattributes RoomDatabase, Entity, PrimaryKey, TypeConverters
 
 -keep class javax.** { *; }
 -keep class jdkx.** { *; }
@@ -120,3 +121,13 @@
 ## Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+# Room DB
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keepclassmembers class * {
+    @androidx.room.TypeConverter <methods>;
+}
+-keep class com.itsaky.androidide.data.converters.ProjectInfoCacheTypeConverter { *; }
+-keep class com.itsaky.androidide.data.converters.FileTypeConverter { *; }
+-dontwarn androidx.room.paging.**
