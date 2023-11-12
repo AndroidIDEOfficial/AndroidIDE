@@ -27,10 +27,6 @@ android {
     generateLocaleConfig = true
   }
 
-  compileOptions {
-    isCoreLibraryDesugaringEnabled = true
-  }
-
   buildTypes { release { isShrinkResources = true } }
 
   packaging {
@@ -104,7 +100,7 @@ dependencies {
   implementation(libs.google.oss.licenses)
 
   // Kotlin
-  implementation(libs.androidx.ktx)
+  implementation(libs.androidx.core.ktx)
   implementation(libs.common.kotlin)
 
   // Local projects here
@@ -112,7 +108,10 @@ dependencies {
   implementation(projects.buildInfo)
   implementation(projects.common)
   implementation(projects.editor)
-  implementation(projects.emulatorview)
+  implementation(projects.termux.termuxApp)
+  implementation(projects.termux.termuxView)
+  implementation(projects.termux.termuxEmulator)
+  implementation(projects.termux.termuxShared)
   implementation(projects.eventbus)
   implementation(projects.eventbusAndroid)
   implementation(projects.eventbusEvents)
@@ -137,8 +136,6 @@ dependencies {
   implementation(projects.templatesImpl)
   implementation(projects.uidesigner)
   implementation(projects.xmlInflater)
-
-  coreLibraryDesugaring(libs.androidx.lib.desugaring)
 
   // This is to build the tooling-api-impl project before the app is built
   // So we always copy the latest JAR file to assets

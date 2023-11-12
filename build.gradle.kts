@@ -17,15 +17,11 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
-import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
-import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost.Companion.S01
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.itsaky.androidide.plugins.conf.configureAndroidModule
+import com.itsaky.androidide.plugins.conf.configureJavaModule
+import com.itsaky.androidide.plugins.conf.configureMavenPublish
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -45,74 +41,6 @@ buildscript {
   }
 }
 
-val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
-
-fun Project.configureBaseExtension() {
-  extensions.findByType(BaseExtension::class)?.run {
-    compileSdkVersion(BuildConfig.compileSdk)
-
-    defaultConfig {
-      minSdk = BuildConfig.minSdk
-      targetSdk = BuildConfig.targetSdk
-      versionCode = projectVersionCode
-      versionName = rootProject.version.toString()
-
-      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    compileOptions {
-      sourceCompatibility = BuildConfig.javaVersion
-      targetCompatibility = BuildConfig.javaVersion
-    }
-
-    if (":app" == project.path) {
-      flavorDimensions("default")
-
-      productFlavors {
-        flavorsAbis.forEach(this::create)
-
-        forEach {
-          val name = it.name
-          defaultConfig.buildConfigField("String",
-            "FLAVOR_${name.replace('-', '_').uppercase()}",
-            "\"${name}\"")
-        }
-      }
-    }
-
-    // configure split APKs for ':app' module only
-    if (this@configureBaseExtension == rootProject.findProject(":app")) {
-      splits {
-        abi {
-          reset()
-
-          isEnable = true
-          isUniversalApk = false
-
-          // TODO: Find a way to enable split APKs in product flavors. If this is possible, we can configure
-          //       each flavor to include only a single ABI. For example, for the 'arm64-v8a' flavor,
-          //       we can configure it to generate APK only for 'arm64-v8a'.
-          //
-          //  See the contribution guidelines for more information.
-          @Suppress("ChromeOsAbiSupport")
-          include(*flavorsAbis)
-        }
-      }
-    }
-
-    buildTypes.getByName("debug") { isMinifyEnabled = false }
-    buildTypes.getByName("release") {
-      isMinifyEnabled = true
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-    }
-
-    testOptions { unitTests.isIncludeAndroidResources = true }
-
-    buildFeatures.viewBinding = true
-    buildFeatures.buildConfig = true
-  }
-}
-
 subprojects {
   afterEvaluate {
     apply { plugin(AndroidIDEPlugin::class.java) }
@@ -120,70 +48,11 @@ subprojects {
 
   project.group = BuildConfig.packageName
   project.version = rootProject.version
-  plugins.withId("com.android.application") { configureBaseExtension() }
-  plugins.withId("com.android.library") { configureBaseExtension() }
 
-  plugins.withId("java-library") {
-    configure<JavaPluginExtension> {
-      sourceCompatibility = BuildConfig.javaVersion
-      targetCompatibility = BuildConfig.javaVersion
-    }
-  }
-
-  project.afterEvaluate {
-    if (project.plugins.hasPlugin(
-        "com.vanniktech.maven.publish.base") && project.description.isNullOrBlank()
-    ) {
-      throw GradleException("Project ${project.path} must have a description")
-    }
-  }
-
-  plugins.withId("com.vanniktech.maven.publish.base") {
-    configure<MavenPublishBaseExtension> {
-
-      project.configureMavenLocal()
-
-      pom {
-        name.set(project.name)
-        description.set(project.description)
-        inceptionYear.set("2021")
-        url.set(ProjectConfig.REPO_URL)
-        licenses {
-          license {
-            name.set("The GNU General Public License, v3.0")
-            url.set("https://www.gnu.org/licenses/gpl-3.0.en.html")
-            distribution.set("https://www.gnu.org/licenses/gpl-3.0.en.html")
-          }
-        }
-
-        developers {
-          developer {
-            id.set("androidide")
-            name.set("AndroidIDE")
-            url.set(ProjectConfig.PROJECT_SITE)
-          }
-        }
-
-        scm {
-          url.set(ProjectConfig.REPO_URL)
-          connection.set(ProjectConfig.SCM_GIT)
-          developerConnection.set(ProjectConfig.SCM_SSH)
-        }
-      }
-
-      coordinates(project.group.toString(), project.name, project.publishingVersion)
-      publishToMavenCentral(host = S01)
-      signAllPublications()
-
-      if (plugins.hasPlugin("com.android.library")) {
-        configure(AndroidMultiVariantLibrary())
-      } else if (plugins.hasPlugin("java-gradle-plugin")) {
-        configure(GradlePlugin(javadocJar = JavadocJar.Javadoc()))
-      } else if (plugins.hasPlugin("java-library")) {
-        configure(JavaLibrary(javadocJar = JavadocJar.Javadoc()))
-      }
-    }
-  }
+  plugins.withId("com.android.application") { configureAndroidModule(libs.androidx.lib.desugaring.get()) }
+  plugins.withId("com.android.library") { configureAndroidModule(libs.androidx.lib.desugaring.get()) }
+  plugins.withId("java-library") { configureJavaModule() }
+  plugins.withId("com.vanniktech.maven.publish.base") { configureMavenPublish() }
 
   plugins.withId("com.gradle.plugin-publish") {
     configure<GradlePluginDevelopmentExtension> {
@@ -193,55 +62,6 @@ subprojects {
 
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = BuildConfig.javaVersion.toString()
-  }
-
-  gradle.projectsEvaluated {
-    rootProject.subprojects {
-      if (project.path in projectsRequiringMavenLocalForTests) {
-        tasks.withType<Test> {
-          for ((project, _) in mavenLocalRepos) {
-            dependsOn(project(project).tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
-          }
-        }
-      }
-    }
-  }
-}
-
-val projectsRequiringMavenLocalForTests = arrayOf(":gradle-plugin")
-val mavenLocalRepos = hashMapOf<String, String>()
-
-fun Project.configureMavenLocal() {
-  val mavenLocalPath = layout.buildDirectory.dir("maven-local")
-  mavenLocalRepos[project.path] = mavenLocalPath.get().asFile.absolutePath
-
-  extensions.findByType(PublishingExtension::class.java)?.run {
-    repositories {
-      maven {
-        name = "buildMavenLocal"
-        url = uri(mavenLocalPath)
-      }
-    }
-  }
-
-  tasks.create<Delete>("deleteBuildMavenLocal") {
-    delete(mavenLocalPath)
-  }
-
-  if (project.path in projectsRequiringMavenLocalForTests) {
-    tasks.withType<Test> {
-      dependsOn(tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
-      doFirst {
-        val file = mavenLocalPath.get().file("repos.txt").asFile
-        file.writeText(mavenLocalRepos.values.joinToString(separator = File.pathSeparator))
-      }
-    }
-  }
-
-  afterEvaluate {
-    tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository") {
-      dependsOn(tasks.getByName("deleteBuildMavenLocal"))
-    }
   }
 }
 

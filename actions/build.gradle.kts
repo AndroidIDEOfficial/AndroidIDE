@@ -22,6 +22,6 @@ dependencies {
     implementation(libs.common.utilcode)
     implementation(libs.google.auto.service.annotations)
     
-    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.google.material)
 }

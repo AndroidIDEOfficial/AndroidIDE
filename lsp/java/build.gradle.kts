@@ -56,7 +56,7 @@ dependencies {
     implementation(projects.subprojects.javapoet)
     implementation(projects.subprojects.googleJavaFormat)
     
-    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.common.kotlin)
 
     testImplementation(projects.testing.lsp)

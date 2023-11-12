@@ -20,18 +20,20 @@ dependencies {
     api(libs.androidx.vectors)
     api(libs.androidx.animated.vectors)
     
-    api(libs.androidx.ktx)
+    api(libs.androidx.core.ktx)
     api(libs.common.kotlin)
     
     api(projects.buildInfo)
+    api(projects.eventbusAndroid)
     api(projects.eventbusEvents)
     api(projects.lexers)
     api(projects.resources)
     
     api(projects.shared)
     api(projects.logger)
+    api(projects.resources)
     api(projects.subprojects.flashbar)
-    
+
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)
     testImplementation(libs.tests.robolectric)

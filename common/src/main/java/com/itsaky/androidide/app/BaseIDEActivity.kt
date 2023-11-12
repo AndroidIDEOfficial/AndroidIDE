@@ -26,10 +26,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
 import com.itsaky.androidide.tasks.cancelIfActive
+import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseIDEActivity : AppCompatActivity() {
 
@@ -56,6 +58,7 @@ abstract class BaseIDEActivity : AppCompatActivity() {
       navigationBarColor = this@BaseIDEActivity.navigationBarColor
       statusBarColor = this@BaseIDEActivity.statusBarColor
     }
+    IThemeManager.getInstance().applyTheme(this)
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
@@ -73,6 +76,24 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
     activityScope.cancelIfActive("Activity is being destroyed")
+  }
+
+  override fun onStart() {
+    super.onStart()
+    EventBus.getDefault().apply {
+      if (!isRegistered(this@BaseIDEActivity)) {
+        register(this)
+      }
+    }
+  }
+
+  override fun onStop() {
+    super.onStop()
+    EventBus.getDefault().apply {
+      if (isRegistered(this@BaseIDEActivity)) {
+        unregister(this)
+      }
+    }
   }
 
   fun loadFragment(fragment: Fragment, id: Int) {

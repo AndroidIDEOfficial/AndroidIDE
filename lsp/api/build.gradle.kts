@@ -40,7 +40,7 @@ dependencies {
     implementation(projects.eventbusEvents)
     
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.common.kotlin)
     implementation(libs.common.utilcode)
     implementation(libs.google.material)
