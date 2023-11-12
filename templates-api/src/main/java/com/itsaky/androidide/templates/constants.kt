@@ -28,5 +28,5 @@ const val KOTLIN_VERSION = "1.8.21"
 val TARGET_SDK_VERSION = Sdk.Tiramisu
 val COMPILE_SDK_VERSION = Sdk.Tiramisu
 
-const val JAVA_SOURCE_VERSION = "11"
-const val JAVA_TARGET_VERSION = "11"
+const val JAVA_SOURCE_VERSION = "17"
+const val JAVA_TARGET_VERSION = "17"
