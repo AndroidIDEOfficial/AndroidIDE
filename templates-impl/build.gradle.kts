@@ -35,7 +35,7 @@ dependencies {
   implementation(projects.preferences)
   implementation(projects.subprojects.projects)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.ktx)
+  implementation(libs.androidx.core.ktx)
   implementation(libs.google.auto.service.annotations)
 
   testImplementation(projects.templatesApi)

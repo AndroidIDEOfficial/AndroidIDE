@@ -11,7 +11,7 @@ android {
 dependencies {
   
   implementation(libs.androidx.appcompat)
-  implementation(libs.androidx.ktx)
+  implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.nav.fragment)
   implementation(libs.androidx.nav.ui)

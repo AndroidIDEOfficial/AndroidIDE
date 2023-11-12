@@ -22,6 +22,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.Observer
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -44,7 +45,9 @@ import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
 import com.itsaky.androidide.preferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS
 import com.itsaky.androidide.preferences.dumpLogs
+import com.itsaky.androidide.preferences.internal.SELECTED_LOCALE
 import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
+import com.itsaky.androidide.preferences.internal.UI_MODE
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.stats.AndroidIDEStats
@@ -53,20 +56,23 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.ui.themes.IDETheme
+import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.ui.themes.ThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
+import com.termux.app.TermuxApplication
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
+import java.util.Locale
 import kotlin.system.exitProcess
 
-class IDEApplication : BaseApplication() {
+class IDEApplication : TermuxApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
   private var ideLogcatReader: IDELogcatReader? = null
@@ -109,7 +115,7 @@ class IDEApplication : BaseApplication() {
 
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
-    if (ThemeManager.getCurrentTheme() == IDETheme.MATERIAL_YOU) {
+    if (IThemeManager.getInstance().getCurrentTheme() == IDETheme.MATERIAL_YOU) {
       DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
@@ -214,6 +220,17 @@ class IDEApplication : BaseApplication() {
       } else {
         stopLogcatReader()
       }
+    } else if (event.key == UI_MODE && uiMode != AppCompatDelegate.getDefaultNightMode()) {
+      AppCompatDelegate.setDefaultNightMode(uiMode)
+    } else if (event.key == SELECTED_LOCALE) {
+
+      // Use empty locale list if the locale has been reset to 'System Default'
+      val selectedLocale = com.itsaky.androidide.preferences.internal.selectedLocale
+      val localeListCompat = selectedLocale?.let {
+        LocaleListCompat.create(Locale.forLanguageTag(selectedLocale))
+      } ?: LocaleListCompat.getEmptyLocaleList()
+
+      AppCompatDelegate.setApplicationLocales(localeListCompat)
     }
   }
 

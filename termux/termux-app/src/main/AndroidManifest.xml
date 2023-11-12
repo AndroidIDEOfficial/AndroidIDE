@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:sharedUserLabel="@string/shared_user_label">
+
+  <uses-feature
+    android:name="android.hardware.touchscreen"
+    android:required="false" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission
+    android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+    tools:ignore="ScopedStorage" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission android:name="android.permission.READ_LOGS" />
+  <uses-permission android:name="android.permission.DUMP" />
+  <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+  <uses-permission
+    android:name="android.permission.PACKAGE_USAGE_STATS"
+    tools:ignore="ProtectedPermissions" />
+
+  <application>
+
+    <activity
+      android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|keyboard|keyboardHidden|navigation"
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:name="com.termux.app.TermuxActivity"
+      android:resizeableActivity="true" />
+
+    <activity
+      android:documentLaunchMode="intoExisting"
+      android:name=".shared.activities.ReportActivity" />
+
+    <activity
+      android:excludeFromRecents="true"
+      android:exported="false"
+      android:name=".app.api.file.FileReceiverActivity"
+      android:noHistory="true"
+      android:resizeableActivity="true"
+      android:taskAffinity="${TERMUX_PACKAGE_NAME}.filereceiver" />
+
+    <meta-data
+      android:name="android.max_aspect"
+      android:value="10.0" />
+
+    <meta-data
+      android:name="com.samsung.android.keepalive.density"
+      android:value="true" />
+
+    <meta-data
+      android:name="com.samsung.android.multidisplay.keep_process_alive"
+      android:value="true" />
+
+    <meta-data
+      android:name="com.sec.android.support.multiwindow"
+      android:value="true" />
+
+
+    <!-- https://developer.samsung.com/samsung-dex/modify-optimizing.html -->
+
+    <!-- Version < 3.0. DeX Mode and Screen Mirroring support -->
+    <receiver
+      android:exported="false"
+      android:name=".shared.activities.ReportActivity$ReportActivityBroadcastReceiver" />
+
+    <!-- Version >= 3.0. DeX Dual Mode support -->
+    <service
+      android:exported="false"
+      android:name=".app.TermuxService" />
+
+  </application>
+
+</manifest>

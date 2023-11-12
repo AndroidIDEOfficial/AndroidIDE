@@ -3,6 +3,7 @@
 
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Copy</string>
+  <string name="terminal_more">More…</string>
   <string name="text_to_search">Text to search</string>
   <string name="app_name" translatable="false">AndroidIDE</string>
   <string name="title_open_source_licenses">Open source licenses</string>

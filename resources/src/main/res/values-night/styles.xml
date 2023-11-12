@@ -22,6 +22,17 @@
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
     <item name="android:windowLightStatusBar">false</item>
     <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+
+    <!-- Left drawer. -->
+    <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Dark</item>
+    <item name="termuxActivityDrawerBackground">@color/black</item>
+    <item name="termuxActivityDrawerImageTint">@color/white</item>
+
+    <!-- Extra keys colors. -->
+    <item name="extraKeysButtonTextColor">@color/white</item>
+    <item name="extraKeysButtonActiveTextColor">@color/red_400</item>
+    <item name="extraKeysButtonBackgroundColor">@color/black</item>
+    <item name="extraKeysButtonActiveBackgroundColor">@color/grey_500</item>
   </style>
 
 </resources>
