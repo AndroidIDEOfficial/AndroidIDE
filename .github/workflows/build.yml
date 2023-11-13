@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "dev", "main", "rework-tooling-api" ]
+    branches: [ "dev", "main", "feature/integrate-termux" ]
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
