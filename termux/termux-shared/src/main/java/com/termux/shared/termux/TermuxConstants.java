@@ -350,36 +350,11 @@ public final class TermuxConstants {
     public static final String TERMUX_GITHUB_ISSUES_REPO_URL = TERMUX_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/termux-app/issues"
 
 
+    /** AndroidIDE APK release */
+    public static final String APK_RELEASE_ANDROIDIDE = "AndroidIDE"; // Default: "AndroidIDE"
 
-
-
-    /*
-     * Termux APK releases.
-     */
-
-    /** F-Droid APK release */
-    public static final String APK_RELEASE_FDROID = "F-Droid"; // Default: "F-Droid"
-
-    /** F-Droid APK release signing certificate SHA-256 digest */
-    public static final String APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST = "228FB2CFE90831C1499EC3CCAF61E96E8E1CE70766B9474672CE427334D41C42"; // Default: "228FB2CFE90831C1499EC3CCAF61E96E8E1CE70766B9474672CE427334D41C42"
-
-    /** GitHub APK release */
-    public static final String APK_RELEASE_GITHUB = "Github"; // Default: "Github"
-
-    /** GitHub APK release signing certificate SHA-256 digest */
-    public static final String APK_RELEASE_GITHUB_SIGNING_CERTIFICATE_SHA256_DIGEST = "B6DA01480EEFD5FBF2CD3771B8D1021EC791304BDD6C4BF41D3FAABAD48EE5E1"; // Default: "B6DA01480EEFD5FBF2CD3771B8D1021EC791304BDD6C4BF41D3FAABAD48EE5E1"
-
-    /** Google Play Store APK release */
-    public static final String APK_RELEASE_GOOGLE_PLAYSTORE = "Google Play Store"; // Default: "Google Play Store"
-
-    /** Google Play Store APK release signing certificate SHA-256 digest */
-    public static final String APK_RELEASE_GOOGLE_PLAYSTORE_SIGNING_CERTIFICATE_SHA256_DIGEST = "738F0A30A04D3C8A1BE304AF18D0779BCF3EA88FB60808F657A3521861C2EBF9"; // Default: "738F0A30A04D3C8A1BE304AF18D0779BCF3EA88FB60808F657A3521861C2EBF9"
-
-    /** Termux Devs APK release */
-    public static final String APK_RELEASE_TERMUX_DEVS = "Termux Devs"; // Default: "Termux Devs"
-
-    /** Termux Devs APK release signing certificate SHA-256 digest */
-    public static final String APK_RELEASE_TERMUX_DEVS_SIGNING_CERTIFICATE_SHA256_DIGEST = "F7A038EB551F1BE8FDF388686B784ABAB4552A5D82DF423E3D8F1B5CBE1C69AE"; // Default: "F7A038EB551F1BE8FDF388686B784ABAB4552A5D82DF423E3D8F1B5CBE1C69AE"
+    /** AndroidIDE APK release signing certificate SHA-256 digest */
+    public static final String APK_RELEASE_ANDROIDIDE_SIGNING_CERTIFICATE_SHA256_DIGEST = "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"; // Default: "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"
 
 
 

@@ -527,18 +527,12 @@ public class TermuxUtils {
     public static String getAPKRelease(String signingCertificateSHA256Digest) {
         if (signingCertificateSHA256Digest == null) return "null";
 
-        switch (signingCertificateSHA256Digest.toUpperCase()) {
-            case TermuxConstants.APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST:
-                return TermuxConstants.APK_RELEASE_FDROID;
-            case TermuxConstants.APK_RELEASE_GITHUB_SIGNING_CERTIFICATE_SHA256_DIGEST:
-                return TermuxConstants.APK_RELEASE_GITHUB;
-            case TermuxConstants.APK_RELEASE_GOOGLE_PLAYSTORE_SIGNING_CERTIFICATE_SHA256_DIGEST:
-                return TermuxConstants.APK_RELEASE_GOOGLE_PLAYSTORE;
-            case TermuxConstants.APK_RELEASE_TERMUX_DEVS_SIGNING_CERTIFICATE_SHA256_DIGEST:
-                return TermuxConstants.APK_RELEASE_TERMUX_DEVS;
-            default:
-                return "Unknown";
+        if (signingCertificateSHA256Digest
+            .equalsIgnoreCase(TermuxConstants.APK_RELEASE_ANDROIDIDE_SIGNING_CERTIFICATE_SHA256_DIGEST)
+        ) {
+            return TermuxConstants.APK_RELEASE_ANDROIDIDE;
         }
+        return "Unknown";
     }
 
 
