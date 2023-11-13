@@ -121,7 +121,10 @@ class KeywordCompletionProvider(
         "int",
         "long",
         "float",
-        "double"
+        "double",
+        "true",
+        "false",
+        "null"
       )
     private val METHOD_BODY_KEYWORDS =
       arrayOf(
@@ -151,7 +154,8 @@ class KeywordCompletionProvider(
         "int",
         "long",
         "float",
-        "double"
+        "double",
+        "synchronized"
       )
   }
 }
