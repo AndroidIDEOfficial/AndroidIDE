@@ -120,7 +120,6 @@ public class KeyboardUtils {
      * @param activity The Activity of the root view for which the visibility should be checked.
      * @return Returns {@code true} if soft keyboard is visible, otherwise {@code false}.
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public static boolean isSoftKeyboardVisible(final Activity activity) {
         if (activity != null && activity.getWindow() != null) {
             WindowInsets insets = activity.getWindow().getDecorView().getRootWindowInsets();

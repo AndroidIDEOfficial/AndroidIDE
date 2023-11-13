@@ -333,7 +333,11 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
         if (mIsInvalidState) return;
 
         this.binding = null;
-        this.mLastToast = null;
+
+        if (mLastToast != null) {
+            mLastToast.cancel();
+        }
+        mLastToast = null;
 
         if (mTermuxService != null) {
             // Do not leave service and session clients with references to activity.
@@ -580,9 +584,7 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
     @SuppressLint("RtlHardcoded")
     @Override
     public void onBackPressed() {
-        if (KeyboardUtils.isSoftKeyboardVisible(this)) {
-            KeyboardUtils.showSoftKeyboard(this, getTerminalView());
-        } else if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
+        if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
             getDrawer().closeDrawers();
         } else {
             finishActivityIfNotFinishing();
