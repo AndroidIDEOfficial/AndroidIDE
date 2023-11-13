@@ -47,6 +47,11 @@ fun Project.configureAndroidModule(
       multiDexEnabled = true
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+      ndk {
+        abiFilters.clear()
+        abiFilters += arrayOf("armeabi-v7a", "arm64-v8a")
+      }
     }
 
     compileOptions {
