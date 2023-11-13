@@ -454,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Theme</string>
   <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Projektkonfiguration</string>
-  <string name="msg_app_launch_failed">Fehler beim Starten der Anwendung. Siehe IDE-Logs für weitere Informationen.</string>
+  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostik aktiviert</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTELL) Sollen die Java-Quellcodedateien auf Fehler analysiert werden oder nicht.</string>
   <string name="title_reload_color_schemes">Farbschemen neu laden</string>
