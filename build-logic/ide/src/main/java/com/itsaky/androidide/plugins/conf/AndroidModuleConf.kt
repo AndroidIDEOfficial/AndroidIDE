@@ -47,11 +47,6 @@ fun Project.configureAndroidModule(
       multiDexEnabled = true
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-      ndk {
-        abiFilters.clear()
-        abiFilters += arrayOf("armeabi-v7a", "arm64-v8a")
-      }
     }
 
     compileOptions {
@@ -72,6 +67,13 @@ fun Project.configureAndroidModule(
           defaultConfig.buildConfigField("String",
             "FLAVOR_${name.replace('-', '_').uppercase()}",
             "\"${name}\"")
+        }
+      }
+    } else {
+      defaultConfig {
+        ndk {
+          abiFilters.clear()
+          abiFilters += arrayOf("armeabi-v7a", "arm64-v8a")
         }
       }
     }
