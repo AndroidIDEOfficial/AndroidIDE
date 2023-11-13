@@ -13,10 +13,6 @@ android {
                 cFlags += arrayOf("-std=c11", "-Wall", "-Wextra", "-Werror", "-Os", "-fno-stack-protector", "-Wl,--gc-sections")
             }
         }
-
-        ndk {
-            abiFilters += arrayOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
-        }
     }
 
     externalNativeBuild {
