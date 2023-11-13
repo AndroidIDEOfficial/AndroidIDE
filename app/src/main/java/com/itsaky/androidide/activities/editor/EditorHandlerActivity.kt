@@ -427,17 +427,16 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val frag = getEditorAtIndex(index) ?: return
-    if (frag.file == null) {
-      return
-    }
+    val fileName = frag.file?.name ?: return
 
     run {
       // Must be called before frag.save()
       // Otherwise, it'll always return false
       val modified = frag.isModified
-      frag.save()
+      if (!frag.save()) {
+        return
+      }
 
-      val fileName = frag.file!!.name
       val isGradle = fileName.endsWith(".gradle") || fileName.endsWith(".gradle.kts")
       val isXml: Boolean = fileName.endsWith(".xml")
       if (!result.gradleSaved) {
