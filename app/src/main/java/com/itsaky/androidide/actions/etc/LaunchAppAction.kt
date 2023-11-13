@@ -68,7 +68,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
       }
 
       val activity = data.requireActivity()
-      IntentUtils.launchApp(activity, packageName)
+      IntentUtils.launchApp(activity, packageName, logError = false)
     }
   }
 

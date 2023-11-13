@@ -95,32 +95,37 @@ object IntentUtils {
    * @param context The context that will be used to fetch the launch intent.
    * @param packageName The package name of the application.
    */
-  fun launchApp(context: Context, packageName: String) {
+  @JvmOverloads
+  fun launchApp(context: Context, packageName: String, logError: Boolean = true) : Boolean {
     if (Build.VERSION.SDK_INT >= 33) {
-      launchAppApi33(context, packageName)
-      return
+      return launchAppApi33(context, packageName, logError)
     }
 
-    doLaunchApp(context, packageName)
+    return doLaunchApp(context, packageName, logError)
   }
 
-  private fun doLaunchApp(context: Context, packageName: String) {
+  private fun doLaunchApp(context: Context, packageName: String, logError: Boolean = true) : Boolean {
     try {
       val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
-      requireNotNull(launchIntent) {
-        "Cannot get launch intent for package '$packageName'. Is the application installed?"
+      if (launchIntent == null) {
+        flashError(R.string.msg_app_launch_failed)
+        return false
       }
 
       context.startActivity(launchIntent)
+      return true
     } catch (e: Throwable) {
       flashError(R.string.msg_app_launch_failed)
-      ILogger.instance().error("Failed to launch application with package name '$packageName'", e)
+      if (logError) {
+        ILogger.instance().error("Failed to launch application with package name '$packageName'", e)
+      }
+      return false
     }
   }
 
   @RequiresApi(33)
-  private fun launchAppApi33(context: Context, packageName: String) {
-    try {
+  private fun launchAppApi33(context: Context, packageName: String, logError: Boolean = true) : Boolean {
+    return try {
       val sender = context.packageManager.getLaunchIntentSenderForPackage(packageName)
       sender.sendIntent(
         context,
@@ -129,9 +134,13 @@ object IntentUtils {
         null,
         null
       )
+      true
     } catch (e: Throwable) {
       flashError(R.string.msg_app_launch_failed)
-      ILogger.instance().error("Failed to launch application with package name '$packageName'", e)
+      if (logError) {
+        ILogger.instance().error("Failed to launch app", e)
+      }
+      false
     }
   }
 }

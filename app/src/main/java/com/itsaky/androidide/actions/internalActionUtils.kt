@@ -28,7 +28,7 @@ import com.itsaky.androidide.utils.flashError
 /**
  * @see openApplicationModuleChooser
  */
-fun openApplicationModuleChooser(data: ActionData, callback: (AndroidModule) -> Unit) =
+inline fun openApplicationModuleChooser(data: ActionData, crossinline callback: (AndroidModule) -> Unit) =
   openApplicationModuleChooser(data.requireContext(), callback)
 
 /**
@@ -38,7 +38,7 @@ fun openApplicationModuleChooser(data: ActionData, callback: (AndroidModule) -> 
  *
  * @param
  */
-fun openApplicationModuleChooser(context: Context, callback: (AndroidModule) -> Unit) {
+inline fun openApplicationModuleChooser(context: Context, crossinline callback: (AndroidModule) -> Unit) {
   val log = ILogger.newInstance("ActionUtils")
   val projectManager = IProjectManager.getInstance()
   val applications = projectManager.getAndroidAppModules()
