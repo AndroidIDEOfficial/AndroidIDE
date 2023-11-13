@@ -454,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">主题</string>
   <string name="idepref_general_themeSelector_summary">选择 AndroidIDE 主题（需要重启）。</string>
   <string name="idepref_general_projectConfig">项目配置</string>
-  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
+  <string name="msg_app_launch_failed">启动失败，请先安装应用。</string>
   <string name="idepref_java_diagnosticEnabled_title">启用诊断</string>
   <string name="idepref_java_diagnosticsEnabled_summary">（实验性）是否应该分析 Java 源文件的错误。</string>
   <string name="title_reload_color_schemes">重载配色方案</string>
