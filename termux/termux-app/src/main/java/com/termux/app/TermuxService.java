@@ -40,6 +40,7 @@ import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A service holding a list of {@link TermuxSession} in {@link TermuxShellManager#mTermuxSessions} and background {@link AppShell}
@@ -448,9 +449,6 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
 
         updateNotification();
 
-        // No need to recreate the activity since it likely just started and theme should already have applied
-        TermuxActivity.updateTermuxActivityStyling(this, false);
-
         return newTermuxSession;
     }
 
@@ -500,10 +498,8 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
      * {@link TermuxService}, otherwise {@link TermuxTerminalSessionServiceClient}.
      */
     public synchronized TermuxTerminalSessionClientBase getTermuxTerminalSessionClient() {
-        if (mTermuxTerminalSessionActivityClient != null)
-            return mTermuxTerminalSessionActivityClient;
-        else
-            return mTermuxTerminalSessionServiceClient;
+        return Objects.requireNonNullElse(mTermuxTerminalSessionActivityClient,
+            mTermuxTerminalSessionServiceClient);
     }
 
     /** This should be called when {@link TermuxActivity#onServiceConnected} is called to set the
@@ -599,8 +595,6 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     }
 
     private void setupNotificationChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-
         NotificationUtils.setupNotificationChannel(this, TermuxConstants.TERMUX_APP_NOTIFICATION_CHANNEL_ID,
             TermuxConstants.TERMUX_APP_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
     }
