@@ -145,7 +145,15 @@ constructor(
   fun compareByEnd(other: Range): Int = end.compareTo(other.end)
 
   fun contains(position: Position): Boolean {
-    return !(position.line < start.line || position.line > end.line)
+    if (position.line < start.line || position.line > end.line) {
+      return false
+    }
+
+    if (start.line == end.line) {
+      return position.column >= start.column && position.column <= end.column
+    }
+
+    return false
   }
 
   /**

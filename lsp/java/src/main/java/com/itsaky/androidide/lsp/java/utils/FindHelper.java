@@ -191,7 +191,7 @@ public class FindHelper {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    Matcher matcher = Pattern.compile("\\b" + name + "\\b").matcher(contents);
+    Matcher matcher = Pattern.compile("\\b" + Pattern.quote(name.toString()) + "\\b").matcher(contents);
     matcher.region(start, end);
     if (matcher.find()) {
       return matcher.start();
