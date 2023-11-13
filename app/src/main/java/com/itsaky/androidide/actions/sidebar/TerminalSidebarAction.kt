@@ -51,6 +51,7 @@ class TerminalSidebarAction(context: Context, override val order: Int) : Abstrac
       TerminalActivity.KEY_WORKING_DIRECTORY,
       Objects.requireNonNull(IProjectManager.getInstance().projectDirPath)
     )
+    intent.putExtra(TerminalActivity.KEY_SESSION_NAME, IProjectManager.getInstance().rootProject?.rootProject?.name)
     context.startActivity(intent)
     return true
   }
