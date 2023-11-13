@@ -16,19 +16,24 @@
  */
 package com.itsaky.androidide.activities
 
+import android.content.ComponentName
 import android.os.Bundle
+import android.os.IBinder
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.termux.app.TermuxActivity
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 class TerminalActivity : TermuxActivity() {
 
   companion object {
 
-    const val KEY_WORKING_DIRECTORY = "terminal_workingDirectory"
+    const val KEY_WORKING_DIRECTORY = TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY.EXTRA_SESSION_WORKING_DIR
+    const val KEY_SESSION_NAME = TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY.EXTRA_SESSION_NAME
+
     private val LOG = ILogger.newInstance("TerminalActivity")
     private val SOURCES_LIST_CONTENT = "deb https://packages.androidide.com/apt/termux-main/ stable main".toByteArray()
   }
@@ -46,18 +51,10 @@ class TerminalActivity : TermuxActivity() {
     super.onCreate(savedInstanceState)
   }
 
-  private val workingDirectory: String
-    get() {
-      val extras = intent.extras
-      if (extras != null && extras.containsKey(KEY_WORKING_DIRECTORY)) {
-        var directory = extras.getString(KEY_WORKING_DIRECTORY, null)
-        if (directory.isNullOrBlank()) {
-          directory = Environment.HOME.absolutePath
-        }
-        return directory
-      }
-      return Environment.HOME.absolutePath
-    }
+  override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
+    writeSourcesList()
+    super.onServiceConnected(componentName, service)
+  }
 
   private fun writeSourcesList() {
     try {

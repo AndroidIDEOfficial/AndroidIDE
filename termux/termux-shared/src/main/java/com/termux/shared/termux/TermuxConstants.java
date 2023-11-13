@@ -675,6 +675,18 @@ public final class TermuxConstants {
          */
         public static final class TERMUX_ACTIVITY {
 
+            /**
+             * Path to the working directory of the session which should be selected when the
+             * termux activity connects to the termux service. If no session's CWD is the given
+             * directory, a new session will be created with the given CWD.
+             */
+            public static final String EXTRA_SESSION_WORKING_DIR = TermuxConstants.TERMUX_PACKAGE_NAME + ".app.session_cwd";
+
+            /**
+             * The name for the session.
+             */
+            public static final String EXTRA_SESSION_NAME = TermuxConstants.TERMUX_PACKAGE_NAME + ".app.session_name";
+
             /** Intent extra for if termux failsafe session needs to be started and is used by {@link TERMUX_ACTIVITY} and {@link TERMUX_SERVICE#ACTION_STOP_SERVICE} */
             public static final String EXTRA_FAILSAFE_SESSION = TermuxConstants.TERMUX_PACKAGE_NAME + ".app.failsafe_session"; // Default: "com.termux.app.failsafe_session"
 

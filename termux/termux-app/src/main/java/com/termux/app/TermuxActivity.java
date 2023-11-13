@@ -64,6 +64,7 @@ import com.termux.shared.termux.extrakeys.ExtraKeysView;
 import com.termux.shared.termux.interact.TextInputDialogUtils;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
+import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
 import com.termux.shared.termux.theme.TermuxThemeUtils;
 import com.termux.shared.view.KeyboardUtils;
 import com.termux.shared.view.ViewUtils;
@@ -72,6 +73,8 @@ import com.termux.terminal.TerminalSessionClient;
 import com.termux.view.TerminalView;
 import com.termux.view.TerminalViewClient;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A terminal emulator activity.
@@ -374,6 +377,16 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
         final Intent intent = getIntent();
         setIntent(null);
 
+        final String workingDir;
+        final String sessionName;
+        if (intent != null && intent.getExtras() != null) {
+            workingDir = intent.getExtras().getString(TERMUX_ACTIVITY.EXTRA_SESSION_WORKING_DIR, null);
+            sessionName = intent.getExtras().getString(TERMUX_ACTIVITY.EXTRA_SESSION_NAME, null);
+        } else {
+            workingDir = null;
+            sessionName = null;
+        }
+
         if (mTermuxService.isTermuxSessionsEmpty()) {
             if (mIsVisible) {
                 TermuxInstaller.setupBootstrapIfNeeded(TermuxActivity.this, () -> {
@@ -383,7 +396,7 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
                         if (intent != null && intent.getExtras() != null) {
                             launchFailsafe = intent.getExtras().getBoolean(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
                         }
-                        mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, null);
+                        mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, null, workingDir);
                     } catch (WindowManager.BadTokenException e) {
                         // Activity finished - ignore.
                     }
@@ -393,14 +406,19 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
                 finishActivityIfNotFinishing();
             }
         } else {
-            // If termux was started from launcher "New session" shortcut and activity is recreated,
-            // then the original intent will be re-delivered, resulting in a new session being re-added
-            // each time.
-            if (!mIsActivityRecreated && intent != null && Intent.ACTION_RUN.equals(intent.getAction())) {
-                // Android 7.1 app shortcut from res/xml/shortcuts.xml.
-                boolean isFailSafe = intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
-                mTermuxTerminalSessionActivityClient.addNewSession(isFailSafe, null);
+            final Optional<TermuxSession> existingSession = workingDir == null ? Optional.empty() :
+            mTermuxService.getTermuxSessions().stream().filter(session -> Objects.equals(
+                session.getTerminalSession().getCwd(), workingDir)).findFirst();
+
+            if (existingSession.isPresent()) {
+                // requested to open a session with a specific working directory
+                // a session is already opened with the provided working directory
+                mTermuxTerminalSessionActivityClient.setCurrentSession(existingSession.get().getTerminalSession());
+            } else if (workingDir != null) {
+                // working directory is provided, but no session has that specific CWD
+                mTermuxTerminalSessionActivityClient.addNewSession(false, sessionName, workingDir);
             } else {
+                // no working directory provided
                 mTermuxTerminalSessionActivityClient.setCurrentSession(mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());
             }
         }
