@@ -454,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Тема</string>
   <string name="idepref_general_themeSelector_summary">Выберите тему оформления для AndroidIDE (требуется перезапуск).</string>
   <string name="idepref_general_projectConfig">Настройки проекта</string>
-  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
+  <string name="msg_app_launch_failed">Ошибка запуска. Сначала установите приложение.</string>
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Перезагрузить цветовые схемы</string>
