@@ -19,11 +19,9 @@ package com.termux.app;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -132,11 +130,6 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
      * The termux sessions list controller.
      */
     TermuxSessionsListViewController mTermuxSessionListViewController;
-
-    /**
-     * The {@link TermuxActivity} broadcast receiver for various things like terminal style configuration changes.
-     */
-    private final BroadcastReceiver mTermuxActivityBroadcastReceiver = new TermuxActivityBroadcastReceiver();
 
     /**
      * The last toast shown, used cancel current toast before showing new in {@link #showToast(String, boolean)}.
@@ -288,8 +281,6 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
         if (mPreferences.isTerminalMarginAdjustmentEnabled())
             addTermuxActivityRootViewGlobalLayoutListener();
-
-        registerTermuxActivityBroadcastReceiver();
     }
 
     @Override
@@ -305,10 +296,6 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
         if (mTermuxTerminalViewClient != null)
             mTermuxTerminalViewClient.onResume();
-
-        // Check if a crash happened on last run of the app or if a plugin crashed and show a
-        // notification with the crash details if it did
-        TermuxCrashUtils.notifyAppCrashFromCrashLogFile(this, LOG_TAG);
 
         mIsOnResumeAfterOnCreate = false;
     }
@@ -331,7 +318,6 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
         removeTermuxActivityRootViewGlobalLayoutListener();
 
-        unregisterTermuxActivityBroadcastReceiver();
         getDrawer().closeDrawers();
     }
 
@@ -860,104 +846,6 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
         return mProperties;
     }
 
-
-
-
-    public static void updateTermuxActivityStyling(Context context, boolean recreateActivity) {
-        // Make sure that terminal styling is always applied.
-        Intent stylingIntent = new Intent(TERMUX_ACTIVITY.ACTION_RELOAD_STYLE);
-        stylingIntent.putExtra(TERMUX_ACTIVITY.EXTRA_RECREATE_ACTIVITY, recreateActivity);
-        context.sendBroadcast(stylingIntent);
-    }
-
-    private void registerTermuxActivityBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(TERMUX_ACTIVITY.ACTION_NOTIFY_APP_CRASH);
-        intentFilter.addAction(TERMUX_ACTIVITY.ACTION_RELOAD_STYLE);
-        intentFilter.addAction(TERMUX_ACTIVITY.ACTION_REQUEST_PERMISSIONS);
-
-        registerReceiver(mTermuxActivityBroadcastReceiver, intentFilter);
-    }
-
-    private void unregisterTermuxActivityBroadcastReceiver() {
-        unregisterReceiver(mTermuxActivityBroadcastReceiver);
-    }
-
-    private void fixTermuxActivityBroadcastReceiverIntent(Intent intent) {
-        if (intent == null) return;
-
-        String extraReloadStyle = intent.getStringExtra(TERMUX_ACTIVITY.EXTRA_RELOAD_STYLE);
-        if ("storage".equals(extraReloadStyle)) {
-            intent.removeExtra(TERMUX_ACTIVITY.EXTRA_RELOAD_STYLE);
-            intent.setAction(TERMUX_ACTIVITY.ACTION_REQUEST_PERMISSIONS);
-        }
-    }
-
-    class TermuxActivityBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null) return;
-
-            if (mIsVisible) {
-                fixTermuxActivityBroadcastReceiverIntent(intent);
-
-                switch (intent.getAction()) {
-                    case TERMUX_ACTIVITY.ACTION_NOTIFY_APP_CRASH:
-                        Logger.logDebug(LOG_TAG, "Received intent to notify app crash");
-                        TermuxCrashUtils.notifyAppCrashFromCrashLogFile(context, LOG_TAG);
-                        return;
-                    case TERMUX_ACTIVITY.ACTION_RELOAD_STYLE:
-                        Logger.logDebug(LOG_TAG, "Received intent to reload styling");
-                        reloadActivityStyling(intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_RECREATE_ACTIVITY, true));
-                        return;
-                    case TERMUX_ACTIVITY.ACTION_REQUEST_PERMISSIONS:
-                        Logger.logDebug(LOG_TAG, "Received intent to request storage permissions");
-                        requestStoragePermission(false);
-                        return;
-                    default:
-                }
-            }
-        }
-    }
-
-    private void reloadActivityStyling(boolean recreateActivity) {
-        if (mProperties != null) {
-            reloadProperties();
-
-            if (mExtraKeysView != null) {
-                mExtraKeysView.setButtonTextAllCaps(mProperties.shouldExtraKeysTextBeAllCaps());
-                mExtraKeysView.reload(mTermuxTerminalExtraKeys.getExtraKeysInfo(), mTerminalToolbarDefaultHeight);
-            }
-
-            // Update NightMode.APP_NIGHT_MODE
-            TermuxThemeUtils.setAppNightMode(mProperties.getNightMode());
-        }
-
-        setMargins();
-        setTerminalToolbarHeight();
-
-        FileReceiverActivity.updateFileReceiverActivityComponentsState(this);
-
-        if (mTermuxTerminalSessionActivityClient != null)
-            mTermuxTerminalSessionActivityClient.onReloadActivityStyling();
-
-        if (mTermuxTerminalViewClient != null)
-            mTermuxTerminalViewClient.onReloadActivityStyling();
-
-        // To change the activity and drawer theme, activity needs to be recreated.
-        // It will destroy the activity, including all stored variables and views, and onCreate()
-        // will be called again. Extra keys input text, terminal sessions and transcripts will be preserved.
-        if (recreateActivity) {
-            Logger.logDebug(LOG_TAG, "Recreating activity");
-            TermuxActivity.this.recreate();
-        }
-    }
-
-
-
-    public static void startTermuxActivity(@NonNull final Context context) {
-        ActivityUtils.startActivity(context, newInstance(context));
-    }
 
     public static Intent newInstance(@NonNull final Context context) {
         Intent intent = new Intent(context, TermuxActivity.class);
