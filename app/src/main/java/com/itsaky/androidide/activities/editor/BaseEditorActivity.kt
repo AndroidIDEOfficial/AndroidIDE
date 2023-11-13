@@ -121,6 +121,9 @@ abstract class BaseEditorActivity :
   lateinit var binding: ActivityEditorBinding
     protected set
 
+  override val subscribeToEvents: Boolean
+    get() = true
+
   private val onBackPressedCallback: OnBackPressedCallback =
     object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {

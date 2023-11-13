@@ -21,22 +21,18 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
-import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import java.util.Locale
 
 abstract class BaseIDEActivity : AppCompatActivity() {
+
+  open val subscribeToEvents: Boolean = false
 
   open val navigationBarColor: Int
     get() = resolveAttr(R.attr.colorSurface)
@@ -73,19 +69,15 @@ abstract class BaseIDEActivity : AppCompatActivity() {
 
   override fun onStart() {
     super.onStart()
-    EventBus.getDefault().apply {
-      if (!isRegistered(this@BaseIDEActivity)) {
-        register(this)
-      }
+    if (!EventBus.getDefault().isRegistered(this) && subscribeToEvents) {
+      EventBus.getDefault().register(this)
     }
   }
 
   override fun onStop() {
     super.onStop()
-    EventBus.getDefault().apply {
-      if (isRegistered(this@BaseIDEActivity)) {
-        unregister(this)
-      }
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().unregister(this)
     }
   }
 
