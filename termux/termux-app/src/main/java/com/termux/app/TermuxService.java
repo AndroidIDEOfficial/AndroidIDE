@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -59,10 +58,10 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
 
     /** This service is only bound from inside the same process and never uses IPC. */
     class LocalBinder extends Binder {
-        public final TermuxService service = TermuxService.this;
+        public TermuxService service = TermuxService.this;
     }
 
-    private final IBinder mBinder = new LocalBinder();
+    private LocalBinder mBinder = null;
 
     private final Handler mHandler = new Handler();
 
@@ -153,6 +152,12 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     public void onDestroy() {
         Logger.logVerbose(LOG_TAG, "onDestroy");
 
+        if (mBinder != null) {
+            mBinder.service = null;
+        }
+
+        mBinder = null;
+
         TermuxShellUtils.clearTermuxTMPDIR(true);
 
         actionReleaseWakeLock(false);
@@ -167,6 +172,9 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     @Override
     public IBinder onBind(Intent intent) {
         Logger.logVerbose(LOG_TAG, "onBind");
+        if (mBinder == null) {
+            mBinder = new LocalBinder();
+        }
         return mBinder;
     }
 
