@@ -23,6 +23,7 @@ import android.widget.ListView
 import com.itsaky.androidide.lsp.util.DocumentationReferenceProvider
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.KeyboardUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
@@ -151,7 +152,9 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
             show()
           }
 
-          if (adapter!!.count >= 1) {
+          if (adapter!!.count >= 1
+              && KeyboardUtils.isHardKeyboardConnected(context)
+            ) {
             currentSelection = 0
           }
         },

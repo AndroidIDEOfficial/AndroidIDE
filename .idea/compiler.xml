@@ -131,6 +131,10 @@
       <module name="AndroidIDE.templates-testing" target="17" />
       <module name="AndroidIDE.templates-testing.main" target="11" />
       <module name="AndroidIDE.templates-testing.test" target="11" />
+      <module name="AndroidIDE.termux.termux-app" target="17" />
+      <module name="AndroidIDE.termux.termux-emulator" target="17" />
+      <module name="AndroidIDE.termux.termux-shared" target="17" />
+      <module name="AndroidIDE.termux.termux-view" target="17" />
       <module name="AndroidIDE.testing-android" target="17" />
       <module name="AndroidIDE.testing.android.test" target="11" />
       <module name="AndroidIDE.testing.common" target="11" />
