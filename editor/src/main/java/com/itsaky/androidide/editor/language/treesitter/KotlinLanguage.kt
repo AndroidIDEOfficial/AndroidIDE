@@ -18,7 +18,9 @@
 package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
+import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 
 /**
  * [TreeSitterLanguage] implementation for Kotlin.
@@ -29,6 +31,7 @@ open class KotlinLanguage(context: Context) :
   TreeSitterLanguage(context, TSLanguageKotlin.getInstance(), TS_TYPE_KT) {
 
   companion object {
+
     val FACTORY = Factory { KotlinLanguage(it) }
     const val TS_TYPE_KT = "kt"
     const val TS_TYPE_KTS = "kts"

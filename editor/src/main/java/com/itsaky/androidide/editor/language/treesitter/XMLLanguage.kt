@@ -23,6 +23,7 @@ import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml
+import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 import io.github.rosemoe.sora.util.MyCharacter
 
 /**
@@ -33,16 +34,15 @@ import io.github.rosemoe.sora.util.MyCharacter
 class XMLLanguage(context: Context) :
   TreeSitterLanguage(context, lang = TSLanguageXml.getInstance(), type = TS_TYPE) {
 
+  override val languageServer: ILanguageServer?
+    get() = ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
+
   companion object {
 
     const val TS_TYPE = "xml"
 
     @JvmField
     val FACTORY = Factory { XMLLanguage(it) }
-  }
-
-  override fun getLanguageServer(): ILanguageServer? {
-    return ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
   }
 
   override fun checkIsCompletionChar(c: Char): Boolean {

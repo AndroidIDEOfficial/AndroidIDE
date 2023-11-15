@@ -47,7 +47,7 @@ class TSLanguageRegistryImpl : TSLanguageRegistry {
     fileType: String
   ): TreeSitterLanguage.Factory<T> {
     return (registry[fileType] ?: throw TSLanguageRegistry.NotRegisteredException(fileType))
-      as TreeSitterLanguage.Factory<T>
+        as TreeSitterLanguage.Factory<T>
   }
 
   override fun destroy() {

@@ -27,6 +27,7 @@ import com.itsaky.androidide.editor.language.treesitter.internal.TSLanguageRegis
 interface TSLanguageRegistry {
 
   companion object {
+
     @JvmStatic
     val instance by lazy { TSLanguageRegistryImpl() }
   }

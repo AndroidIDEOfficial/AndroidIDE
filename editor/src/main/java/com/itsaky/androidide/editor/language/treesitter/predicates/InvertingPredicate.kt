@@ -28,7 +28,8 @@ import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
  *
  * @author Akash Yadav
  */
-open class InvertingPredicate(override val name: String, private val predicate: TreeSitterPredicate) :
+open class InvertingPredicate(override val name: String,
+  private val predicate: TreeSitterPredicate) :
   TreeSitterPredicate() {
 
   override fun canHandle(steps: List<TsClientPredicateStep>): Boolean {

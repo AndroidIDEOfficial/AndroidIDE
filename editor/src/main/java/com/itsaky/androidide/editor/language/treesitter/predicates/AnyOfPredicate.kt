@@ -42,14 +42,14 @@ object AnyOfPredicate : TreeSitterPredicate() {
 
   override fun canHandle(steps: List<TsClientPredicateStep>): Boolean {
     return steps.size > 4 &&
-      steps.let {
-        it[0].predicateType == TSQueryPredicateStep.Type.String &&
-          it[1].predicateType == TSQueryPredicateStep.Type.Capture &&
-          it[it.lastIndex].predicateType == TSQueryPredicateStep.Type.Done &&
-          it.subList(2, it.lastIndex - 1).all { step ->
-            step.predicateType == TSQueryPredicateStep.Type.String
-          }
-      }
+        steps.let {
+          it[0].predicateType == TSQueryPredicateStep.Type.String &&
+              it[1].predicateType == TSQueryPredicateStep.Type.Capture &&
+              it[it.lastIndex].predicateType == TSQueryPredicateStep.Type.Done &&
+              it.subList(2, it.lastIndex - 1).all { step ->
+                step.predicateType == TSQueryPredicateStep.Type.String
+              }
+        }
   }
 
   override fun doPredicateInternal(

@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.editor.language
 
+import com.itsaky.androidide.editor.language.utils.CompletionHelper
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
@@ -27,11 +28,9 @@ import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
-import io.github.rosemoe.sora.lang.completion.CompletionHelper
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import java.nio.file.Path
-import java.util.function.Predicate
 
 /**
  * Common implementation of completion provider which requests completions to provided language
@@ -39,10 +38,15 @@ import java.util.function.Predicate
  *
  * @author Akash Yadav
  */
-class CommonCompletionProvider(private val server: ILanguageServer,
-  private val cancelChecker: CompletionCancelChecker) {
+internal class CommonCompletionProvider(
+  private val server: ILanguageServer,
+  private val cancelChecker: CompletionCancelChecker
+) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = ILogger.newInstance("CommonCompletionProvider")
+  }
 
   /**
    * Computes completion items using the provided language server instance.
@@ -53,18 +57,19 @@ class CommonCompletionProvider(private val server: ILanguageServer,
    * @return The computed completion items. May return an empty list if the there was an error
    * computing the completion items.
    */
-  fun complete(
-    content: ContentReference?,
+  inline fun complete(
+    content: ContentReference,
     file: Path,
     position: CharPosition,
-    prefixMatcher: Predicate<Char?>
+    prefixMatcher: (Char) -> Boolean
   ): List<CompletionItem> {
     val completionResult =
       try {
         setupLookupForCompletion(file)
-        val prefix = CompletionHelper.computePrefix(content, position) { prefixMatcher.test(it) }
+        val prefix = CompletionHelper.computePrefix(content, position, prefixMatcher)
         val params =
-          CompletionParams(Position(position.line, position.column, position.index), file, cancelChecker)
+          CompletionParams(Position(position.line, position.column, position.index), file,
+            cancelChecker)
         params.content = content
         params.prefix = prefix
         server.complete(params)

@@ -43,12 +43,12 @@ object EqualPredicate : TreeSitterPredicate() {
 
   override fun canHandle(steps: List<TsClientPredicateStep>): Boolean {
     return steps.size == 4 &&
-      steps[0].predicateType == TSQueryPredicateStep.Type.String &&
-      steps[1].predicateType == TSQueryPredicateStep.Type.Capture &&
-      steps[2].predicateType.let {
-        it == TSQueryPredicateStep.Type.Capture || it == TSQueryPredicateStep.Type.String
-      } &&
-      steps[3].predicateType == TSQueryPredicateStep.Type.Done
+        steps[0].predicateType == TSQueryPredicateStep.Type.String &&
+        steps[1].predicateType == TSQueryPredicateStep.Type.Capture &&
+        steps[2].predicateType.let {
+          it == TSQueryPredicateStep.Type.Capture || it == TSQueryPredicateStep.Type.String
+        } &&
+        steps[3].predicateType == TSQueryPredicateStep.Type.Done
   }
 
   override fun doPredicateInternal(
@@ -63,7 +63,7 @@ object EqualPredicate : TreeSitterPredicate() {
       predicateSteps[2].let {
         check(
           it.predicateType == TSQueryPredicateStep.Type.String ||
-            it.predicateType == TSQueryPredicateStep.Type.Capture
+              it.predicateType == TSQueryPredicateStep.Type.Capture
         ) {
           "Second predicate step of #eq? predicate must be a string or a capture"
         }

@@ -70,8 +70,8 @@ abstract class TreeSitterPredicate : TsPredicate {
 
     if (
       predicateSteps.isEmpty() ||
-        predicateSteps[0].content != "${name}?" ||
-        !canHandle(predicateSteps)
+      predicateSteps[0].content != "${name}?" ||
+      !canHandle(predicateSteps)
     ) {
       return PredicateResult.UNHANDLED
     }

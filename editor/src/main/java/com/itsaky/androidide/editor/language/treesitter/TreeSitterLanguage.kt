@@ -33,6 +33,7 @@ import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.TsTheme
+import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
 import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.text.TextUtils
@@ -78,7 +79,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   }
 
   open fun finalizeIndent(indent: Int): Int {
-    return indent * tabSize
+    return indent * getTabSize()
   }
 
   override fun getAnalyzeManager(): AnalyzeManager {
@@ -106,7 +107,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
       content.toString(),
       line,
       column,
-      decrementBy = TextUtils.countLeadingSpaceCount(content.getLine(line), tabSize)
+      decrementBy = TextUtils.countLeadingSpaceCount(content.getLine(line), getTabSize())
     )
   }
 
