@@ -28,7 +28,7 @@ public class TermuxShellUtils {
 
     public static boolean shellExists(boolean failsafe) {
         for (String shellBinary : UnixShellEnvironment.LOGIN_SHELL_BINARIES) {
-            File shellFile = new File(Environment.PREFIX, shellBinary);
+            File shellFile = new File(Environment.BIN_DIR, shellBinary);
             if (shellFile.canExecute()) {
                 return true;
             }
