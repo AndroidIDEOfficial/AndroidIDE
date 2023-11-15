@@ -104,9 +104,13 @@ public class TermuxAppShellEnvironment {
 
         HashMap<String, String> environment = new HashMap<>();
 
-        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_VERSION, PackageUtils.getVersionNameForPackage(packageInfo));
-        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__VERSION_NAME, PackageUtils.getVersionNameForPackage(packageInfo));
-        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__VERSION_CODE, String.valueOf(PackageUtils.getVersionCodeForPackage(packageInfo)));
+        // Hardcode termux version
+        final var termuxVersionName = "0.118.0";
+        final var termuxVersionCode = "118";
+
+        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_VERSION, termuxVersionName);
+        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__VERSION_NAME, termuxVersionName);
+        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__VERSION_CODE, termuxVersionCode);
 
         ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__PACKAGE_NAME, packageName);
         ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__PID, TermuxUtils.getTermuxAppPID(currentPackageContext));
@@ -123,10 +127,8 @@ public class TermuxAppShellEnvironment {
             // An app that does not have the same sharedUserId as termux app will not be able to get
             // get termux context's classloader to get BuildConfig.TERMUX_PACKAGE_VARIANT via reflection.
             // Check TermuxBootstrap.setTermuxPackageManagerAndVariantFromTermuxApp()
-            if (TermuxBootstrap.TERMUX_APP_PACKAGE_MANAGER != null)
-                environment.put(ENV_TERMUX_APP__PACKAGE_MANAGER, TermuxBootstrap.TERMUX_APP_PACKAGE_MANAGER.getName());
-            if (TermuxBootstrap.TERMUX_APP_PACKAGE_VARIANT != null)
-                environment.put(ENV_TERMUX_APP__PACKAGE_VARIANT, TermuxBootstrap.TERMUX_APP_PACKAGE_VARIANT.getName());
+            environment.put(ENV_TERMUX_APP__PACKAGE_MANAGER, TermuxBootstrap.TERMUX_APP_PACKAGE_MANAGER.getName());
+            environment.put(ENV_TERMUX_APP__PACKAGE_VARIANT, TermuxBootstrap.TERMUX_APP_PACKAGE_VARIANT.getName());
 
             // Will not be set for plugins
             ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__AM_SOCKET_SERVER_ENABLED,
@@ -142,8 +144,7 @@ public class TermuxAppShellEnvironment {
             ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__SE_INFO, PackageUtils.getApplicationInfoSeInfoForPackage(applicationInfo) +
                 (DataUtils.isNullOrEmpty(seInfoUser) ? "" : seInfoUser));
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__USER_ID, String.valueOf(PackageUtils.getUserIdForPackage(currentPackageContext)));
+            ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__USER_ID, String.valueOf(PackageUtils.getUserIdForPackage(currentPackageContext)));
             ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_TERMUX_APP__PROFILE_OWNER, PackageUtils.getProfileOwnerPackageNameForUser(currentPackageContext));
         }
 
