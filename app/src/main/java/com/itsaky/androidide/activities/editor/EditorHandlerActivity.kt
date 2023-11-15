@@ -427,7 +427,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     saveResultInternal(index, result, true)
   }
 
-  private fun saveResultInternal(index: Int, result: SaveResult, updateSaving: Boolean) {
+  private suspend fun saveResultInternal(index: Int, result: SaveResult, updateSaving: Boolean) {
     if (index < 0 || index >= editorViewModel.getOpenedFileCount()) {
       return
     }
