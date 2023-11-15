@@ -54,7 +54,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
         }
 
     visible = context.editorViewModel.getOpenedFiles().isNotEmpty()
-    enabled = context.areFilesModified()
+    enabled = context.areFilesModified() && !context.areFilesSaving()
   }
 
   override suspend fun execAction(data: ActionData): ResultWrapper {

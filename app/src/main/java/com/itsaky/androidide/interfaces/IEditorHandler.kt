@@ -39,6 +39,7 @@ interface IEditorHandler {
   fun openFileAndGetIndex(file: File, selection: Range?) : Int
   
   fun areFilesModified(): Boolean
+  fun areFilesSaving(): Boolean
 
   /**
    * Save all files.
