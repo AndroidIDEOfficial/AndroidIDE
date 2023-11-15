@@ -17,12 +17,9 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.app.IDEBuildConfigProvider;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -35,7 +32,6 @@ import java.util.Properties;
 public final class Environment {
 
   public static final Map<String, String> IDE_PROPS = new HashMap<>();
-  public static final Map<String, String> ENV_VARS = new HashMap<>();
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
   public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
   public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
@@ -167,12 +163,9 @@ public final class Environment {
   }
 
   @NonNull
-  private static String createPath() {
-    String path = "";
-    path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
+  public static String createPath() {
+    String path = BIN_DIR.getAbsolutePath();
     path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
-    path += String.format(":%s/bin", PREFIX.getAbsolutePath());
-    path += String.format(":%s", System.getenv("PATH"));
     return path;
   }
 
@@ -190,68 +183,30 @@ public final class Environment {
     BOOTCLASSPATH = new File(file.getAbsolutePath());
   }
 
-  public static Map<String, String> getEnvironment() {
+  public static void putEnvironment(Map<String, String> env, boolean forFailsafe) {
 
-    if (!ENV_VARS.isEmpty()) {
-      return ENV_VARS;
-    }
+    env.put("HOME", HOME.getAbsolutePath());
+    env.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
+    env.put("ANDROID_SDK_ROOT", ANDROID_HOME.getAbsolutePath());
+    env.put("ANDROID_USER_HOME", HOME.getAbsolutePath() + "/.android");
+    env.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
+    env.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
+    env.put("SYSROOT", PREFIX.getAbsolutePath());
+    env.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
 
-    ENV_VARS.put("HOME", HOME.getAbsolutePath());
-    ENV_VARS.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
-    ENV_VARS.put("ANDROID_SDK_ROOT", ANDROID_HOME.getAbsolutePath());
-    ENV_VARS.put("ANDROID_USER_HOME", HOME.getAbsolutePath() + "/.android");
-    ENV_VARS.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
-    ENV_VARS.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
-    ENV_VARS.put("TMPDIR", TMP_DIR.getAbsolutePath());
-    ENV_VARS.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
-    ENV_VARS.put("LANG", "en_US.UTF-8");
-    ENV_VARS.put("LC_ALL", "en_US.UTF-8");
+    // add user envs for non-failsafe sessions
+    if (!forFailsafe) {
+      // No mirror select
+      env.put("TERMUX_PKG_NO_MIRROR_SELECT", "true");
 
-    ENV_VARS.put("SYSROOT", PREFIX.getAbsolutePath());
-
-    ENV_VARS.put("BUSYBOX", BUSYBOX.getAbsolutePath());
-    ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
-    ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
-    ENV_VARS.put("TERM", "screen");
-
-    // https://github.com/termux/termux-tools/blob/f2736f7f8232cd19cf52bca9b0ac9afb8ad9e562/scripts/termux-setup-package-manager.in#L3
-    ENV_VARS.put("TERMUX_APP_PACKAGE_MANAGER", "apt");
-    ENV_VARS.put("TERMUX_PKG_NO_MIRROR_SELECT", "true");
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-        && IDEBuildConfigProvider.getInstance().isArm64v8aBuild()
-        && LIB_HOOK.exists()
-        && BaseApplication.getBaseInstance().getPrefManager().shouldUseLdPreload()) {
-      // Required for JDK 11
-      ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
-    }
-
-    addToEnvIfPresent(ENV_VARS, "ANDROID_ART_ROOT");
-    addToEnvIfPresent(ENV_VARS, "DEX2OATBOOTCLASSPATH");
-    addToEnvIfPresent(ENV_VARS, "ANDROID_I18N_ROOT");
-    addToEnvIfPresent(ENV_VARS, "ANDROID_RUNTIME_ROOT");
-    addToEnvIfPresent(ENV_VARS, "ANDROID_TZDATA_ROOT");
-    addToEnvIfPresent(ENV_VARS, "ANDROID_DATA");
-    addToEnvIfPresent(ENV_VARS, "ANDROID_ROOT");
-
-    String path = createPath();
-
-    ENV_VARS.put("PATH", path);
-
-    for (String key : IDE_PROPS.keySet()) {
-      if (!blacklistedVariables().contains(key.trim())) {
-        ENV_VARS.put(key, readProp(key, ""));
+      for (String key : IDE_PROPS.keySet()) {
+        if (!blacklistedVariables().contains(key.trim())) {
+          env.put(key, readProp(key, ""));
+        }
       }
     }
 
-    return ENV_VARS;
-  }
 
-  public static void addToEnvIfPresent(Map<String, String> environment, String name) {
-    String value = System.getenv(name);
-    if (value != null) {
-      environment.put(name, value);
-    }
   }
 
   private static List<String> blacklistedVariables() {
