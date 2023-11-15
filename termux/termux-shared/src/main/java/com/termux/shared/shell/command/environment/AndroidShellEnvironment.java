@@ -33,9 +33,7 @@ public class AndroidShellEnvironment extends UnixShellEnvironment {
     public HashMap<String, String> getEnvironment(@NonNull Context currentPackageContext, boolean isFailSafe) {
         HashMap<String, String> environment = new HashMap<>();
 
-        if (!isFailSafe) {
-            environment.putAll(Environment.getEnvironment());
-        }
+        Environment.putEnvironment(environment, isFailSafe);
 
         environment.put(ENV_HOME, "/");
         environment.put(ENV_LANG, "en_US.UTF-8");

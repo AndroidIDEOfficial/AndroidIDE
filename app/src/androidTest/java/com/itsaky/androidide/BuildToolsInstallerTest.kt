@@ -18,15 +18,18 @@
 package com.itsaky.androidide
 
 import android.util.Log
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R.string
+import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.shell.executeProcessAsync
 import com.itsaky.androidide.testing.android.clickAndWaitForWindowUpdate
 import com.itsaky.androidide.testing.android.findObjectWithText
 import com.itsaky.androidide.testing.android.hasObjectWithText
 import com.itsaky.androidide.testing.android.launchAndroidIDE
 import com.itsaky.androidide.utils.Environment
+import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -84,7 +87,7 @@ class BuildToolsInstallerTest {
     val process = executeProcessAsync {
       redirectErrorStream = true
       workingDirectory = null
-      environment = Environment.getEnvironment()
+      environment = TermuxShellEnvironment().getEnvironment(ApplicationProvider.getApplicationContext<IDEApplication>(), false)
       command = listOf(Environment.SHELL.absolutePath, "-c", cmd).also {
         Log.d(TAG, "setupDevice: Full command : ${it.joinToString(separator = " ")}")
       }

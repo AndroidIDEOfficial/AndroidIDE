@@ -1,5 +1,7 @@
 package com.termux.shared.termux.shell.command.environment;
 
+import static com.itsaky.androidide.utils.Environment.ANDROID_HOME;
+
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -77,15 +79,8 @@ public class TermuxShellEnvironment extends AndroidShellEnvironment {
         // If failsafe is not enabled, then we keep default PATH and TMPDIR so that system binaries can be used
         if (!isFailSafe) {
             environment.put(ENV_TMPDIR, TermuxConstants.TERMUX_TMP_PREFIX_DIR_PATH);
-            if (TermuxBootstrap.isAppPackageVariantAPTAndroid5()) {
-                // Termux in android 5/6 era shipped busybox binaries in applets directory
-                environment.put(ENV_PATH, TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH + ":" + TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH + "/applets");
-                environment.put(ENV_LD_LIBRARY_PATH, TermuxConstants.TERMUX_LIB_PREFIX_DIR_PATH);
-            } else {
-                // Termux binaries on Android 7+ rely on DT_RUNPATH, so LD_LIBRARY_PATH should be unset by default
-                environment.put(ENV_PATH, TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH);
-                environment.remove(ENV_LD_LIBRARY_PATH);
-            }
+            environment.put(ENV_PATH, TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH + String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath()));
+            environment.remove(ENV_LD_LIBRARY_PATH);
         }
 
         return environment;
