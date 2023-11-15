@@ -414,13 +414,25 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
             mTermuxService.getTermuxSessions().stream().filter(session -> Objects.equals(
                 session.getTerminalSession().getCwd(), workingDir)).findFirst();
 
+            boolean launchFailsafe =
+                intent != null && intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION,
+                    false);
+
             if (existingSession.isPresent()) {
                 // requested to open a session with a specific working directory
                 // a session is already opened with the provided working directory
-                mTermuxTerminalSessionActivityClient.setCurrentSession(existingSession.get().getTerminalSession());
+                final var session = existingSession.get();
+
+                if (session.getExecutionCommand().isFailsafe != launchFailsafe) {
+                    // the existing session's failsafe status does not match with the requested
+                    // failsafe status, create a new session
+                    mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, sessionName, workingDir);
+                } else {
+                    mTermuxTerminalSessionActivityClient.setCurrentSession(session.getTerminalSession());
+                }
             } else if (workingDir != null) {
                 // working directory is provided, but no session has that specific CWD
-                mTermuxTerminalSessionActivityClient.addNewSession(false, sessionName, workingDir);
+                mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, sessionName, workingDir);
             } else {
                 // no working directory provided
                 mTermuxTerminalSessionActivityClient.setCurrentSession(mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());

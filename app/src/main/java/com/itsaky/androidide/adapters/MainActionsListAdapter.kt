@@ -50,6 +50,11 @@ constructor(val actions: List<MainScreenAction> = emptyList()) :
       setOnClickListener {
         action.onClick?.invoke(action, it)
       }
+      action.onLongClick?.let { onLongClick ->
+        setOnLongClickListener {
+          onLongClick(action, it)
+        }
+      }
     }
   }
 }

@@ -34,7 +34,8 @@ constructor(
   val id: Int,
   @StringRes val text: Int,
   @DrawableRes val icon: Int,
-  var onClick: ((MainScreenAction, View) -> Unit)? = null
+  var onClick: ((MainScreenAction, View) -> Unit)? = null,
+  var onLongClick: ((MainScreenAction, View) -> Boolean)? = null
 ) {
 
   companion object {

@@ -26,6 +26,8 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
+import com.termux.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
@@ -63,7 +65,19 @@ class MainFragment : BaseFragment() {
         }
       }
 
-      actions.forEach { action -> action.onClick = onClick }
+      actions.forEach { action ->
+        action.onClick = onClick
+
+        if (action.id == MainScreenAction.ACTION_OPEN_TERMINAL) {
+          action.onLongClick = { _: MainScreenAction, _: View ->
+            val intent = Intent(requireActivity(), TerminalActivity::class.java).apply {
+              putExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, true)
+            }
+            startActivity(intent)
+            true
+          }
+        }
+      }
     }
 
     binding!!.actions.adapter = MainActionsListAdapter(actions)
