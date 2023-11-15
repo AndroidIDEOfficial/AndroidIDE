@@ -54,7 +54,7 @@ public class FileTreeCallable implements Callable<Boolean> {
     for (File file : files) {
       TreeNode node = new TreeNode(file);
       node.setViewHolder(new FileTreeViewHolder(ctx));
-      parent.addChild(node);
+      parent.addChild(node, false);
     }
   }
 
