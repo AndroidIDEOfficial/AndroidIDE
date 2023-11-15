@@ -52,8 +52,8 @@ class TerminalActivity : TermuxActivity() {
   }
 
   override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
-    writeSourcesList()
     super.onServiceConnected(componentName, service)
+    writeSourcesList()
   }
 
   private fun writeSourcesList() {
