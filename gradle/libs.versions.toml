@@ -85,7 +85,7 @@ google-auto-service-annotations = { module = "com.google.auto.service:auto-servi
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.25.1" }
-google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.17.0" }
+google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.18.1" }
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
