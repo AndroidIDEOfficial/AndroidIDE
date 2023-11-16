@@ -25,7 +25,8 @@ import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.utils.ILogger
 
-private val log = ILogger.newInstance("TsUtilsKt")
+@PublishedApi
+internal val log = ILogger.newInstance("TsUtilsKt")
 
 /**
  * Safely create a query cursor and execute the given [TSQuery]. The given [action] will be called for
@@ -34,16 +35,16 @@ private val log = ILogger.newInstance("TsUtilsKt")
  *
  * This method does not close the [TSQueryCursor] instance.
  */
-fun <ResultT> TSQueryCursor.safeExecQueryCursor(
+inline fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   query: TSQuery,
   tree: TSTree?,
   recycleNodeAfterUse: Boolean = true,
-  matchCondition: ((TSQueryMatch?) -> Boolean)? = null,
-  whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
-  onClosedOrEdited: (() -> Unit)? = null,
+  crossinline matchCondition: (TSQueryMatch?) -> Boolean = { true },
+  crossinline whileTrue: (TSQueryMatch?) -> Boolean = { true },
+  crossinline onClosedOrEdited: () -> Unit = {},
   debugName: String = "",
   debugLogging: Boolean = false,
-  action: (TSQueryMatch) -> ResultT
+  crossinline action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
 
   log.isEnabled = debugLogging
@@ -64,7 +65,7 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     node = rootNode,
     recycleNodeAfterUse = recycleNodeAfterUse,
     matchCondition = {
-      val result = tree.canAccess() && (matchCondition?.invoke(it) ?: true)
+      val result = tree.canAccess() && matchCondition(it)
       if (!result) {
         log.debug("$debugName: tree.canAccess=${tree.canAccess()}")
       }
@@ -85,16 +86,16 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
  *
  * This method does not close the [TSQueryCursor] instance.
  */
-fun <ResultT> TSQueryCursor.safeExecQueryCursor(
+inline fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   query: TSQuery,
   node: TSNode,
   recycleNodeAfterUse: Boolean = true,
-  matchCondition: ((TSQueryMatch?) -> Boolean)? = null,
-  whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
-  onClosedOrEdited: (() -> Unit)? = null,
+  crossinline matchCondition: (TSQueryMatch?) -> Boolean = { true },
+  crossinline whileTrue: (TSQueryMatch?) -> Boolean = { true },
+  crossinline onClosedOrEdited: () -> Unit = {},
   debugName: String = "",
   debugLogging: Boolean = false,
-  action: (TSQueryMatch) -> ResultT
+  crossinline action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
 
   return doSafeExecQueryCursor(
@@ -102,8 +103,7 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     node = node,
     recycleNodeAfterUse = recycleNodeAfterUse,
     matchCondition = { match ->
-      match != null && canAccess() && node.canAccess() && !node.hasChanges() && (matchCondition?.invoke(
-        match) ?: true)
+      match != null && canAccess() && node.canAccess() && !node.hasChanges() && matchCondition(match)
     },
     whileTrue = whileTrue,
     onClosedOrEdited = onClosedOrEdited,
@@ -112,16 +112,17 @@ fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     action = action)
 }
 
-private fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
+@PublishedApi
+internal inline fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
   query: TSQuery,
   node: TSNode,
   recycleNodeAfterUse: Boolean = true,
-  matchCondition: (TSQueryMatch?) -> Boolean,
-  whileTrue: ((TSQueryMatch?) -> Boolean)? = null,
-  onClosedOrEdited: (() -> Unit)? = null,
+  crossinline matchCondition: (TSQueryMatch?) -> Boolean,
+  crossinline whileTrue: (TSQueryMatch?) -> Boolean,
+  crossinline onClosedOrEdited: () -> Unit,
   debugName: String = "",
   debugLogging: Boolean = false,
-  action: (TSQueryMatch) -> ResultT
+  crossinline action: (TSQueryMatch) -> ResultT
 ) : ResultT? {
 
   log.isEnabled = debugLogging
@@ -138,7 +139,7 @@ private fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
 
   exec(query, node)
   var match = nextMatch()
-  while (matchCondition(match) && (whileTrue?.invoke(match) != false)) {
+  while (matchCondition(match) && whileTrue(match)) {
 
     val result = action(match)
 
@@ -150,7 +151,7 @@ private fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
         "node.canAccess=${node.canAccess()}",
         "node.hasChanges=${node.canAccess() && node.hasErrors()}"
       )
-      onClosedOrEdited?.invoke()
+      onClosedOrEdited()
       break
     }
 

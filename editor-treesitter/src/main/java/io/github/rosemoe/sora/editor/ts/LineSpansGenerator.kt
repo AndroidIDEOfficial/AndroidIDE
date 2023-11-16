@@ -118,8 +118,6 @@ class LineSpansGenerator(
         query = languageSpec.tsQuery,
         tree = tree,
         recycleNodeAfterUse = true,
-        matchCondition = null,
-        onClosedOrEdited = null,
         debugLogging = false,
         debugName = "LineSpansGenerator.captureRegion()"
       ) { match ->

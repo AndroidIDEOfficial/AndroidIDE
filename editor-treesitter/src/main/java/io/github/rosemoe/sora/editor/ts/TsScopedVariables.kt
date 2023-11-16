@@ -77,7 +77,6 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
           query = spec.tsQuery,
           tree = tree,
           recycleNodeAfterUse = true,
-          matchCondition = null,
           onClosedOrEdited = { captures.clear() },
           debugName = "TsScopedVariables.init()"
         ) { match ->

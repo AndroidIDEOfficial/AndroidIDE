@@ -63,9 +63,7 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
         query = languageSpec.bracketsQuery,
         tree = tree,
         recycleNodeAfterUse = true,
-        matchCondition = null,
         whileTrue = { !matched },
-        onClosedOrEdited = null,
         debugName = "TsBracketPairs.getPairedBracketAt()"
       ) { match ->
         if (!languageSpec.bracketsPredicator.doPredicate(languageSpec.predicates, text, match)) {

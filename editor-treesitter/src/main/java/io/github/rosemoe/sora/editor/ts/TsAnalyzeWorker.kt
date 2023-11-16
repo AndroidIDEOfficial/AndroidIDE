@@ -223,8 +223,6 @@ internal class TsAnalyzeWorker(
         query = languageSpec.blocksQuery,
         tree = tree,
         recycleNodeAfterUse = true,
-        matchCondition = null,
-        whileTrue = null,
         onClosedOrEdited = { blocks.clear() },
         debugName = "TsAnalyzeManager.updateCodeBlocks()"
       ) { match ->
