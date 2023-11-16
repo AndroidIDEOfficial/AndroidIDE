@@ -444,6 +444,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       // Otherwise, it'll always return false
       val modified = frag.isModified
       if (!frag.save()) {
+        if (updateSaving) {
+          setFilesSaving(false)
+        }
         return
       }
 

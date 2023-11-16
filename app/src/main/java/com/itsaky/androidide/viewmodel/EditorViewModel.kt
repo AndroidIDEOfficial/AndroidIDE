@@ -209,8 +209,7 @@ class EditorViewModel : ViewModel() {
   }
 
   fun areFilesSaving(): Boolean {
-    val saving = fileSaving.value
-    return saving != null && saving
+    return fileSaving.value ?: false
   }
 
   fun readOpenedFiles(result: (OpenedFilesCache?) -> Unit) {
