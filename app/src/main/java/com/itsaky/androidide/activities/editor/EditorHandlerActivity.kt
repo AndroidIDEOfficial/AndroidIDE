@@ -472,9 +472,10 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     withContext(Dispatchers.Main) {
       editorViewModel.apply {
         setFilesModified(finalModified)
-        if (updateSaving) {
-          setFilesSaving(false)
-        }
+      }
+
+      if (updateSaving) {
+        setFilesSaving(false)
       }
 
       // set tab as unmodified
@@ -487,6 +488,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   private suspend fun setFilesSaving(saving: Boolean) {
     withContext(Dispatchers.Main.immediate) {
+      invalidateOptionsMenu()
       editorViewModel.setFilesSaving(saving)
     }
   }

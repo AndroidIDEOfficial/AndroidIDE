@@ -26,7 +26,9 @@ import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.flashSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 /** @author Akash Yadav */
@@ -60,10 +62,14 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
   override suspend fun execAction(data: ActionData): ResultWrapper {
     val context = data.getActivity() ?: return ResultWrapper()
 
+    if (context.areFilesSaving()) {
+      return ResultWrapper(isAlreadySaving = true)
+    }
+
     return try {
       // Cannot use context.saveAll() because this.execAction is called on non-UI thread
       // and saveAll call will result in UI actions
-      ResultWrapper(runBlocking { context.saveAllResult() })
+      ResultWrapper(result = runBlocking { context.saveAllResult() })
     } catch (error: Throwable) {
       log.error("Failed to save file", error)
       ResultWrapper()
@@ -74,9 +80,14 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
     if (result is ResultWrapper && result.result != null) {
       val context = data.requireActivity()
 
+      if (result.isAlreadySaving) {
+        context.flashError(R.string.msg_files_being_saved)
+        return
+      }
+
       // show save notification before calling 'notifySyncNeeded' so that the file save notification
       // does not overlap the sync notification
-      flashSuccess(R.string.all_saved)
+      context.flashSuccess(R.string.all_saved)
 
       val saveResult = result.result
       if (saveResult.xmlSaved) {
@@ -94,5 +105,5 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
     }
   }
 
-  inner class ResultWrapper(val result: SaveResult? = null)
+  inner class ResultWrapper(val isAlreadySaving: Boolean = false, val result: SaveResult? = null)
 }
