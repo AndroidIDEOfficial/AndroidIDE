@@ -541,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">无法访问项目目录</string>
   <string name="msg_file_is_not_dir">所选文件不是目录</string>
   <string name="msg_project_dir_doesnt_exist">项目目录不存在</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>
