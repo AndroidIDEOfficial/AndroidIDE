@@ -432,12 +432,12 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return
     }
 
+    val frag = getEditorAtIndex(index) ?: return
+    val fileName = frag.file?.name ?: return
+
     if (updateSaving) {
       setFilesSaving(true)
     }
-
-    val frag = getEditorAtIndex(index) ?: return
-    val fileName = frag.file?.name ?: return
 
     run {
       // Must be called before frag.save()
