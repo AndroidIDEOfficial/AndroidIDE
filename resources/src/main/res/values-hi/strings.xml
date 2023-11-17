@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">क्या एडिटर को हेक्स रंग की स्ट्रिंग ड्रा करनी चाहिए?</string>
   <string name="idepref_editor_word_wrap_title">वर्ड रैप</string>
   <string name="idepref_editor_word_wrap_summary">एडिटर के वर्डरैप का प्रयोग करें</string>
-  <string name="idepref_editor_hide_file_tree_button_title">फ़ाइल ट्री बटन छिपाएँ</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">एडिटर टूलबार के ओवरफ़्लो मेनू में \"फ़ाइल ट्री\" बटन को ले जाएँ।</string>
   <string name="idepref_editor_use_magnifier_title">मैग्नीफायर एनेबल करें</string>
   <string name="idepref_editor_use_magnifier_summary">एडिटर में टेक्स्ट का चयन करते समय कर्सर की स्थिति में टेक्स्ट को बड़ा करें</string>
   <string name="idepref_editor_title">एडिटर</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">थीम</string>
   <string name="idepref_general_themeSelector_summary">AndroidIDE के लिए एक थीम चुनें (बदले जाने पर पुनः आरंभ करने की आवश्यकता है)।</string>
   <string name="idepref_general_projectConfig">प्रोजेक्ट कॉन्फ़िगरेशन</string>
-  <string name="msg_app_launch_failed">एप्लिकेशन लॉन्च करने में विफल। अधिक जानकारी के लिए IDE लॉग देखें।</string>
+  <string name="msg_app_launch_failed">लांच विफल रहा. पहले एप्लिकेशन इंस्टॉल करें.</string>
   <string name="idepref_java_diagnosticEnabled_title">Java सोर्स कोड विश्लेषण सक्षम करें</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(प्रायोगिक) जावा स्रोत फ़ाइलों का गलतियों के लिए विश्लेषण किया जाना चाहिए या नहीं।</string>
   <string name="title_reload_color_schemes">कलर स्कीम्स को पुनः लोड करें</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">प्रोजेक्ट डायरेक्टरी पहुंच योग्य नहीं है</string>
   <string name="msg_file_is_not_dir">चुनी गई फ़ाइल एक डायरेक्टरी नहीं है!</string>
   <string name="msg_project_dir_doesnt_exist">प्रोजेक्ट डायरेक्टरी मौजूद नहीं है</string>
+  <string name="msg_files_being_saved">फ़ाइल सहेजने का कार्य पहले से ही प्रगति पर है!</string>
 </resources>

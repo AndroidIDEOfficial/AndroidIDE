@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
   <string name="idepref_editor_word_wrap_title">Перенос слов</string>
   <string name="idepref_editor_word_wrap_summary">Используйте перенос слов в редакторе</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Скрыть кнопку дерева файлов</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Переместить кнопку \"Дерево файлов\" в меню переполнения панели инструментов редактора.</string>
   <string name="idepref_editor_use_magnifier_title">Включить лупу</string>
   <string name="idepref_editor_use_magnifier_summary">Увеличьте текст в положении курсора при выделении текста в редакторе</string>
   <string name="idepref_editor_title">Редактор</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Тема</string>
   <string name="idepref_general_themeSelector_summary">Выберите тему оформления для AndroidIDE (требуется перезапуск).</string>
   <string name="idepref_general_projectConfig">Настройки проекта</string>
-  <string name="msg_app_launch_failed">Ошибка запуска приложения. Обратитесь к логам IDE.</string>
+  <string name="msg_app_launch_failed">Ошибка запуска. Сначала установите приложение.</string>
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Перезагрузить цветовые схемы</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Директория проекта недоступна</string>
   <string name="msg_file_is_not_dir">Выбранный файл не является директорией</string>
   <string name="msg_project_dir_doesnt_exist">Директории проекта не существует</string>
+  <string name="msg_files_being_saved">Сохранение файла уже в процессе!</string>
 </resources>

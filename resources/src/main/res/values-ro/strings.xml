@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Utilizați wordwrap al editorului</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activați lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Mărirea textului în poziția cursorului în timp ce selectați textul în editor</string>
   <string name="idepref_editor_title">Editor</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Theme</string>
   <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Configurarea proiectului</string>
-  <string name="msg_app_launch_failed">Nu a reușit să lanseze aplicația. Consultați jurnalele IDE pentru mai multe informații.</string>
+  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnosticarea activată</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Dacă fișierele sursă Java ar trebui să fie analizate pentru erori sau nu.</string>
   <string name="title_reload_color_schemes">Reîncărcarea schemelor de culori</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
   <string name="msg_file_is_not_dir">Selected file is not a directory</string>
   <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>

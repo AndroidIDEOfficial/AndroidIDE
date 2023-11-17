@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">Düzenleyici onaltılık renk dizisi çizmeli mi?</string>
   <string name="idepref_editor_word_wrap_title">Kelime kaydırma</string>
   <string name="idepref_editor_word_wrap_summary">Editörün yazı kaydırmasını kullan</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Dosya Ağacı tuşunu gizle</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">\"Dosya Ağacı\" tuşunu düzenleyicinin araç çubuğundaki taşma menüsüne taşı.</string>
   <string name="idepref_editor_use_magnifier_title">Büyüteçi etkinleştir</string>
   <string name="idepref_editor_use_magnifier_summary">Düzenleyicide metin seçerken imleç konumundaki metni büyütün</string>
   <string name="idepref_editor_title">Editör</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Tema</string>
   <string name="idepref_general_themeSelector_summary">AndroidIDE için bir tema seçin (yeniden başlatma gerekir).</string>
   <string name="idepref_general_projectConfig">Proje yapılandırması</string>
-  <string name="msg_app_launch_failed">Uygulama başlatılamadı. IDE günlüklerini inceleyerek detayları görün.</string>
+  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
   <string name="idepref_java_diagnosticEnabled_title">Tanılamalar etkin</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(DENEYSEL) Java kaynak kodu dosyalarının hatalar için analiz edilip edilmeyeceğini seçin.</string>
   <string name="title_reload_color_schemes">Renk şemalarını yeniden yükle</string>
@@ -540,7 +538,8 @@
   <string name="idepref_general_localeSelector_title">Dil</string>
   <string name="idepref_general_localeSelector_summary">AndroidIDE için bir dil seç.</string>
   <string name="locale_system_default">Sistem varsayılanı</string>
-  <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
-  <string name="msg_file_is_not_dir">Selected file is not a directory</string>
-  <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_project_dir_inaccessible">Proje dizini erişilemez</string>
+  <string name="msg_file_is_not_dir">Seçilen dosya bir dizin değil</string>
+  <string name="msg_project_dir_doesnt_exist">Proje dizini mevcut değil</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>

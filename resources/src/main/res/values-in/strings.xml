@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">Apakah editor harus menampilkan warna Hex?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Gunakan wordwrap dari editor</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Sembunyikan tombol File Tree</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Pindahkan tombol \"File Tree\" ke dalam menu luapan bilah alat editor.</string>
   <string name="idepref_editor_use_magnifier_title">Aktifkan Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Memperbesar teks pada posisi kursor sambil memilih teks di editor</string>
   <string name="idepref_editor_title">Editor</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Tema</string>
   <string name="idepref_general_themeSelector_summary">Pilih tema untuk AndroidIDE (memerlukan restart).</string>
   <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
-  <string name="msg_app_launch_failed">Gagal meluncurkan aplikasi. Lihat log IDE untuk info lebih lanjut.</string>
+  <string name="msg_app_launch_failed">Peluncuran gagal. Instal aplikasinya terlebih dahulu.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostik diaktifkan</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EKSPERIMENTAL) Apakah file sumber Java harus dianalisis untuk kesalahan atau tidak.</string>
   <string name="title_reload_color_schemes">Muat ulang skema warna</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Direktori proyek tidak dapat diakses</string>
   <string name="msg_file_is_not_dir">File yang dipilih bukan direktori</string>
   <string name="msg_project_dir_doesnt_exist">Direktori proyek tidak ada</string>
+  <string name="msg_files_being_saved">Operasi penyimpanan file sedang berlangsung!</string>
 </resources>

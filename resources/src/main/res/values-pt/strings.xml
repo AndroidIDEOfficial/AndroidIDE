@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
   <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
   <string name="idepref_editor_word_wrap_summary">Usa quebra de linha no editor</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Ocultar o botão Lista de Arquivos</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Mover o botão \"Lista de Arquivos\" para o menu flutuante da barra de ferramentas do editor.</string>
   <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
   <string name="idepref_editor_title">Editor</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Tema</string>
   <string name="idepref_general_themeSelector_summary">Selecione um tema para o AndroidIDE (requer reinicialização).</string>
   <string name="idepref_general_projectConfig">Configuração do projeto</string>
-  <string name="msg_app_launch_failed">Falha ao iniciar o aplicativo. Consulte os logs da IDE para obter mais informações.</string>
+  <string name="msg_app_launch_failed">Falha no lançamento. Instale o aplicativo primeiro.</string>
   <string name="idepref_java_diagnosticEnabled_title">Habilitar diagnósticos</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Os arquivos de código-fonte Java serão analisados para detecção de erros.</string>
   <string name="title_reload_color_schemes">Recarregar esquema de cores</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Diretório de projeto não é acessível</string>
   <string name="msg_file_is_not_dir">Arquivo selecionado não é um diretório</string>
   <string name="msg_project_dir_doesnt_exist">Diretório do projeto não existe</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>

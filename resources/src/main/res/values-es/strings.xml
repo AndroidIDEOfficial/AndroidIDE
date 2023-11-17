@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">¿Debe el editor dibujar una cadena de color hex?</string>
   <string name="idepref_editor_word_wrap_title">Ajuste de línea</string>
   <string name="idepref_editor_word_wrap_summary">Usar ajuste de línea del editor</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Ocultar el botón de árbol de archivos</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Aumenta el texto en la posición del cursor mientras seleccionas el texto en el editor</string>
   <string name="idepref_editor_title">Editor</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Theme</string>
   <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">Project configuration</string>
-  <string name="msg_app_launch_failed">Error al iniciar la aplicación. Vea los registros de IDE para más información.</string>
+  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnósticos habilitados</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
   <string name="title_reload_color_schemes">Recargar esquemas de color</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
   <string name="msg_file_is_not_dir">Selected file is not a directory</string>
   <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>

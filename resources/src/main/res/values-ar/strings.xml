@@ -192,8 +192,6 @@
   <string name="idepref_editor_drawhexcolors_summary">هل يجب على المحرر أن يرسم سلسلة ألوان hex؟</string>
   <string name="idepref_editor_word_wrap_title">التفاف النص</string>
   <string name="idepref_editor_word_wrap_summary">استخدام تغليف الكلمات للمحرر</string>
-  <string name="idepref_editor_hide_file_tree_button_title">إخفاء زر شجرة الملفات</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">نقل الزر \"شجرة الملف\" إلى قائمة شريط الأدوات الخاص بالمحرر.</string>
   <string name="idepref_editor_use_magnifier_title">تمكين المكبر</string>
   <string name="idepref_editor_use_magnifier_summary">تكبير النص في موضع المؤشر أثناء اختيار النص في المحرر</string>
   <string name="idepref_editor_title">المحرر</string>
@@ -456,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Theme</string>
   <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
   <string name="idepref_general_projectConfig">تهيئة المشروع</string>
-  <string name="msg_app_launch_failed">فشل في تشغيل التطبيق. راجع سجلات IDE لمزيد من المعلومات.</string>
+  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
   <string name="idepref_java_diagnosticEnabled_title">التشخيصات مفعلة</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(تجريبي) ما إذا ينبغي تحليل ملفات مصدر جافا بحثا عن أخطاء أم لا.</string>
   <string name="title_reload_color_schemes">إعادة تحميل أنظمة الألوان</string>
@@ -543,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
   <string name="msg_file_is_not_dir">Selected file is not a directory</string>
   <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>
