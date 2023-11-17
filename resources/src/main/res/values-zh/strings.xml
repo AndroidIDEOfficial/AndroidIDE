@@ -304,8 +304,8 @@
   <string name="msg_gradle_installation_path">Gradle 安装路径</string>
   <string name="msg_gradle_installation_input_help">留空将使用 Gradle 包装器</string>
   <string name="msg_require_install_jdk_and_android_sdk">您需要安装 JDK 和 Android SDK 才能使 IDE 工作。要安装，请单击“是”并按照<![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">此处</a>]]>的说明进行操作</string>
-  <string name="build_status_idle">无进行中构建</string>
-  <string name="build_status_in_progress">正在构建&#8230;</string>
+  <string name="build_status_idle">没有正在进行的构建</string>
+  <string name="build_status_in_progress">构建正在进行中……</string>
   <string name="build_status_failed">构建失败，请参阅构建输出以获取详情</string>
   <string name="build_status_sucess">构建成功</string>
   <string name="msg_output_text_extraction_failed">无法从编辑器获取文本</string>
@@ -439,7 +439,7 @@
   <string name="git_clone">克隆</string>
   <string name="git_clone_repo">克隆 git 仓库</string>
   <string name="git_clone_repo_url">存储库 URL</string>
-  <string name="git_clone_in_progress">克隆库</string>
+  <string name="git_clone_in_progress">克隆存储库</string>
   <string name="git_clone_success">git 克隆成功</string>
   <string name="git_clone_failed">无法克隆 git 存储库</string>
   <string name="msg_select_attr">从下面的列表中选择一个属性</string>
@@ -541,5 +541,5 @@
   <string name="msg_project_dir_inaccessible">无法访问项目目录</string>
   <string name="msg_file_is_not_dir">所选文件不是目录</string>
   <string name="msg_project_dir_doesnt_exist">项目目录不存在</string>
-  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
+  <string name="msg_files_being_saved">文件保存操作已在进行中！</string>
 </resources>
