@@ -541,5 +541,5 @@
   <string name="msg_project_dir_inaccessible">Direktori proyek tidak dapat diakses</string>
   <string name="msg_file_is_not_dir">File yang dipilih bukan direktori</string>
   <string name="msg_project_dir_doesnt_exist">Direktori proyek tidak ada</string>
-  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
+  <string name="msg_files_being_saved">Operasi penyimpanan file sedang berlangsung!</string>
 </resources>
