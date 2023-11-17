@@ -541,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Директория проекта недоступна</string>
   <string name="msg_file_is_not_dir">Выбранный файл не является директорией</string>
   <string name="msg_project_dir_doesnt_exist">Директории проекта не существует</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>
