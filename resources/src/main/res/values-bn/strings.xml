@@ -542,4 +542,5 @@
   <string name="msg_project_dir_inaccessible">Project directory is not accessible</string>
   <string name="msg_file_is_not_dir">Selected file is not a directory</string>
   <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>
