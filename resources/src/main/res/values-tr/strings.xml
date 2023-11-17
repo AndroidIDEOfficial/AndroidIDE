@@ -541,4 +541,5 @@
   <string name="msg_project_dir_inaccessible">Proje dizini erişilemez</string>
   <string name="msg_file_is_not_dir">Seçilen dosya bir dizin değil</string>
   <string name="msg_project_dir_doesnt_exist">Proje dizini mevcut değil</string>
+  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
 </resources>
