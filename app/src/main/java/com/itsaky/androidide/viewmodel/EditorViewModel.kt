@@ -46,6 +46,7 @@ class EditorViewModel : ViewModel() {
   private val files = MutableLiveData<MutableList<File>>(ArrayList())
 
   private val fileModified = MutableLiveData(false)
+  private val fileSaving = MutableLiveData(false)
 
   /**
    * Holds information about the currently selected editor fragment. First value in the pair is the
@@ -201,6 +202,14 @@ class EditorViewModel : ViewModel() {
   fun areFilesModified(): Boolean {
     val modified = fileModified.value
     return modified != null && modified
+  }
+
+  fun setFilesSaving(saving: Boolean) {
+    fileSaving.value = saving
+  }
+
+  fun areFilesSaving(): Boolean {
+    return fileSaving.value ?: false
   }
 
   fun readOpenedFiles(result: (OpenedFilesCache?) -> Unit) {
