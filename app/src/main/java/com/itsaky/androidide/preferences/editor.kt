@@ -66,6 +66,7 @@ import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import kotlin.reflect.KMutableProperty0
 
 @Parcelize
 class EditorPreferences(
@@ -231,33 +232,16 @@ private class NonPrintablePaintingFlags(
   override val title: Int = string.idepref_editor_paintingflags_title,
   override val summary: Int? = string.idepref_editor_paintingflags_summary,
   override val icon: Int? = drawable.ic_drawing,
-) : MultiChoicePreference() {
+) : PropertyBasedMultiChoicePreference() {
 
-  override fun getChoices(context: Context): Array<String> {
-    return arrayOf("Leading", "Trailing", "Inner", "Empty lines", "Line breaks")
-  }
-
-  override fun getCheckedItems(choices: Array<String>): BooleanArray? {
-    return booleanArrayOf(
-      drawLeadingWs,
-      drawTrailingWs,
-      drawInnerWs,
-      drawEmptyLineWs,
-      drawLineBreak
+  override fun getProperties(): Map<String, KMutableProperty0<Boolean>> {
+    return linkedMapOf(
+      "Leading" to ::drawLeadingWs,
+      "Trailing" to ::drawTrailingWs,
+      "Inner" to ::drawInnerWs,
+      "Empty lines" to ::drawEmptyLineWs,
+      "Line breaks" to ::drawLineBreak
     )
-  }
-
-  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {
-    for (position in selectedPositions) {
-      when (position) {
-        0 -> ::drawLeadingWs
-        1 -> ::drawTrailingWs
-        2 -> ::drawInnerWs
-        3 -> ::drawEmptyLineWs
-        4 -> ::drawLineBreak
-        else -> null
-      }?.set(true)
-    }
   }
 }
 

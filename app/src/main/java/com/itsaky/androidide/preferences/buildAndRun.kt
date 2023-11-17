@@ -46,9 +46,9 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.File
+import kotlin.reflect.KMutableProperty0
 
 @Parcelize
 class BuildAndRunPreferences(
@@ -75,7 +75,9 @@ private class GradleOptions(
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
     addPreference(GradleClearCache())
-    if (IDEBuildConfigProvider.getInstance().isArm64v8aBuild() && VERSION.SDK_INT == VERSION_CODES.R) {
+    if (IDEBuildConfigProvider.getInstance()
+        .isArm64v8aBuild() && VERSION.SDK_INT == VERSION_CODES.R
+    ) {
       addPreference(TagPointersFix())
     }
   }
@@ -87,31 +89,18 @@ private class GradleCommands(
   override val title: Int = string.idepref_build_customgradlecommands_title,
   override val summary: Int? = string.idepref_build_customgradlecommands_summary,
   override val icon: Int? = drawable.ic_bash_commands,
-) : MultiChoicePreference() {
+) : PropertyBasedMultiChoicePreference() {
 
-  @IgnoredOnParcel
-  private val choices = linkedMapOf(
-    "--stacktrace" to ::isStacktraceEnabled,
-    "--info" to ::isInfoEnabled,
-    "--debug" to ::isDebugEnabled,
-    "--scan" to ::isScanEnabled,
-    "--warning-mode all" to ::isWarningModeAllEnabled,
-    "--build-cache" to ::isBuildCacheEnabled,
-    "--offline" to ::isOfflineEnabled,
-  )
-
-  override fun getCheckedItems(choices: Array<String>): BooleanArray {
-    return BooleanArray(choices.size) { this.choices[choices[it]]?.get() == true }
-  }
-
-  override fun getChoices(context: Context): Array<String> {
-    return choices.keys.toTypedArray()
-  }
-
-  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {
-    selections.forEach { (key, value) ->
-      choices[key]?.set(value)
-    }
+  override fun getProperties(): Map<String, KMutableProperty0<Boolean>> {
+    return linkedMapOf(
+      "--stacktrace" to ::isStacktraceEnabled,
+      "--info" to ::isInfoEnabled,
+      "--debug" to ::isDebugEnabled,
+      "--scan" to ::isScanEnabled,
+      "--warning-mode all" to ::isWarningModeAllEnabled,
+      "--build-cache" to ::isBuildCacheEnabled,
+      "--offline" to ::isOfflineEnabled,
+    )
   }
 }
 
