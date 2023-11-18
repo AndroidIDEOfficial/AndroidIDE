@@ -47,8 +47,8 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
   }
 
   override fun getPairedBracketAt(text: Content, index: Int): PairedBracket? {
-    if (languageSpec.bracketsQuery.patternCount <= 0
-      || !languageSpec.bracketsQuery.canAccess()
+    if (!languageSpec.bracketsQuery.canAccess()
+      || languageSpec.bracketsQuery.patternCount <= 0
       || !tree.canAccess()
     ) {
       return null
