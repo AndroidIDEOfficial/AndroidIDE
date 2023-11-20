@@ -463,7 +463,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     }
 
     manager.cachedInitResult = result
-    activityBackroundScope.launch(Dispatchers.IO) {
+    activityBackgroundScope.launch(Dispatchers.IO) {
       manager.setupProject()
       manager.notifyProjectUpdate()
       updateBuildVariants(manager.androidBuildVariants)

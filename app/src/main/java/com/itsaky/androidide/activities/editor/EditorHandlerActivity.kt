@@ -378,7 +378,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     progressConsumer: ((Int, Int) -> Unit)?,
     runAfter: (() -> Unit)?
   ) {
-    activityBackroundScope.launch {
+    activityBackgroundScope.launch {
       saveAll(notify, requestSync, processResources, progressConsumer)
       runAfter?.invoke()
     }
