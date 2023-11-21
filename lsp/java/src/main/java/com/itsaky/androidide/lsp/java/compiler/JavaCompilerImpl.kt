@@ -24,6 +24,7 @@ import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner.prune
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.androidide.utils.VMUtils
+import com.itsaky.androidide.utils.withStopWatch
 import jdkx.tools.JavaFileObject
 import jdkx.tools.JavaFileObject.Kind.SOURCE
 import kotlin.io.path.name
@@ -58,19 +59,22 @@ class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
       return super.parse(filename, content)
     }
 
-    val pruned =
-      StopWatch("${if(file is SourceFileObject) "[${file.path.name}] " else ""}Prune method bodies")
-        .let {
-          val contentBuilder = StringBuilder(content)
-          val parseResult = TSJavaParser.parse(file)
-          prune(
-            contentBuilder,
-            parseResult.tree,
-            compilerConfig.completionInfo?.cursor?.index ?: -1
-          )
-          it.log()
-          return@let contentBuilder
-        }
+    val pruned = withStopWatch("${if(file is SourceFileObject) "[${file.path.name}] " else ""}Prune method bodies") { watch ->
+      val contentBuilder = StringBuilder(content)
+
+      return@withStopWatch TSJavaParser.parse(file).use { parseResult ->
+
+        prune(
+          contentBuilder,
+          parseResult.tree,
+          compilerConfig.completionInfo?.cursor?.index ?: -1
+        )
+
+        watch.log()
+
+        return@use contentBuilder
+      }
+    }
 
     return super.parse(filename, pruned)
   }

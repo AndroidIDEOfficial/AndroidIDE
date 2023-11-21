@@ -120,38 +120,38 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     val indentsQuery = languageSpec.indentsQuery ?: return 0
     return TSParser.create().use { parser ->
       parser.language = languageSpec.language
-      val tree = parser.parseString(content)
+      return@use parser.parseString(content).use { tree ->
+        TSQueryCursor.create().use { cursor ->
+          cursor.exec(indentsQuery, tree.rootNode)
 
-      return@use TSQueryCursor.create().use { cursor ->
-        cursor.exec(indentsQuery, tree.rootNode)
-
-        var indent = 0
-        var match: TSQueryMatch? = cursor.nextMatch()
-        val captures = mutableListOf<TSQueryCapture>()
-        while (match != null) {
-          captures.addAll(match.captures)
-          match = cursor.nextMatch()
-        }
-
-        captures.sortBy { it.node.startByte }
-
-        for (capture in captures) {
-          val capLine = capture.node.startPoint.row
-          val capCol = capture.node.endPoint.column / 2
-
-          if (capLine > line || (capLine == line && capCol > column)) {
-            break
+          var indent = 0
+          var match: TSQueryMatch? = cursor.nextMatch()
+          val captures = mutableListOf<TSQueryCapture>()
+          while (match != null) {
+            captures.addAll(match.captures)
+            match = cursor.nextMatch()
           }
 
-          val captureName = indentsQuery.getCaptureNameForId(capture.index)
-          if (captureName == "indent") {
-            ++indent
-          } else if (captureName == "outdent") {
-            --indent
-          }
-        }
+          captures.sortBy { it.node.startByte }
 
-        finalizeIndent(indent) - decrementBy
+          for (capture in captures) {
+            val capLine = capture.node.startPoint.row
+            val capCol = capture.node.endPoint.column / 2
+
+            if (capLine > line || (capLine == line && capCol > column)) {
+              break
+            }
+
+            val captureName = indentsQuery.getCaptureNameForId(capture.index)
+            if (captureName == "indent") {
+              ++indent
+            } else if (captureName == "outdent") {
+              --indent
+            }
+          }
+
+          finalizeIndent(indent) - decrementBy
+        }
       }
     }
   }

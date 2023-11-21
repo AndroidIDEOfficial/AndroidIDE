@@ -69,7 +69,7 @@ object TSJavaParser : IJavaParser<TSParseResult> {
     check(file.kind == JavaFileObject.Kind.SOURCE) { "File must a source file object" }
 
     synchronized(this.cache) {
-      val result = this.cache.get(file.toUri())
+      val result = this.cache[file.toUri()]
       if (result != null) {
         if (result.fileModified == file.lastModified) {
           // cache hit and cache modified == file modified
