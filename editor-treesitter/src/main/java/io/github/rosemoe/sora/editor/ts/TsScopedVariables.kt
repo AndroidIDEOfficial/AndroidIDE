@@ -111,9 +111,7 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
             scopeStack.push(newScope)
           } else if (pattern in spec.localsDefinitionIndices) {
             val scope = scopeStack.peek()
-            val utf16Name = text.subseqChars(startIndex, endIndex)
-            val name = utf16Name.toString()
-            utf16Name.close()
+            val name = text.substringChars(startIndex, endIndex)
             val scopedVar = ScopedVariable(
               name,
               if (scope.forMembers) scope.startIndex else startIndex,

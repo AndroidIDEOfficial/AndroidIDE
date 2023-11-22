@@ -54,7 +54,7 @@ fun getCaptureContent(
 ) = match.captures.filter { tsQuery.getCaptureNameForId(it.index) == captureName }
   .map { capture ->
     when (text) {
-      is UTF16String -> text.subseqBytes(capture.node.startByte, capture.node.endByte).use(UTF16String::toString)
+      is UTF16String -> text.substringBytes(capture.node.startByte, capture.node.endByte)
       is Content -> text.substring(capture.node.startByte shr 1, capture.node.endByte shr 1)
       else -> text.substring(capture.node.startByte shr 1, capture.node.endByte shr 1)
     }
