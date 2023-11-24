@@ -111,7 +111,7 @@ abstract class BaseEditorActivity :
   /**
    * [CoroutineScope] for executing tasks in the background.
    */
-  protected val activityBackroundScope = CoroutineScope(Dispatchers.Default)
+  protected val activityBackgroundScope = CoroutineScope(Dispatchers.Default)
 
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
@@ -168,7 +168,7 @@ abstract class BaseEditorActivity :
     installationCallback = null
 
     if (isDestroying) {
-      activityBackroundScope.cancelIfActive("Activity is being destroyed")
+      activityBackgroundScope.cancelIfActive("Activity is being destroyed")
     }
   }
 
