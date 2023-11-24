@@ -19,14 +19,8 @@ package com.itsaky.androidide.gradle
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.buildinfo.BuildInfo
-import com.itsaky.androidide.utils.FileProvider
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.junit.jupiter.api.Test
-import java.io.File
-import java.io.FileNotFoundException
-import kotlin.io.path.pathString
 
 /**
  * @author Akash Yadav
@@ -60,7 +54,9 @@ class AndroidIDEInitScriptPluginTest {
     for ((project, variants) in mapOf(":app" to arrayOf("demoDebug", "fullDebug"))) {
       for (variant in variants) {
         assertThat(result.output).contains(
-          "Adding LogSender dependency (version '${depVersion(true)}') to variant '${variant}' of project '${project}'"
+          "Adding LogSender dependency (version '${
+            depVersion(true)
+          }') to variant '${variant}' of project '${project}'"
         )
       }
     }

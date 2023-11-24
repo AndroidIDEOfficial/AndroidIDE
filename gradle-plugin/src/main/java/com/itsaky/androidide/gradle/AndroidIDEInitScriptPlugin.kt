@@ -55,6 +55,13 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
 
     target.projectsLoaded { gradle ->
       gradle.rootProject.subprojects { sub ->
+        if (!sub.buildFile.exists()) {
+          // For subproject ':nested:module',
+          // ':nested' represented as a 'Project', but it may or may not have a buildscript file
+          // if the project doesn't have a buildscript, then the plugins should not be applied
+          return@subprojects
+        }
+
         sub.buildscript.dependencies.apply {
           add("classpath", sub.ideDependency("gradle-plugin"))
         }

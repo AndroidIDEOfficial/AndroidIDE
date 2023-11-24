@@ -4,3 +4,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Sample App"
 include(":app")
+include(":nested:app")
