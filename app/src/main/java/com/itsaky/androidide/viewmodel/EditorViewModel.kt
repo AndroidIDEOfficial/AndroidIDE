@@ -59,7 +59,6 @@ class EditorViewModel : ViewModel() {
   var areFilesModified: Boolean
     get() = _filesModified.value ?: false
     set(value) {
-      ILogger.instance().debug("update areFilesModified = $value", RuntimeException())
       _filesModified.value = value
     }
 
