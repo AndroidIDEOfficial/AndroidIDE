@@ -87,6 +87,7 @@ import io.github.rosemoe.sora.widget.component.EditorTextActionWindow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -100,13 +101,10 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-open class IDEEditor @JvmOverloads constructor(
-  context: Context,
-  attrs: AttributeSet? = null,
-  defStyleAttr: Int = 0,
-  defStyleRes: Int = 0,
-  private val editorFeatures: EditorFeatures = EditorFeatures()
-) : CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
+open class IDEEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
+  defStyleAttr: Int = 0, defStyleRes: Int = 0,
+  private val editorFeatures: EditorFeatures = EditorFeatures()) :
+  CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
 
   @Suppress("PropertyName")
   internal var _file: File? = null
@@ -127,8 +125,7 @@ open class IDEEditor @JvmOverloads constructor(
     }
 
     diagnosticWindow.showDiagnostic(
-      languageClient.getDiagnosticAt(file, cursor.leftLine, cursor.leftColumn)
-    )
+      languageClient.getDiagnosticAt(file, cursor.leftLine, cursor.leftColumn))
   }
 
   /**
@@ -140,6 +137,7 @@ open class IDEEditor @JvmOverloads constructor(
 
   protected val eventDispatcher = EditorEventDispatcher()
 
+  private var setupTsLanguageJob: Job? = null
   private var sigHelpCancelChecker: ICancelChecker? = null
 
   var languageServer: ILanguageServer? = null
@@ -163,8 +161,7 @@ open class IDEEditor @JvmOverloads constructor(
    */
   val signatureHelpWindow: SignatureHelpWindow
     get() {
-      return _signatureHelpWindow ?: SignatureHelpWindow(this)
-        .also { _signatureHelpWindow = it }
+      return _signatureHelpWindow ?: SignatureHelpWindow(this).also { _signatureHelpWindow = it }
     }
 
   /**
@@ -172,8 +169,7 @@ open class IDEEditor @JvmOverloads constructor(
    */
   val diagnosticWindow: DiagnosticWindow
     get() {
-      return _diagnosticWindow ?: DiagnosticWindow(this)
-        .also { _diagnosticWindow = it }
+      return _diagnosticWindow ?: DiagnosticWindow(this).also { _diagnosticWindow = it }
     }
 
   companion object {
@@ -186,8 +182,7 @@ open class IDEEditor @JvmOverloads constructor(
      * Create input type flags for the editor.
      */
     fun createInputTypeFlags(): Int {
-      var flags = EditorInfo.TYPE_CLASS_TEXT or EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or
-          EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+      var flags = EditorInfo.TYPE_CLASS_TEXT or EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
       if (visiblePasswordFlag) {
         flags = flags or EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
       }
@@ -361,10 +356,8 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   // not overridable!
-  final override fun <T : EditorBuiltinComponent?> replaceComponent(
-    clazz: Class<T>,
-    replacement: T & Any
-  ) {
+  final override fun <T : EditorBuiltinComponent?> replaceComponent(clazz: Class<T>,
+    replacement: T & Any) {
     super.replaceComponent(clazz, replacement)
   }
 
@@ -414,6 +407,8 @@ open class IDEEditor @JvmOverloads constructor(
     if (EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().unregister(this)
     }
+
+    setupTsLanguageJob?.cancel("Editor is releasing resources.")
 
     if (editorScope.isActive) {
       editorScope.cancelIfActive("Editor is releasing resources.")
@@ -557,37 +552,30 @@ open class IDEEditor @JvmOverloads constructor(
     if (file == null) {
       return
     }
-    val language = createLanguage(file)
-    val extension = file.extension
-    if (language is TreeSitterLanguage) {
-      IDEColorSchemeProvider.readSchemeAsync(
-        context = context,
-        type = extension,
-        coroutineScope = editorScope
-      ) { scheme ->
-        applyTreeSitterLang(language, extension, scheme)
+
+    createLanguage(file) { language ->
+      val extension = file.extension
+      if (language is TreeSitterLanguage) {
+        IDEColorSchemeProvider.readSchemeAsync(context = context, coroutineScope = editorScope,
+          type = extension) { scheme ->
+          applyTreeSitterLang(language, extension, scheme)
+        }
+      } else {
+        setEditorLanguage(language)
       }
-    } else {
-      setEditorLanguage(language)
     }
   }
 
   /**
    * Applies the given [TreeSitterLanguage] and the [color scheme][scheme] for the given [file type][type].
    */
-  open fun applyTreeSitterLang(
-    language: TreeSitterLanguage,
-    type: String,
-    scheme: SchemeAndroidIDE?
-  ) {
+  open fun applyTreeSitterLang(language: TreeSitterLanguage, type: String,
+    scheme: SchemeAndroidIDE?) {
     applyTreeSitterLangInternal(language, type, scheme)
   }
 
-  private fun applyTreeSitterLangInternal(
-    language: TreeSitterLanguage,
-    type: String,
-    scheme: SchemeAndroidIDE?
-  ) {
+  private fun applyTreeSitterLangInternal(language: TreeSitterLanguage, type: String,
+    scheme: SchemeAndroidIDE?) {
     if (isReleased) {
       return
     }
@@ -616,21 +604,42 @@ open class IDEEditor @JvmOverloads constructor(
     setEditorLanguage(language)
   }
 
-  private fun createLanguage(file: File): Language {
+  private inline fun createLanguage(file: File, crossinline callback: (Language?) -> Unit) {
+
+    // 1 -> If the given File object does not represent a file, return emtpy language
     if (!file.isFile) {
-      return EmptyLanguage()
+      return callback(EmptyLanguage())
     }
 
-    val tsLang = TreeSitterLanguageProvider.forFile(file, context)
-    if (tsLang != null) {
-      return tsLang
+    // 2 -> In case a TreeSitterLanguage has been registered for this file type,
+    //      Initialize the TreeSitterLanguage asynchronously and then invoke the callback
+    if (TreeSitterLanguageProvider.hasTsLanguage(file)) {
+
+      // lazily create TS languages as they need to read files from assets
+      setupTsLanguageJob = editorScope.launch {
+        callback(TreeSitterLanguageProvider.forFile(file, context))
+      }.also { job ->
+        job.invokeOnCompletion { err ->
+          if (err != null) {
+            log.error("Failed to setup tree sitter language for file: $file", err)
+          }
+
+          setupTsLanguageJob = null
+        }
+      }
+
+      return
     }
 
-    return when (FileUtils.getFileExtension(file)) {
+    // 3 -> Check if we have ANTLR4 lexer-based languages for this file,
+    //      return the language if we do, otherwise return an empty language
+    val lang = when (FileUtils.getFileExtension(file)) {
       "gradle" -> GroovyLanguage()
       "c", "h", "cc", "cpp", "cxx" -> CppLanguage()
       else -> EmptyLanguage()
     }
+
+    callback(lang)
   }
 
   /**
@@ -688,10 +697,8 @@ open class IDEEditor @JvmOverloads constructor(
     EventBus.getDefault().register(this)
   }
 
-  private inline fun launchCancellableAsyncWithProgress(
-    @StringRes message: Int,
-    crossinline action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
-  ): Job? {
+  private inline fun launchCancellableAsyncWithProgress(@StringRes message: Int,
+    crossinline action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit): Job? {
     if (isReleased) {
       return null
     }
@@ -738,48 +745,45 @@ open class IDEEditor @JvmOverloads constructor(
       return@withContext
     }
 
-    languageClient.showDocument(
-      ShowDocumentParams(file1, range)
-    )
+    languageClient.showDocument(ShowDocumentParams(file1, range))
   }
 
-  protected open suspend fun onFindReferencesResult(
-    result: ReferenceResult?
-  ) = withContext(Dispatchers.Main) {
+  protected open suspend fun onFindReferencesResult(result: ReferenceResult?) =
+    withContext(Dispatchers.Main) {
 
-    if (isReleased) {
-      return@withContext
-    }
-
-    val languageClient = languageClient ?: run {
-      log.error("No language client found to handle the references result")
-      return@withContext
-    }
-
-    if (result == null) {
-      log.error("Invalid references result from language server (null)")
-      flashError(string.msg_no_references)
-      return@withContext
-    }
-
-    val locations = result.locations
-    if (locations.isEmpty()) {
-      log.error("No references found")
-      flashError(string.msg_no_references)
-      return@withContext
-    }
-
-    if (result.locations.size == 1) {
-      val (file, range) = result.locations[0]
-
-      if (DocumentUtils.isSameFile(file, getFile()!!.toPath())) {
-        setSelection(range)
+      if (isReleased) {
         return@withContext
       }
-    }
 
-    languageClient.showLocations(result.locations)
-  }
+      val languageClient = languageClient ?: run {
+        log.error("No language client found to handle the references result")
+        return@withContext
+      }
+
+      if (result == null) {
+        log.error("Invalid references result from language server (null)")
+        flashError(string.msg_no_references)
+        return@withContext
+      }
+
+      val locations = result.locations
+      if (locations.isEmpty()) {
+        log.error("No references found")
+        flashError(string.msg_no_references)
+        return@withContext
+      }
+
+      if (result.locations.size == 1) {
+        val (file, range) = result.locations[0]
+
+        if (DocumentUtils.isSameFile(file, getFile()!!.toPath())) {
+          setSelection(range)
+          return@withContext
+        }
+      }
+
+      languageClient.showLocations(result.locations)
+    }
 
   protected open fun dispatchDocumentOpenEvent() {
     if (isReleased) {
@@ -790,11 +794,7 @@ open class IDEEditor @JvmOverloads constructor(
 
     this.fileVersion = 0
 
-    val openEvent = DocumentOpenEvent(
-      file.toPath(),
-      text.toString(),
-      fileVersion
-    )
+    val openEvent = DocumentOpenEvent(file.toPath(), text.toString(), fileVersion)
 
     eventDispatcher.dispatch(openEvent)
   }
@@ -820,8 +820,8 @@ open class IDEEditor @JvmOverloads constructor(
     val changeRange = Range(Position(start.line, start.column, start.index),
       Position(end.line, end.column, end.index))
     val changedText = event.changedText.toString()
-    val changeEvent = DocumentChangeEvent(file, changedText, text.toString(),
-      ++fileVersion, type, changeDelta, changeRange)
+    val changeEvent = DocumentChangeEvent(file, changedText, text.toString(), ++fileVersion, type,
+      changeDelta, changeRange)
 
     eventDispatcher.dispatch(changeEvent)
   }
@@ -874,13 +874,9 @@ open class IDEEditor @JvmOverloads constructor(
     }
   }
 
-  private fun configureFlashbar(
-    builder: Flashbar.Builder,
-    @StringRes message: Int,
-    cancelChecker: ICancelChecker
-  ) {
-    builder.message(message)
-      .negativeActionText(android.R.string.cancel)
+  private fun configureFlashbar(builder: Flashbar.Builder, @StringRes message: Int,
+    cancelChecker: ICancelChecker) {
+    builder.message(message).negativeActionText(android.R.string.cancel)
       .negativeActionTapListener { bar: Flashbar ->
         cancelChecker.cancel()
         bar.dismiss()

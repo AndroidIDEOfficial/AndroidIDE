@@ -20,6 +20,7 @@ package com.itsaky.androidide.editor.language.treesitter
 import android.content.Context
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
 import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
+import com.itsaky.androidide.utils.withStopWatch
 import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 
 /**
@@ -28,7 +29,7 @@ import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
  * @author Akash Yadav
  */
 open class KotlinLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageKotlin.getInstance(), TS_TYPE_KT) {
+  TreeSitterLanguage(context, withStopWatch("TSLangKt.getInstance()") { TSLanguageKotlin.getInstance() }, TS_TYPE_KT) {
 
   companion object {
 

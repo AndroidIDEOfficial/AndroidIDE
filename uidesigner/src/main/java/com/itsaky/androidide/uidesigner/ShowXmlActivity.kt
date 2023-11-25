@@ -70,8 +70,8 @@ class ShowXmlActivity : BaseIDEActivity() {
 
       IDEColorSchemeProvider.readSchemeAsync(
         context = this,
-        type = XMLLanguage.TS_TYPE,
-        coroutineScope = activityScope
+        coroutineScope = activityScope,
+        type = XMLLanguage.TS_TYPE
       ) {
         if (it == null) {
           log.error("Unable to load color sheme")

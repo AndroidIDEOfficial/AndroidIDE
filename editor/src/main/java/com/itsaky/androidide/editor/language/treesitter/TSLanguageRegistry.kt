@@ -43,6 +43,13 @@ interface TSLanguageRegistry {
   fun <T : TreeSitterLanguage> register(fileType: String, factory: TreeSitterLanguage.Factory<T>)
 
   /**
+   * Checks whether a [TreeSitterLanguage] has been registered for the given [file type][fileType].
+   *
+   * @return `true` if a [TreeSitterLanguage] has been registered for [fileType], `false` otherwise.
+   */
+  fun hasLanguage(fileType: String): Boolean
+
+  /**
    * Returns the instance of the [TreeSitterLanguage.Factory] for the given file type.
    *
    * @param fileType The file type (extension) to create the language factory instance for.

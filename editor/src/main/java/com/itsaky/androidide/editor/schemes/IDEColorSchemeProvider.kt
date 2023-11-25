@@ -23,7 +23,6 @@ import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent
 import com.itsaky.androidide.preferences.internal.DEFAULT_COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
-import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.isSystemInDarkMode
@@ -178,8 +177,8 @@ object IDEColorSchemeProvider {
   @JvmOverloads
   fun readSchemeAsync(
     context: Context,
-    type: String? = null,
     coroutineScope: CoroutineScope,
+    type: String? = null,
     callbackContext: CoroutineContext = Dispatchers.Main,
     callback: (SchemeAndroidIDE?) -> Unit
   ) {

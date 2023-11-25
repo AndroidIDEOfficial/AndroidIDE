@@ -27,7 +27,15 @@ import java.io.File
  */
 object TreeSitterLanguageProvider {
 
+  fun hasTsLanguage(file: File) : Boolean {
+    return TSLanguageRegistry.instance.hasLanguage(file.extension)
+  }
+
   fun forFile(file: File, context: Context): TreeSitterLanguage? {
+    if (!hasTsLanguage(file)) {
+      return null
+    }
+
     val type = file.extension
 
     return try {

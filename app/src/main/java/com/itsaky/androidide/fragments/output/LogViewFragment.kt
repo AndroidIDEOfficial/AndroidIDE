@@ -240,8 +240,8 @@ abstract class LogViewFragment :
 
     IDEColorSchemeProvider.readSchemeAsync(
       context = requireContext(),
-      type = LogLanguage.TS_TYPE,
-      coroutineScope = editor.editorScope
+      coroutineScope = editor.editorScope,
+      type = LogLanguage.TS_TYPE
     ) { scheme ->
       editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)
     }
