@@ -454,7 +454,7 @@
   <string name="idepref_general_themeSelector_title">Tema</string>
   <string name="idepref_general_themeSelector_summary">AndroidIDE için bir tema seçin (yeniden başlatma gerekir).</string>
   <string name="idepref_general_projectConfig">Proje yapılandırması</string>
-  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
+  <string name="msg_app_launch_failed">Başlatma başarısız. Önce uygulamayı yükleyin.</string>
   <string name="idepref_java_diagnosticEnabled_title">Tanılamalar etkin</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(DENEYSEL) Java kaynak kodu dosyalarının hatalar için analiz edilip edilmeyeceğini seçin.</string>
   <string name="title_reload_color_schemes">Renk şemalarını yeniden yükle</string>
@@ -541,5 +541,5 @@
   <string name="msg_project_dir_inaccessible">Proje dizini erişilemez</string>
   <string name="msg_file_is_not_dir">Seçilen dosya bir dizin değil</string>
   <string name="msg_project_dir_doesnt_exist">Proje dizini mevcut değil</string>
-  <string name="msg_files_being_saved">A file save operation is already in progress!</string>
+  <string name="msg_files_being_saved">Bir dosya kaydetme işlemi zaten devam ediyor!</string>
 </resources>
