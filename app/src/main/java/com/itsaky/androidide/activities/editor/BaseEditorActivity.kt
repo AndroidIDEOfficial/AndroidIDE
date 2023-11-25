@@ -465,6 +465,8 @@ abstract class BaseEditorActivity :
           viewContainer.displayedChild = 0
         }
       }
+
+      invalidateOptionsMenu()
     }
 
     setupNoEditorView()

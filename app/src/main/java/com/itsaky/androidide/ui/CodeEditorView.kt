@@ -208,7 +208,7 @@ class CodeEditorView(
    * Mark this files as saved. Even if it not saved.
    */
   fun markAsSaved() {
-    notifySaved()
+    editor?.markUnmodified()
   }
 
   /**
@@ -245,6 +245,7 @@ class CodeEditorView(
       _binding?.rwProgress?.isVisible = false
     }
 
+    markUnmodified()
     notifySaved()
 
     return true
