@@ -22,7 +22,6 @@ import com.itsaky.androidide.editor.language.IDELanguage
 import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
-import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
@@ -44,8 +43,11 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch
  *
  * @author Akash Yadav
  */
-abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: String) :
-  IDELanguage() {
+abstract class TreeSitterLanguage(
+  context: Context,
+  lang: TSLanguage,
+  private val langType: String
+) : IDELanguage() {
 
   private lateinit var tsTheme: TsTheme
   private lateinit var languageSpec: TreeSitterLanguageSpec
@@ -57,25 +59,15 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   private val log = ILogger.newInstance("TreeSitterLanguage")
 
   init {
-    this.languageSpec = getLanguageSpec(context, type, lang, newLocalCaptureSpec(type))
+    this.languageSpec = getLanguageSpec(context, langType, lang, newLocalCaptureSpec(langType))
     this.tsTheme = TsTheme(languageSpec.spec.tsQuery)
-    IDEColorSchemeProvider.readScheme(context, type) { scheme ->
-      if (scheme == null) {
-        log.error("Failed to read color scheme")
-        return@readScheme
-      }
+  }
 
-      if (scheme !is IDEColorScheme) {
-        log.error("Invalid color scheme returned by color scheme provider", scheme)
-        return@readScheme
-      }
-
-      val langScheme = scheme.languages[type] ?: return@readScheme
-      this.languageScheme = langScheme
-      langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
-
-      analyzer.langScheme = languageScheme
-    }
+  fun setupWith(scheme: IDEColorScheme?) {
+    val langScheme = scheme?.languages?.get(langType)
+    this.languageScheme = langScheme
+    this.analyzer.langScheme = languageScheme
+    langScheme?.styles?.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
   }
 
   open fun finalizeIndent(indent: Int): Int {

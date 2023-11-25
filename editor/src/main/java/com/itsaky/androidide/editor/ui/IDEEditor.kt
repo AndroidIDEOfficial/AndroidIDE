@@ -37,7 +37,7 @@ import com.itsaky.androidide.editor.language.groovy.GroovyLanguage
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
-import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider.readScheme
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.snippets.AbstractSnippetVariableResolver
 import com.itsaky.androidide.editor.snippets.FileVariableResolver
 import com.itsaky.androidide.editor.snippets.WorkspaceVariableResolver
@@ -94,7 +94,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
-import java.util.function.Consumer
 
 /**
  * [CodeEditor] implementation for the IDE.
@@ -132,7 +131,13 @@ open class IDEEditor @JvmOverloads constructor(
     )
   }
 
-  protected val editorScope = CoroutineScope(Dispatchers.Default)
+  /**
+   * The [CoroutineScope] for the editor.
+   *
+   * All the jobs in this scope are cancelled when the editor is released.
+   */
+  val editorScope = CoroutineScope(Dispatchers.Default)
+
   protected val eventDispatcher = EditorEventDispatcher()
 
   private var sigHelpCancelChecker: ICancelChecker? = null
@@ -555,10 +560,13 @@ open class IDEEditor @JvmOverloads constructor(
     val language = createLanguage(file)
     val extension = file.extension
     if (language is TreeSitterLanguage) {
-      readScheme(context, extension,
-        Consumer { scheme: SchemeAndroidIDE? ->
-          applyTreeSitterLang(language, extension, scheme)
-        })
+      IDEColorSchemeProvider.readSchemeAsync(
+        context = context,
+        type = extension,
+        coroutineScope = editorScope
+      ) { scheme ->
+        applyTreeSitterLang(language, extension, scheme)
+      }
     } else {
       setEditorLanguage(language)
     }
@@ -567,14 +575,16 @@ open class IDEEditor @JvmOverloads constructor(
   /**
    * Applies the given [TreeSitterLanguage] and the [color scheme][scheme] for the given [file type][type].
    */
-  open fun applyTreeSitterLang(language: TreeSitterLanguage?, type: String,
+  open fun applyTreeSitterLang(
+    language: TreeSitterLanguage,
+    type: String,
     scheme: SchemeAndroidIDE?
   ) {
-    applyTreeSitterLang(language as Language?, type, scheme)
+    applyTreeSitterLangInternal(language, type, scheme)
   }
 
-  private fun applyTreeSitterLang(
-    language: Language?,
+  private fun applyTreeSitterLangInternal(
+    language: TreeSitterLanguage,
     type: String,
     scheme: SchemeAndroidIDE?
   ) {
@@ -588,11 +598,14 @@ open class IDEEditor @JvmOverloads constructor(
       SchemeAndroidIDE.newInstance(context)
     }
 
-    if (finalScheme is IDEColorScheme &&
-      finalScheme.getLanguageScheme(type) == null
-    ) {
-      log.warn("Color scheme does not support file type '$type'")
-      finalScheme = SchemeAndroidIDE.newInstance(context)
+    if (finalScheme is IDEColorScheme) {
+
+      language.setupWith(finalScheme)
+
+      if (finalScheme.getLanguageScheme(type) == null) {
+        log.warn("Color scheme does not support file type '$type'")
+        finalScheme = SchemeAndroidIDE.newInstance(context)
+      }
     }
 
     if (finalScheme is DynamicColorScheme) {

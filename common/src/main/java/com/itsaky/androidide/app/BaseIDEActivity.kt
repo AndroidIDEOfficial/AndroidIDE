@@ -25,8 +25,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
+import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 abstract class BaseIDEActivity : AppCompatActivity() {
 
@@ -36,11 +39,17 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   open val statusBarColor: Int
     get() = resolveAttr(R.attr.colorSurface)
 
-  fun loadFragment(fragment: Fragment, id: Int) {
-    val transaction = supportFragmentManager.beginTransaction()
-    transaction.replace(id, fragment)
-    transaction.commit()
-  }
+  /**
+   * [CoroutineScope] for executing tasks with the [Default][Dispatchers.Default] dispatcher.
+   */
+  protected val activityScope = CoroutineScope(Dispatchers.Default)
+
+  val isStoragePermissionGranted: Boolean
+    get() =
+      (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
+          PackageManager.PERMISSION_GRANTED &&
+          ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
+          PackageManager.PERMISSION_GRANTED)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     window?.apply {
@@ -61,12 +70,16 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     }
   }
 
-  val isStoragePermissionGranted: Boolean
-    get() =
-      (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
-        PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
-          PackageManager.PERMISSION_GRANTED)
+  override fun onDestroy() {
+    super.onDestroy()
+    activityScope.cancelIfActive("Activity is being destroyed")
+  }
+
+  fun loadFragment(fragment: Fragment, id: Int) {
+    val transaction = supportFragmentManager.beginTransaction()
+    transaction.replace(id, fragment)
+    transaction.commit()
+  }
 
   protected fun requestStorage() {
     if (isStoragePermissionGranted) {
@@ -80,7 +93,6 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     )
   }
 
-  protected open fun onStorageGranted() {}
   override fun onRequestPermissionsResult(
     requestCode: Int,
     permissions: Array<String>,
@@ -94,6 +106,8 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     }
   }
 
+  protected open fun onStorageGranted() {}
+
   protected open fun onStorageAlreadyGranted() {}
   protected open fun onStorageDenied() {}
   protected open fun preSetContentLayout() {}
@@ -101,6 +115,7 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   protected abstract fun bindLayout(): View
 
   companion object {
+
     const val REQCODE_STORAGE = 1009
     protected var LOG = ILogger.newInstance("StudioActivity")
   }

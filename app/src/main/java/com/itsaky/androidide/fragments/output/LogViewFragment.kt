@@ -238,7 +238,11 @@ abstract class LogViewFragment :
       }
     }
 
-    IDEColorSchemeProvider.readScheme(requireContext(), LogLanguage.TS_TYPE) { scheme ->
+    IDEColorSchemeProvider.readSchemeAsync(
+      context = requireContext(),
+      type = LogLanguage.TS_TYPE,
+      coroutineScope = editor.editorScope
+    ) { scheme ->
       editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)
     }
   }

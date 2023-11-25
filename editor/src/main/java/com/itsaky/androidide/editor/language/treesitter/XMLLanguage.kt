@@ -32,7 +32,7 @@ import io.github.rosemoe.sora.util.MyCharacter
  * @author Akash Yadav
  */
 class XMLLanguage(context: Context) :
-  TreeSitterLanguage(context, lang = TSLanguageXml.getInstance(), type = TS_TYPE) {
+  TreeSitterLanguage(context, lang = TSLanguageXml.getInstance(), langType = TS_TYPE) {
 
   override val languageServer: ILanguageServer?
     get() = ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
