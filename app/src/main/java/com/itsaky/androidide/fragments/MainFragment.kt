@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import com.blankj.utilcode.util.ThreadUtils
+import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.activities.PreferencesActivity
@@ -19,26 +19,35 @@ import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
+import java.io.File
+import java.util.concurrent.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
-import java.io.File
 
 class MainFragment : BaseFragment() {
 
-  private val viewModel by viewModels<MainViewModel>(
-    ownerProducer = { requireActivity() })
+  private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
   private var binding: FragmentMainBinding? = null
 
   private val log = ILogger.newInstance("MainFragment")
+  private val fragmentScope = CoroutineScope(Dispatchers.Default)
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
     binding = FragmentMainBinding.inflate(inflater, container, false)
@@ -48,23 +57,23 @@ class MainFragment : BaseFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    val actions = MainScreenAction.all().also { actions ->
-      val onClick = { action: MainScreenAction, _: View ->
-        when (action.id) {
-          MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
-          MainScreenAction.ACTION_OPEN_PROJECT -> pickDirectory()
-          MainScreenAction.ACTION_CLONE_REPO -> cloneGitRepo()
-          MainScreenAction.ACTION_OPEN_TERMINAL -> startActivity(
-            Intent(requireActivity(), TerminalActivity::class.java))
-
-          MainScreenAction.ACTION_PREFERENCES -> gotoPreferences()
-          MainScreenAction.ACTION_DONATE -> BaseApplication.getBaseInstance().openDonationsPage()
-          MainScreenAction.ACTION_DOCS -> BaseApplication.getBaseInstance().openDocs()
+    val actions =
+      MainScreenAction.all().also { actions ->
+        val onClick = { action: MainScreenAction, _: View ->
+          when (action.id) {
+            MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
+            MainScreenAction.ACTION_OPEN_PROJECT -> pickDirectory()
+            MainScreenAction.ACTION_CLONE_REPO -> cloneGitRepo()
+            MainScreenAction.ACTION_OPEN_TERMINAL ->
+              startActivity(Intent(requireActivity(), TerminalActivity::class.java))
+            MainScreenAction.ACTION_PREFERENCES -> gotoPreferences()
+            MainScreenAction.ACTION_DONATE -> BaseApplication.getBaseInstance().openDonationsPage()
+            MainScreenAction.ACTION_DOCS -> BaseApplication.getBaseInstance().openDocs()
+          }
         }
-      }
 
-      actions.forEach { action -> action.onClick = onClick }
-    }
+        actions.forEach { action -> action.onClick = onClick }
+      }
 
     binding!!.actions.adapter = MainActionsListAdapter(actions)
   }
@@ -72,6 +81,8 @@ class MainFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     binding = null
+
+    fragmentScope.cancelIfActive("Fragment has been destroyed")
   }
 
   private fun pickDirectory() {
@@ -128,49 +139,56 @@ class MainFragment : BaseFragment() {
     val targetDir = File(Environment.PROJECTS_DIR, repoName)
 
     val progress = GitCloneProgressMonitor(binding.progress, binding.message)
-    var git: Git? = null
-    val future = executeAsyncProvideError({
-      return@executeAsyncProvideError Git.cloneRepository()
-        .setURI(url)
-        .setDirectory(targetDir)
-        .setProgressMonitor(progress)
-        .call()
-        .also { git = it }
-    }, { _, _ -> })
 
-    builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
-      iface.dismiss()
+    var cloneJob: Job? = null
+    var git: Git? = null
+
+    builder.setPositiveButton(android.R.string.cancel) { dialogInterface, _ ->
+      dialogInterface.dismiss()
       progress.cancel()
       git?.close()
-      future.cancel(true)
+      cloneJob?.cancel(CancellationException("Cloning canceled"))
     }
 
     val dialog = builder.show()
 
-    future.whenComplete { result, error ->
-      ThreadUtils.runOnUiThread {
-        dialog?.dismiss()
-        result?.close()
-        if (result == null || error != null) {
-          if (!future.isCancelled) {
+    cloneJob =
+      fragmentScope
+        .launch {
+          try {
+            git =
+              Git.cloneRepository()
+                .setURI(url)
+                .setDirectory(targetDir)
+                .setProgressMonitor(progress)
+                .call()
+          } catch (error: Throwable) {
             showCloneError(error)
           }
-        } else flashSuccess(string.git_clone_success)
-      }
-    }
+        }
+        .also {
+          it.invokeOnCompletion { error ->
+            runOnUiThread {
+              dialog?.takeIf { it.isShowing }?.dismiss()
+              git?.close()
+              if (git == null || error != null) {
+                if (!cloneJob.isCancelled) {
+                  flashError(string.git_clone_failed)
+                }
+              } else flashSuccess(string.git_clone_success)
+            }
+          }
+        }
   }
 
-  private fun showCloneError(error: Throwable?) {
-    if (error == null) {
-      flashError(string.git_clone_failed)
-      return
+  private suspend fun showCloneError(error: Throwable) {
+    withContext(Dispatchers.Main) {
+      DialogUtils.newMaterialDialogBuilder(requireContext())
+        .setTitle(string.git_clone_failed)
+        .setMessage(error.localizedMessage)
+        .setPositiveButton(android.R.string.ok, null)
+        .show()
     }
-
-    val builder = DialogUtils.newMaterialDialogBuilder(requireContext())
-    builder.setTitle(string.git_clone_failed)
-    builder.setMessage(error.localizedMessage)
-    builder.setPositiveButton(android.R.string.ok, null)
-    builder.show()
   }
 
   private fun gotoPreferences() {
@@ -178,9 +196,8 @@ class MainFragment : BaseFragment() {
   }
 
   // TODO(itsaky) : Improve this implementation
-  class GitCloneProgressMonitor(val progress: LinearProgressIndicator,
-    val message: TextView
-  ) : ProgressMonitor {
+  class GitCloneProgressMonitor(val progress: LinearProgressIndicator, val message: TextView) :
+    ProgressMonitor {
 
     private var cancelled = false
 
@@ -189,15 +206,15 @@ class MainFragment : BaseFragment() {
     }
 
     override fun start(totalTasks: Int) {
-      ThreadUtils.runOnUiThread { progress.max = totalTasks }
+      runOnUiThread { progress.max = totalTasks }
     }
 
     override fun beginTask(title: String?, totalWork: Int) {
-      ThreadUtils.runOnUiThread { message.text = title }
+      runOnUiThread { message.text = title }
     }
 
     override fun update(completed: Int) {
-      ThreadUtils.runOnUiThread { progress.progress = completed }
+      runOnUiThread { progress.progress = completed }
     }
 
     override fun showDuration(enabled: Boolean) {
