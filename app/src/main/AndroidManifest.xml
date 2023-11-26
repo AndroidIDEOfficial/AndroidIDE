@@ -60,7 +60,7 @@
       android:theme="@style/Theme.AndroidIDE"/>
     <activity
       android:name=".activities.editor.EditorActivityKt"
-      android:configChanges="orientation|screenSize"
+      android:configChanges="uiMode|orientation|screenSize"
       android:launchMode="singleTop"
       android:windowSoftInputMode="adjustResize" />
     <activity android:name=".activities.PreferencesActivity" />
@@ -69,7 +69,7 @@
       android:configChanges="orientation|screenSize" />
     <activity
       android:name=".activities.TerminalActivity"
-      android:configChanges="orientation|screenSize"
+      android:configChanges="uiMode|orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />
 
     <service
