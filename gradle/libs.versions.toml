@@ -53,7 +53,7 @@ common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", versi
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.7.0" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
-androidx-collection = { module = "androidx.collection:collection", version = "1.4.0-alpha02" }
+androidx-collection = { module = "androidx.collection:collection", version = "1.4.0-beta02" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version = "1.2.0" }
 androidx-drawer = { module = "androidx.drawerlayout:drawerlayout", version = "1.2.0" }
