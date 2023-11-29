@@ -348,10 +348,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun getEditorForFile(file: File): CodeEditorView? {
     for (i in 0 until editorViewModel.getOpenedFileCount()) {
-      val editor = binding.editorContainer.getChildAt(i) as CodeEditorView
-      if (file == editor.file) {
-        return editor
-      }
+      val editor = binding.editorContainer.getChildAt(i) as? CodeEditorView
+      if (file == editor?.file) return editor
     }
     return null
   }

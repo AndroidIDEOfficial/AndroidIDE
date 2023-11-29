@@ -183,7 +183,7 @@ interface ActionItem {
     }
 
     fun forId(id: String): Location {
-      return values().first { it.id == id }
+      return entries.first { it.id == id }
     }
   }
 }
