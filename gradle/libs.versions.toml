@@ -12,7 +12,7 @@ androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
 ksp = "1.9.10-1.0.13"
 antlr4 = "4.13.1"
-androidx-work = "2.8.1"
+androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 
