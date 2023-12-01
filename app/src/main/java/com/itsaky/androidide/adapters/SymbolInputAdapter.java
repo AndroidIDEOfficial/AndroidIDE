@@ -119,8 +119,8 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     }
 
     if ("\t".equals(text)) {
-      text = getIndentationString();
-      selectionOffset = text.length();
+      editor.indentOrCommitTab();
+      return;
     }
 
     var cur = editor.getText().getCursor();
