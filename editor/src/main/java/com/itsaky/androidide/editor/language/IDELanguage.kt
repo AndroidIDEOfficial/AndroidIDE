@@ -73,16 +73,13 @@ abstract class IDELanguage : Language {
     cancelChecker: CompletionCancelChecker,
     extraArguments: Bundle
   ) {
-    val server = languageServer
-    if (server == null) {
-      LOG.warn("Cannot provide completions. No language server available.")
-      return
-    }
+    val server = languageServer ?: return
     val path = extraArguments.getString(IEditor.KEY_FILE, null)
     if (path == null) {
       LOG.warn("Cannot provide completions. No file provided.")
       return
     }
+
     val completionProvider = CommonCompletionProvider(server, cancelChecker)
     val file = Paths.get(path)
     val completionItems = completionProvider.complete(content, file, position) { checkIsCompletionChar(it) }
