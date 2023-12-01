@@ -22,14 +22,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.FileUtils
 import com.google.gson.GsonBuilder
-import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
@@ -129,6 +132,7 @@ class EditorViewModel : ViewModel() {
     }
 
   companion object {
+
     private val EMPTY_FILES = mutableListOf<File>()
   }
 
@@ -217,36 +221,58 @@ class EditorViewModel : ViewModel() {
     return mCurrentFile.value?.second
   }
 
-  fun readOpenedFiles(result: (OpenedFilesCache?) -> Unit) {
-    executeAsync({
-      val file = getOpenedFilesCache(false)
-      if (file.length() == 0L) {
-        return@executeAsync null
+  /**
+   * Get the [OpenedFilesCache] if it is already loaded, otherwise read the cache from the file system
+   * and invoke the given callback.
+   *
+   * If the cache is already loaded, [result] is called on the same thread. Otherwise, it is
+   * always called on the main/UI thread.
+   */
+  inline fun getOrReadOpenedFilesCache(crossinline result: (OpenedFilesCache?) -> Unit) {
+    return openedFilesCache?.let(result) ?: run {
+      viewModelScope.launch(Dispatchers.IO) {
+        val cache = getOpenedFilesCache(false).takeIf { it.exists() && it.length() > 0L }
+          ?.bufferedReader()?.use { reader ->
+            OpenedFilesCache.parse(reader)
+          }
+
+        withContext(Dispatchers.Main) {
+          result(cache)
+        }
+      }.also { job ->
+        handleOpenedFilesCacheJobCompletion(job, "read")
       }
-      return@executeAsync file.reader().buffered().use { reader ->
-        OpenedFilesCache.parse(reader)
+      Unit
+    }
+  }
+
+  fun handleOpenedFilesCacheJobCompletion(it: Job, operation: String) {
+    it.invokeOnCompletion { err ->
+      if (err != null) {
+        ILogger.instance().error("[EditorViewModel] Failed to $operation opened files cache", err)
       }
-    }) {
-      result(it)
     }
   }
 
   fun writeOpenedFiles(cache: OpenedFilesCache?) {
-    executeAsync {
-      val file = getOpenedFilesCache()
+    viewModelScope.launch(Dispatchers.IO) {
+      val file = getOpenedFilesCache(true)
 
       if (cache == null) {
         file.delete()
-        return@executeAsync
+        return@launch
       }
 
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
       file.writeText(string)
+    }.also { job ->
+      handleOpenedFilesCacheJobCompletion(job, "write")
     }
   }
 
-  private fun getOpenedFilesCache(forWrite: Boolean = false): File {
+  @PublishedApi
+  internal fun getOpenedFilesCache(forWrite: Boolean = false): File {
     var file = Environment.getProjectCacheDir(IProjectManager.getInstance().projectDir)
     file = File(file, "editor/openedFiles.json")
     if (file.exists() && forWrite) {

@@ -65,8 +65,5 @@ data class OpenedFilesCache(@SerializedName(KEY_SELECTED_FILE) val selectedFile:
         null
       }
     }
-
-    private fun readOpenedFiles(reader: JsonReader, allFiles: MutableList<OpenedFile>) {
-    }
   }
 }
