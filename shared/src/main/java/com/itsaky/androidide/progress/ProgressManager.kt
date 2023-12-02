@@ -19,6 +19,7 @@ package com.itsaky.androidide.progress
 
 import com.itsaky.androidide.progress.ICancelChecker.Default
 import java.util.WeakHashMap
+import java.util.concurrent.CancellationException
 
 /**
  * @author Akash Yadav
@@ -54,7 +55,7 @@ class ProgressManager private constructor() {
     val checker = threads[thisThread]
     if (checker != null && checker.isCancelled()) {
       threads.remove(thisThread)
-      throw ProcessCancelledException()
+      throw CancellationException()
     }
   }
 }
