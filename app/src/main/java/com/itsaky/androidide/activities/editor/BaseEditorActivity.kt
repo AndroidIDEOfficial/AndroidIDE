@@ -43,7 +43,6 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
 import com.itsaky.androidide.R.string
@@ -74,11 +73,15 @@ import com.itsaky.androidide.ui.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
+import com.itsaky.androidide.utils.DURATION_INDEFINITE
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashbarBuilder
+import com.itsaky.androidide.utils.showOnUiThread
+import com.itsaky.androidide.utils.successIcon
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -201,9 +204,18 @@ abstract class BaseEditorActivity :
       return
     }
 
-    Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-      .setAction(string.yes) { IntentUtils.launchApp(this, packageName) }
-      .show()
+    flashbarBuilder(duration = DURATION_INDEFINITE)
+      .successIcon()
+      .message(string.msg_action_open_application)
+      .positiveActionText(string.yes)
+      .positiveActionTapListener { flashbar ->
+        flashbar.dismiss()
+        IntentUtils.launchApp(this, packageName)
+      }
+      .negativeActionText(string.no)
+      .negativeActionTapListener(Flashbar::dismiss)
+      .build()
+      .showOnUiThread()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
