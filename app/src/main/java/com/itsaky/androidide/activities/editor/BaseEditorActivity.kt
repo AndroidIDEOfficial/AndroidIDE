@@ -53,6 +53,7 @@ import com.itsaky.androidide.app.IDEActivity
 import com.itsaky.androidide.databinding.ActivityEditorBinding
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
+import com.itsaky.androidide.flashbar.Flashbar
 import com.itsaky.androidide.fragments.SearchResultFragment
 import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
