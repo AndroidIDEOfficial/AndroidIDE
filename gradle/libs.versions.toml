@@ -118,7 +118,7 @@ tests-androidx-work-testing = { module = "androidx.work:work-testing", version.r
 tests-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 tests-androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx-espresso" }
 tests-androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.2.0" }
-tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.1.0" }
+tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.2.1" }
 tests-mockk = { module = "io.mockk:mockk", version = "1.13.8" }
 
 # Tooling
