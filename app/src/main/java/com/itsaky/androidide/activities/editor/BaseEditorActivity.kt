@@ -79,10 +79,10 @@ import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.IntentUtils
+import com.itsaky.androidide.utils.infoIcon
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashbarBuilder
 import com.itsaky.androidide.utils.showOnUiThread
-import com.itsaky.androidide.utils.successIcon
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -206,7 +206,7 @@ abstract class BaseEditorActivity :
     }
 
     flashbarBuilder(duration = DURATION_INDEFINITE)
-      .successIcon()
+      .infoIcon()
       .message(string.msg_action_open_application)
       .positiveActionText(string.yes)
       .positiveActionTapListener { flashbar ->
