@@ -45,6 +45,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
+import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
@@ -69,8 +70,8 @@ import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tasks.cancelIfActive
-import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.CodeEditorView
+import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
@@ -79,9 +80,10 @@ import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.IntentUtils
-import com.itsaky.androidide.utils.infoIcon
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashbarBuilder
+import com.itsaky.androidide.utils.infoIcon
+import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.utils.showOnUiThread
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -108,6 +110,7 @@ abstract class BaseEditorActivity :
   protected var diagnosticInfoBinding: LayoutDiagnosticInfoBinding? = null
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
+  protected var launchAppFlashbar: Flashbar? = null
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
@@ -171,6 +174,9 @@ abstract class BaseEditorActivity :
     installationCallback?.destroy()
     installationCallback = null
 
+    launchAppFlashbar?.dismiss()
+    launchAppFlashbar = null
+
     if (isDestroying) {
       editorActivityScope.cancelIfActive("Activity is being destroyed")
     }
@@ -205,18 +211,7 @@ abstract class BaseEditorActivity :
       return
     }
 
-    flashbarBuilder(duration = DURATION_INDEFINITE)
-      .infoIcon()
-      .message(string.msg_action_open_application)
-      .positiveActionText(string.yes)
-      .positiveActionTapListener { flashbar ->
-        flashbar.dismiss()
-        IntentUtils.launchApp(this, packageName)
-      }
-      .negativeActionText(string.no)
-      .negativeActionTapListener(Flashbar::dismiss)
-      .build()
-      .showOnUiThread()
+    showLaunchAppFlashbar()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -604,6 +599,24 @@ abstract class BaseEditorActivity :
     builder.setMessage(string.msg_need_help)
     builder.setPositiveButton(string.ok, null)
     builder.create().show()
+  }
+
+  private fun showLaunchAppFlashbar() {
+    this.launchAppFlashbar?.dismiss()
+    
+    this.launchAppFlashbar = flashbarBuilder(duration = DURATION_INDEFINITE)
+      .infoIcon()
+      .message(string.msg_action_open_application)
+      .positiveActionText(string.yes)
+      .positiveActionTapListener {
+        IntentUtils.launchApp(this, packageName)
+        it.dismiss()
+      }
+      .negativeActionText(string.no)
+      .negativeActionTapListener(Flashbar::dismiss)
+      .build()
+      
+    this.launchAppFlashbar?.showOnUiThread()
   }
 
   open fun installationSessionCallback(): SessionCallback {
