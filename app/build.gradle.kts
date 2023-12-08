@@ -47,7 +47,7 @@ android {
         "about.mappings",
         "about.properties",
         "about.ini",
-        "modeling32.png"
+        "modeling32.png",
       )
     )
   }
@@ -55,6 +55,9 @@ android {
   lint {
     abortOnError = false
     disable.addAll(arrayOf("VectorPath", "NestedWeights", "ContentDescription", "SmallSp"))
+  }
+  buildFeatures {
+    viewBinding = true
   }
 }
 
@@ -73,6 +76,8 @@ dependencies {
   implementation(libs.common.glide)
   implementation(libs.common.jsoup)
   implementation(libs.common.kotlin.coroutines.android)
+  implementation(libs.common.appintro)
+  implementation(libs.common.lottie)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)

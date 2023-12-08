@@ -94,14 +94,9 @@ class MainActivity : LimitlessIDEActivity() {
     }
 
     showStatConsentDialogIfNeeded {
-
       app.reportStatsIfNecessary()
 
-      if (!checkToolsIsInstalled()) {
-        showDialogInstallJdkSdk()
-      } else {
-        openLastProject()
-      }
+      if (!checkToolsIsInstalled()) openOnboarding() else openLastProject()
     }
 
     viewModel.currentScreen.observe(this) { screen ->
@@ -130,25 +125,11 @@ class MainActivity : LimitlessIDEActivity() {
       onResult()
       return
     }
+    openOnboarding()
+  }
 
-    DialogUtils.newMaterialDialogBuilder(this).apply {
-      setTitle(string.title_androidide_statistics)
-      setMessage(string.msg_androidide_statistics)
-      setCancelable(false)
-      setPositiveButton(string.btn_opt_in) { dialog, _ ->
-        dialog.dismiss()
-        statOptIn = true
-      }
-      setNegativeButton(string.btn_no_thanks) { dialog, _ ->
-        dialog.dismiss()
-        statOptIn = false
-      }
-      setOnDismissListener {
-        statConsentDialogShown = true
-        onResult()
-      }
-      show()
-    }
+  private fun openOnboarding() {
+    startActivity(Intent(this, OnboardingActivity::class.java))
   }
 
   override fun onInsetsUpdated(insets: Rect) {
@@ -206,29 +187,6 @@ class MainActivity : LimitlessIDEActivity() {
     return binding.root
   }
 
-  private fun showDialogInstallJdkSdk() {
-    val dp24 = SizeUtils.dp2px(24f)
-    val builder = DialogUtils.newMaterialDialogBuilder(this)
-    builder.setTitle(string.title_warning)
-    val view = TextView(this)
-    view.setPaddingRelative(dp24, dp24, dp24, dp24)
-    view.text = HtmlCompat.fromHtml(
-      getString(string.msg_require_install_jdk_and_android_sdk),
-      HtmlCompat.FROM_HTML_MODE_COMPACT)
-    view.movementMethod = LinkMovementMethod.getInstance()
-    builder.setView(view)
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { _, _ -> openTerminal() }
-    builder.setNegativeButton(
-      android.R.string.cancel) { _, _ -> finishAffinity() }
-    builder.setNeutralButton(string.btn_docs) { _, _ -> app.openDocs(); finishAffinity() }
-    builder.show()
-  }
-
-  private fun openTerminal() {
-    startActivity(Intent(this, TerminalActivity::class.java))
-  }
-
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
 
@@ -261,8 +219,11 @@ class MainActivity : LimitlessIDEActivity() {
       DialogUtils.showDeviceNotSupported(this)
     }
 
-
     return supported
+  }
+
+  private fun checkToolsIsInstalled(): Boolean {
+    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
   }
 
   private fun openLastProject() {
@@ -313,10 +274,6 @@ class MainActivity : LimitlessIDEActivity() {
   internal fun openProject(root: File) {
     ProjectManagerImpl.getInstance().projectPath = root.absolutePath
     startActivity(Intent(this, EditorActivityKt::class.java))
-  }
-
-  private fun checkToolsIsInstalled(): Boolean {
-    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
   }
 
   override fun onDestroy() {

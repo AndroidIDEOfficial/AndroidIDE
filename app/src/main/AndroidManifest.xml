@@ -55,6 +55,9 @@
       </intent-filter>
     </activity>
     <activity
+      android:name=".activities.OnboardingActivity"
+      android:exported="false" />
+    <activity
       android:name=".activities.MainActivity"
       android:exported="false"
       android:theme="@style/Theme.AndroidIDE"/>
