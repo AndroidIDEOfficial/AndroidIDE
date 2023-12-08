@@ -1,18 +1,18 @@
 [versions]
-agp = "8.1.3"
-agp-tooling = "8.2.0-rc02"
-gradle-tooling = "8.3"
-junit-jupiter = "5.10.0"
-kotlin = "1.9.10"
+agp = "8.2.0"
+agp-tooling = "8.2.0"
+gradle-tooling = "8.5"
+junit-jupiter = "5.10.1"
+kotlin = "1.9.21"
 kotlin-coroutines = "1.7.3"
 tree-sitter = "4.0.1-internal.1+branch.dev.commit.e09c012.timestamp.20231125133123-SNAPSHOT"
-editor = "0.22.1-6d761d6-SNAPSHOT"
+editor = "0.22.2"
 glide = "4.16.0"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
-ksp = "1.9.10-1.0.13"
+ksp = "1.9.21-1.0.15"
 antlr4 = "4.13.1"
-androidx-work = "2.8.1"
+androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 appintro = "6.3.1"
@@ -34,12 +34,12 @@ common-editor = { module = "io.github.Rosemoe.sora-editor:editor", version.ref =
 common-utilcode = { module = "com.blankj:utilcodex", version = "1.31.1" }
 common-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 common-glide_ap = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
-common-jsoup = { module = "org.jsoup:jsoup", version = "1.16.1" }
+common-jsoup = { module = "org.jsoup:jsoup", version = "1.17.1" }
 common-antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
 common-antlr4-runtime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr4" }
-common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-core", version = "3.25.5" }
-common-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.13.0" }
-common-io = { module = "commons-io:commons-io", version = "2.15.0" }
+common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-core", version = "3.25.7" }
+common-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.14.0" }
+common-io = { module = "commons-io:commons-io", version = "2.15.1" }
 common-kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 common-kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
 common-jkotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -57,7 +57,7 @@ common-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.7.0" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
-androidx-collection = { module = "androidx.collection:collection", version = "1.4.0-alpha02" }
+androidx-collection = { module = "androidx.collection:collection", version = "1.4.0-beta02" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version = "1.2.0" }
 androidx-drawer = { module = "androidx.drawerlayout:drawerlayout", version = "1.2.0" }
@@ -74,36 +74,36 @@ androidx-transition = { module = "androidx.transition:transition-ktx", version =
 androidx-nav-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
 androidx-nav-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
 androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
-androidx-tracing = { module = "androidx.tracing:tracing", version = "1.1.0" }
-androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.1.0" }
+androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
+androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2.0" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
 # Google
 google-material = { module = "com.google.android.material:material", version = "1.9.0" }
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
-google-guava = { module = "com.google.guava:guava", version = "31.1-android" }
+google-guava = { module = "com.google.guava:guava", version = "32.0.0-android" }
 google-auto-value-annotations = { module = "com.google.auto.value:auto-value-annotations", version = "1.10.4" }
 google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.4" }
 google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.25.1" }
-google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.17.0" }
+google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.18.1" }
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
-aapt2-common = { module = "com.android.tools:common", version = "31.1.2" }
-aapt2-annotations = { module = "com.android.tools:annotations", version = "31.1.3" }
-aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
-aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.1.2-10154469" }
+aapt2-common = { module = "com.android.tools:common", version = "31.2.0" }
+aapt2-annotations = { module = "com.android.tools:annotations", version = "31.2.0" }
+aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
+aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.2.0-10154469" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
 xml-apis = { module = "xml-apis:xml-apis", version = "2.0.2" }
 xml-remark = { module = "com.kotcrab.remark:remark", version = "1.2.0" }
 xml-resolver = { module = "xml-resolver:xml-resolver", version = "1.2" }
-xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
+xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
 
 # GIT
 git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "6.7.0.202309050840-r" }
@@ -113,7 +113,7 @@ tests-junit = { module = "junit:junit", version = "4.13.2" }
 tests-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 tests-junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 tests-google-truth = { module = "com.google.truth:truth", version = "1.1.5" }
-tests-robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
+tests-robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
 tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
 tests-androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
 tests-androidx-test-rules = { module = "androidx.test:rules", version = "1.5.0" }
@@ -122,7 +122,7 @@ tests-androidx-work-testing = { module = "androidx.work:work-testing", version.r
 tests-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
 tests-androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx-espresso" }
 tests-androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.2.0" }
-tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.1.0" }
+tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.2.1" }
 tests-mockk = { module = "io.mockk:mockk", version = "1.13.8" }
 
 # Tooling

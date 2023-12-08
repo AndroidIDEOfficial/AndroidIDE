@@ -155,7 +155,10 @@ class KeywordCompletionProvider(
         "long",
         "float",
         "double",
-        "synchronized"
+        "synchronized",
+        "true",
+        "false",
+        "null"
       )
   }
 }
