@@ -89,10 +89,6 @@ class MainActivity : LimitlessIDEActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    if (!checkDeviceSupported()) {
-      return
-    }
-
     showStatConsentDialogIfNeeded {
       app.reportStatsIfNecessary()
 
@@ -177,49 +173,9 @@ class MainActivity : LimitlessIDEActivity() {
     }
   }
 
-  override fun onStorageDenied() {
-    flashError(string.msg_storage_denied)
-    finishAffinity()
-  }
-
   override fun bindLayout(): View {
     _binding = ActivityMainBinding.inflate(layoutInflater)
     return binding.root
-  }
-
-  private fun checkDeviceSupported(): Boolean {
-    val configProvider = IDEBuildConfigProvider.getInstance()
-
-    val supported = if (
-      configProvider.isArm64v8aBuild()
-      && !configProvider.isArm64v8aDevice()
-      && configProvider.isArmeabiv7aDevice()
-    ) {
-      // IDE = 64-bit
-      // Device = 32-bit
-      // NOT SUPPORTED
-      DialogUtils.show64bitOn32bit(this)
-      false
-
-    } else if (
-      configProvider.isArmeabiv7aBuild()
-      && configProvider.isArm64v8aDevice()
-    ) {
-      // IDE = 32-bit
-      // Device = 64-bit
-      // SUPPORTED, but warn the user
-      if (!prefManager.getBoolean("ide.archConfigWarn.hasShown", false)) {
-        DialogUtils.show32bitOn64bit(this)
-      }
-      true
-
-    } else configProvider.supportsBuildFlavor()
-
-    if (!supported) {
-      DialogUtils.showDeviceNotSupported(this)
-    }
-
-    return supported
   }
 
   private fun checkToolsIsInstalled(): Boolean {

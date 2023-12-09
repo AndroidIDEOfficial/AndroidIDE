@@ -625,4 +625,6 @@
   <string name="msg_project_dir_doesnt_exist">Project directory does not exist</string>
   <string name="msg_files_being_saved">A file save operation is already in progress!</string>
   <string name="title_install_jdk_sdk">JDK &amp; SDK</string>
+  <string name="title_file_access">File Access Permission</string>
+  <string name="msg_file_access">This app needs permission to access files to function. Please grant permission to continue.</string>
 </resources>

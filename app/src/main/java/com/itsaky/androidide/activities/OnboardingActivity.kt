@@ -17,18 +17,24 @@
 
 package com.itsaky.androidide.activities
 
+import android.Manifest.permission
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
+import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.fragments.onboarding.OnboardingFragment
+import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.flashError
 
 class OnboardingActivity : AppIntro2() {
 
@@ -38,6 +44,13 @@ class OnboardingActivity : AppIntro2() {
     }
   }
 
+  private val isStoragePermissionGranted: Boolean
+    get() =
+      (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
+          PackageManager.PERMISSION_GRANTED &&
+          ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
+          PackageManager.PERMISSION_GRANTED)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setTransformer(AppIntroPageTransformerType.Fade)
@@ -46,24 +59,51 @@ class OnboardingActivity : AppIntro2() {
     setProgressIndicator()
     showStatusBar(true)
 
-    if (!statConsentDialogShown) {
-      addSlide(OnboardingFragment.newInstance(
-        string.title_androidide_statistics,
-        string.msg_androidide_statistics,
-        R.raw.statistics_animation,
-        "statistics"
-      ))
-    }
-    if (!checkToolsIsInstalled()) {
-      addSlide(OnboardingFragment.newInstance(
-        string.title_install_jdk_sdk,
-        string.msg_require_install_jdk_and_android_sdk,
-        R.raw.java_animation,
-        "install_jdk_sdk"
-      ))
+    if (checkDeviceSupported()) {
+      if (!isStoragePermissionGranted) {
+        addSlide(OnboardingFragment.newInstance(
+          string.title_file_access,
+          string.msg_file_access,
+          R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
+          name = ""
+        ))
+        askForPermissions(
+          permissions = arrayOf(
+            permission.WRITE_EXTERNAL_STORAGE,
+            permission.READ_EXTERNAL_STORAGE
+          ),
+          slideNumber = if (!archConfigWarnHasShown()) 1 else 2,
+          required = true
+        )
+      }
+      if (!statConsentDialogShown) {
+        addSlide(OnboardingFragment.newInstance(
+          string.title_androidide_statistics,
+          string.msg_androidide_statistics,
+          R.raw.statistics_animation,
+          "statistics"
+        ))
+      }
+      if (!checkToolsIsInstalled()) {
+        addSlide(OnboardingFragment.newInstance(
+          string.title_install_jdk_sdk,
+          string.msg_require_install_jdk_and_android_sdk,
+          R.raw.java_animation,
+          "install_jdk_sdk"
+        ))
+      }
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+  }
+
+  override fun onUserDeniedPermission(permissionName: String) {
+    // User pressed "Deny" on the permission dialog
+    flashError(string.msg_storage_denied)
+  }
+
+  override fun onUserDisabledPermission(permissionName: String) {
+    // User pressed "Deny" + "Don't ask again" on the permission dialog
   }
 
   override fun onResume() {
@@ -100,6 +140,7 @@ class OnboardingActivity : AppIntro2() {
     if (currentFragment is OnboardingFragment) {
       when (currentFragment.name) {
         "install_jdk_sdk" -> openActivity(TerminalActivity::class.java)
+        "device_not_supported" -> finishAffinity()
         else -> openActivity(MainActivity::class.java)
       }
     }
@@ -113,5 +154,59 @@ class OnboardingActivity : AppIntro2() {
     return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
   }
 
-  private fun isSetupDone(): Boolean = checkToolsIsInstalled() && statConsentDialogShown
+  private fun isSetupDone() =
+    (checkToolsIsInstalled() && statConsentDialogShown && isStoragePermissionGranted)
+
+  private fun checkDeviceSupported(): Boolean {
+    val configProvider = IDEBuildConfigProvider.getInstance()
+
+    val supported = if (
+      configProvider.isArm64v8aBuild()
+      && !configProvider.isArm64v8aDevice()
+      && configProvider.isArmeabiv7aDevice()
+    ) {
+      // IDE = 64-bit
+      // Device = 32-bit
+      // NOT SUPPORTED
+      addSlide(OnboardingFragment.newInstance(
+        string.title_device_not_supported,
+        string.msg_64bit_on_32bit_device,
+        R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
+        name = ""
+      ))
+      false
+
+    } else if (
+      configProvider.isArmeabiv7aBuild()
+      && configProvider.isArm64v8aDevice()
+    ) {
+      // IDE = 32-bit
+      // Device = 64-bit
+      // SUPPORTED, but warn the user
+      if (!archConfigWarnHasShown()) {
+        addSlide(OnboardingFragment.newInstance(
+          string.title_32bit_on_64bit_device,
+          string.msg_32bit_on_64bit_device,
+          R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
+          name = ""
+        ))
+      }
+      true
+
+    } else configProvider.supportsBuildFlavor()
+
+    if (!supported) {
+      addSlide(OnboardingFragment.newInstance(
+        string.title_device_not_supported,
+        string.msg_device_not_supported,
+        R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
+        "device_not_supported"
+      ))
+    }
+
+    return supported
+  }
+
+  private fun archConfigWarnHasShown() =
+    prefManager.getBoolean("ide.archConfigWarn.hasShown", false)
 }
