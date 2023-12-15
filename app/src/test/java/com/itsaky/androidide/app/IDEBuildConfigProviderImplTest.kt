@@ -19,6 +19,7 @@ package com.itsaky.androidide.app
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.BuildConfig
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProviderImpl
 import org.junit.Test
 
 /**

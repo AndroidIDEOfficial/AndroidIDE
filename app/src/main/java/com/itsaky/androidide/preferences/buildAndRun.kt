@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -70,11 +69,6 @@ private class GradleOptions(
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
     addPreference(GradleClearCache())
-    if (IDEBuildConfigProvider.getInstance()
-        .isArm64v8aBuild() && VERSION.SDK_INT == VERSION_CODES.R
-    ) {
-      addPreference(TagPointersFix())
-    }
   }
 }
 

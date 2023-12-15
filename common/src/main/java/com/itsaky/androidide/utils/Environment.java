@@ -67,7 +67,6 @@ public final class Environment {
   public static File GRADLE_USER_HOME;
   public static File AAPT2;
   public static File JAVA;
-  public static File BUSYBOX;
   public static File SHELL;
   public static File LOGIN_SHELL;
   public static File BOOTCLASSPATH;
@@ -108,12 +107,10 @@ public final class Environment {
     }
 
     JAVA = new File(JAVA_HOME, "bin/java");
-    BUSYBOX = new File(BIN_DIR, "busybox");
     SHELL = new File(BIN_DIR, "bash");
     LOGIN_SHELL = new File(BIN_DIR, "login");
 
     setExecutable(JAVA);
-    setExecutable(BUSYBOX);
     setExecutable(SHELL);
 
     System.setProperty("user.home", HOME.getAbsolutePath());

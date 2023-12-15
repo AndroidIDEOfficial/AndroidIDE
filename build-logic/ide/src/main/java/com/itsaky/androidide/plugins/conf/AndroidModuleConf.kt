@@ -24,7 +24,7 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import projectVersionCode
 
-private val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
+private val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a", "x86_64")
 
 fun Project.configureAndroidModule(
   coreLibDesugDep: Dependency
@@ -73,7 +73,7 @@ fun Project.configureAndroidModule(
       defaultConfig {
         ndk {
           abiFilters.clear()
-          abiFilters += arrayOf("armeabi-v7a", "arm64-v8a")
+          abiFilters += flavorsAbis
         }
       }
     }

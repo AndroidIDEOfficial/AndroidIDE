@@ -44,8 +44,7 @@
   <string name="msg_pick_single_file">Mohon untuk hanya memilih satu direktori</string>
   <string name="please_wait">Mohon tunggu sebentar &#8230;</string>
   <!-- Project Builder -->
-  <string name="title_device_not_supported">Perangkat tidak didukung</string>
-  <string name="msg_device_not_supported">Sayang sekali, perangkat anda tidak didukung saat ini. Kami mohon maaf atas ketidaknyamanannya.\n\nCPU ABI yang didukung: aarch64 dan armeabi-v7a</string>
+  <string name="title_unsupported_device">Perangkat tidak didukung</string>
   <string name="build">Build</string>
   <string name="build_output">Hasil Build</string>
   <string name="lint_tasks">Lint tasks</string>
@@ -527,9 +526,7 @@
   <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
   <string name="msg_launch_failure_no_app_module">Tidak dapat menjalankan aplikasi. Tidak ada modul aplikasi yang ditemukan di proyek.</string>
   <string name="title_launch_app">Luncurkan aplikasi</string>
-  <string name="msg_64bit_on_32bit_device">Anda menggunakan AndroidIDE varian 64-bit pada perangkat 32-bit saja. Konfigurasi ini tidak didukung. Silakan instal AndroidIDE varian 32-bit.</string>
-  <string name="title_32bit_on_64bit_device">Peringatan Konfigurasi</string>
-  <string name="msg_32bit_on_64bit_device">Anda menggunakan AndroidIDE varian 32-bit pada perangkat 64-bit. Konfigurasi ini mungkin berfungsi, namun akan mengakibatkan penurunan kinerja dan kemungkinan kerentanan keamanan. Harap hindari penggunaan konfigurasi ini bila memungkinkan.</string>
+  <string name="title_experiment_flavor">Peringatan Konfigurasi</string>
   <string name="idepref_editor_pinLineNumbers_title">Sematkan nomor baris</string>
   <string name="idepref_editor_pinLineNumbers_summary">Apakah editor harus menyematkan panel nomor baris saat digulir secara horizontal.</string>
   <string name="theme_blue_wave">Blue Wave</string>

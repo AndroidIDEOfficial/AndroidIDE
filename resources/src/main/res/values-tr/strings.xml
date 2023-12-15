@@ -44,8 +44,7 @@
   <string name="msg_pick_single_file">Lütfen sadece 1 dizin seç</string>
   <string name="please_wait">1 dakika bekleyin…</string>
   <!-- Project Builder -->
-  <string name="title_device_not_supported">Cihaz desteklemiyor</string>
-  <string name="msg_device_not_supported">Üzgünüz ki cihazınız şu an desteklenmiyor. Rahatsızlık için üzgünüz.\n\nDesteklenen CPU\'lar: aarch64 ve armeabi-v7a</string>
+  <string name="title_unsupported_device">Cihaz desteklemiyor</string>
   <string name="build">İnşa et</string>
   <string name="build_output">Yapım İşi Çıktısı</string>
   <string name="lint_tasks">Lintleme</string>
@@ -527,9 +526,7 @@
   <string name="err_cannot_determine_package">Uygulama çalıştırılamıyor. Paket adı tanınamadı.</string>
   <string name="msg_launch_failure_no_app_module">Uygulama çalıştırılamıyor. Projede hiçbir uygulama modülü bulunamadı.</string>
   <string name="title_launch_app">Uygulamayı aç</string>
-  <string name="msg_64bit_on_32bit_device">Yalnızca 32 bit bir cihazda AndroidIDE\'nin 64 bit varyantını kullanıyorsunuz. Bu yapılandırma desteklenmemektedir. Lütfen AndroidIDE\'nin 32 bit sürümünü yükleyin.</string>
-  <string name="title_32bit_on_64bit_device">Yapılandırma Uyarısı</string>
-  <string name="msg_32bit_on_64bit_device">64-bit bir cihazda AndroidIDE\'nin 32-bit varyantını kullanıyorsunuz. Bu yapılandırma işe yarayabilir, ancak düşük performansa ve olası güvenlik açıklarına neden olacaktır. Lütfen mümkün olduğunca bu yapılandırmayı kullanmaktan kaçının.</string>
+  <string name="title_experiment_flavor">Yapılandırma Uyarısı</string>
   <string name="idepref_editor_pinLineNumbers_title">Pin hat numaraları</string>
   <string name="idepref_editor_pinLineNumbers_summary">Düzenleyicinin yatay olarak kaydırıldığında satır numarası panelini sabitleyip sabitlemeyeceği.</string>
   <string name="theme_blue_wave">Mavi Dalga</string>

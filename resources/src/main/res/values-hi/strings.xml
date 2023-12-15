@@ -44,8 +44,7 @@
   <string name="msg_pick_single_file">कृपया केवल एक डायरेक्टरी चुनें</string>
   <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें…</string>
   <!-- Project Builder -->
-  <string name="title_device_not_supported">डिवाइस समर्थित नहीं है</string>
-  <string name="msg_device_not_supported">दुर्भाग्य से, आपका डिवाइस इस समय समर्थित नहीं है। असुविधा के लिए हमें खेद है.\n\nसमर्थित CPU ABIs: aarch64 और armeabi-v7a</string>
+  <string name="title_unsupported_device">डिवाइस समर्थित नहीं है</string>
   <string name="build">बिल्ड</string>
   <string name="build_output">बिल्ड आउटपुट</string>
   <string name="lint_tasks">लिंट टास्क्स</string>
@@ -527,9 +526,7 @@
   <string name="err_cannot_determine_package">ऐप नहीं चला सकते. पैकेज का नाम निर्धारित करने में असमर्थ.</string>
   <string name="msg_launch_failure_no_app_module">एप्लिकेशन नहीं चला सकते. प्रोजेक्ट में कोई एप्लिकेशन मॉड्यूल नहीं मिला.</string>
   <string name="title_launch_app">ऐप को लांच करें</string>
-  <string name="msg_64bit_on_32bit_device">आप केवल 32-बिट डिवाइस पर AndroidIDE के 64-बिट संस्करण का उपयोग कर रहे हैं। यह कॉन्फ़िगरेशन समर्थित नहीं है. कृपया AndroidIDE का 32-बिट संस्करण इंस्टॉल करें।</string>
-  <string name="title_32bit_on_64bit_device">कॉन्फ़िगरेशन चेतावनी</string>
-  <string name="msg_32bit_on_64bit_device">आप 64-बिट डिवाइस पर AndroidIDE के 32-बिट संस्करण का उपयोग कर रहे हैं। यह कॉन्फ़िगरेशन काम कर सकता है, लेकिन इसके परिणामस्वरूप प्रदर्शन में कमी आएगी और संभावित सुरक्षा कमजोरियाँ होंगी। कृपया जब भी संभव हो इस कॉन्फ़िगरेशन का उपयोग करने से बचें।</string>
+  <string name="title_experiment_flavor">कॉन्फ़िगरेशन चेतावनी</string>
   <string name="idepref_editor_pinLineNumbers_title">पिन लाइन नंबर</string>
   <string name="idepref_editor_pinLineNumbers_summary">क्या एडिटर को क्षैतिज रूप से स्क्रॉल करने पर लाइन नंबर पैनल को पिन करना चाहिए?</string>
   <string name="theme_blue_wave">ब्लू वेव</string>

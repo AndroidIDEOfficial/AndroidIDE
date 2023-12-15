@@ -33,8 +33,8 @@ import androidx.transition.doOnEnd
 import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
-import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.app.LimitlessIDEActivity
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
@@ -162,9 +162,7 @@ class MainActivity : LimitlessIDEActivity() {
       // template list -> template details
       // ------- OR -------
       // template details -> template list
-      val setAxisToX =
-        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
-            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
+      val setAxisToX = (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) && (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
 
       val axis = if (setAxisToX) {
         MaterialSharedAxis.X
@@ -212,15 +210,13 @@ class MainActivity : LimitlessIDEActivity() {
     builder.setTitle(string.title_warning)
     val view = TextView(this)
     view.setPaddingRelative(dp24, dp24, dp24, dp24)
-    view.text = HtmlCompat.fromHtml(
-      getString(string.msg_require_install_jdk_and_android_sdk),
+    view.text = HtmlCompat.fromHtml(getString(string.msg_require_install_jdk_and_android_sdk),
       HtmlCompat.FROM_HTML_MODE_COMPACT)
     view.movementMethod = LinkMovementMethod.getInstance()
     builder.setView(view)
     builder.setCancelable(false)
     builder.setPositiveButton(android.R.string.ok) { _, _ -> openTerminal() }
-    builder.setNegativeButton(
-      android.R.string.cancel) { _, _ -> finishAffinity() }
+    builder.setNegativeButton(android.R.string.cancel) { _, _ -> finishAffinity() }
     builder.setNeutralButton(string.btn_docs) { _, _ -> app.openDocs(); finishAffinity() }
     builder.show()
   }
@@ -232,37 +228,22 @@ class MainActivity : LimitlessIDEActivity() {
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
 
-    val supported = if (
-      configProvider.isArm64v8aBuild()
-      && !configProvider.isArm64v8aDevice()
-      && configProvider.isArmeabiv7aDevice()
-    ) {
-      // IDE = 64-bit
-      // Device = 32-bit
-      // NOT SUPPORTED
-      DialogUtils.show64bitOn32bit(this)
-      false
-
-    } else if (
-      configProvider.isArmeabiv7aBuild()
-      && configProvider.isArm64v8aDevice()
-    ) {
-      // IDE = 32-bit
-      // Device = 64-bit
-      // SUPPORTED, but warn the user
-      if (!prefManager.getBoolean("ide.archConfigWarn.hasShown", false)) {
-        DialogUtils.show32bitOn64bit(this)
-      }
-      true
-
-    } else configProvider.supportsBuildFlavor()
-
-    if (!supported) {
-      DialogUtils.showDeviceNotSupported(this)
+    if (!configProvider.supportsBuildFlavor()) {
+      DialogUtils.showUnSupportedDevice(this, configProvider.flavorArch.abi,
+        configProvider.deviceArch.abi)
+      return false
     }
 
+    if (configProvider.flavorArch != configProvider.deviceArch) {
+      // IDE's build flavor is NOT the primary arch of the device
+      // warn the user
+      if (!prefManager.getBoolean("ide.archConfig.experimentalWarning.isShown", false)) {
+        DialogUtils.showExperimentalArchSupportWarning(this, configProvider.flavorArch.abi,
+          configProvider.deviceArch.abi)
+      }
+    }
 
-    return supported
+    return true
   }
 
   private fun openLastProject() {
@@ -302,8 +283,7 @@ class MainActivity : LimitlessIDEActivity() {
   private fun askProjectOpenPermission(root: File) {
     val builder = DialogUtils.newMaterialDialogBuilder(this)
     builder.setTitle(string.title_confirm_open_project)
-    builder.setMessage(
-      getString(string.msg_confirm_open_project, root.absolutePath))
+    builder.setMessage(getString(string.msg_confirm_open_project, root.absolutePath))
     builder.setCancelable(false)
     builder.setPositiveButton(string.yes) { _, _ -> openProject(root) }
     builder.setNegativeButton(string.no, null)
