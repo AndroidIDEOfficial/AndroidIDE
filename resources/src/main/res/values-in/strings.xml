@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Salin</string>
-  <string name="terminal_more">More…</string>
+  <string name="terminal_more">Lagi…</string>
   <string name="text_to_search">Teks untuk mencari</string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
@@ -45,8 +45,8 @@
   <string name="msg_pick_single_file">Mohon untuk hanya memilih satu direktori</string>
   <string name="please_wait">Mohon tunggu sebentar &#8230;</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
+  <string name="title_unsupported_device">Perangkat Tidak Didukung</string>
+  <string name="msg_unsupported_device">Anda menggunakan %1$s varian AndroidIDE pada perangkat khusus %2$s. Konfigurasi ini tidak didukung. Silakan instal varian %2$s AndroidIDE.</string>
   <string name="build">Build</string>
   <string name="build_output">Hasil Build</string>
   <string name="lint_tasks">Lint tasks</string>
@@ -528,8 +528,8 @@
   <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
   <string name="msg_launch_failure_no_app_module">Tidak dapat menjalankan aplikasi. Tidak ada modul aplikasi yang ditemukan di proyek.</string>
   <string name="title_launch_app">Luncurkan aplikasi</string>
-  <string name="title_experiment_flavor">Experimental</string>
-  <string name="msg_experimental_flavor">You are using %1$s variant of AndroidIDE on a %2$s device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="title_experiment_flavor">Eksperimental</string>
+  <string name="msg_experimental_flavor">Anda menggunakan %1$s varian AndroidIDE di perangkat %2$s. Konfigurasi ini mungkin berfungsi, namun akan mengakibatkan penurunan kinerja dan kemungkinan kerentanan keamanan. Harap hindari penggunaan konfigurasi ini bila memungkinkan.</string>
   <string name="idepref_editor_pinLineNumbers_title">Sematkan nomor baris</string>
   <string name="idepref_editor_pinLineNumbers_summary">Apakah editor harus menyematkan panel nomor baris saat digulir secara horizontal.</string>
   <string name="theme_blue_wave">Blue Wave</string>
