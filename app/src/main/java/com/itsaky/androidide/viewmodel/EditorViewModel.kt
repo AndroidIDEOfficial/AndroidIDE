@@ -34,6 +34,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.util.Collections
 
 /** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
@@ -230,10 +231,15 @@ class EditorViewModel : ViewModel() {
   inline fun getOrReadOpenedFilesCache(crossinline result: (OpenedFilesCache?) -> Unit) {
     return openedFilesCache?.let(result) ?: run {
       viewModelScope.launch(Dispatchers.IO) {
-        val cache = getOpenedFilesCache(false).takeIf { it.exists() && it.length() > 0L }
-          ?.bufferedReader()?.use { reader ->
-            OpenedFilesCache.parse(reader)
-          }
+        val cache = try {
+          val cacheFile = getOpenedFilesCache(false)
+          if (cacheFile.exists() && cacheFile.length() > 0L) {
+            cacheFile.bufferedReader().use(OpenedFilesCache::parse)
+          } else null
+        } catch (err: IOException) {
+          // ignore exception
+          null
+        }
 
         withContext(Dispatchers.Main) {
           result(cache)
