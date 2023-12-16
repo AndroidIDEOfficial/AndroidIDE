@@ -74,17 +74,17 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Assemble
+      - name: Assemble ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         run: |
           build_type=${{ matrix.build_type }}
           flavor=${{ matrix.flavor }}
-          ./gradlew :app:assemble${flavor^}${$build_type^}
-      - name: Copy APK
+          ./gradlew :app:assemble${flavor^}${build_type^}
+      - name: Copy ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         run: |
           build_type=${{ matrix.build_type }}
           flavor=${{ matrix.flavor }}
           cp app/build/outputs/apk/$flavor/$build_type/app-$flavor-$flavor.apk ./app-$flavor-$build_type.apk
-      - name: Upload APK
+      - name: Upload ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         uses: actions/upload-artifact@v3
         with:
           name: AndroidIDE-${{ matrix.flavor }}-${{ matrix.build_type }}
