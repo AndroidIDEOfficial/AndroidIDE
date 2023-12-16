@@ -24,7 +24,7 @@
   <string name="title_terminal">终端</string>
   <string name="reset">重置</string>
   <string name="app_logs">应用日志</string>
-  <string name="ide_logs">IDE日志</string>
+  <string name="ide_logs">IDE 日志</string>
   <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">启动图</string>
   <string name="get_started">开始使用</string>
@@ -45,8 +45,8 @@
   <string name="msg_pick_single_file">请仅选择一个目录</string>
   <string name="please_wait">请稍等片刻…</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">您正在仅 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体，不支持此配置。请安装 AndroidIDE 的 %2$s 变体。</string>
+  <string name="title_unsupported_device">不兼容的设备</string>
+  <string name="msg_unsupported_device">您正在仅 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体。此配置不兼容，请安装 AndroidIDE 的 %2$s 变体。</string>
   <string name="build">构建</string>
   <string name="build_output">构建输出</string>
   <string name="lint_tasks">Lint 任务</string>
@@ -528,7 +528,7 @@
   <string name="err_cannot_determine_package">无法确定软件包名称，不能运行应用。</string>
   <string name="msg_launch_failure_no_app_module">项目中未找到应用模块，无法运行应用。</string>
   <string name="title_launch_app">启动应用</string>
-  <string name="title_experiment_flavor">Experimental</string>
+  <string name="title_experiment_flavor">实验性功能</string>
   <string name="msg_experimental_flavor">您正在 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体。此配置可能有效，但会使性能降低并可能导致安全漏洞。请尽可能避免使用此配置。</string>
   <string name="idepref_editor_pinLineNumbers_title">固定行号</string>
   <string name="idepref_editor_pinLineNumbers_summary">编辑器是否应在水平滚动时固定行号栏。</string>
