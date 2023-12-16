@@ -81,8 +81,7 @@ jobs:
           ./gradlew :app:assemble${flavor^}${build_type^}
       - name: Copy ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         run: |
-          build_type=${{ matrix.build_type }}
-          flavor=${{ matrix.flavor }}
+          find app/build/outputs/apk
           cp app/build/outputs/apk/**/*.apk ./
       - name: Upload ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         uses: actions/upload-artifact@v3
