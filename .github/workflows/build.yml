@@ -83,12 +83,12 @@ jobs:
         run: |
           build_type=${{ matrix.build_type }}
           flavor=${{ matrix.flavor }}
-          cp app/build/outputs/apk/$flavor/$build_type/app-$flavor-$flavor.apk ./app-$flavor-$build_type.apk
+          cp app/build/outputs/apk/**/*.apk ./
       - name: Upload ${{ matrix.flavor }} ${{ matrix.build_type }} APK
         uses: actions/upload-artifact@v3
         with:
-          name: AndroidIDE-${{ matrix.flavor }}-${{ matrix.build_type }}
-          path: app-${{ matrix.flavor }}-${{ matrix.build_type }}.apk
+          name: apk-${{ matrix.flavor }}-${{ matrix.build_type }}
+          path: app-${{ matrix.flavor }}-${{ matrix.flavor }}-${{ matrix.build_type }}.apk
 
   run_unit_tests:
     name: Run unit tests
