@@ -69,7 +69,6 @@ public final class Environment {
   public static File JAVA;
   public static File SHELL;
   public static File LOGIN_SHELL;
-  public static File BOOTCLASSPATH;
 
   public static void init() {
     ROOT = mkdirIfNotExits(new File(DEFAULT_ROOT));
@@ -91,7 +90,6 @@ public final class Environment {
     PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
-    BOOTCLASSPATH = new File("");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
 
     IDE_PROPS.putAll(readProperties());
@@ -134,7 +132,7 @@ public final class Environment {
       Properties p = new Properties();
       p.load(new StringReader(FileIOUtils.readFile2String(IDE_PROPS_FILE)));
       for (@SuppressWarnings("rawtypes") Map.Entry entry : p.entrySet()) {
-        props.put(entry.getKey() + "", entry.getValue() + "");
+        props.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
       }
     } catch (Throwable th) {
       LOG.error("Unable to read properties file", th);
@@ -176,10 +174,6 @@ public final class Environment {
     PROJECTS_DIR = new File(file.getAbsolutePath());
   }
 
-  public static void setBootClasspath(@NonNull File file) {
-    BOOTCLASSPATH = new File(file.getAbsolutePath());
-  }
-
   public static void putEnvironment(Map<String, String> env, boolean forFailsafe) {
 
     env.put("HOME", HOME.getAbsolutePath());
@@ -212,10 +206,6 @@ public final class Environment {
       blacklist.add("SYSROOT");
     }
     return blacklist;
-  }
-
-  public static File getProjectCacheDir(String projectDir) {
-    return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
   }
 
   public static File getProjectCacheDir(File projectDir) {
