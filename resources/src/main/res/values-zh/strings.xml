@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">复制</string>
-  <string name="terminal_more">More…</string>
+  <string name="terminal_more">更多…</string>
   <string name="text_to_search">要搜索的文本</string>
   <string name="title_open_source_licenses">开源许可证</string>
   <string name="msg_about_licensed_under">许可证：</string>
@@ -46,7 +46,7 @@
   <string name="please_wait">请稍等片刻…</string>
   <!-- Project Builder -->
   <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
+  <string name="msg_unsupported_device">您正在仅 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体，不支持此配置。请安装 AndroidIDE 的 %2$s 变体。</string>
   <string name="build">构建</string>
   <string name="build_output">构建输出</string>
   <string name="lint_tasks">Lint 任务</string>
@@ -529,7 +529,7 @@
   <string name="msg_launch_failure_no_app_module">项目中未找到应用模块，无法运行应用。</string>
   <string name="title_launch_app">启动应用</string>
   <string name="title_experiment_flavor">Experimental</string>
-  <string name="msg_experimental_flavor">You are using %1$s variant of AndroidIDE on a %2$s device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="msg_experimental_flavor">您正在 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体。此配置可能有效，但会使性能降低并可能导致安全漏洞。请尽可能避免使用此配置。</string>
   <string name="idepref_editor_pinLineNumbers_title">固定行号</string>
   <string name="idepref_editor_pinLineNumbers_summary">编辑器是否应在水平滚动时固定行号栏。</string>
   <string name="theme_blue_wave">蓝色波浪</string>
