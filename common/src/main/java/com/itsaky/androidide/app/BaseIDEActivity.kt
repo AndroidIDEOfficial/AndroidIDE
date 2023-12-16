@@ -47,7 +47,7 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   /**
    * [CoroutineScope] for executing tasks with the [Default][Dispatchers.Default] dispatcher.
    */
-  protected val activityScope = CoroutineScope(Dispatchers.Default)
+  val activityScope = CoroutineScope(Dispatchers.Default)
 
   val isStoragePermissionGranted: Boolean
     get() =
