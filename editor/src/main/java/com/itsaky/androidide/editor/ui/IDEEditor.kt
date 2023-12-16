@@ -84,6 +84,7 @@ import io.github.rosemoe.sora.widget.IDEEditorSearcher
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -133,7 +134,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
    *
    * All the jobs in this scope are cancelled when the editor is released.
    */
-  val editorScope = CoroutineScope(Dispatchers.Default)
+  val editorScope = CoroutineScope(Dispatchers.Default + CoroutineName("IDEEditor"))
 
   protected val eventDispatcher = EditorEventDispatcher()
 
@@ -270,7 +271,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
       this.sigHelpCancelChecker = it
     }
 
-    editorScope.launch {
+    editorScope.launch(Dispatchers.Default) {
       cancelChecker.job = coroutineContext[Job]
       val params = SignatureHelpParams(file.toPath(), cursorLSPPosition, cancelChecker)
       val help = languageServer.signatureHelp(params)

@@ -34,6 +34,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.Collections
 
 /** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
 @Suppress("PropertyName")
@@ -126,14 +127,15 @@ class EditorViewModel : ViewModel() {
     }
 
   internal var files: MutableList<File>
-    get() = this._files.value ?: EMPTY_FILES
+    get() = this._files.value ?: Collections.emptyList()
     set(value) {
       this._files.value = value
     }
 
-  companion object {
-
-    private val EMPTY_FILES = mutableListOf<File>()
+  private inline fun updateFiles(crossinline action: (files: MutableList<File>) -> Unit) {
+    val files = this.files
+    action(files)
+    this.files = files
   }
 
   /**
@@ -141,9 +143,8 @@ class EditorViewModel : ViewModel() {
    *
    * @param file The file that has been opened.
    */
-  fun addFile(file: File) {
+  fun addFile(file: File) = updateFiles { files ->
     files.add(file)
-    this.files = files
   }
 
   /**
@@ -151,17 +152,16 @@ class EditorViewModel : ViewModel() {
    *
    * @param index The index of the closed file.
    */
-  fun removeFile(index: Int) {
+  fun removeFile(index: Int) = updateFiles { files ->
     files.removeAt(index)
-    this.files = files
 
-    if (this.files.isEmpty()) {
+    if (files.isEmpty()) {
       mCurrentFile.value = null
     }
   }
 
-  fun removeAllFiles() {
-    this.files = EMPTY_FILES
+  fun removeAllFiles() = updateFiles { files ->
+    files.clear()
     setCurrentFile(-1, null)
   }
 
@@ -170,9 +170,8 @@ class EditorViewModel : ViewModel() {
     mCurrentFile.value = index to file
   }
 
-  fun updateFile(index: Int, newFile: File) {
+  fun updateFile(index: Int, newFile: File) = updateFiles { files ->
     files[index] = newFile
-    this.files = files
   }
 
   /**
@@ -200,7 +199,7 @@ class EditorViewModel : ViewModel() {
    * @return The list of opened files.
    */
   fun getOpenedFiles(): List<File> {
-    return files
+    return Collections.unmodifiableList(files)
   }
 
   /**
