@@ -23,55 +23,57 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RawRes
-import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.databinding.FragmentOnboardingBinding
 
 class OnboardingFragment : Fragment() {
 
-  @StringRes
-  private var title: Int? = null
-
-  @StringRes
-  private var message: Int? = null
+  private var title: String? = null
+  private var message: String? = null
+  private var hasHtml: Boolean = false
 
   @RawRes
   private var icon: Int? = null
 
   var name: String? = null
 
-  private var binding: FragmentOnboardingBinding? = null
+  private var _binding: FragmentOnboardingBinding? = null
+  private val binding get() = checkNotNull(_binding) { "Fragment has been destroyed" }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?): View {
-    binding = FragmentOnboardingBinding.inflate(inflater, container, false)
-    return binding!!.root
+    _binding = FragmentOnboardingBinding.inflate(inflater, container, false)
+    return binding.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    binding?.apply {
+    binding.apply {
       tvMessage.movementMethod = LinkMovementMethod.getInstance()
-      title?.let(this@OnboardingFragment::getString).also(tvTitle::setText)
-      message?.let { HtmlCompat.fromHtml(getString(it), HtmlCompat.FROM_HTML_MODE_COMPACT) }.also(tvMessage::setText)
+      tvTitle.text = title
+      tvMessage.text = if (hasHtml) message?.let {
+        HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
+      } else message
       icon?.let(animationView::setAnimation)
     }
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
-    binding = null
+    _binding = null
   }
 
   companion object {
+
     @JvmStatic
     @JvmOverloads
-    fun newInstance(@StringRes title: Int, @StringRes message: Int, @RawRes icon: Int, name: String = "") =
+    fun newInstance(title: String, message: String, @RawRes icon: Int, name: String = "", hasHtml: Boolean = false) =
       OnboardingFragment().apply {
         this.title = title
         this.message = message
         this.icon = icon
+        this.hasHtml = hasHtml
         this.name = name
       }
   }

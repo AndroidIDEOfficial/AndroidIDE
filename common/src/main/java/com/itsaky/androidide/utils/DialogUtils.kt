@@ -16,13 +16,11 @@
  */
 package com.itsaky.androidide.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.itsaky.androidide.common.R
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.R.style
@@ -35,26 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author Akash Yadav
  */
 object DialogUtils {
-
-  @JvmStatic
-  fun showUnSupportedDevice(context: Activity, buildFlavor: String, deviceArch: String) {
-    val builder = newMaterialDialogBuilder(context)
-    builder.setTitle(R.string.title_unsupported_device)
-    builder.setMessage(context.getString(R.string.msg_unsupported_device, buildFlavor, deviceArch))
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { _, _ -> context.finishAffinity() }
-    builder.create().show()
-  }
-
-  @JvmStatic
-  fun showExperimentalArchSupportWarning(context: Activity, buildFlavor: String, deviceArch: String) {
-    val builder = newMaterialDialogBuilder(context)
-    builder.setTitle(R.string.title_experiment_flavor)
-    builder.setMessage(context.getString(R.string.msg_experimental_flavor, buildFlavor, deviceArch))
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
-    builder.create().show()
-  }
 
   @JvmStatic
   @JvmOverloads

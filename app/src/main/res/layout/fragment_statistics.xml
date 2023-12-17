@@ -67,6 +67,8 @@
     android:id="@+id/stat_opt_in"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:paddingStart="15dp"
+    android:paddingEnd="15dp"
     android:checked="true"
     android:text="@string/idepref_stats_optIn_summary"
     app:layout_constraintBottom_toBottomOf="parent"

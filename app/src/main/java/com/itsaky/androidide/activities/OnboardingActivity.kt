@@ -29,7 +29,7 @@ import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.app.IDEApplication
-import com.itsaky.androidide.app.IDEBuildConfigProvider
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
 import com.itsaky.androidide.fragments.onboarding.OnboardingFragment
 import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
 import com.itsaky.androidide.preferences.internal.prefManager
@@ -82,8 +82,8 @@ class OnboardingActivity : AppIntro2() {
       }
       if (!isStoragePermissionGranted) {
         addSlide(OnboardingFragment.newInstance(
-          string.title_file_access,
-          string.msg_file_access,
+          getString(string.title_file_access),
+          getString(string.msg_file_access),
           R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
         ))
         askForPermissions(
@@ -91,7 +91,7 @@ class OnboardingActivity : AppIntro2() {
             permission.WRITE_EXTERNAL_STORAGE,
             permission.READ_EXTERNAL_STORAGE
           ),
-          slideNumber = if (archConfigWarnHasShown()) {
+          slideNumber = if (archConfigExperimentalWarningIsShown()) {
             if (statisticsFragmentHasShown) 3 else 2
           } else {
             if (statisticsFragmentHasShown) 2 else 1
@@ -101,10 +101,11 @@ class OnboardingActivity : AppIntro2() {
       }
       if (!checkToolsIsInstalled()) {
         addSlide(OnboardingFragment.newInstance(
-          string.title_install_jdk_sdk,
-          string.msg_require_install_jdk_and_android_sdk,
+          getString(string.title_install_jdk_sdk),
+          getString(string.msg_require_install_jdk_and_android_sdk),
           R.raw.java_animation,
-          FRAGMENT_SETUP_SDK
+          FRAGMENT_SETUP_SDK,
+          true
         ))
       }
     }
@@ -171,52 +172,38 @@ class OnboardingActivity : AppIntro2() {
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
 
-    val supported = if (
-      configProvider.isArm64v8aBuild()
-      && !configProvider.isArm64v8aDevice()
-      && configProvider.isArmeabiv7aDevice()
-    ) {
-      // IDE = 64-bit
-      // Device = 32-bit
-      // NOT SUPPORTED
+    if (!configProvider.supportsBuildFlavor()) {
       addSlide(OnboardingFragment.newInstance(
-        string.title_device_not_supported,
-        string.msg_64bit_on_32bit_device,
-        R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
-      ))
-      false
-
-    } else if (
-      configProvider.isArmeabiv7aBuild()
-      && configProvider.isArm64v8aDevice()
-    ) {
-      // IDE = 32-bit
-      // Device = 64-bit
-      // SUPPORTED, but warn the user
-      if (!archConfigWarnHasShown()) {
-        addSlide(OnboardingFragment.newInstance(
-          string.title_32bit_on_64bit_device,
-          string.msg_32bit_on_64bit_device,
-          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
-        ))
-        prefManager.putBoolean("ide.archConfigWarn.hasShown", true)
-      }
-      true
-
-    } else configProvider.supportsBuildFlavor()
-
-    if (!supported) {
-      addSlide(OnboardingFragment.newInstance(
-        string.title_device_not_supported,
-        string.msg_device_not_supported,
+        getString(string.title_unsupported_device),
+        getString(
+          string.msg_unsupported_device,
+          configProvider.flavorArch.abi,
+          configProvider.deviceArch.abi
+        ),
         R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
         FRAGMENT_DEVICE_NOT_SUPPORTED
       ))
+      return false
     }
 
-    return supported
+    if (configProvider.flavorArch != configProvider.deviceArch) {
+      // IDE's build flavor is NOT the primary arch of the device
+      // warn the user
+      if (!archConfigExperimentalWarningIsShown()) {
+        addSlide(OnboardingFragment.newInstance(
+          getString(string.title_experiment_flavor),
+          getString(string.msg_experimental_flavor,
+            configProvider.flavorArch.abi,
+            configProvider.deviceArch.abi
+          ),
+          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
+        ))
+        prefManager.putBoolean("ide.archConfig.experimentalWarning.isShown", true)
+      }
+    }
+    return true
   }
 
-  private fun archConfigWarnHasShown() =
-    prefManager.getBoolean("ide.archConfigWarn.hasShown", false)
+  private fun archConfigExperimentalWarningIsShown() =
+    prefManager.getBoolean("ide.archConfig.experimentalWarning.isShown", false)
 }
