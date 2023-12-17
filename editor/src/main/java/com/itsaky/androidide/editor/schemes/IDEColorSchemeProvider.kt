@@ -193,8 +193,18 @@ object IDEColorSchemeProvider {
   ) {
 
     // If the scheme has already been loaded, do not bother to dispatch an IO coroutine
-    // simply invoke the callback on the requested context
-    if (isCurrentSchemeLoaded && isDefaultSchemeLoaded) {
+    // simply invoke the callback on the requested context providing the already loaded scheme
+    val loadedScheme = if (isCurrentSchemeLoaded && (type == null || currentScheme?.getLanguageScheme(
+        type) != null)
+    ) {
+      currentScheme
+    } else if (isDefaultSchemeLoaded) {
+      defaultScheme
+    } else {
+      null
+    }
+
+    if (loadedScheme != null) {
       coroutineScope.launch(callbackContext) {
         callback(readScheme(context, type))
       }
