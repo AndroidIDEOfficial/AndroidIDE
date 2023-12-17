@@ -28,8 +28,10 @@ import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
+import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.fragments.onboarding.OnboardingFragment
+import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
 import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
@@ -38,10 +40,18 @@ import com.itsaky.androidide.utils.flashError
 
 class OnboardingActivity : AppIntro2() {
 
+  private var statisticsFragmentHasShown = false
+
   private val onBackPressedCallback = object : OnBackPressedCallback(true) {
     override fun handleOnBackPressed() {
       finishAffinity()
     }
+  }
+
+  companion object {
+
+    const val FRAGMENT_SETUP_SDK = "install_jdk_sdk"
+    const val FRAGMENT_DEVICE_NOT_SUPPORTED = "device_not_supported"
   }
 
   private val isStoragePermissionGranted: Boolean
@@ -53,6 +63,11 @@ class OnboardingActivity : AppIntro2() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    if (isSetupDone()) {
+      openActivity(MainActivity::class.java)
+      finish()
+    }
+
     setTransformer(AppIntroPageTransformerType.Fade)
     isIndicatorEnabled = true
     isWizardMode = true
@@ -60,36 +75,36 @@ class OnboardingActivity : AppIntro2() {
     showStatusBar(true)
 
     if (checkDeviceSupported()) {
+      if (!statConsentDialogShown || !statOptIn) {
+        addSlide(StatisticsFragment.newInstance())
+        statConsentDialogShown = true
+        statisticsFragmentHasShown = true
+      }
       if (!isStoragePermissionGranted) {
         addSlide(OnboardingFragment.newInstance(
           string.title_file_access,
           string.msg_file_access,
-          R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
-          name = ""
+          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
         ))
         askForPermissions(
           permissions = arrayOf(
             permission.WRITE_EXTERNAL_STORAGE,
             permission.READ_EXTERNAL_STORAGE
           ),
-          slideNumber = if (!archConfigWarnHasShown()) 1 else 2,
+          slideNumber = if (archConfigWarnHasShown()) {
+            if (statisticsFragmentHasShown) 3 else 2
+          } else {
+            if (statisticsFragmentHasShown) 2 else 1
+          },
           required = true
         )
-      }
-      if (!statConsentDialogShown) {
-        addSlide(OnboardingFragment.newInstance(
-          string.title_androidide_statistics,
-          string.msg_androidide_statistics,
-          R.raw.statistics_animation,
-          "statistics"
-        ))
       }
       if (!checkToolsIsInstalled()) {
         addSlide(OnboardingFragment.newInstance(
           string.title_install_jdk_sdk,
           string.msg_require_install_jdk_and_android_sdk,
           R.raw.java_animation,
-          "install_jdk_sdk"
+          FRAGMENT_SETUP_SDK
         ))
       }
     }
@@ -125,13 +140,9 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun checkConsent(fragment: Fragment?) {
-    if (fragment is OnboardingFragment) {
-      when (fragment.name) {
-        "statistics" -> {
-          statOptIn = true
-          statConsentDialogShown = true
-        }
-      }
+    if (fragment is StatisticsFragment) {
+      statOptIn = fragment.statOptIn
+      IDEApplication.instance.reportStatsIfNecessary()
     }
   }
 
@@ -139,8 +150,8 @@ class OnboardingActivity : AppIntro2() {
     super.onDonePressed(currentFragment)
     if (currentFragment is OnboardingFragment) {
       when (currentFragment.name) {
-        "install_jdk_sdk" -> openActivity(TerminalActivity::class.java)
-        "device_not_supported" -> finishAffinity()
+        FRAGMENT_SETUP_SDK -> openActivity(TerminalActivity::class.java)
+        FRAGMENT_DEVICE_NOT_SUPPORTED -> finishAffinity()
         else -> openActivity(MainActivity::class.java)
       }
     }
@@ -171,8 +182,7 @@ class OnboardingActivity : AppIntro2() {
       addSlide(OnboardingFragment.newInstance(
         string.title_device_not_supported,
         string.msg_64bit_on_32bit_device,
-        R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
-        name = ""
+        R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
       ))
       false
 
@@ -187,9 +197,9 @@ class OnboardingActivity : AppIntro2() {
         addSlide(OnboardingFragment.newInstance(
           string.title_32bit_on_64bit_device,
           string.msg_32bit_on_64bit_device,
-          R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
-          name = ""
+          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
         ))
+        prefManager.putBoolean("ide.archConfigWarn.hasShown", true)
       }
       true
 
@@ -200,7 +210,7 @@ class OnboardingActivity : AppIntro2() {
         string.title_device_not_supported,
         string.msg_device_not_supported,
         R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
-        "device_not_supported"
+        FRAGMENT_DEVICE_NOT_SUPPORTED
       ))
     }
 

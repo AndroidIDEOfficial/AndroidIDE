@@ -47,7 +47,7 @@ android {
         "about.mappings",
         "about.properties",
         "about.ini",
-        "modeling32.png",
+        "modeling32.png"
       )
     )
   }
@@ -55,9 +55,6 @@ android {
   lint {
     abortOnError = false
     disable.addAll(arrayOf("VectorPath", "NestedWeights", "ContentDescription", "SmallSp"))
-  }
-  buildFeatures {
-    viewBinding = true
   }
 }
 

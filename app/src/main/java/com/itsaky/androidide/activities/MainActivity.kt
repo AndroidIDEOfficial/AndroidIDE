@@ -80,12 +80,7 @@ class MainActivity : LimitlessIDEActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    showStatConsentDialogIfNeeded {
-      app.reportStatsIfNecessary()
-
-      if (!checkToolsIsInstalled()) openOnboarding() else openLastProject()
-    }
+    openLastProject()
 
     viewModel.currentScreen.observe(this) { screen ->
       if (screen == -1) {
@@ -106,14 +101,6 @@ class MainActivity : LimitlessIDEActivity() {
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-  }
-
-  private fun showStatConsentDialogIfNeeded(onResult: () -> Unit) {
-    if (statConsentDialogShown) {
-      onResult()
-      return
-    }
-    openOnboarding()
   }
 
   private fun openOnboarding() {
@@ -168,10 +155,6 @@ class MainActivity : LimitlessIDEActivity() {
   override fun bindLayout(): View {
     _binding = ActivityMainBinding.inflate(layoutInflater)
     return binding.root
-  }
-
-  private fun checkToolsIsInstalled(): Boolean {
-    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
   }
 
   private fun openLastProject() {

@@ -66,7 +66,8 @@ class OnboardingFragment : Fragment() {
 
   companion object {
     @JvmStatic
-    fun newInstance(@StringRes title: Int, @StringRes message: Int, @RawRes icon: Int, name: String) =
+    @JvmOverloads
+    fun newInstance(@StringRes title: Int, @StringRes message: Int, @RawRes icon: Int, name: String = "") =
       OnboardingFragment().apply {
         this.title = title
         this.message = message
