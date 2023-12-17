@@ -118,8 +118,9 @@ abstract class BaseEditorActivity :
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
   val editorViewModel by viewModels<EditorViewModel>()
 
-  lateinit var binding: ActivityEditorBinding
-    protected set
+  private var _binding: ActivityEditorBinding? = null
+  val binding: ActivityEditorBinding
+    get() = checkNotNull(_binding) { "Activity has been destroyed" }
 
   override val subscribeToEvents: Boolean
     get() = true
@@ -161,6 +162,8 @@ abstract class BaseEditorActivity :
   internal abstract fun doConfirmProjectClose()
 
   protected open fun preDestroy() {
+    _binding = null
+
     optionsMenuInvalidator?.also {
       ThreadUtils.getMainHandler().removeCallbacks(it)
     }
@@ -185,7 +188,7 @@ abstract class BaseEditorActivity :
   }
 
   override fun bindLayout(): View {
-    this.binding = ActivityEditorBinding.inflate(layoutInflater)
+    this._binding = ActivityEditorBinding.inflate(layoutInflater)
     this.diagnosticInfoBinding = this.binding.diagnosticInfo
     return this.binding.root
   }
