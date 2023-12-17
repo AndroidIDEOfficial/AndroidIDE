@@ -36,8 +36,10 @@ object TreeSitterLanguageProvider {
       return null
     }
 
-    val type = file.extension
+    return forType(file.extension, context)
+  }
 
+  fun forType(type: String, context: Context): TreeSitterLanguage? {
     return try {
       TSLanguageRegistry.instance.getFactory<TreeSitterLanguage>(type).create(context)
     } catch (e: TSLanguageRegistry.NotRegisteredException) {

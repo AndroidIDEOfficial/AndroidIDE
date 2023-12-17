@@ -56,8 +56,6 @@ abstract class TreeSitterLanguage(
 
   private var languageScheme: LanguageScheme? = null
 
-  private val log = ILogger.newInstance("TreeSitterLanguage")
-
   init {
     this.languageSpec = getLanguageSpec(context, langType, lang, newLocalCaptureSpec(langType))
     this.tsTheme = TsTheme(languageSpec.spec.tsQuery)
