@@ -26,10 +26,7 @@ import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.flashSuccess
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 /** @author Akash Yadav */
 class SaveFileAction(context: Context, override val order: Int) : EditorRelatedAction() {
@@ -47,13 +44,11 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
 
   override fun prepare(data: ActionData) {
     super.prepare(data)
-    val context =
-      data.getActivity()
-        ?: run {
-          visible = false
-          enabled = false
-          return
-        }
+    val context = data.getActivity() ?: run {
+      visible = false
+      enabled = false
+      return
+    }
 
     visible = context.editorViewModel.getOpenedFiles().isNotEmpty()
     enabled = context.areFilesModified() && !context.areFilesSaving()
@@ -69,7 +64,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
     return try {
       // Cannot use context.saveAll() because this.execAction is called on non-UI thread
       // and saveAll call will result in UI actions
-      ResultWrapper(result = runBlocking { context.saveAllResult() })
+      ResultWrapper(result = context.saveAllResult())
     } catch (error: Throwable) {
       log.error("Failed to save file", error)
       ResultWrapper()
