@@ -29,7 +29,7 @@ import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
  * @author Akash Yadav
  */
 open class KotlinLanguage(context: Context) :
-  TreeSitterLanguage(context, withStopWatch("TSLangKt.getInstance()") { TSLanguageKotlin.getInstance() }, TS_TYPE_KT) {
+  TreeSitterLanguage(context, TSLanguageKotlin.getInstance(), TS_TYPE_KT) {
 
   companion object {
 

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.ui.themes
 
 import android.app.Activity
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.preferences.internal.selectedTheme
 import com.itsaky.androidide.utils.isSystemInDarkMode
 
@@ -26,12 +27,14 @@ import com.itsaky.androidide.utils.isSystemInDarkMode
  *
  * @author Akash Yadav
  */
-object ThemeManager {
+@Suppress("unused")
+@AutoService(IThemeManager::class)
+class ThemeManager : IThemeManager {
 
   /**
    * Apply the current theme to the given activity. Does nothing if theme is set to [Material You][IDETheme.MATERIAL_YOU].
    */
-  fun applyTheme(activity: Activity) {
+  override fun applyTheme(activity: Activity) {
 
     val theme = getCurrentTheme()
     if (theme == IDETheme.MATERIAL_YOU) {
@@ -51,7 +54,7 @@ object ThemeManager {
   /**
    * Get the currently selected theme.
    */
-  fun getCurrentTheme(): IDETheme {
+  override fun getCurrentTheme(): IDETheme {
     return selectedTheme?.let { IDETheme.valueOf(it) } ?: IDETheme.DEFAULT
   }
 }

@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.ktx)
+    api(libs.androidx.core.ktx)
     api(libs.common.kotlin)
     
     api(projects.lsp.api)

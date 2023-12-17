@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
+  android:installLocation="internalOnly"
   tools:ignore="Instantiatable">
 
   <application
@@ -119,6 +120,7 @@
     android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE"
     android:protectionLevel="normal"
     tools:ignore="ManifestOrder" />
+
 
   <uses-permission android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />

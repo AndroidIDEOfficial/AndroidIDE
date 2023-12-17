@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+  <color name="background_markdown_code_inline">#1F000000</color>
+  <color name="background_markdown_code_block">#0F000000</color>
+
+  <color name="black">#FF000000</color>
+  <color name="white">#FFFFFFFF</color>
+
+  <color name="red_400">#FF0000</color>
+  <color name="red_800">#C4001D</color>
+
+  <color name="grey_200">#EEEEEE</color>
+  <color name="grey_400">#BDBDBD</color>
+  <color name="grey_500">#9E9E9E</color>
+  <color name="grey_800">#424242</color>
+  <color name="grey_900">#212121</color>
+
+  <color name="red_error">#DC143C</color>
+  <color name="red_error_link">#FC143C</color>
+
+  <color name="blue_link_light">#0969DA</color>
+  <color name="blue_link_dark">#58A6FF</color>
+</resources>

@@ -28,6 +28,10 @@ import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.flashError
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import java.io.File
 
 open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) :
@@ -37,9 +41,16 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) :
   private val allowedAuthorities =
     setOf(ANDROID_DOCS_AUTHORITY, ANDROIDIDE_DOCS_AUTHORITY)
 
+  protected val viewLifecycleScope = CoroutineScope(Dispatchers.Default + CoroutineName(javaClass.simpleName))
+
   companion object {
     const val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
     const val ANDROIDIDE_DOCS_AUTHORITY = "com.itsaky.androidide.documents"
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    viewLifecycleScope.cancel("${javaClass.simpleName} is being destroyed")
   }
 
   private val startForResult =

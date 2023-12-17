@@ -19,6 +19,7 @@ package com.itsaky.androidide.utils
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.IdRes
 import androidx.core.view.forEach
 import androidx.navigation.NavController
@@ -30,6 +31,7 @@ import androidx.navigation.fragment.FragmentNavigatorDestinationBuilder
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.get
 import androidx.navigation.navOptions
+import com.google.android.material.navigation.NavigationBarMenuView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -174,6 +176,22 @@ internal object EditorSidebarActions {
     rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.also {
       it.isChecked = true
       binding.title.text = it.title
+    }
+
+    rail.viewTreeObserver.addOnPreDrawListener {
+      val railView = railRef.get()
+      if (railView != null) {
+
+        // set long click action to terminal action
+        // noinspection RestrictedApi
+        (railView.menuView as NavigationBarMenuView)
+          .findViewById<View>(TerminalSidebarAction.ID.hashCode())
+          ?.setOnLongClickListener {
+            TerminalSidebarAction.startTerminalActivity(data, true)
+            true
+          }
+      }
+      true
     }
   }
 

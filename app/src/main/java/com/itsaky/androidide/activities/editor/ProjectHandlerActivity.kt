@@ -37,6 +37,7 @@ import com.itsaky.androidide.handlers.LspHandler.connectClient
 import com.itsaky.androidide.handlers.LspHandler.destroyLanguageServers
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
+import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
 import com.itsaky.androidide.projects.ProjectManagerImpl
@@ -396,7 +397,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       releaseServerListener()
 
       if (result == null || !result.isSuccessful || error != null) {
-        log.error("An error occurred initializing the project with Tooling API", error)
+        if (!CancelChecker.isCancelled(error)) {
+          log.error("An error occurred initializing the project with Tooling API", error)
+        }
+
         ThreadUtils.runOnUiThread {
           postProjectInit(false, result?.failure)
         }

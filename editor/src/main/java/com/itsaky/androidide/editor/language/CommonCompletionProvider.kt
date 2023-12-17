@@ -25,12 +25,12 @@ import com.itsaky.androidide.lsp.models.FailureType.COMPLETION
 import com.itsaky.androidide.lsp.models.LSPFailure
 import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import java.nio.file.Path
+import java.util.concurrent.CancellationException
 
 /**
  * Common implementation of completion provider which requests completions to provided language
@@ -75,12 +75,12 @@ internal class CommonCompletionProvider(
         server.complete(params)
       } catch (e: Throwable) {
 
-        if (e is ProcessCancelledException) {
+        if (e is CancellationException) {
           log.debug("Completion process cancelled")
         }
 
         // Do not log if completion was interrupted or cancelled
-        if (!(e is ProcessCancelledException || e is CompletionCancelledException)) {
+        if (!(e is CancellationException || e is CompletionCancelledException)) {
           if (!server.handleFailure(LSPFailure(COMPLETION, e))) {
             log.error("Unable to compute completions", e)
           }

@@ -158,7 +158,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   }
 
   override fun findModuleForFile(file: File, checkExistance: Boolean): ModuleProject? {
-    if (!checkInit()) {
+    if (!isInitialized()) {
       return null
     }
 
@@ -166,7 +166,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   }
 
   override fun containsSourceFile(file: Path): Boolean {
-    if (!checkInit()) {
+    if (!isInitialized()) {
       return false
     }
 
@@ -301,15 +301,6 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   }
 
   private fun isInitialized() = rootProject != null
-
-  private fun checkInit(): Boolean {
-    if (isInitialized()) {
-      return true
-    }
-
-    log.warn("GradleProject is not initialized yet!")
-    return false
-  }
 
   private fun generateSourcesIfNecessary(event: FileEvent) {
     val builder = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) ?: return

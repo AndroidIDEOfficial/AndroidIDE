@@ -27,7 +27,7 @@ android {
 dependencies {
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.ktx)
+  implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.constraintlayout)
   implementation(libs.google.material)
 }

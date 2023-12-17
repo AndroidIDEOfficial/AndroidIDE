@@ -37,6 +37,7 @@ import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.ui.themes.IDETheme
+import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.ui.themes.ThemeManager
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -148,7 +149,7 @@ class ThemeSelector(
   }
 
   override fun getInitiallySelectionItemPosition(context: Context): Int {
-    return themes.indexOf(ThemeManager.getCurrentTheme())
+    return themes.indexOf(IThemeManager.getInstance().getCurrentTheme())
   }
 
   override fun onChoiceConfirmed(position: Int) {

@@ -102,6 +102,7 @@
       <module name="AndroidIDE.colorschemes" target="11" />
       <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.editor-languages" target="11" />
+      <module name="AndroidIDE.emulatorview" target="17" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
@@ -131,10 +132,6 @@
       <module name="AndroidIDE.templates-testing" target="17" />
       <module name="AndroidIDE.templates-testing.main" target="11" />
       <module name="AndroidIDE.templates-testing.test" target="11" />
-      <module name="AndroidIDE.termux.termux-app" target="17" />
-      <module name="AndroidIDE.termux.termux-emulator" target="17" />
-      <module name="AndroidIDE.termux.termux-shared" target="17" />
-      <module name="AndroidIDE.termux.termux-view" target="17" />
       <module name="AndroidIDE.testing-android" target="17" />
       <module name="AndroidIDE.testing.android.test" target="11" />
       <module name="AndroidIDE.testing.common" target="11" />

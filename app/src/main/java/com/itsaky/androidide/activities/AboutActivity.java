@@ -25,7 +25,7 @@ import androidx.core.util.Pair;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.IDEActivity;
-import com.itsaky.androidide.app.IDEBuildConfigProvider;
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 import java.util.ArrayList;

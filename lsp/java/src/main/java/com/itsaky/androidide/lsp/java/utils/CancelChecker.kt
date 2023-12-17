@@ -18,8 +18,7 @@
 package com.itsaky.androidide.lsp.java.utils
 
 import com.itsaky.androidide.javac.services.CancelAbort
-import com.itsaky.androidide.lsp.java.CompilationCancellationException
-import com.itsaky.androidide.progress.ProcessCancelledException
+import java.util.concurrent.CancellationException
 
 /** @author Akash Yadav */
 class CancelChecker {
@@ -32,10 +31,9 @@ class CancelChecker {
         return false
       }
 
-      return err is CancelAbort ||
-        err is CompilationCancellationException ||
-        err is ProcessCancelledException ||
-        isCancelled(err.cause)
+      return err is CancellationException ||
+          err is CancelAbort ||
+          isCancelled(err.cause)
     }
   }
 }

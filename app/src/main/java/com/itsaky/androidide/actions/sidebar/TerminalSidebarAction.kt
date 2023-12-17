@@ -26,6 +26,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireContext
 import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.projects.IProjectManager
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY
 import java.util.Objects
 import kotlin.reflect.KClass
 
@@ -36,7 +37,7 @@ import kotlin.reflect.KClass
  */
 class TerminalSidebarAction(context: Context, override val order: Int) : AbstractSidebarAction() {
 
-  override val id: String = "ide.editor.sidebar.terminal"
+  override val id: String = ID
   override val fragmentClass: KClass<out Fragment>? = null
 
   init {
@@ -44,14 +45,29 @@ class TerminalSidebarAction(context: Context, override val order: Int) : Abstrac
     icon = ContextCompat.getDrawable(context, R.drawable.ic_terminal)
   }
 
+  companion object {
+
+    const val ID = "ide.editor.sidebar.terminal"
+
+    fun startTerminalActivity(data: ActionData, isFailsafe: Boolean) {
+      val context = data.requireContext()
+      val intent = Intent(context, TerminalActivity::class.java).apply {
+        putExtra(
+          TerminalActivity.KEY_WORKING_DIRECTORY,
+          Objects.requireNonNull(IProjectManager.getInstance().projectDirPath)
+        )
+        putExtra(
+          TerminalActivity.KEY_SESSION_NAME,
+          IProjectManager.getInstance().rootProject?.rootProject?.name
+        )
+        putExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, isFailsafe)
+      }
+      context.startActivity(intent)
+    }
+  }
+
   override suspend fun execAction(data: ActionData): Any {
-    val context = data.requireContext()
-    val intent = Intent(context, TerminalActivity::class.java)
-    intent.putExtra(
-      TerminalActivity.KEY_WORKING_DIRECTORY,
-      Objects.requireNonNull(IProjectManager.getInstance().projectDirPath)
-    )
-    context.startActivity(intent)
+    startTerminalActivity(data, false)
     return true
   }
 }

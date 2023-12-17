@@ -22,7 +22,7 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.app.IDEBuildConfigProvider;
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
@@ -53,7 +53,6 @@ public class ToolsManager {
     CompletableFuture.runAsync(
             () -> {
               writeNoMediaFile();
-              copyBusyboxIfNeeded();
               extractAapt2();
               extractToolingApi();
               extractAndroidJar();
@@ -165,20 +164,6 @@ public class ToolsManager {
     final var file = new File(Environment.BIN_DIR, "ideenv");
     if (file.exists() && !file.delete()) {
       LOG.warn("Unable to delete", file);
-    }
-  }
-
-  private static void copyBusyboxIfNeeded() {
-    File exec = Environment.BUSYBOX;
-    if (exec.exists()) {
-      return;
-    }
-    Environment.mkdirIfNotExits(exec.getParentFile());
-    ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
-    if (!exec.canExecute()) {
-      if (!exec.setExecutable(true)) {
-        LOG.error("Cannot set busybox executable permissions.");
-      }
     }
   }
 

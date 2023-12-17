@@ -37,30 +37,20 @@ import java.util.concurrent.atomic.AtomicInteger
 object DialogUtils {
 
   @JvmStatic
-  fun showDeviceNotSupported(context: Activity) {
+  fun showUnSupportedDevice(context: Activity, buildFlavor: String, deviceArch: String) {
     val builder = newMaterialDialogBuilder(context)
-    builder.setTitle(R.string.title_device_not_supported)
-    builder.setMessage(R.string.title_device_not_supported)
+    builder.setTitle(R.string.title_unsupported_device)
+    builder.setMessage(context.getString(R.string.msg_unsupported_device, buildFlavor, deviceArch))
     builder.setCancelable(false)
     builder.setPositiveButton(android.R.string.ok) { _, _ -> context.finishAffinity() }
     builder.create().show()
   }
 
   @JvmStatic
-  fun show64bitOn32bit(context: Activity) {
+  fun showExperimentalArchSupportWarning(context: Activity, buildFlavor: String, deviceArch: String) {
     val builder = newMaterialDialogBuilder(context)
-    builder.setTitle(R.string.title_device_not_supported)
-    builder.setMessage(R.string.msg_64bit_on_32bit_device)
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { _, _ -> context.finishAffinity() }
-    builder.create().show()
-  }
-
-  @JvmStatic
-  fun show32bitOn64bit(context: Activity) {
-    val builder = newMaterialDialogBuilder(context)
-    builder.setTitle(R.string.title_32bit_on_64bit_device)
-    builder.setMessage(R.string.msg_32bit_on_64bit_device)
+    builder.setTitle(R.string.title_experiment_flavor)
+    builder.setMessage(context.getString(R.string.msg_experimental_flavor, buildFlavor, deviceArch))
     builder.setCancelable(false)
     builder.setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
     builder.create().show()

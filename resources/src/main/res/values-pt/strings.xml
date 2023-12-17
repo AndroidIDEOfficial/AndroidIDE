@@ -44,8 +44,7 @@
   <string name="msg_pick_single_file">Por favor, escolha apenas um diretório</string>
   <string name="please_wait">Por favor aguarde um momento …</string>
   <!-- Project Builder -->
-  <string name="title_device_not_supported">Dispositivo não suportado</string>
-  <string name="msg_device_not_supported">Infelizmente, seu dispositivo não é compatível no momento. Lamentamos o inconveniente.\n\nABIs de CPU compatíveis: aarch64 e armeabi-v7a</string>
+  <string name="title_unsupported_device">Dispositivo não suportado</string>
   <string name="build">Compilar</string>
   <string name="build_output">Saída de compilação</string>
   <string name="lint_tasks">Tarefas do Lint</string>
@@ -527,9 +526,7 @@
   <string name="err_cannot_determine_package">Não foi possível executar o aplicativo. Não foi possível determinar o nome do pacote.</string>
   <string name="msg_launch_failure_no_app_module">Não é possível executar a aplicação. Nenhum módulo de aplicativo encontrado no projeto.</string>
   <string name="title_launch_app">Iniciar aplicativo</string>
-  <string name="msg_64bit_on_32bit_device">Você está usando a variante 64 bits do AndroidIDE em um dispositivo de somente 32 bits. Esta configuração não é suportada. Por favor, instale a variante 32 bits do AndroidIDE.</string>
-  <string name="title_32bit_on_64bit_device">Aviso de configuração</string>
-  <string name="msg_32bit_on_64bit_device">Você está usando uma variante de 32 bits do AndroidIDE em um dispositivo de 64 bits. Esta configuração pode funcionar, mas resultará em desempenho reduzido e possíveis vulnerabilidades de segurança. Por favor, evite usar essa configuração sempre que possível.</string>
+  <string name="title_experiment_flavor">Aviso de configuração</string>
   <string name="idepref_editor_pinLineNumbers_title">Fixar linha de números</string>
   <string name="idepref_editor_pinLineNumbers_summary">Se o editor deve fixar o painel de linha de números quando rolado horizontalmente.</string>
   <string name="theme_blue_wave">Onda Azul</string>

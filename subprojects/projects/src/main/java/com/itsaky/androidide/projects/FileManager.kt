@@ -22,7 +22,6 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
-import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.utils.ILogger
@@ -35,6 +34,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -160,7 +160,7 @@ object FileManager {
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
       "".reader().buffered()
-    } catch (cancelled: ProcessCancelledException) {
+    } catch (cancelled: CancellationException) {
       "".reader().buffered()
     }
   }
@@ -171,7 +171,7 @@ object FileManager {
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
       "".byteInputStream()
-    } catch (cancelled: ProcessCancelledException) {
+    } catch (cancelled: CancellationException) {
       "".byteInputStream()
     }
   }
@@ -187,7 +187,7 @@ object FileManager {
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
       ""
-    } catch (cancelled: ProcessCancelledException) {
+    } catch (cancelled: CancellationException) {
       ""
     }
   }

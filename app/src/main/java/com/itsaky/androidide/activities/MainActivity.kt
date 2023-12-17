@@ -30,6 +30,7 @@ import androidx.transition.doOnEnd
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.LimitlessIDEActivity
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
@@ -118,9 +119,7 @@ class MainActivity : LimitlessIDEActivity() {
       // template list -> template details
       // ------- OR -------
       // template details -> template list
-      val setAxisToX =
-        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
-            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
+      val setAxisToX = (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) && (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
 
       val axis = if (setAxisToX) {
         MaterialSharedAxis.X
@@ -194,8 +193,7 @@ class MainActivity : LimitlessIDEActivity() {
   private fun askProjectOpenPermission(root: File) {
     val builder = DialogUtils.newMaterialDialogBuilder(this)
     builder.setTitle(string.title_confirm_open_project)
-    builder.setMessage(
-      getString(string.msg_confirm_open_project, root.absolutePath))
+    builder.setMessage(getString(string.msg_confirm_open_project, root.absolutePath))
     builder.setCancelable(false)
     builder.setPositiveButton(string.yes) { _, _ -> openProject(root) }
     builder.setNegativeButton(string.no, null)

@@ -46,7 +46,7 @@ dependencies {
     implementation(projects.subprojects.xmlDom)
     implementation(projects.subprojects.xmlUtils)
     
-    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.common.kotlin)
     implementation(libs.google.material)
 

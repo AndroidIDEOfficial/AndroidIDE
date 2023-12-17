@@ -18,7 +18,6 @@
 package com.itsaky.androidide.preferences.internal
 
 // Defined in PreferenceManager so that it could be accessible from Environment class
-import com.itsaky.androidide.managers.PreferenceManager.KEY_TP_FIX
 
 const val STACKTRACE = "idepref_gradleCmd_stacktrace"
 const val DEBUG = "idepref_gradleCmd_debug"
@@ -32,7 +31,6 @@ const val GRADLE_COMMANDS = "idepref_build_gradleCommands"
 const val GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache"
 const val CUSTOM_GRADLE_INSTALLATION = "idepref_build_customGradleInstallation"
 const val LAUNCH_APP_AFTER_INSTALL = "ide.build.run.launchAppAfterInstall"
-const val TP_FIX = KEY_TP_FIX
 
 /** Switch for Gradle `--debug` option. */
 var isDebugEnabled: Boolean
@@ -88,16 +86,6 @@ var gradleInstallationDir: String
   get() = prefManager.getString(CUSTOM_GRADLE_INSTALLATION, "")
   set(value) {
     prefManager.putString(CUSTOM_GRADLE_INSTALLATION, value)
-  }
-
-/**
- * Whether the tag pointer fix should be enabled or not. The fix is needed only if JDK 11 is being
- * used.
- */
-var tpFix: Boolean
-  get() = prefManager.getBoolean(TP_FIX, false)
-  set(value) {
-    prefManager.putBoolean(TP_FIX, value)
   }
 
 /**

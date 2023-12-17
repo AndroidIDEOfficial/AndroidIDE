@@ -84,6 +84,7 @@ import io.github.rosemoe.sora.widget.IDEEditorSearcher
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -133,7 +134,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
    *
    * All the jobs in this scope are cancelled when the editor is released.
    */
-  val editorScope = CoroutineScope(Dispatchers.Default)
+  val editorScope = CoroutineScope(Dispatchers.Default + CoroutineName("IDEEditor"))
 
   protected val eventDispatcher = EditorEventDispatcher()
 
@@ -270,23 +271,18 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
       this.sigHelpCancelChecker = it
     }
 
-    editorScope.launch {
+    editorScope.launch(Dispatchers.Default) {
       cancelChecker.job = coroutineContext[Job]
-      val params = SignatureHelpParams(file.toPath(), cursorLSPPosition, cancelChecker)
-      val help = languageServer.signatureHelp(params)
+
+      val help = safeGet("signature help request") {
+        val params = SignatureHelpParams(file.toPath(), cursorLSPPosition, cancelChecker)
+        languageServer.signatureHelp(params)
+      }
 
       withContext(Dispatchers.Main) {
         showSignatureHelp(help)
       }
-    }.invokeOnCompletion { error ->
-      if (error != null) {
-        if (!CancelChecker.isCancelled(error)) {
-          log.error("Failed to compute signature help", error)
-        } else {
-          log.debug("Signature help request cancelled")
-        }
-      }
-    }
+    }.logError("signature help request")
   }
 
   override fun showSignatureHelp(help: SignatureHelp?) {
@@ -304,10 +300,13 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     val file = file ?: return
 
     launchCancellableAsyncWithProgress(string.msg_finding_definition) { _, cancelChecker ->
-      val params = DefinitionParams(file.toPath(), cursorLSPPosition, cancelChecker)
-      val result = languageServer.findDefinition(params)
+      val result = safeGet("definition request") {
+        val params = DefinitionParams(file.toPath(), cursorLSPPosition, cancelChecker)
+        languageServer.findDefinition(params)
+      }
+
       onFindDefinitionResult(result)
-    }
+    }?.logError("definition request")
   }
 
   override fun findReferences() {
@@ -318,10 +317,13 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     val file = file ?: return
 
     launchCancellableAsyncWithProgress(string.msg_finding_references) { _, cancelChecker ->
-      val params = ReferenceParams(file.toPath(), cursorLSPPosition, true, cancelChecker)
-      val result = languageServer.findReferences(params)
+      val result = safeGet("references request") {
+        val params = ReferenceParams(file.toPath(), cursorLSPPosition, true, cancelChecker)
+        languageServer.findReferences(params)
+      }
+
       onFindReferencesResult(result)
-    }
+    }?.logError("references request")
   }
 
   override fun expandSelection() {
@@ -332,13 +334,16 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     val file = file ?: return
 
     launchCancellableAsyncWithProgress(string.please_wait) { _, _ ->
-      val params = ExpandSelectionParams(file.toPath(), cursorLSPRange)
-      val result = languageServer.expandSelection(params)
+      val initialRange = cursorLSPRange
+      val result = safeGet("expand selection request") {
+        val params = ExpandSelectionParams(file.toPath(), initialRange)
+        languageServer.expandSelection(params)
+      } ?: initialRange
 
       withContext(Dispatchers.Main) {
         setSelection(result)
       }
-    }
+    }?.logError("expand selection request")
   }
 
   override fun ensureWindowsDismissed() {
@@ -460,9 +465,9 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     val file = file ?: return
 
     editorScope.launch {
-      val result = languageServer.analyze(file.toPath())
+      val result = safeGet("LSP file analysis") { languageServer.analyze(file.toPath()) }
       languageClient?.publishDiagnostics(result)
-    }
+    }.logError("LSP file analysis")
   }
 
   /**
@@ -881,5 +886,27 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
         cancelChecker.cancel()
         bar.dismiss()
       }
+  }
+
+  private inline fun <T> safeGet(name: String, action: () -> T) : T? {
+    return try {
+      action()
+    } catch (err: Throwable) {
+      logError(err, name)
+      null
+    }
+  }
+
+  private fun Job.logError(action: String) : Job = apply {
+    invokeOnCompletion { err -> logError(err, action) }
+  }
+
+  private fun logError(err: Throwable?, action: String) {
+    err ?: return
+    if (CancelChecker.isCancelled(err)) {
+      log.warn("$action has been cancelled")
+    } else {
+      log.error("$action failed")
+    }
   }
 }

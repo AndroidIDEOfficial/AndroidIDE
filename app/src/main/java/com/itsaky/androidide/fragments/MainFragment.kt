@@ -1,11 +1,13 @@
 package com.itsaky.androidide.fragments
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -14,21 +16,29 @@ import com.itsaky.androidide.activities.PreferencesActivity
 import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.databinding.FragmentMainBinding
+import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.tasks.runOnUiThread
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
+import java.util.concurrent.CancellationException
 
 class MainFragment : BaseFragment() {
 
@@ -63,7 +73,19 @@ class MainFragment : BaseFragment() {
         }
       }
 
-      actions.forEach { action -> action.onClick = onClick }
+      actions.forEach { action ->
+        action.onClick = onClick
+
+        if (action.id == MainScreenAction.ACTION_OPEN_TERMINAL) {
+          action.onLongClick = { _: MainScreenAction, _: View ->
+            val intent = Intent(requireActivity(), TerminalActivity::class.java).apply {
+              putExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, true)
+            }
+            startActivity(intent)
+            true
+          }
+        }
+      }
     }
 
     binding!!.actions.adapter = MainActionsListAdapter(actions)
@@ -128,36 +150,47 @@ class MainFragment : BaseFragment() {
     val targetDir = File(Environment.PROJECTS_DIR, repoName)
 
     val progress = GitCloneProgressMonitor(binding.progress, binding.message)
-    var git: Git? = null
-    val future = executeAsyncProvideError({
-      return@executeAsyncProvideError Git.cloneRepository()
-        .setURI(url)
-        .setDirectory(targetDir)
-        .setProgressMonitor(progress)
-        .call()
-        .also { git = it }
-    }, { _, _ -> })
+    val coroutineScope = (activity as? BaseIDEActivity?)?.activityScope ?: viewLifecycleScope
+
+    var getDialog: Function0<AlertDialog?>? = null
+
+    val cloneJob = coroutineScope.launch(Dispatchers.IO) {
+
+      val git = try {
+        Git.cloneRepository()
+          .setURI(url)
+          .setDirectory(targetDir)
+          .setProgressMonitor(progress)
+          .call()
+      } catch (err: Throwable) {
+        if (!progress.isCancelled) {
+          err.printStackTrace()
+          withContext(Dispatchers.Main) {
+            getDialog?.invoke()?.also { if (it.isShowing) it.dismiss() }
+            showCloneError(err)
+          }
+        }
+        null
+      }
+
+      try {
+        git?.close()
+      } finally {
+        val success = git != null
+        getDialog?.invoke()?.also { dialog ->
+          if (dialog.isShowing) dialog.dismiss()
+          if (success) flashSuccess(string.git_clone_success)
+        }
+      }
+    }
 
     builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
       iface.dismiss()
       progress.cancel()
-      git?.close()
-      future.cancel(true)
+      cloneJob.cancel(CancellationException("Cancelled by user"))
     }
 
-    val dialog = builder.show()
-
-    future.whenComplete { result, error ->
-      ThreadUtils.runOnUiThread {
-        dialog?.dismiss()
-        result?.close()
-        if (result == null || error != null) {
-          if (!future.isCancelled) {
-            showCloneError(error)
-          }
-        } else flashSuccess(string.git_clone_success)
-      }
-    }
+    getDialog = { builder.show() }
   }
 
   private fun showCloneError(error: Throwable?) {
@@ -189,15 +222,15 @@ class MainFragment : BaseFragment() {
     }
 
     override fun start(totalTasks: Int) {
-      ThreadUtils.runOnUiThread { progress.max = totalTasks }
+      runOnUiThread { progress.max = totalTasks }
     }
 
     override fun beginTask(title: String?, totalWork: Int) {
-      ThreadUtils.runOnUiThread { message.text = title }
+      runOnUiThread { message.text = title }
     }
 
     override fun update(completed: Int) {
-      ThreadUtils.runOnUiThread { progress.progress = completed }
+      runOnUiThread { progress.progress = completed }
     }
 
     override fun showDuration(enabled: Boolean) {

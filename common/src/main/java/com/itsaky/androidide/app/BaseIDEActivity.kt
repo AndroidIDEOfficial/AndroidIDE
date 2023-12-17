@@ -21,13 +21,18 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
+
 import com.itsaky.androidide.tasks.cancelIfActive
+import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.greenrobot.eventbus.EventBus
 
 abstract class BaseIDEActivity : AppCompatActivity() {
+
+  open val subscribeToEvents: Boolean = false
 
   open val navigationBarColor: Int
     get() = resolveAttr(R.attr.colorSurface)
@@ -38,13 +43,14 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   /**
    * [CoroutineScope] for executing tasks with the [Default][Dispatchers.Default] dispatcher.
    */
-  protected val activityScope = CoroutineScope(Dispatchers.Default)
+  val activityScope = CoroutineScope(Dispatchers.Default)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     window?.apply {
       navigationBarColor = this@BaseIDEActivity.navigationBarColor
       statusBarColor = this@BaseIDEActivity.statusBarColor
     }
+    IThemeManager.getInstance().applyTheme(this)
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
@@ -53,6 +59,20 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
     activityScope.cancelIfActive("Activity is being destroyed")
+  }
+
+  override fun onStart() {
+    super.onStart()
+    if (!EventBus.getDefault().isRegistered(this) && subscribeToEvents) {
+      EventBus.getDefault().register(this)
+    }
+  }
+
+  override fun onStop() {
+    super.onStop()
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().unregister(this)
+    }
   }
 
   fun loadFragment(fragment: Fragment, id: Int) {

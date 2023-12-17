@@ -66,7 +66,7 @@ internal class ToolingServerRunner(
     this.listener = listener
   }
 
-  fun startAsync() = runnerScope.launch {
+  fun startAsync(envs: Map<String, String>) = runnerScope.launch {
     var process: Process?
     try {
       log.info("Starting tooling API server...")
@@ -99,7 +99,7 @@ internal class ToolingServerRunner(
         // error stream is used to read the server logs
         this.redirectErrorStream = false
         this.workingDirectory = null // HOME
-        this.environment = Environment.getEnvironment()
+        this.environment = envs
       }
 
       val inputStream = process.inputStream

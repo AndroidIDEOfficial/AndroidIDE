@@ -26,7 +26,6 @@ import org.greenrobot.eventbus.EventBus;
 
 public class PreferenceManager {
 
-  public static final String KEY_TP_FIX = "idepref_build_tagPointersFix";
   private final SharedPreferences prefs;
 
   public PreferenceManager(Context ctx) {
@@ -123,7 +122,4 @@ public class PreferenceManager {
     return prefs.getInt(key, def);
   }
 
-  public boolean shouldUseLdPreload() {
-    return getBoolean(KEY_TP_FIX, false);
-  }
 }

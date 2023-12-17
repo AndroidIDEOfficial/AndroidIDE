@@ -43,6 +43,7 @@ import java.util.regex.Pattern
 import jdkx.lang.model.element.Element
 import jdkx.tools.Diagnostic
 import jdkx.tools.JavaFileObject
+import java.lang.IndexOutOfBoundsException
 
 /**
  * Finds errors and warnings from a compilation task.
@@ -98,7 +99,7 @@ object DiagnosticsProvider {
     val scanner = DiagnosticVisitor(task.task)
     scanner.scan(root, notThrown)
     for (unusedEl in scanner.notUsed()) {
-      result.add(warnUnused(task, unusedEl))
+      warnUnused(task, unusedEl)?.also { result.add(it) }
     }
     
     for (location in notThrown.keys) {
@@ -169,7 +170,7 @@ object DiagnosticsProvider {
     )
   }
 
-  private fun warnUnused(task: CompileTask, unusedEl: Element): DiagnosticItem {
+  private fun warnUnused(task: CompileTask, unusedEl: Element): DiagnosticItem? {
     val trees = Trees.instance(task.task)
     val path = trees.getPath(unusedEl) ?: throw RuntimeException("$unusedEl has no path")
     val root = path.compilationUnit
@@ -177,24 +178,34 @@ object DiagnosticsProvider {
     val pos = trees.sourcePositions
     var start = pos.getStartPosition(root, leaf).toInt()
     var end = pos.getEndPosition(root, leaf).toInt()
+
     if (leaf is VariableTree) {
       val offset = pos.getEndPosition(root, leaf.type).toInt()
       if (offset != -1) {
         start = offset
       }
     }
+
     val file = Paths.get(root.sourceFile.toUri())
     val contents = FileManager.getDocumentContents(file)
     var name = unusedEl.simpleName
     if (name.contentEquals("<init>")) {
       name = unusedEl.enclosingElement.simpleName
     }
-    val region = contents.subSequence(start, end)
+
+    val region = try {
+      contents.subSequence(start, end)
+    } catch (err: IndexOutOfBoundsException) {
+      // might happen if the file contents were changed after the file was compiled for analysis
+      return null
+    }
+
     val matcher = Pattern.compile("\\b$name\\b").matcher(region)
     if (matcher.find()) {
       start += matcher.start()
       end = start + name.length
     }
+
     val message = String.format("'%s' is not used", name)
     val code: DiagnosticCode
     val severity: DiagnosticSeverity
@@ -232,6 +243,7 @@ object DiagnosticsProvider {
         severity = DiagnosticSeverity.INFO
       }
     }
+
     return asDiagnosticItem(severity, code.id, message, start.toLong(), end.toLong(), root)
   }
 
