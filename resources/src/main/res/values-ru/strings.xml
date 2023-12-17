@@ -45,7 +45,7 @@
   <string name="msg_pick_single_file">Пожалуйста, выберите только одну директорию</string>
   <string name="please_wait">Пожалуйста, подождите немного&#8230;</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
+  <string name="title_unsupported_device">Устройство не поддерживается</string>
   <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
   <string name="build">Сборка</string>
   <string name="build_output">Результат сборки</string>
@@ -528,7 +528,7 @@
   <string name="err_cannot_determine_package">Невозможно запустить приложение. Не удалось определить имя пакета.</string>
   <string name="msg_launch_failure_no_app_module">Невозможно запустить приложение. В проекте не найдены модули приложения.</string>
   <string name="title_launch_app">Запустить приложение</string>
-  <string name="title_experiment_flavor">Experimental</string>
+  <string name="title_experiment_flavor">Экспериментальная функция</string>
   <string name="msg_experimental_flavor">You are using %1$s variant of AndroidIDE on a %2$s device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
   <string name="idepref_editor_pinLineNumbers_title">Закрепить номера строк</string>
   <string name="idepref_editor_pinLineNumbers_summary">Оставлять панель с номерами строк видимой при горизонтальной прокрутке редактора.</string>
