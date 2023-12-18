@@ -28,6 +28,7 @@ import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
+import java.io.FileNotFoundException
 
 /**
  * Provides language spec instances for tree sitter languages.
@@ -74,8 +75,9 @@ object LanguageSpecProvider {
     return try {
       context.assets.open("${BASE_SPEC_PATH}/${type}/${name}.scm").reader().readText()
     } catch (e: Exception) {
-      if (type != "log" || name == "highlights") {
-        log.warn("Scheme file '$name' for type '$type' not found")
+      if (e !is FileNotFoundException) {
+        // log everything except FileNotFoundException
+        log.error("Failed to read scheme file $name for type $type", e)
       }
       ""
     }
