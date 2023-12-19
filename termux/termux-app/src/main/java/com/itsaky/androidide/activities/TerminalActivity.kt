@@ -14,6 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.activities
 
 import android.content.ComponentName
@@ -22,21 +23,12 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.termux.app.TermuxActivity
-import com.termux.shared.termux.TermuxConstants
-import java.io.File
 
+/**
+ * @author Akash Yadav
+ */
 class TerminalActivity : TermuxActivity() {
-
-  companion object {
-
-    const val KEY_WORKING_DIRECTORY = TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY.EXTRA_SESSION_WORKING_DIR
-    const val KEY_SESSION_NAME = TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY.EXTRA_SESSION_NAME
-
-    private val LOG = ILogger.newInstance("TerminalActivity")
-    private val SOURCES_LIST_CONTENT = "deb https://packages.androidide.com/apt/termux-main/ stable main".toByteArray()
-  }
 
   override val navigationBarColor: Int
     get() = ContextCompat.getColor(this, android.R.color.black)
@@ -53,16 +45,6 @@ class TerminalActivity : TermuxActivity() {
 
   override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
     super.onServiceConnected(componentName, service)
-    writeSourcesList()
-
     Environment.mkdirIfNotExits(Environment.TMP_DIR)
-  }
-
-  private fun writeSourcesList() {
-    try {
-      File(Environment.PREFIX, "etc/apt/sources.list").writeBytes(SOURCES_LIST_CONTENT)
-    } catch (th: Throwable) {
-      LOG.error("Unable to update sources.list", th)
-    }
   }
 }

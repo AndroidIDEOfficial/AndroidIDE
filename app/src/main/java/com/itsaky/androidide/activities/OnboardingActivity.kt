@@ -39,6 +39,7 @@ import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
+import com.termux.app.TermuxActivity
 
 class OnboardingActivity : AppIntro2() {
 
@@ -106,7 +107,7 @@ class OnboardingActivity : AppIntro2() {
     }
 
     if (!checkToolsIsInstalled()) {
-      openActivity(TerminalActivity::class.java)
+      TermuxActivity.startTermuxActivity(this)
       return
     }
 
