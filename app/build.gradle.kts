@@ -70,7 +70,6 @@ dependencies {
   implementation(libs.common.jsoup)
   implementation(libs.common.kotlin.coroutines.android)
   implementation(libs.common.appintro)
-  implementation(libs.common.lottie)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)

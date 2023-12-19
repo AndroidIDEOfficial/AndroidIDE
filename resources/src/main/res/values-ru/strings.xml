@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">Укажите пользовательскую установку Gradle для использования при сборке. Это ПЕРЕОПРЕДЕЛЯЕТ версию, указанную в gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">Путь установки Gradle</string>
   <string name="msg_gradle_installation_input_help">Оставьте пустым, чтобы использовать Gradle wrapper.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь.</a>]]></string>
+  <string name="msg_install_tools">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь.</a>]]></string>
   <string name="build_status_idle">Сборки не выполняются</string>
   <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
   <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>

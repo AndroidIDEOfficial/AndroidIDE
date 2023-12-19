@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">Specificați o instalare Gradle particularizată de utilizat pentru compilare. Acest lucru suprascrie versiunea specificată în gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">Calea spre Gradle</string>
   <string name="msg_gradle_installation_input_help">Lăsați gol pentru a folosi Gradle wrapper.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">Trebuie să instalați SDK-ul JDK și Android pentru ca IDE să funcționeze. Pentru a instala faceți clic pe \'Da\' și urmați instrucțiunile <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
+  <string name="msg_install_tools">Trebuie să instalați SDK-ul JDK și Android pentru ca IDE să funcționeze. Pentru a instala faceți clic pe \'Da\' și urmați instrucțiunile <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
   <string name="build_status_idle">Nici o compilare în progres</string>
   <string name="build_status_in_progress">Compilare în progres…</string>
   <string name="build_status_failed">Compilarea nu a reușit. Consultați Log-ul pentru mai multe detalii.</string>

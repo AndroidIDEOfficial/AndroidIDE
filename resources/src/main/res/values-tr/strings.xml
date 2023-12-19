@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">İnşa için kişisel bir Gradle kurulumu belirleyin. Bu işlem gradle-wrapper.properties dosyasındaki sürümünü GEÇERSİZ KILAR.</string>
   <string name="msg_gradle_installation_path">Gradle kurulum yolu</string>
   <string name="msg_gradle_installation_input_help">Gradle sarıcı kullanmak için bunu boş bırakın.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">IDE\'nin çalışması için JDK ve Android SDK yüklemen gerek. Evet\'e tıklayarak anlatılanları takip et<![CDATA[<a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide"> burası</a>]]></string>
+  <string name="msg_install_tools">IDE\'nin çalışması için JDK ve Android SDK yüklemen gerek. Evet\'e tıklayarak anlatılanları takip et<![CDATA[<a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide"> burası</a>]]></string>
   <string name="build_status_idle">Devam eden işlem yok</string>
   <string name="build_status_in_progress">Derleme devam ediyor…</string>
   <string name="build_status_failed">Yapı başarısız. Daha fazla detay için çıktıya bak.</string>

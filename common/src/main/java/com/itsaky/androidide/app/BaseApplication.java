@@ -61,16 +61,6 @@ public class BaseApplication extends Application {
     if (!VMUtils.isJvm()) {
       ToolsManager.init(this, null);
     }
-
-    createNotificationChannels();
-  }
-
-  private void createNotificationChannels() {
-    NotificationChannel buildNotificationChannel = new NotificationChannel(
-        NOTIFICATION_GRADLE_BUILD_SERVICE,
-        getString(R.string.title_gradle_service_notification_channel),
-        NotificationManager.IMPORTANCE_LOW);
-    NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
 
   public void writeException(Throwable th) {

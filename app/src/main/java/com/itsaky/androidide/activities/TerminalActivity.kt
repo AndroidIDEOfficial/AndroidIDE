@@ -54,6 +54,8 @@ class TerminalActivity : TermuxActivity() {
   override fun onServiceConnected(componentName: ComponentName?, service: IBinder?) {
     super.onServiceConnected(componentName, service)
     writeSourcesList()
+
+    Environment.mkdirIfNotExits(Environment.TMP_DIR)
   }
 
   private fun writeSourcesList() {

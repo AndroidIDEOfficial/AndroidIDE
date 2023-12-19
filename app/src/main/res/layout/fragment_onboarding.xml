@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  This file is part of AndroidIDE.
-  ~
+  ~r
   ~  AndroidIDE is free software: you can redistribute it and/or modify
   ~  it under the terms of the GNU General Public License as published by
   ~  the Free Software Foundation, either version 3 of the License, or
@@ -16,53 +15,65 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/root"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".fragments.onboarding.OnboardingFragment">
+  android:background="?attr/colorSurface"
+  android:fillViewport="true">
 
-  <com.airbnb.lottie.LottieAnimationView
-    android:id="@+id/animationView"
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="15dp"
-    android:paddingEnd="15dp"
-    app:lottie_rawRes="@raw/statistics_animation"
-    app:lottie_autoPlay="true"
-    app:lottie_loop="true"
-    app:layout_constraintBottom_toTopOf="@+id/tv_message"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/tv_title"/>
+    android:layout_height="match_parent">
 
-  <TextView
-    android:id="@+id/tv_title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="85dp"
-    android:text="Title"
-    android:textAppearance="@style/TextAppearance.AndroidIDE.TitleLarge.Bold"
-    android:textColor="?colorOnSurface"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:ignore="HardcodedText" />
+    <LinearLayout
+      android:id="@+id/content_container"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="16dp"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="@id/onboarding_title"
+      app:layout_constraintStart_toStartOf="@id/onboarding_title"
+      app:layout_constraintTop_toBottomOf="@id/onboarding_extra_info" />
 
-  <TextView
-    android:id="@+id/tv_message"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="200dp"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
-    android:text="Message"
-    android:textSize="14sp"
-    android:textColor="?colorOnSurface"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    tools:ignore="HardcodedText" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textview.MaterialTextView
+      android:id="@+id/onboarding_subtitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+      app:layout_constraintEnd_toEndOf="@id/onboarding_title"
+      app:layout_constraintStart_toStartOf="@id/onboarding_title"
+      app:layout_constraintTop_toBottomOf="@id/onboarding_title"
+      tools:text="@string/greeting_subtitle" />
+
+    <com.google.android.material.textview.MaterialTextView
+      android:id="@+id/onboarding_extra_info"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+      app:layout_constraintEnd_toEndOf="@id/onboarding_title"
+      app:layout_constraintStart_toStartOf="@id/onboarding_title"
+      app:layout_constraintTop_toBottomOf="@id/onboarding_subtitle"
+      tools:text="@string/greeting_subtitle" />
+
+    <com.google.android.material.textview.MaterialTextView
+      android:id="@+id/onboarding_title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="?attr/actionBarSize"
+      android:layout_marginBottom="16dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="@string/greeting_title" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

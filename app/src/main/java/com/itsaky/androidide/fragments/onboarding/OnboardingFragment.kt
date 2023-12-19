@@ -18,63 +18,53 @@
 package com.itsaky.androidide.fragments.onboarding
 
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RawRes
-import androidx.core.text.HtmlCompat
-import androidx.fragment.app.Fragment
+import androidx.core.text.method.LinkMovementMethodCompat
+import androidx.core.view.updateLayoutParams
 import com.itsaky.androidide.databinding.FragmentOnboardingBinding
+import com.itsaky.androidide.fragments.FragmentWithBinding
 
-class OnboardingFragment : Fragment() {
+open class OnboardingFragment :
+  FragmentWithBinding<FragmentOnboardingBinding>(FragmentOnboardingBinding::inflate) {
 
-  private var title: String? = null
-  private var message: String? = null
-  private var hasHtml: Boolean = false
+  companion object {
 
-  @RawRes
-  private var icon: Int? = null
+    const val KEY_ONBOARDING_TITLE = "ide.onboarding.fragment.title"
+    const val KEY_ONBOARDING_SUBTITLE = "ide.onboarding.fragment.subtitle"
+    const val KEY_ONBOARDING_EXTRA_INFO = "ide.onboarding.fragment.extraInfo"
 
-  var name: String? = null
-
-  private var _binding: FragmentOnboardingBinding? = null
-  private val binding get() = checkNotNull(_binding) { "Fragment has been destroyed" }
-
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View {
-    _binding = FragmentOnboardingBinding.inflate(inflater, container, false)
-    return binding.root
+    @JvmStatic
+    fun newInstance(title: CharSequence, subtitle: CharSequence,
+      extraInfo: CharSequence = ""): OnboardingFragment {
+      return OnboardingFragment().apply {
+        arguments = Bundle().apply {
+          putCharSequence(KEY_ONBOARDING_TITLE, title)
+          putCharSequence(KEY_ONBOARDING_SUBTITLE, subtitle)
+          putCharSequence(KEY_ONBOARDING_EXTRA_INFO, extraInfo)
+        }
+      }
+    }
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    binding.apply {
-      tvMessage.movementMethod = LinkMovementMethod.getInstance()
-      tvTitle.text = title
-      tvMessage.text = if (hasHtml) message?.let {
-        HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
-      } else message
-      icon?.let(animationView::setAnimation)
-    }
-  }
+    binding.onboardingTitle.text = requireArguments().getCharSequence(KEY_ONBOARDING_TITLE)
+    binding.onboardingSubtitle.text = requireArguments().getCharSequence(KEY_ONBOARDING_SUBTITLE)
 
-  override fun onDestroyView() {
-    super.onDestroyView()
-    _binding = null
-  }
-
-  companion object {
-
-    @JvmStatic
-    @JvmOverloads
-    fun newInstance(title: String, message: String, @RawRes icon: Int, name: String = "", hasHtml: Boolean = false) =
-      OnboardingFragment().apply {
-        this.title = title
-        this.message = message
-        this.icon = icon
-        this.hasHtml = hasHtml
-        this.name = name
+    val extraInfo = requireArguments().getCharSequence(KEY_ONBOARDING_EXTRA_INFO, "")
+    if (extraInfo.isBlank()) {
+      binding.onboardingExtraInfo.updateLayoutParams<ViewGroup.LayoutParams> {
+        height = 0
       }
+    } else {
+      binding.onboardingExtraInfo.movementMethod = LinkMovementMethodCompat.getInstance()
+      binding.onboardingExtraInfo.text = extraInfo
+    }
+
+    binding.contentContainer.removeAllViews()
+    createContentView(binding.contentContainer, true)
   }
+
+  protected open fun createContentView(parent: ViewGroup, attachToParent: Boolean) {}
 }

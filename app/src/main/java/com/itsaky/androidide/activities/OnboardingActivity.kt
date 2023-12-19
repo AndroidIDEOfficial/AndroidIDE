@@ -17,9 +17,7 @@
 
 package com.itsaky.androidide.activities
 
-import android.Manifest.permission
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -28,19 +26,21 @@ import com.github.appintro.AppIntro2
 import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
-import com.itsaky.androidide.fragments.onboarding.OnboardingFragment
+import com.itsaky.androidide.fragments.onboarding.OnboardingGreetingFragment
+import com.itsaky.androidide.fragments.onboarding.OnboardingInfoFragment
+import com.itsaky.androidide.fragments.onboarding.OnboardingPermissionsFragment
+import com.itsaky.androidide.fragments.onboarding.OnboardingToolInstallationFragment
 import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
 import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
+import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.resolveAttr
 
 class OnboardingActivity : AppIntro2() {
-
-  private var statisticsFragmentHasShown = false
 
   private val onBackPressedCallback = object : OnBackPressedCallback(true) {
     override fun handleOnBackPressed() {
@@ -50,76 +50,45 @@ class OnboardingActivity : AppIntro2() {
 
   companion object {
 
-    const val FRAGMENT_SETUP_SDK = "install_jdk_sdk"
-    const val FRAGMENT_DEVICE_NOT_SUPPORTED = "device_not_supported"
+    private const val KEY_ARCHCONFIG_WARNING_IS_SHOWN = "ide.archConfig.experimentalWarning.isShown"
   }
 
-  private val isStoragePermissionGranted: Boolean
-    get() =
-      (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
-          PackageManager.PERMISSION_GRANTED &&
-          ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
-          PackageManager.PERMISSION_GRANTED)
-
   override fun onCreate(savedInstanceState: Bundle?) {
+    IThemeManager.getInstance().applyTheme(this)
+
     super.onCreate(savedInstanceState)
+
     if (isSetupDone()) {
       openActivity(MainActivity::class.java)
       finish()
     }
 
+    onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
     setTransformer(AppIntroPageTransformerType.Fade)
-    isIndicatorEnabled = true
-    isWizardMode = true
     setProgressIndicator()
     showStatusBar(true)
+    isIndicatorEnabled = true
+    isWizardMode = true
 
-    if (checkDeviceSupported()) {
-      if (!statConsentDialogShown || !statOptIn) {
-        addSlide(StatisticsFragment.newInstance())
-        statConsentDialogShown = true
-        statisticsFragmentHasShown = true
-      }
-      if (!isStoragePermissionGranted) {
-        addSlide(OnboardingFragment.newInstance(
-          getString(string.title_file_access),
-          getString(string.msg_file_access),
-          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
-        ))
-        askForPermissions(
-          permissions = arrayOf(
-            permission.WRITE_EXTERNAL_STORAGE,
-            permission.READ_EXTERNAL_STORAGE
-          ),
-          slideNumber = if (archConfigExperimentalWarningIsShown()) {
-            if (statisticsFragmentHasShown) 3 else 2
-          } else {
-            if (statisticsFragmentHasShown) 2 else 1
-          },
-          required = true
-        )
-      }
-      if (!checkToolsIsInstalled()) {
-        addSlide(OnboardingFragment.newInstance(
-          getString(string.title_install_jdk_sdk),
-          getString(string.msg_require_install_jdk_and_android_sdk),
-          R.raw.java_animation,
-          FRAGMENT_SETUP_SDK,
-          true
-        ))
-      }
+    addSlide(OnboardingGreetingFragment())
+
+    if (!checkDeviceSupported()) {
+      return
     }
 
-    onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-  }
+    if (!statConsentDialogShown) {
+      addSlide(StatisticsFragment.newInstance(this))
+      statConsentDialogShown = true
+    }
 
-  override fun onUserDeniedPermission(permissionName: String) {
-    // User pressed "Deny" on the permission dialog
-    flashError(string.msg_storage_denied)
-  }
+    if (!OnboardingPermissionsFragment.areAllPermissionsGranted(this)) {
+      addSlide(OnboardingPermissionsFragment.newInstance(this))
+    }
 
-  override fun onUserDisabledPermission(permissionName: String) {
-    // User pressed "Deny" + "Don't ask again" on the permission dialog
+    if (!checkToolsIsInstalled()) {
+      addSlide(OnboardingToolInstallationFragment.newInstance(this))
+    }
   }
 
   override fun onResume() {
@@ -130,32 +99,18 @@ class OnboardingActivity : AppIntro2() {
     }
   }
 
-  override fun onSlideChanged(oldFragment: Fragment?, newFragment: Fragment?) {
-    super.onSlideChanged(oldFragment, newFragment)
-    checkConsent(oldFragment)
-  }
-
-  override fun onNextPressed(currentFragment: Fragment?) {
-    super.onNextPressed(currentFragment)
-    checkConsent(currentFragment)
-  }
-
-  private fun checkConsent(fragment: Fragment?) {
-    if (fragment is StatisticsFragment) {
-      statOptIn = fragment.statOptIn
-      IDEApplication.instance.reportStatsIfNecessary()
-    }
-  }
-
   override fun onDonePressed(currentFragment: Fragment?) {
-    super.onDonePressed(currentFragment)
-    if (currentFragment is OnboardingFragment) {
-      when (currentFragment.name) {
-        FRAGMENT_SETUP_SDK -> openActivity(TerminalActivity::class.java)
-        FRAGMENT_DEVICE_NOT_SUPPORTED -> finishAffinity()
-        else -> openActivity(MainActivity::class.java)
-      }
+    if (!IDEBuildConfigProvider.getInstance().supportsBuildFlavor()) {
+      finishAffinity()
+      return
     }
+
+    if (!checkToolsIsInstalled()) {
+      openActivity(TerminalActivity::class.java)
+      return
+    }
+
+    openActivity(MainActivity::class.java)
   }
 
   private fun openActivity(cls: Class<*>) {
@@ -167,21 +122,21 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun isSetupDone() =
-    (checkToolsIsInstalled() && statConsentDialogShown && isStoragePermissionGranted)
+    (checkToolsIsInstalled() && statConsentDialogShown && OnboardingPermissionsFragment.areAllPermissionsGranted(this))
 
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
 
     if (!configProvider.supportsBuildFlavor()) {
-      addSlide(OnboardingFragment.newInstance(
+      addSlide(OnboardingInfoFragment.newInstance(
         getString(string.title_unsupported_device),
         getString(
           string.msg_unsupported_device,
           configProvider.flavorArch.abi,
           configProvider.deviceArch.abi
         ),
-        R.raw.statistics_animation, // TODO: Replace the animation with a more appropriate one
-        FRAGMENT_DEVICE_NOT_SUPPORTED
+        R.drawable.ic_alert,
+        ContextCompat.getColor(this, R.color.color_error)
       ))
       return false
     }
@@ -190,20 +145,22 @@ class OnboardingActivity : AppIntro2() {
       // IDE's build flavor is NOT the primary arch of the device
       // warn the user
       if (!archConfigExperimentalWarningIsShown()) {
-        addSlide(OnboardingFragment.newInstance(
+        addSlide(OnboardingInfoFragment.newInstance(
           getString(string.title_experiment_flavor),
           getString(string.msg_experimental_flavor,
             configProvider.flavorArch.abi,
             configProvider.deviceArch.abi
           ),
-          R.raw.statistics_animation // TODO: Replace the animation with a more appropriate one
+          R.drawable.ic_alert,
+          ContextCompat.getColor(this, R.color.color_warning)
         ))
-        prefManager.putBoolean("ide.archConfig.experimentalWarning.isShown", true)
+        prefManager.putBoolean(KEY_ARCHCONFIG_WARNING_IS_SHOWN, true)
       }
     }
+
     return true
   }
 
   private fun archConfigExperimentalWarningIsShown() =
-    prefManager.getBoolean("ide.archConfig.experimentalWarning.isShown", false)
+    prefManager.getBoolean(KEY_ARCHCONFIG_WARNING_IS_SHOWN, false)
 }

@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">حدد تثبيت Gradle مخصص لاستخدامه في البناء. سيقوم بتغيير الإصدار المحدد في gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">مسار تثبيت Gradle</string>
   <string name="msg_gradle_installation_input_help">اتركه فارغاً لاستخدام Gradle wrapper.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">تحتاج إلى تثبيت JDK و Android SDK حتى يعمل IDE. للتثبيت انقر فوق \'نعم\' واتبع التعليمات <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">هنا</a>]]></string>
+  <string name="msg_install_tools">تحتاج إلى تثبيت JDK و Android SDK حتى يعمل IDE. للتثبيت انقر فوق \'نعم\' واتبع التعليمات <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">هنا</a>]]></string>
   <string name="build_status_idle">لا يوجد بناء قيد التقدم</string>
   <string name="build_status_in_progress">البناء جارٍ...</string>
   <string name="build_status_failed">فشل البناء. راجع إخراج البناء لمزيد من التفاصيل.</string>

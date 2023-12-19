@@ -52,6 +52,12 @@
     <item name="extraKeysButtonActiveBackgroundColor">@color/grey_500</item>
   </style>
 
+  <style name="AndroidIDE.Widget.Chip.Warning" parent="Widget.MaterialComponents.Chip.Action">
+    <item name="chipIcon">@id/info</item>
+    <item name="chipIconTint">@color/log_warning</item>
+    <item name="chipStrokeColor">@color/log_warning</item>
+  </style>
+
   <style
     name="TextAppearance.AndroidIDE.TitleLarge.Bold"
     parent="TextAppearance.Material3.TitleLarge">

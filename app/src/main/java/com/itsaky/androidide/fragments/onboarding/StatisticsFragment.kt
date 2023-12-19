@@ -1,35 +1,44 @@
 package com.itsaky.androidide.fragments.onboarding
 
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import com.itsaky.androidide.databinding.FragmentStatisticsBinding
+import com.itsaky.androidide.R
+import com.itsaky.androidide.app.IDEApplication
+import com.itsaky.androidide.databinding.LayoutOnboardingStatisticsBinding
+import com.itsaky.androidide.preferences.internal.statOptIn
 
-class StatisticsFragment : Fragment() {
+class StatisticsFragment : OnboardingFragment() {
 
-  private var _binding: FragmentStatisticsBinding? = null
-  private val binding: FragmentStatisticsBinding
-    get() = checkNotNull(_binding) { "Fragment has been destroyed" }
+  private var _content: LayoutOnboardingStatisticsBinding? = null
+  private val content: LayoutOnboardingStatisticsBinding
+    get() = checkNotNull(_content) { "Fragment has been destroyed" }
 
-  val statOptIn: Boolean
-    get() = binding.statOptIn.isChecked
+  companion object {
+    @JvmStatic
+    fun newInstance(context: Context) : StatisticsFragment {
+      return StatisticsFragment().apply {
+        arguments = Bundle().apply {
+          putCharSequence(KEY_ONBOARDING_TITLE, context.getString(R.string.title_androidide_statistics))
+          putCharSequence(KEY_ONBOARDING_SUBTITLE, context.getString(R.string.idepref_stats_optIn_summary))
+        }
+      }
+    }
+  }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View {
-    _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
-    return binding.root
+  override fun createContentView(parent: ViewGroup, attachToParent: Boolean) {
+    _content = LayoutOnboardingStatisticsBinding.inflate(layoutInflater, parent, attachToParent)
+    content.statOptIn.isChecked = statOptIn
+    content.statOptIn.setOnCheckedChangeListener { _, isChecked ->
+      statOptIn = isChecked
+      if (isChecked) {
+        IDEApplication.instance.reportStatsIfNecessary()
+      }
+    }
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    _binding = null
-  }
-
-  companion object {
-
-    @JvmStatic
-    fun newInstance() = StatisticsFragment()
+    _content = null
   }
 }

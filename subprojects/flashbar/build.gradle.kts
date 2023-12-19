@@ -30,4 +30,6 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.constraintlayout)
   implementation(libs.google.material)
+
+  implementation(projects.resources)
 }

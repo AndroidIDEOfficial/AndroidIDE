@@ -16,7 +16,6 @@ androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 appintro = "6.3.1"
-lottie = "3.4.0"
 markwon = "4.6.2"
 maven-publish-plugin = "0.25.3"
 
@@ -53,7 +52,6 @@ common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", ver
 common-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 common-appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appintro" }
-common-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 common-markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 common-markwon-extStrikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }
 common-markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }

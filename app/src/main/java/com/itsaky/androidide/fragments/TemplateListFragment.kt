@@ -29,18 +29,18 @@ import com.itsaky.androidide.adapters.TemplateListAdapter
 import com.itsaky.androidide.databinding.FragmentTemplateListBinding
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.utils.FlexboxUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.viewmodel.MainViewModel
-import kotlin.math.ceil
 
 /**
  * A fragment to show the list of available templates.
  *
  * @author Akash Yadav
  */
-class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
-  R.layout.fragment_template_list, FragmentTemplateListBinding::bind
-) {
+class TemplateListFragment :
+  FragmentWithBinding<FragmentTemplateListBinding>(R.layout.fragment_template_list,
+    FragmentTemplateListBinding::bind) {
 
   private var adapter: TemplateListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
@@ -59,30 +59,11 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
     // This makes sure that the items are evenly distributed in the list
     // and the last row is always aligned to the start
-    globalLayoutListener = object : OnGlobalLayoutListener {
-      override fun onGlobalLayout() {
-        val adapter = this@TemplateListFragment.adapter ?: return
-        val layoutManager = this@TemplateListFragment.layoutManager ?: return
-
-        val columns = layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
-        if (columns == 0) {
-          return
-        }
-
-        val itemCount = adapter.itemCount
-        val rows = ceil(itemCount.toFloat() / columns.toFloat()).toInt()
-        if (itemCount % columns == 0) {
-          return
-        }
-
-        val diff = rows * columns - itemCount
-        if (diff <= 0) {
-          return
-        }
-
-        adapter.fillDiff(diff)
-      }
+    globalLayoutListener = FlexboxUtils.createGlobalLayoutListenerToDistributeFlexboxItemsEvenly(
+      { adapter }, { layoutManager }) { adapter, diff ->
+      adapter.fillDiff(diff)
     }
+
     binding.list.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
     binding.exitButton.setOnClickListener {
@@ -113,8 +94,7 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
     // Show only project templates
     // reloading the tempaltes also makes sure that the resources are
     // released from template parameter widgets
-    val templates = ITemplateProvider.getInstance(reload = true)
-      .getTemplates()
+    val templates = ITemplateProvider.getInstance(reload = true).getTemplates()
       .filterIsInstance<ProjectTemplate>()
 
     adapter = TemplateListAdapter(templates) { template, _ ->
