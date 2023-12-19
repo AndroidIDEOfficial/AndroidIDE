@@ -69,7 +69,6 @@ dependencies {
   implementation(libs.common.glide)
   implementation(libs.common.jsoup)
   implementation(libs.common.kotlin.coroutines.android)
-  implementation(libs.common.appintro)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)
@@ -119,6 +118,7 @@ dependencies {
   implementation(projects.gradlePluginConfig)
   implementation(projects.idestats)
   implementation(projects.subprojects.aaptcompiler)
+  implementation(projects.subprojects.appintro)
   implementation(projects.subprojects.javacServices)
   implementation(projects.subprojects.javapoet)
   implementation(projects.subprojects.xmlUtils)

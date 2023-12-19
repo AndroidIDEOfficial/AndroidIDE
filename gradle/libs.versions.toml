@@ -51,7 +51,6 @@ common-jsonrpc = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc", versi
 common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.12" }
 common-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-common-appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appintro" }
 common-markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 common-markwon-extStrikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }
 common-markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
@@ -84,6 +83,7 @@ androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynam
 androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
 androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2.0" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version = "1.0.0" }
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version = "1.0.0"}
 #noinspection GradleDependency
 androidx-window-v1alpha9 = { module = "androidx.window:window", version="1.0.0-alpha09" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
@@ -149,6 +149,6 @@ maven-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish-plugin" }
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
