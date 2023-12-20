@@ -81,58 +81,59 @@ object ContentReadWrite {
     val consumer = discreteProgressConsumer(progressConsumer = progressConsumer)
     return Content().apply {
       isUndoEnabled = false
-      val input = inputStream()
-      val total = input.available().let { if (it == 0) 1 else it } // avoid divide by 0
-      input.reader().use { reader ->
-        val buffer = CharArray(DEFAULT_BUFFER_SIZE * 2)
-        val wrapper = CharArrayWrapper(buffer, 0)
-        var totalRead = 0.0
-        var count: Int
-        while (true) {
-          count = reader.read(buffer)
-          if (count == -1) {
-            break
-          }
-          if (count == 0) {
-            continue
-          }
-
-          totalRead += count
-
-          val progress = floor((totalRead / total) * 100).toInt()
-
-          if (buffer[count - 1] == '\r') {
-            val peek = reader.read()
-            if (peek == '\n'.code) {
-              wrapper.setDataCount(count - 1)
-              var line = lineCount - 1
-              insert(line, getColumnCount(line), wrapper)
-
-              line = lineCount - 1
-              insert(line, getColumnCount(line), "\r\n")
-              consumer(progress)
-              continue
-
-            } else if (peek != -1) {
-              wrapper.setDataCount(count)
-              var line = lineCount - 1
-              insert(line, getColumnCount(line), wrapper)
-
-              line = lineCount - 1
-              insert(line, getColumnCount(line), peek.toChar().toString())
-              consumer(progress)
+      inputStream().use { input ->
+        val total = input.available().let { if (it == 0) 1 else it } // avoid divide by 0
+        input.reader().use { reader ->
+          val buffer = CharArray(DEFAULT_BUFFER_SIZE * 2)
+          val wrapper = CharArrayWrapper(buffer, 0)
+          var totalRead = 0.0
+          var count: Int
+          while (true) {
+            count = reader.read(buffer)
+            if (count == -1) {
+              break
+            }
+            if (count == 0) {
               continue
             }
+
+            totalRead += count
+
+            val progress = floor((totalRead / total) * 100).toInt()
+
+            if (buffer[count - 1] == '\r') {
+              val peek = reader.read()
+              if (peek == '\n'.code) {
+                wrapper.setDataCount(count - 1)
+                var line = lineCount - 1
+                insert(line, getColumnCount(line), wrapper)
+
+                line = lineCount - 1
+                insert(line, getColumnCount(line), "\r\n")
+                consumer(progress)
+                continue
+
+              } else if (peek != -1) {
+                wrapper.setDataCount(count)
+                var line = lineCount - 1
+                insert(line, getColumnCount(line), wrapper)
+
+                line = lineCount - 1
+                insert(line, getColumnCount(line), peek.toChar().toString())
+                consumer(progress)
+                continue
+              }
+            }
+            wrapper.setDataCount(count)
+
+            val line = lineCount - 1
+            insert(line, getColumnCount(line), wrapper)
+
+            consumer(progress)
           }
-          wrapper.setDataCount(count)
-
-          val line = lineCount - 1
-          insert(line, getColumnCount(line), wrapper)
-
-          consumer(progress)
         }
+        isUndoEnabled = true
       }
-      isUndoEnabled = true
     }
   }
 

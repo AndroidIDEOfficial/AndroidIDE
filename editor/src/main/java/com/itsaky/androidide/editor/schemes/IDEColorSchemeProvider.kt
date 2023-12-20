@@ -50,6 +50,9 @@ object IDEColorSchemeProvider {
   private const val SCHEME_IS_DARK = "scheme.isDark"
   private const val SCHEME_FILE = "scheme.file"
 
+  private var isDefaultSchemeLoaded = false
+  private var isCurrentSchemeLoaded = false
+
   /**
    * The default color scheme.
    *
@@ -58,7 +61,10 @@ object IDEColorSchemeProvider {
    */
   private var defaultScheme: IDEColorScheme? = null
     get() {
-      return field ?: getColorScheme(DEFAULT_COLOR_SCHEME).also { field = it }
+      return field ?: getColorScheme(DEFAULT_COLOR_SCHEME).also { scheme ->
+        field = scheme
+        isDefaultSchemeLoaded = scheme != null
+      }
     }
 
   /**
@@ -69,7 +75,10 @@ object IDEColorSchemeProvider {
    */
   private var currentScheme: IDEColorScheme? = null
     get() {
-      return field ?: getColorScheme(colorScheme).also { field = it }
+      return field ?: getColorScheme(colorScheme).also { scheme ->
+        field = scheme
+        isCurrentSchemeLoaded = scheme != null
+      }
     }
 
   /**
@@ -179,9 +188,31 @@ object IDEColorSchemeProvider {
     context: Context,
     coroutineScope: CoroutineScope,
     type: String? = null,
-    callbackContext: CoroutineContext = Dispatchers.Main,
+    callbackContext: CoroutineContext = Dispatchers.Main.immediate,
     callback: (SchemeAndroidIDE?) -> Unit
   ) {
+
+    // If the scheme has already been loaded, do not bother to dispatch an IO coroutine
+    // simply invoke the callback on the requested context providing the already loaded scheme
+    val loadedScheme = if (isCurrentSchemeLoaded && (type == null || currentScheme?.getLanguageScheme(
+        type) != null)
+    ) {
+      currentScheme
+    } else if (isDefaultSchemeLoaded) {
+      defaultScheme
+    } else {
+      null
+    }
+
+    if (loadedScheme != null) {
+      coroutineScope.launch(callbackContext) {
+        callback(readScheme(context, type))
+      }
+      return
+    }
+
+    // scheme has not been loaded
+    // load the scheme using the IO dispatcher
     coroutineScope.launch(Dispatchers.IO) {
       val scheme = readScheme(context, type)
       withContext(callbackContext) {
@@ -252,7 +283,10 @@ object IDEColorSchemeProvider {
   fun destroy() {
     this.schemes.clear()
     this.currentScheme = null
+    this.isCurrentSchemeLoaded = false
+
     this.defaultScheme = null
+    this.isDefaultSchemeLoaded = false
   }
 
   @WorkerThread

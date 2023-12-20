@@ -32,13 +32,14 @@ import io.github.rosemoe.sora.lang.analysis.StyleReceiver
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Styles
 import io.github.rosemoe.sora.text.ContentReference
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.newSingleThreadContext
+import java.lang.RuntimeException
 import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -61,11 +62,15 @@ internal class TsAnalyzeWorker(
 
   var stylesReceiver: StyleReceiver? = null
 
-  private val analyzerScope = CoroutineScope(Dispatchers.Default + CoroutineName("TsAnalyzeWorker"))
+  @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+  private val analyzerContext = newSingleThreadContext("TsAnalyzeWorkerContext")
+
+  private val analyzerScope = CoroutineScope(analyzerContext)
   private val messageChannel = LinkedBlockingQueue<Message<*>>()
   private var analyzerJob: Job? = null
 
   private var isInitialized = false
+  private var isDestroyed = false
 
   private var tree: TSTree? = null
   private val localText = UTF16StringFactory.newString()
@@ -74,14 +79,28 @@ internal class TsAnalyzeWorker(
   }
 
   fun init(init: Init) {
+    if (isDestroyed) {
+      log.warn("Received Init after TsAnalyzeWorker has been destroyed. Ignoring...")
+      return
+    }
+
     messageChannel.offer(init)
   }
 
   fun onMod(mod: Mod) {
+    if (isDestroyed) {
+      log.warn("Received Mod after TsAnalyzeWorker has been destroyed. Ignoring...")
+      return
+    }
+
     messageChannel.offer(mod)
   }
 
   fun stop() {
+    log.debug("Stopping TsAnalyzeWorker...")
+    isDestroyed = true
+
+    analyzerContext.close()
     messageChannel.clear()
     analyzerJob?.cancel(CancellationException("Requested to be stopped"))
     localText.close()
@@ -90,7 +109,8 @@ internal class TsAnalyzeWorker(
   }
 
   fun start() {
-    analyzerJob = analyzerScope.launch(Dispatchers.Default) {
+    check(!isDestroyed) { "TsAnalyeWorker has already been destroyed" }
+    analyzerJob = analyzerScope.launch {
       while (isActive) {
         processNextMessage()
       }
@@ -105,8 +125,8 @@ internal class TsAnalyzeWorker(
     }
   }
 
-  private suspend fun processNextMessage() {
-    val message = withContext(Dispatchers.IO) { messageChannel.take() }
+  private fun processNextMessage() {
+    val message = messageChannel.take()
 
     try {
       when (message) {

@@ -31,7 +31,6 @@ import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 /** @author Akash Yadav */
@@ -90,10 +89,9 @@ class PreviewLayoutAction(context: Context, override val order: Int) : EditorRel
     }
   }
 
-  // TODO: Migrate to coroutines
   override suspend fun execAction(data: ActionData): Boolean {
     val activity = data.requireActivity()
-    runBlocking { activity.saveAll() }
+    activity.saveAll()
     return true
   }
 
@@ -109,7 +107,7 @@ class PreviewLayoutAction(context: Context, override val order: Int) : EditorRel
   }
 
   private fun ActionData.requireEditor(): IDEEditor {
-    return this.getEditor()
-      ?: throw IllegalArgumentException("An editor instance is required but none was provided")
+    return this.getEditor() ?: throw IllegalArgumentException(
+      "An editor instance is required but none was provided")
   }
 }

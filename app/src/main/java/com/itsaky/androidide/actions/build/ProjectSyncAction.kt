@@ -23,8 +23,6 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.utils.flashSuccess
-import kotlinx.coroutines.runBlocking
 
 /**
  * Triggers a project sync request.
@@ -42,9 +40,7 @@ class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAc
   }
 
   override suspend fun execAction(data: ActionData): Any {
-    return data.requireActivity().apply {
-      runBlocking { saveAll() }
-    }
+    return data.requireActivity().saveAll()
   }
 
   override fun postExec(data: ActionData, result: Any) {

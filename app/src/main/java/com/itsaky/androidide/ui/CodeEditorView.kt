@@ -83,16 +83,17 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.Magnifier
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.Closeable
 import java.io.File
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * A view that handles opened code editor.
@@ -111,6 +112,15 @@ class CodeEditorView(
 
   private val codeEditorScope = CoroutineScope(
     Dispatchers.Default + CoroutineName("CodeEditorView"))
+
+  /**
+   * The [CoroutineContext][kotlin.coroutines.CoroutineContext] used to reading and writing the file
+   * in this editor. We use a separate, single-threaded context assuming that the file will be either
+   * read from or written to at a time, but not both. If in future we add support for anything like
+   * that, the number of thread should probably be increased.
+   */
+  @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+  private val readWriteContext = newSingleThreadContext("CodeEditorView")
 
   private val binding: LayoutCodeEditorBinding
     get() = checkNotNull(_binding) { "Binding has been destroyed" }
@@ -222,8 +232,7 @@ class CodeEditorView(
     val file = this.file ?: return false
 
     if (!isModified && file.exists()) {
-      log.info(file.name)
-      log.info("File was not modified. Skipping save operation.")
+      log.info("File was not modified. Skipping save operation.", file.name)
       return false
     }
 
@@ -232,16 +241,19 @@ class CodeEditorView(
       return false
     }
 
-    disableEditingAndRun(Dispatchers.IO) {
-      // Do not call suspend functions in this scope
-      // the writeTo function acquires lock to the Content object before writing and releases
-      // the lock after writing
-      // if there are any suspend function calls in between, the lock and unlock calls might not
-      // be called on the same thread
-      text.writeTo(file, this@CodeEditorView::updateReadWriteProgress)
-    }
+    withContext(Dispatchers.Main.immediate) {
 
-    withContext(Dispatchers.Main) {
+      withEditingDisabled {
+        withContext(readWriteContext) {
+          // Do not call suspend functions in this scope
+          // the writeTo function acquires lock to the Content object before writing and releases
+          // the lock after writing
+          // if there are any suspend function calls in between, the lock and unlock calls might not
+          // be called on the same thread
+          text.writeTo(file, this@CodeEditorView::updateReadWriteProgress)
+        }
+      }
+
       _binding?.rwProgress?.isVisible = false
     }
 
@@ -267,31 +279,26 @@ class CodeEditorView(
     }
   }
 
-  private suspend inline fun <R> disableEditingAndRun(
-    context: CoroutineContext = EmptyCoroutineContext,
-    crossinline action: CoroutineScope.() -> R
-  ): R {
-    return withContext(Dispatchers.Main) {
+  private inline fun <R : Any?> withEditingDisabled(action: () -> R): R {
+    return try {
       _binding?.editor?.isEditable = false
-
-      val result = withContext(context) {
-        action()
-      }
-
+      action()
+    } finally {
       _binding?.editor?.isEditable = true
-      return@withContext result
     }
   }
 
   private fun readFileAndApplySelection(file: File, selection: Range) {
-    updateReadWriteProgress(0)
-    codeEditorScope.launch {
-      val content = disableEditingAndRun(Dispatchers.IO) {
-        selection.validate()
-        file.readContent(this@CodeEditorView::updateReadWriteProgress)
-      }
+    codeEditorScope.launch(Dispatchers.Main.immediate) {
+      updateReadWriteProgress(0)
 
-      withContext(Dispatchers.Main) {
+      withEditingDisabled {
+
+        val content = withContext(readWriteContext) {
+          selection.validate()
+          file.readContent(this@CodeEditorView::updateReadWriteProgress)
+        }
+
         initializeContent(content, file, selection)
         _binding?.rwProgress?.isVisible = false
       }
@@ -299,12 +306,13 @@ class CodeEditorView(
   }
 
   private fun initializeContent(content: Content, file: File, selection: Range) {
-    binding.editor.apply {
+    val ideEditor = binding.editor
+    ideEditor.postInLifecycle {
       val args = Bundle().apply {
         putString(IEditor.KEY_FILE, file.absolutePath)
       }
 
-      setText(content, args)
+      ideEditor.setText(content, args)
 
       // editor.setText(...) sets the modified flag to true
       // but in this case, file is read from disk and hence the contents are not modified at all
@@ -313,11 +321,11 @@ class CodeEditorView(
       markUnmodified()
       postRead(file)
 
-      validateRange(selection)
-      setSelection(selection)
-    }
+      ideEditor.validateRange(selection)
+      ideEditor.setSelection(selection)
 
-    configureEditorIfNeeded()
+      configureEditorIfNeeded()
+    }
   }
 
   private fun postRead(file: File) {
@@ -514,5 +522,7 @@ class CodeEditorView(
       notifyClose()
       release()
     }
+
+    readWriteContext.use { }
   }
 }

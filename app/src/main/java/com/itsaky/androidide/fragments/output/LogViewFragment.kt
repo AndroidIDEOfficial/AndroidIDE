@@ -25,6 +25,8 @@ import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.editor.language.treesitter.LogLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider
+import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.models.LogLine
@@ -243,7 +245,14 @@ abstract class LogViewFragment :
       coroutineScope = editor.editorScope,
       type = LogLanguage.TS_TYPE
     ) { scheme ->
-      editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)
+      val language = TreeSitterLanguageProvider.forType(LogLanguage.TS_TYPE, requireContext())
+      checkNotNull(language) { "No TreeSitterLanguage found for type ${LogLanguage.TS_TYPE}" }
+
+      if (scheme is IDEColorScheme) {
+        language.setupWith(scheme)
+      }
+
+      editor.applyTreeSitterLang(language, LogLanguage.TS_TYPE, scheme)
     }
   }
 
