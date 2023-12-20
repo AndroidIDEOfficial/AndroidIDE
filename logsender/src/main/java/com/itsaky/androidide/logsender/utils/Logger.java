@@ -25,7 +25,7 @@ import com.itsaky.androidide.utils.ILogger;
  * @author Akash Yadav
  */
 public class Logger {
-  private static final ILogger LOG = ILogger.newInstance("LogSender");
+  public static final ILogger LOG = ILogger.newInstance("LogSender");
 
   public static void error(Object... messages) {
     LOG.error(messages);

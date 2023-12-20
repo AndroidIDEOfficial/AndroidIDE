@@ -17,4 +17,5 @@
 
 <resources>
   <string name="msg_bind_service_failed">Failed to bind to AndroidIDE</string>
+  <string name="notification_action_exit">Exit</string>
 </resources>
