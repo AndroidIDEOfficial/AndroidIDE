@@ -58,7 +58,6 @@ open class OnboardingMultiActionFragment : OnboardingFragment() {
 
   override fun createContentView(parent: ViewGroup, attachToParent: Boolean) {
     val binding = LayoutOnboardingMultiactionBinding.inflate(layoutInflater, parent, attachToParent)
-    RecyclerView.setVerboseLoggingEnabled(true)
     binding.onboardingItems.adapter = createAdapter()
     recyclerView = binding.onboardingItems
   }

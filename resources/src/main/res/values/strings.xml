@@ -622,7 +622,7 @@
   <string name="msg_files_being_saved">A file save operation is already in progress!</string>
   <string name="title_install_tools">SDK Installation</string>
   <string name="subtitle_install_tools">Install the development tools</string>
-  <string name="msg_install_tools">The following tools must be installed for the IDE to work. Clicking the next button will open terminal to install the tools. To install, follow the instructions <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">here</a>.<br/><br/>Or read the <a href="https://androidide.com/docs/">documentation</a>]]>.</string>
+  <string name="msg_install_tools">The development tools must be installed for the IDE to work. Clicking the done button will open terminal to install the tools. To install, follow the instructions <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">here</a>.<br/><br/>Or read the <a href="https://androidide.com/docs/">documentation</a>]]>.</string>
   <string name="title_file_access">File Access Permission</string>
   <string name="msg_file_access">This app needs permission to access files to function. Please grant permission to continue.</string>
   <string name="greeting_title">Welcome</string>
@@ -641,8 +641,13 @@
   <string name="msg_connected_to_cellular">Heads up! You\'re using cellular data.</string>
   <string name="msg_connected_to_metered_connection">Heads up! You\'re on a metered network.</string>
   <string name="msg_disable_background_data_restriction">Disable background data restriction to avoid installation failures.</string>
-  <string name="tool_jdk_title" translatable="false">OpenJDK</string>
-  <string name="tool_jdk_summary">Java Development Kit (JDK) is required to build projects with Gradle.</string>
-  <string name="toolg_sdk_title" translatable="false">Android SDK</string>
-  <string name="tool_sdk_summary">Android SDK is required to build Android projects.</string>
+  <string name="msg_cannot_create_terminal_session">Unable to create terminal session</string>
+  <string name="action_auto_install">Automatic installation</string>
+  <string name="action_manual_install">Manual installation</string>
+  <string name="hint_android_sdk_version">Android SDK version</string>
+  <string name="hin_jdk_version">JDK version</string>
+  <string name="msg_with_command_line_tools">With command line tools</string>
+  <string name="action_install_git">Install Git</string>
+  <string name="action_install_openssh">Install OpenSSH</string>
+  <string name="msg_terminal_new_sessions_disabled">Cannot create session. New sessions are disabled!</string>
 </resources>

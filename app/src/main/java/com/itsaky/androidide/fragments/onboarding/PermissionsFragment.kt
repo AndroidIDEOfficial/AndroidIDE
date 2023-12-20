@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
@@ -40,7 +39,7 @@ import com.itsaky.androidide.utils.isAtLeastR
 /**
  * @author Akash Yadav
  */
-class OnboardingPermissionsFragment : OnboardingMultiActionFragment(), SlidePolicy {
+class PermissionsFragment : OnboardingMultiActionFragment(), SlidePolicy {
 
   var adapter: OnboardingPermissionsAdapter? = null
 
@@ -61,8 +60,8 @@ class OnboardingPermissionsFragment : OnboardingMultiActionFragment(), SlidePoli
   companion object {
 
     @JvmStatic
-    fun newInstance(context: Context): OnboardingPermissionsFragment {
-      return OnboardingPermissionsFragment().apply {
+    fun newInstance(context: Context): PermissionsFragment {
+      return PermissionsFragment().apply {
         arguments = Bundle().apply {
           putCharSequence(KEY_ONBOARDING_TITLE,
             context.getString(R.string.onboarding_title_permissions))

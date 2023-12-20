@@ -38,7 +38,7 @@ public class TermuxSession {
 
     private static final String LOG_TAG = "TermuxSession";
 
-    private TermuxSession(@NonNull final TerminalSession terminalSession, @NonNull final ExecutionCommand executionCommand,
+    protected TermuxSession(@NonNull final TerminalSession terminalSession, @NonNull final ExecutionCommand executionCommand,
                           final TermuxSessionClient termuxSessionClient, final boolean setStdoutOnExit) {
         this.mTerminalSession = terminalSession;
         this.mExecutionCommand = executionCommand;
@@ -274,6 +274,14 @@ public class TermuxSession {
 
     public TerminalSession getTerminalSession() {
         return mTerminalSession;
+    }
+
+    public TermuxSessionClient getTermuxSessionClient() {
+        return mTermuxSessionClient;
+    }
+
+    public boolean isSetStdoutOnExit() {
+        return mSetStdoutOnExit;
     }
 
     public ExecutionCommand getExecutionCommand() {

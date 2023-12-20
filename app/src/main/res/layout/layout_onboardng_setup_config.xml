@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.appcompat.widget.LinearLayoutCompat
+    android:id="@+id/connection_info_container"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toTopOf="@id/auto_install_switch"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <include
+      android:id="@+id/no_connection"
+      layout="@layout/layout_chip_error"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginBottom="4dp" />
+
+    <include
+      android:id="@+id/cellular_connection"
+      layout="@layout/layout_chip_warning"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginBottom="4dp" />
+
+    <include
+      android:id="@+id/metered_connection"
+      layout="@layout/layout_chip_warning"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginBottom="4dp" />
+
+    <include
+      android:id="@+id/background_data_restricted"
+      layout="@layout/layout_chip_warning"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginBottom="4dp" />
+
+  </androidx.appcompat.widget.LinearLayoutCompat>
+
+  <com.google.android.material.checkbox.MaterialCheckBox
+    android:id="@+id/with_cmdline_tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:checked="true"
+    android:enabled="false"
+    android:text="@string/msg_with_command_line_tools"
+    app:layout_constraintStart_toStartOf="@id/auto_install_switch"
+    app:layout_constraintTop_toBottomOf="@id/jdk_version_layout" />
+
+  <com.google.android.material.checkbox.MaterialCheckBox
+    android:id="@+id/install_git"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:checked="true"
+    android:text="@string/action_install_git"
+    app:layout_constraintStart_toStartOf="@id/auto_install_switch"
+    app:layout_constraintTop_toBottomOf="@id/with_cmdline_tools" />
+
+  <com.google.android.material.checkbox.MaterialCheckBox
+    android:id="@+id/install_openssh"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:checked="true"
+    android:text="@string/action_install_openssh"
+    app:layout_constraintStart_toStartOf="@id/auto_install_switch"
+    app:layout_constraintTop_toBottomOf="@id/install_git" />
+
+  <com.google.android.material.materialswitch.MaterialSwitch
+    android:id="@+id/auto_install_switch"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:checked="true"
+    android:text="@string/action_auto_install"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/connection_info_container" />
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/jdk_version_layout"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:hint="@string/hin_jdk_version"
+    android:labelFor="@id/jdk_version"
+    app:layout_constraintEnd_toEndOf="@id/auto_install_switch"
+    app:layout_constraintStart_toStartOf="@id/auto_install_switch"
+    app:layout_constraintTop_toBottomOf="@id/sdk_version_layout">
+
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+      android:id="@+id/jdk_version"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:inputType="none" />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/sdk_version_layout"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:hint="@string/hint_android_sdk_version"
+    android:labelFor="@id/sdk_version"
+    app:layout_constraintEnd_toEndOf="@id/auto_install_switch"
+    app:layout_constraintStart_toStartOf="@id/auto_install_switch"
+    app:layout_constraintTop_toBottomOf="@id/auto_install_switch">
+
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+      android:id="@+id/sdk_version"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:inputType="none" />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

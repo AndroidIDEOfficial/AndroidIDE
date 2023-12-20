@@ -402,16 +402,22 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
             sessionName = null;
         }
 
+        boolean launchFailsafe =
+            intent != null && intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION,
+                false);
+
         if (mTermuxService.isTermuxSessionsEmpty()) {
             if (mIsVisible) {
                 TermuxInstaller.setupBootstrapIfNeeded(TermuxActivity.this, () -> {
                     if (mTermuxService == null) return; // Activity might have been destroyed.
                     try {
-                        boolean launchFailsafe = false;
-                        if (intent != null && intent.getExtras() != null) {
-                            launchFailsafe = intent.getExtras().getBoolean(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
-                        }
-                        mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, null, workingDir);
+                        setupTermuxSessionOnServiceConnected(
+                            intent,
+                            workingDir,
+                            sessionName,
+                            null,
+                            launchFailsafe
+                        );
                     } catch (WindowManager.BadTokenException e) {
                         // Activity finished - ignore.
                     }
@@ -421,37 +427,58 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
                 finishActivityIfNotFinishing();
             }
         } else {
+
             final Optional<TermuxSession> existingSession = workingDir == null ? Optional.empty() :
                 mTermuxService.getTermuxSessions().stream().filter(session -> Objects.equals(
                     session.getTerminalSession().getCwd(), workingDir)).findFirst();
 
-            boolean launchFailsafe =
-                intent != null && intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION,
-                    false);
-
-            if (existingSession.isPresent()) {
-                // requested to open a session with a specific working directory
-                // a session is already opened with the provided working directory
-                final var session = existingSession.get();
-
-                if (session.getExecutionCommand().isFailsafe != launchFailsafe) {
-                    // the existing session's failsafe status does not match with the requested
-                    // failsafe status, create a new session
-                    mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, sessionName, workingDir);
-                } else {
-                    mTermuxTerminalSessionActivityClient.setCurrentSession(session.getTerminalSession());
-                }
-            } else if (workingDir != null) {
-                // working directory is provided, but no session has that specific CWD
-                mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, sessionName, workingDir);
-            } else {
-                // no working directory provided
-                mTermuxTerminalSessionActivityClient.setCurrentSession(mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());
-            }
+            setupTermuxSessionOnServiceConnected(
+                intent,
+                workingDir,
+                sessionName,
+                existingSession.orElse(null),
+                launchFailsafe
+            );
         }
 
         // Update the {@link TerminalSession} and {@link TerminalEmulator} clients.
         mTermuxService.setTermuxTerminalSessionClient(mTermuxTerminalSessionActivityClient);
+    }
+
+    protected void setupTermuxSessionOnServiceConnected(
+        Intent intent,
+        String workingDir,
+        String sessionName,
+        TermuxSession existingSession,
+        boolean launchFailsafe
+    ) {
+        if (mTermuxService.isTermuxSessionsEmpty()) {
+            onCreateNewSession(launchFailsafe, sessionName, workingDir);
+            return;
+        }
+
+        if (existingSession != null) {
+            // requested to open a session with a specific working directory
+            // a session is already opened with the provided working directory
+
+            if (existingSession.getExecutionCommand().isFailsafe != launchFailsafe) {
+                // the existing session's failsafe status does not match with the requested
+                // failsafe status, create a new session
+                onCreateNewSession(launchFailsafe, sessionName,
+                    workingDir);
+            } else {
+                mTermuxTerminalSessionActivityClient.setCurrentSession(
+                    existingSession.getTerminalSession());
+            }
+        } else if (workingDir != null) {
+            // working directory is provided, but no session has that specific CWD
+            onCreateNewSession(launchFailsafe, sessionName,
+                workingDir);
+        } else {
+            // no working directory provided
+            mTermuxTerminalSessionActivityClient.setCurrentSession(
+                mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());
+        }
     }
 
     @Override
@@ -588,14 +615,18 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
     private void setNewSessionButtonView() {
         View newSessionButton = findViewById(R.id.new_session_button);
-        newSessionButton.setOnClickListener(v -> mTermuxTerminalSessionActivityClient.addNewSession(false, null));
+        newSessionButton.setOnClickListener(v -> onCreateNewSession(false, null, null));
         newSessionButton.setOnLongClickListener(v -> {
             TextInputDialogUtils.textInput(TermuxActivity.this, R.string.title_create_named_session, null,
-                R.string.action_create_named_session_confirm, text -> mTermuxTerminalSessionActivityClient.addNewSession(false, text),
-                R.string.action_new_session_failsafe, text -> mTermuxTerminalSessionActivityClient.addNewSession(true, text),
+                R.string.action_create_named_session_confirm, text -> onCreateNewSession(false, text, null),
+                R.string.action_new_session_failsafe, text -> onCreateNewSession(true, text, null),
                 -1, null, null);
             return true;
         });
+    }
+
+    protected void onCreateNewSession(boolean isFailsafe, String sessionName, String workingDirectory) {
+        mTermuxTerminalSessionActivityClient.addNewSession(isFailsafe, sessionName, workingDirectory);
     }
 
     private void setToggleKeyboardView() {

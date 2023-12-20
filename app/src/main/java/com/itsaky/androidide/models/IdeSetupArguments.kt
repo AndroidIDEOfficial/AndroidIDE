@@ -15,13 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.fragments.onboarding
-
-import com.itsaky.androidide.databinding.FragmentOnboardingGreetingBinding
-import com.itsaky.androidide.fragments.FragmentWithBinding
+package com.itsaky.androidide.models
 
 /**
+ * Configuration options for IDESetup
+ *
+ * @property argumentName The name of the argument.
+ * @property requiresValue Whether the argument must have a value.
  * @author Akash Yadav
  */
-class OnboardingGreetingFragment :
-  FragmentWithBinding<FragmentOnboardingGreetingBinding>(FragmentOnboardingGreetingBinding::inflate)
+enum class IdeSetupArgument(val argumentName: String, val requiresValue: Boolean = false) {
+  INSTALL_DIR("--install-dir", true),
+  WITH_CMDLINE_TOOLS("--with-cmdline-tools"),
+  WITH_GIT("--with-git"),
+  ASSUME_YES("--assume-yes"),
+  WITH_OPENSSH("--with-openssh"),
+  SDK_VERSION("--sdk", true),
+  JDK_VERSION("--jdk", true)
+}

@@ -28,17 +28,16 @@ class StatisticsFragment : OnboardingFragment() {
 
   override fun createContentView(parent: ViewGroup, attachToParent: Boolean) {
     _content = LayoutOnboardingStatisticsBinding.inflate(layoutInflater, parent, attachToParent)
-    content.statOptIn.isChecked = statOptIn
-    content.statOptIn.setOnCheckedChangeListener { _, isChecked ->
-      statOptIn = isChecked
-      if (isChecked) {
-        IDEApplication.instance.reportStatsIfNecessary()
-      }
-    }
+    content.statOptIn.isChecked = true
   }
 
   override fun onDestroy() {
     super.onDestroy()
     _content = null
+  }
+
+  fun updateStatOptInStatus() {
+    statOptIn = _content?.statOptIn?.isChecked ?: false
+    IDEApplication.instance.reportStatsIfNecessary()
   }
 }

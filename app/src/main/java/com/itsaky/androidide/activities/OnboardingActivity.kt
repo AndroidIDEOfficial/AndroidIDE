@@ -27,19 +27,15 @@ import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
-import com.itsaky.androidide.fragments.onboarding.OnboardingGreetingFragment
+import com.itsaky.androidide.fragments.onboarding.GreetingFragment
+import com.itsaky.androidide.fragments.onboarding.IdeSetupConfigurationFragment
 import com.itsaky.androidide.fragments.onboarding.OnboardingInfoFragment
-import com.itsaky.androidide.fragments.onboarding.OnboardingPermissionsFragment
-import com.itsaky.androidide.fragments.onboarding.OnboardingToolInstallationFragment
+import com.itsaky.androidide.fragments.onboarding.PermissionsFragment
 import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
 import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
-import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.resolveAttr
-import com.termux.app.TermuxActivity
 
 class OnboardingActivity : AppIntro2() {
 
@@ -66,13 +62,14 @@ class OnboardingActivity : AppIntro2() {
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+    setSwipeLock(true)
     setTransformer(AppIntroPageTransformerType.Fade)
     setProgressIndicator()
     showStatusBar(true)
     isIndicatorEnabled = true
     isWizardMode = true
 
-    addSlide(OnboardingGreetingFragment())
+    addSlide(GreetingFragment())
 
     if (!checkDeviceSupported()) {
       return
@@ -83,12 +80,12 @@ class OnboardingActivity : AppIntro2() {
       statConsentDialogShown = true
     }
 
-    if (!OnboardingPermissionsFragment.areAllPermissionsGranted(this)) {
-      addSlide(OnboardingPermissionsFragment.newInstance(this))
+    if (!PermissionsFragment.areAllPermissionsGranted(this)) {
+      addSlide(PermissionsFragment.newInstance(this))
     }
 
     if (!checkToolsIsInstalled()) {
-      addSlide(OnboardingToolInstallationFragment.newInstance(this))
+      addSlide(IdeSetupConfigurationFragment.newInstance(this))
     }
   }
 
@@ -100,14 +97,26 @@ class OnboardingActivity : AppIntro2() {
     }
   }
 
+  override fun onNextPressed(currentFragment: Fragment?) {
+    (currentFragment as? StatisticsFragment?)?.updateStatOptInStatus()
+  }
+
   override fun onDonePressed(currentFragment: Fragment?) {
+    (currentFragment as? StatisticsFragment?)?.updateStatOptInStatus()
+
     if (!IDEBuildConfigProvider.getInstance().supportsBuildFlavor()) {
       finishAffinity()
       return
     }
 
-    if (!checkToolsIsInstalled()) {
-      TermuxActivity.startTermuxActivity(this)
+    if (!checkToolsIsInstalled() && currentFragment is IdeSetupConfigurationFragment) {
+      val intenet = Intent(this, TerminalActivity::class.java)
+      if (currentFragment.isAutoInstall()) {
+        intenet.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP, true)
+        intenet.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP_ARGS,
+          currentFragment.buildIdeSetupArguments())
+      }
+      startActivity(intenet)
       return
     }
 
@@ -123,7 +132,8 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun isSetupDone() =
-    (checkToolsIsInstalled() && statConsentDialogShown && OnboardingPermissionsFragment.areAllPermissionsGranted(this))
+    (checkToolsIsInstalled() && statConsentDialogShown && PermissionsFragment.areAllPermissionsGranted(
+      this))
 
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
