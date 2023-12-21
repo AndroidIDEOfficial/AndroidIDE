@@ -2,8 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">نسخ</string>
-  <string name="terminal_more">More…</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="terminal_more">المزيد…</string>
+  <string name="text_to_search">البحث عن نص</string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
@@ -20,7 +20,7 @@
   <string name="ide_preferences">إعدادات IDE</string>
   <string name="discussions_on_telegram">المناقشات على التيليغرام</string>
   <string name="official_tg_channel">قناة التيليغرام الرسمية</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">لا يوجد بيانات</string>
   <string name="title_terminal">التيرمنال</string>
   <string name="reset">إعادة تعيين</string>
   <string name="app_logs">سجلات التطبيق</string>
@@ -45,8 +45,8 @@
   <string name="msg_pick_single_file">الرجاء اختيار مجلد واحد فقط</string>
   <string name="please_wait">رجاءا انتظر لحظة…</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
+  <string name="title_unsupported_device">هذا الجهاز غير مدعوم</string>
+  <string name="msg_unsupported_device">أنت تستخدم نسخة %1$s من AndroidIDE على جهاز يعمل فقط بـ %2$s. هذه التكوينات غير معتمدة. يرجى تثبيت نسخة %2$s من AndroidIDE.</string>
   <string name="build">بناء</string>
   <string name="build_output">مخرجات البناء</string>
   <string name="lint_tasks">مهام Lint</string>
@@ -452,10 +452,10 @@
   <string name="uiMode_light">فاتح</string>
   <string name="uiMode_dark">مظلم</string>
   <string name="uiMode_system">اتبع النظام</string>
-  <string name="idepref_general_themeSelector_title">Theme</string>
-  <string name="idepref_general_themeSelector_summary">Select a theme for AndroidIDE (requires restart).</string>
+  <string name="idepref_general_themeSelector_title">سمة</string>
+  <string name="idepref_general_themeSelector_summary">اختر سمة لـ AndroidIDE (تتطلب إعادة التشغيل).</string>
   <string name="idepref_general_projectConfig">تهيئة المشروع</string>
-  <string name="msg_app_launch_failed">Launch failed. Install the application first.</string>
+  <string name="msg_app_launch_failed">فشل التشغيل. يجب تثبيت التطبيق أولاً.</string>
   <string name="idepref_java_diagnosticEnabled_title">التشخيصات مفعلة</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(تجريبي) ما إذا ينبغي تحليل ملفات مصدر جافا بحثا عن أخطاء أم لا.</string>
   <string name="title_reload_color_schemes">إعادة تحميل أنظمة الألوان</string>
@@ -496,7 +496,7 @@
   <string name="title_country">البلد</string>
   <string name="title_cpu_arch">بناء CPU</string>
   <string name="title_preview_data">معاينة البيانات</string>
-  <string name="title_android_version">Android version</string>
+  <string name="title_android_version">اصدار الاندرويد</string>
   <string name="btn_opt_in">الاشتراك</string>
   <string name="btn_no_thanks">لا، شكراً</string>
   <string name="title_developer_options">خيارات المطور</string>
@@ -504,14 +504,14 @@
   <string name="idepref_group_debugging">تصحيح الأخطاء</string>
   <string name="idepref_devOptions_dumpLogs_title">تفريغ السجلات</string>
   <string name="idepref_devOptions_dumpLogs_summary">تفريغ سجلات AndroidIDE إلى $HOME/.androidide/logs</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
-  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
-  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
-  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
-  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="msg_emptyview_applogs">قم بتشغيل النسخة التصحيحية (debug) من تطبيقك لعرض السجلات هنا.</string>
+  <string name="msg_logsender_disabled">تم تعطيل إرسال السجل. يمكنك تمكينه في الخيارات.</string>
+  <string name="msg_emptyview_idelogs">تظهر سجلات من بيئة التطوير المتكاملة هنا.</string>
+  <string name="msg_emptyview_diagnostics">افتح ملف لعرض نتائج التشخيص الخاصة به</string>
+  <string name="msg_emptyview_buildoutput">"قم ببناء التطبيق أو تشغيل مهمة لرؤية نتائج بنائه هنا. "</string>
+  <string name="msg_codeaction_failed">فشلت في تنفيذ الإجراء.</string>
+  <string name="idepref_devOptions_enableLogsender_title">تمكين مرسل السجلات.</string>
+  <string name="idepref_devOptions_enableLogsender_summary">عند التعطيل، لن يتم عرض سجلات التطبيقات في AndroidIDE.</string>
   <string name="title_build_variants">Build variants</string>
   <string name="title_apply">Apply</string>
   <string name="title_discard">Discard</string>
