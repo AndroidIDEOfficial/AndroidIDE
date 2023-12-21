@@ -32,7 +32,6 @@
   <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
   <string name="error_disable_component_failed">Failed to enable %1$s/%2$s component</string>
   <!-- PermissionUtils -->
-  <string name="message_sudo_please_grant_permissions">Please grant requested permission(s)</string>
   <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
   <string name="error_attempted_to_check_for_permissions_not_requested">Attempted to check for permissions that have not been requested in app manifest: %1$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
@@ -62,7 +61,6 @@
   <string name="error_execution_cancelled">Execution has been cancelled since execution service is being killed</string>
   <string name="error_failed_to_execute_termux_session_command">Failed to execute \"%1$s\" termux session command</string>
   <string name="error_failed_to_execute_app_shell_command">Failed to execute \"%1$s\" app shell command</string>
-  <string name="error_exception_received_while_executing_termux_session_command">Exception received while to executing \"%1$s\" termux session command.\nException: %2$s</string>
   <string name="error_exception_received_while_executing_app_shell_command">Exception received while to executing \"%1$s\" app shell command.\nException: %2$s</string>
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
@@ -92,14 +90,6 @@
   <string name="action_save_to_file">In Datei speichern</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
-  <!-- Launcher Icons -->
-  <string name="action_enable_launcher_icon">Enable Launcher Icon</string>
-  <string name="action_disable_launcher_icon">Disable Launcher Icon</string>
-  <string name="msg_enabling_launcher_icon">Enabling %1$s app launcher icon</string>
-  <string name="msg_disabling_launcher_icon">Disabling %1$s app launcher icon</string>
-  <string name="setting_launcher_icon_title">Launcher-Symbol aktiviert</string>
-  <string name="setting_launcher_icon_enabled_off">Launcher-Symbol wird deaktiviert.</string>
-  <string name="setting_launcher_icon_enabled_on">Launcher-Symbol wird aktiviert. (Standard)</string>
   <!-- Log Level -->
   <string name="log_level_title">Log Level</string>
   <string name="log_level_off">Aus</string>
