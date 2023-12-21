@@ -50,14 +50,14 @@
   <string name="title_share_with">分享到</string>
   <string name="title_open_url_with">打开网址</string>
   <string name="msg_storage_permission_not_granted">未授予存储权限。</string>
-  <string name="msg_file_saved_successfully">%1$s 文件已成功保存在“%2$s”</string>
+  <string name="msg_file_saved_successfully">%1$s 文件已成功保存在 “%2$s”</string>
   <!-- Shell -->
-  <string name="error_sending_sigkill_to_process">Sending SIGKILL to process on user request or because android is killing the execution service</string>
-  <string name="error_executable_unset">Executable not set \"%1$s\" for shell command</string>
-  <string name="error_execution_cancelled">Execution has been cancelled since execution service is being killed</string>
-  <string name="error_failed_to_execute_termux_session_command">Failed to execute \"%1$s\" termux session command</string>
-  <string name="error_failed_to_execute_app_shell_command">Failed to execute \"%1$s\" app shell command</string>
-  <string name="error_exception_received_while_executing_app_shell_command">Exception received while to executing \"%1$s\" app shell command.\nException: %2$s</string>
+  <string name="error_sending_sigkill_to_process">因为用户请求或 Android 正在终止执行服务而发送 SIGKILL 到进程</string>
+  <string name="error_executable_unset">可执行文件未设置 shell 命令的“%1$s”</string>
+  <string name="error_execution_cancelled">执行服务被终止，执行已被取消</string>
+  <string name="error_failed_to_execute_termux_session_command">无法执行 termux 会话命令“%1$s”</string>
+  <string name="error_failed_to_execute_app_shell_command">无法执行应用程序 shell 命令“%1$s”</string>
+  <string name="error_exception_received_while_executing_app_shell_command">执行应用程序 shell 命令“%1$s”时收到异常。\n异常: %2$s</string>
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
         an issue on one of the following links.
@@ -70,28 +70,26 @@
         \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
         on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
         even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The &amp;TERMUX_APP_NAME; is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The &amp;TERMUX_APP_NAME; app (package context) is not accessible.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">The &amp;TERMUX_APP_NAME; app $PREFIX directory is not accessible by the %1$s app.
-        This may be because you have not installed or setup &amp;TERMUX_APP_NAME; app or
-    &amp;TERMUX_APP_NAME; app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
-        It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
-        write and execute permissions.</string>
+  <string name="msg_termux_app_required_by_app">%1$s 应用需要 &amp;TERMUX_APP_NAME; 来运行 termux 命令。</string>
+  <string name="error_termux_app_package_context_not_accessible">无法访问 &amp;TERMUX_APP_NAME; 应用（软件包上下文）。</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">%1$s 应用无法访问 &amp;TERMUX_APP_NAME; 应用 $PREFIX 目录。
+         这可能是因为您尚未安装或设置 &amp;TERMUX_APP_NAME; 应用，或者因为您从不同来源安装的 &amp;TERMUX_APP_NAME; 应用和 %1$s 应用具有不同的 APK 签名。
+         也可能是因为 &amp;TERMUX_APP_NAME 的 $PREFIX 目录“&amp;TERMUX_PREFIX_DIR_PATH;”不存在或没有读、写和执行权限。</string>
   <!-- Miscellaneous -->
   <string name="action_yes">Yes</string>
   <string name="action_no">No</string>
-  <string name="action_copy">Copy</string>
-  <string name="action_share">Share</string>
-  <string name="action_cancel">Cancel</string>
-  <string name="action_save_to_file">Save To File</string>
+  <string name="action_copy">复制</string>
+  <string name="action_share">分享</string>
+  <string name="action_cancel">取消</string>
+  <string name="action_save_to_file">保存到文件</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
-  <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_title">日志级别</string>
+  <string name="log_level_off">关闭</string>
+  <string name="log_level_normal">标准</string>
+  <string name="log_level_debug">调试</string>
+  <string name="log_level_verbose">详细</string>
+  <string name="log_level_unknown">*未知*</string>
+  <string name="log_level_value">Logcat 日志级别设置为“%1$s”</string>
 </resources>
