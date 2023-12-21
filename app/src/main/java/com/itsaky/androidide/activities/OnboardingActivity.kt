@@ -36,6 +36,9 @@ import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
+import com.termux.shared.android.PackageUtils
+import com.termux.shared.markdown.MarkdownUtils
+import com.termux.shared.termux.TermuxConstants
 
 class OnboardingActivity : AppIntro2() {
 
@@ -70,6 +73,30 @@ class OnboardingActivity : AppIntro2() {
     isWizardMode = true
 
     addSlide(GreetingFragment())
+
+    if (!PackageUtils.isCurrentUserThePrimaryUser(this)) {
+      val errorMessage = getString(string.bootstrap_error_not_primary_user_message,
+        MarkdownUtils.getMarkdownCodeForString(TermuxConstants.TERMUX_PREFIX_DIR_PATH, false))
+      addSlide(OnboardingInfoFragment.newInstance(
+        getString(string.title_unsupported_user),
+        errorMessage,
+        R.drawable.ic_alert,
+        ContextCompat.getColor(this, R.color.color_error)
+      ))
+      return
+    }
+
+    if (isInstalledOnSdCard()) {
+      val errorMessage = getString(string.bootstrap_error_installed_on_portable_sd,
+        MarkdownUtils.getMarkdownCodeForString(TermuxConstants.TERMUX_PREFIX_DIR_PATH, false))
+      addSlide(OnboardingInfoFragment.newInstance(
+        getString(string.title_install_location_error),
+        errorMessage,
+        R.drawable.ic_alert,
+        ContextCompat.getColor(this, R.color.color_error)
+      ))
+      return
+    }
 
     if (!checkDeviceSupported()) {
       return
@@ -134,6 +161,13 @@ class OnboardingActivity : AppIntro2() {
   private fun isSetupDone() =
     (checkToolsIsInstalled() && statConsentDialogShown && PermissionsFragment.areAllPermissionsGranted(
       this))
+
+  private fun isInstalledOnSdCard() : Boolean {
+    // noinspection SdCardPath
+    return PackageUtils.isAppInstalledOnExternalStorage(this) &&
+        TermuxConstants.TERMUX_FILES_DIR_PATH != filesDir.absolutePath
+      .replace("^/data/user/0/".toRegex(), "/data/data/")
+  }
 
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
