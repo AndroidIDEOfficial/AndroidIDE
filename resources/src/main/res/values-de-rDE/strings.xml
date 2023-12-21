@@ -469,4 +469,6 @@
   <string name="action_install_git">Git installieren</string>
   <string name="action_install_openssh">OpenSSH installieren</string>
   <string name="msg_terminal_new_sessions_disabled">Cannot create session. New sessions are disabled!</string>
+  <string name="title_install_location_error">Install location error</string>
+  <string name="title_unsupported_user">Unsupported user</string>
 </resources>
