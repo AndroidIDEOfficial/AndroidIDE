@@ -69,18 +69,12 @@ class LogReceiverService : Service() {
       return null
     }
 
-    // TODO: Handle the case where a log consumer unbinds from the service while senders
-    //   are connected to the service. In this case, we should disconnect from the senders
-    //   and stop this service.
     if (intent?.action == ACTION_CONNECT_LOG_CONSUMER) {
-      // a log consumer has been bound to the service
-
       if (isBoundToConsumer.get()) {
         log.warn("LogReceiverService is limited to one consumer only.")
         return null
       }
 
-      // start accepting senders
       log.info("Log consumer has been bound")
       return startBinderAndGet().also { binder ->
         binder.startReaders()
@@ -96,12 +90,15 @@ class LogReceiverService : Service() {
     log.debug("Accepting bind request...")
     return startBinderAndGet().also {
       if (!isBoundToConsumer.get()) {
-        // if there are no consumers bound to this service
         // listen for consumers to bind to the service for next LOG_CONSUMER_WAIT_DURATION
         // if the consumer still does not connect, disconnect from all senders and stop the service
         listenForConsumer()
       }
     }
+  }
+
+  override fun onUnbind(intent: Intent?): Boolean {
+    return super.onUnbind(intent)
   }
 
   private fun startBinderAndGet(): LogReceiverImpl {

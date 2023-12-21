@@ -27,6 +27,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.services.log.ConnectionObserverParams
+import com.itsaky.androidide.services.log.LogReceiverImpl
 import com.itsaky.androidide.services.log.LogReceiverService
 import com.itsaky.androidide.services.log.LogReceiverServiceConnection
 import com.itsaky.androidide.services.log.lookupLogService
@@ -43,6 +44,7 @@ class AppLogFragment : LogViewFragment() {
   private val isBoundToLogReceiver = AtomicBoolean(false)
 
   private var logServiceConnection: LogReceiverServiceConnection? = null
+  private var logReceiverImpl: LogReceiverImpl? = null
 
   private val logServiceConnectionObserver = object : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -131,7 +133,8 @@ class AppLogFragment : LogViewFragment() {
       val intent = Intent(context, LogReceiverService::class.java)
         .setAction(LogReceiverService.ACTION_CONNECT_LOG_CONSUMER)
 
-      val serviceConnection = logServiceConnection ?: LogReceiverServiceConnection {
+      val serviceConnection = logServiceConnection ?: LogReceiverServiceConnection { binder ->
+        logReceiverImpl = binder
         lookupLogService()?.setConsumer(this::appendLog)
       }.also { serviceConnection ->
         logServiceConnection = serviceConnection
@@ -149,13 +152,11 @@ class AppLogFragment : LogViewFragment() {
   private fun unbindFromLogReceiver() {
     try {
       if (!logsenderEnabled) {
-        // make sure the listener is released
-        logServiceConnection?.onConnected = null
         return
       }
 
       lookupLogService()?.setConsumer(null)
-      logServiceConnection?.onConnected = null
+      logReceiverImpl?.disconnectAll()
 
       val serviceConnection = logServiceConnection ?: run {
         log.warn("Trying to unbind from LogReceiverService, but ServiceConnection is null")
@@ -166,11 +167,14 @@ class AppLogFragment : LogViewFragment() {
       context.unbindService(serviceConnection)
 
       this.isBoundToLogReceiver.set(false)
-      this.logServiceConnection = null
-
       log.info("Unbound from LogReceiver service")
     } catch (e: Exception) {
       log.error("Failed to unbind from LogReceiver service")
+    } finally {
+      this.logServiceConnection?.onConnected = null
+      this.logServiceConnection = null
+
+      this.logReceiverImpl = null
     }
   }
 }
