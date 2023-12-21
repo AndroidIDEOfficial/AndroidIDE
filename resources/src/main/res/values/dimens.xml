@@ -2,4 +2,8 @@
 <resources>
     <dimen name="editor_sheet_peek_height">40dp</dimen>
     <dimen name="editor_sheet_collapsed_height">56dp</dimen>
+    <dimen name="content_padding_half">4dip</dimen>
+    <dimen name="content_padding">8dip</dimen>
+    <dimen name="content_padding_double">16dip</dimen>
+    <dimen name="content_padding_triple">32dip</dimen>
 </resources>
