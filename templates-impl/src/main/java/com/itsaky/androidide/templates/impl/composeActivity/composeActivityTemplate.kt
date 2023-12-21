@@ -41,7 +41,6 @@ fun composeActivityProject() =
     projectVersionData = ProjectVersionData(kotlin = composeKotlinVersion)) {
 
     templateName = R.string.template_compose
-    description = R.string.template_description_compose
     thumb = R.drawable.template_compose_empty_activity
 
     defaultAppModule(addAndroidX = false) {

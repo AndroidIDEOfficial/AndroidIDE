@@ -144,7 +144,7 @@ class ProjectTemplateBuilder :
   }
 
   override fun buildInternal(): ProjectTemplate {
-    return ProjectTemplate(modules, templateName!!, thumb!!, description,
+    return ProjectTemplate(modules, templateName!!, thumb!!,
       widgets!!, recipe!!)
   }
 }

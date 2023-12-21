@@ -31,6 +31,6 @@ import java.io.File
 class FileTemplateBuilder<R: FileTemplateRecipeResult>(val dir: File) : TemplateBuilder<R>() {
 
   override fun buildInternal(): FileTemplate<R> {
-    return FileTemplate(templateName!!, thumb!!, description, widgets!!, recipe!!)
+    return FileTemplate(templateName!!, thumb!!, widgets!!, recipe!!)
   }
 }
