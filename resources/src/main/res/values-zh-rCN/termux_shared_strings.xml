@@ -21,22 +21,22 @@
 <!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
 ]>
 <resources>
-  <string name="msg_directory_absolute_path">%1$s Directory Absolute Path: \"%2$s\"</string>
+  <string name="msg_directory_absolute_path">%1$s 目录绝对路径：“%2$s”</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">The %1$s (%2$s) app is not installed or is disabled.</string>
-  <string name="error_get_package_context_failed_title">Failed To Get Package Context</string>
+  <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) 应用程序未安装或被禁用。</string>
+  <string name="error_get_package_context_failed_title">无法获取软件包上下文</string>
   <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package.
         This may be because the app package is not installed or it has different APK signature from the current app.</string>
-  <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
-  <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
-  <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to enable %1$s/%2$s component</string>
+  <string name="error_get_package_context_failed_help_url_message">查看 %1$s 了解更多详情。</string>
+  <string name="error_get_component_state_failed">无法获取 %1$s/%2$s 组件状态</string>
+  <string name="error_enable_component_failed">无法启用 %1$s/%2$s 组件</string>
+  <string name="error_disable_component_failed">无法启用 %1$s/%2$s 组件</string>
   <!-- PermissionUtils -->
-  <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
-  <string name="error_attempted_to_check_for_permissions_not_requested">Attempted to check for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
-  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
+  <string name="error_failed_to_request_permissions">请求权限失败，请求代码为 %1$d：%2$s</string>
+  <string name="error_attempted_to_check_for_permissions_not_requested">尝试检查应用清单中未要求的权限：%1$s</string>
+  <string name="error_attempted_to_ask_for_permissions_not_requested">尝试请求应用清单中未要求的权限：%1$s</string>
+  <string name="error_has_not_requested_legacy_external_storage">“%1$s”软件包的目标 targetSdkVersion 为 %2$d，并且运行在 android sdk %3$d 上，但尚未在应用清单中将 requestLegacyExternalStorage 设置为 true</string>
+  <string name="msg_requires_dump_and_package_usage_stats_permissions">需要“DUMP”和“PACKAGE_USAGE_STATS”权限</string>
   <string name="error_display_over_other_apps_permission_not_granted">%1$s requires
         \"Display over other apps\" permission to start activities and services from background on Android &gt;= 10.
         Grants it from Android Settings -&gt; Apps -&gt; %1$s -&gt; Advanced -&gt; Draw over other apps.
