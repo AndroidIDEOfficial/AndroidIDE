@@ -16,13 +16,9 @@
  */
 package com.itsaky.androidide.app
 
-import android.Manifest.permission
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
 
@@ -49,13 +45,6 @@ abstract class BaseIDEActivity : AppCompatActivity() {
    */
   val activityScope = CoroutineScope(Dispatchers.Default)
 
-  val isStoragePermissionGranted: Boolean
-    get() =
-      (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
-          PackageManager.PERMISSION_GRANTED &&
-          ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
-          PackageManager.PERMISSION_GRANTED)
-
   override fun onCreate(savedInstanceState: Bundle?) {
     window?.apply {
       navigationBarColor = this@BaseIDEActivity.navigationBarColor
@@ -65,15 +54,6 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
-    if (!isStoragePermissionGranted) {
-      requestStorage()
-      return
-    }
-    if (isStoragePermissionGranted) {
-      onStorageAlreadyGranted()
-    } else {
-      onStorageDenied()
-    }
   }
 
   override fun onDestroy() {
@@ -101,35 +81,6 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     transaction.commit()
   }
 
-  protected fun requestStorage() {
-    if (isStoragePermissionGranted) {
-      onStorageGranted()
-      return
-    }
-    ActivityCompat.requestPermissions(
-      this,
-      arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE),
-      REQCODE_STORAGE
-    )
-  }
-
-  override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<String>,
-    grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (requestCode == REQCODE_STORAGE) {
-      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-        onStorageGranted()
-      else onStorageDenied()
-    }
-  }
-
-  protected open fun onStorageGranted() {}
-
-  protected open fun onStorageAlreadyGranted() {}
-  protected open fun onStorageDenied() {}
   protected open fun preSetContentLayout() {}
 
   protected abstract fun bindLayout(): View

@@ -118,6 +118,7 @@ dependencies {
   implementation(projects.gradlePluginConfig)
   implementation(projects.idestats)
   implementation(projects.subprojects.aaptcompiler)
+  implementation(projects.subprojects.appintro)
   implementation(projects.subprojects.javacServices)
   implementation(projects.subprojects.javapoet)
   implementation(projects.subprojects.xmlUtils)

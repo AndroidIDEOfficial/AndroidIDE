@@ -182,7 +182,7 @@ class IDEApplication : TermuxApplication() {
         ExistingPeriodicWorkPolicy.UPDATE, request)
 
     operation.state.observeForever(object : Observer<Operation.State> {
-      override fun onChanged(t: Operation.State?) {
+      override fun onChanged(t: Operation.State) {
         operation.state.removeObserver(this)
         log.debug("reportStatsIfNecessary: WorkManager enqueue result: $t")
       }
@@ -239,7 +239,7 @@ class IDEApplication : TermuxApplication() {
     val operation = WorkManager.getInstance(this)
       .cancelUniqueWork(StatUploadWorker.WORKER_WORK_NAME)
     operation.state.observeForever(object : Observer<Operation.State> {
-      override fun onChanged(t: Operation.State?) {
+      override fun onChanged(t: Operation.State) {
         operation.state.removeObserver(this)
         log.info("StatUploadWorker: Cancellation result state: $t")
       }

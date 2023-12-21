@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">बिल्ड में उपयोग करने के लिए एक कस्टम ग्रेडल इंस्टॉलेशन निर्दिष्ट करें। यह gradle-wrapper.properties में निर्दिष्ट संस्करण को ओवरराइड करता है।</string>
   <string name="msg_gradle_installation_path">ग्रेडल इंस्टॉलेशन पथ</string>
   <string name="msg_gradle_installation_input_help">ग्रेडल रैपर का उपयोग करने के लिए खाली छोड़ दें।</string>
-  <string name="msg_require_install_jdk_and_android_sdk">IDE के काम करने के लिए आपको JDK और Android SDK इंस्टॉल करने की आवश्यकता है। इंस्टॉल करने के लिए क्लिक करे \'हां\' और <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">इन निर्देशों का पालन करें</a>]]></string>
+  <string name="msg_install_tools">IDE के काम करने के लिए आपको JDK और Android SDK इंस्टॉल करने की आवश्यकता है। इंस्टॉल करने के लिए क्लिक करे \'हां\' और <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">इन निर्देशों का पालन करें</a>]]></string>
   <string name="build_status_idle">कोई निर्माण प्रगति पर नहीं है</string>
   <string name="build_status_in_progress">निर्माण चल रहा है…</string>
   <string name="build_status_failed">निर्माण विफल रहा। अधिक विवरण के लिए बिल्ड आउटपुट देखें।</string>

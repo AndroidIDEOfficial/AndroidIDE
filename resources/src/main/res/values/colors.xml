@@ -9,10 +9,13 @@
   <color name="completionList_backgroundSelected">?attr/colorPrimaryVariant</color>
   <color name="rippleHighlightColor">#85121212</color>
 
-  <color name="log_warning">#FF7043</color>
+  <color name="color_error">#f44336</color>
+  <color name="color_warning">#ff9800</color>
 
-  <color name="diagnostic_error">#f44336</color>
-  <color name="diagnostic_warning">@color/log_warning</color>
+  <color name="log_warning">@color/color_warning</color>
+
+  <color name="diagnostic_error">@color/color_error</color>
+  <color name="diagnostic_warning">@color/color_warning</color>
 
   <color name="content_background">#212121</color>
 
@@ -27,5 +30,6 @@
 
   <color name="splash_bg">@android:color/white</color>
   <color name="splash_icon_tint">@android:color/black</color>
+  <color name="color_android">#3DDC84</color>
 
 </resources>

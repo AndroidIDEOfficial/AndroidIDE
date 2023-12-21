@@ -36,6 +36,11 @@ public class TermuxShellManager {
     public final List<AppShell> mTermuxTasks = new ArrayList<>();
 
     /**
+     * The pending plugin ExecutionCommands that have yet to be processed by this service.
+     */
+    public final List<ExecutionCommand> mPendingPluginExecutionCommands = new ArrayList<>();
+
+    /**
      * The {@link ExecutionCommand.Runner#APP_SHELL} number after app process was started/restarted.
      */
     public static int APP_SHELL_NUMBER_SINCE_APP_START;

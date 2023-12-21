@@ -53,11 +53,11 @@ class TerminalSidebarAction(context: Context, override val order: Int) : Abstrac
       val context = data.requireContext()
       val intent = Intent(context, TerminalActivity::class.java).apply {
         putExtra(
-          TerminalActivity.KEY_WORKING_DIRECTORY,
+          TERMUX_ACTIVITY.EXTRA_SESSION_WORKING_DIR,
           Objects.requireNonNull(IProjectManager.getInstance().projectDirPath)
         )
         putExtra(
-          TerminalActivity.KEY_SESSION_NAME,
+          TERMUX_ACTIVITY.EXTRA_SESSION_NAME,
           IProjectManager.getInstance().rootProject?.rootProject?.name
         )
         putExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, isFailsafe)

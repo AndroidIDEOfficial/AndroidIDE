@@ -72,7 +72,7 @@ class MainViewModel : ViewModel() {
   fun postTransition(owner: LifecycleOwner, action: Runnable) {
     if (isTransitionInProgress) {
       _isTransitionInProgress.observe(owner, object : Observer<Boolean> {
-        override fun onChanged(t: Boolean?) {
+        override fun onChanged(t: Boolean) {
           _isTransitionInProgress.removeObserver(this)
           action.run()
         }

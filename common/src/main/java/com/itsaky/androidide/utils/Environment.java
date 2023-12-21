@@ -17,16 +17,22 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
+import android.system.ErrnoException;
+import android.system.Os;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+import kotlin.io.FilesKt;
 
 @SuppressLint("SdCardPath")
 public final class Environment {
@@ -210,5 +216,20 @@ public final class Environment {
 
   public static File getProjectCacheDir(File projectDir) {
     return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
+  }
+
+  @NonNull
+  public static File createTempFile() {
+    var file = newTempFile();
+    while (file.exists()) {
+      file = newTempFile();
+    }
+
+    return file;
+  }
+
+  @NonNull
+  private static File newTempFile() {
+    return new File(TMP_DIR, "temp_" + UUID.randomUUID().toString().replace('-', 'X'));
   }
 }

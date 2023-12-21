@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">Tentukan penginstalan Custom Gradle yang akan digunakan untuk build. Ini MENGGANTI versi yang ditentukan dalam gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">Path instalasi Gradle</string>
   <string name="msg_gradle_installation_input_help">Biarkan kosong untuk menggunakan Gradle wrapper.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">Anda perlu menginstal JDK dan Android SDK agar IDE berfungsi. Untuk menginstal klik \'Ya\' dan ikuti petunjuknya <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">di sini</a>]]></string>
+  <string name="msg_install_tools">Anda perlu menginstal JDK dan Android SDK agar IDE berfungsi. Untuk menginstal klik \'Ya\' dan ikuti petunjuknya <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">di sini</a>]]></string>
   <string name="build_status_idle">Tidak ada build yang sedang berlangsung</string>
   <string name="build_status_in_progress">Build sedang berlangsung…</string>
   <string name="build_status_failed">Build gagal. Lihat output build untuk detail selengkapnya.</string>

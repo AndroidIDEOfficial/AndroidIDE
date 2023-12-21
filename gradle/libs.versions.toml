@@ -15,6 +15,7 @@ antlr4 = "4.13.1"
 androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
+appintro = "6.3.1"
 markwon = "4.6.2"
 maven-publish-plugin = "0.25.3"
 
@@ -82,6 +83,7 @@ androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynam
 androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
 androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2.0" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version = "1.0.0" }
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version = "1.0.0"}
 #noinspection GradleDependency
 androidx-window-v1alpha9 = { module = "androidx.window:window", version="1.0.0-alpha09" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
@@ -147,6 +149,6 @@ maven-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish-plugin" }
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }

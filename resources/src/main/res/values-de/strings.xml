@@ -302,7 +302,7 @@
   <string name="idepref_msg_customGradleInstallation">Geben Sie eine benutzerdefinierte Gradle-Installation an, die für den Build verwendet werden soll. Dies ÜBERSCHREIBT die in gradle-wrapper.properties angegebene Version</string>
   <string name="msg_gradle_installation_path">Gradle installation Pfad</string>
   <string name="msg_gradle_installation_input_help">Lass dies leer um den Gradle wrapper zu benutzen.</string>
-  <string name="msg_require_install_jdk_and_android_sdk">Sie müssen das JDK und das Android SDK installieren, damit die IDE funktioniert. Um dies zu installieren klick \'Ok\' und folge der Anleitung <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">hier</a>]]></string>
+  <string name="msg_install_tools">Sie müssen das JDK und das Android SDK installieren, damit die IDE funktioniert. Um dies zu installieren klick \'Ok\' und folge der Anleitung <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">hier</a>]]></string>
   <string name="build_status_idle">Kein Build wird ausgeführt</string>
   <string name="build_status_in_progress">Build läuft…</string>
   <string name="build_status_failed">Build ist fehlgeschlagen. Sieh dir die Ausgabe an für mehr Informationen</string>

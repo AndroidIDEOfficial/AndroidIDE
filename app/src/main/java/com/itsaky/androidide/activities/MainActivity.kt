@@ -21,16 +21,12 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
-import android.text.method.LinkMovementMethod
 import android.view.View
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.transition.TransitionManager
 import androidx.transition.doOnEnd
-import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.LimitlessIDEActivity
@@ -40,15 +36,12 @@ import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
-import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
-import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.viewmodel.MainViewModel
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_MAIN
@@ -88,21 +81,7 @@ class MainActivity : LimitlessIDEActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    if (!checkDeviceSupported()) {
-      return
-    }
-
-    showStatConsentDialogIfNeeded {
-
-      app.reportStatsIfNecessary()
-
-      if (!checkToolsIsInstalled()) {
-        showDialogInstallJdkSdk()
-      } else {
-        openLastProject()
-      }
-    }
+    openLastProject()
 
     viewModel.currentScreen.observe(this) { screen ->
       if (screen == -1) {
@@ -125,30 +104,8 @@ class MainActivity : LimitlessIDEActivity() {
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
   }
 
-  private fun showStatConsentDialogIfNeeded(onResult: () -> Unit) {
-    if (statConsentDialogShown) {
-      onResult()
-      return
-    }
-
-    DialogUtils.newMaterialDialogBuilder(this).apply {
-      setTitle(string.title_androidide_statistics)
-      setMessage(string.msg_androidide_statistics)
-      setCancelable(false)
-      setPositiveButton(string.btn_opt_in) { dialog, _ ->
-        dialog.dismiss()
-        statOptIn = true
-      }
-      setNegativeButton(string.btn_no_thanks) { dialog, _ ->
-        dialog.dismiss()
-        statOptIn = false
-      }
-      setOnDismissListener {
-        statConsentDialogShown = true
-        onResult()
-      }
-      show()
-    }
+  private fun openOnboarding() {
+    startActivity(Intent(this, OnboardingActivity::class.java))
   }
 
   override fun onInsetsUpdated(insets: Rect) {
@@ -194,56 +151,9 @@ class MainActivity : LimitlessIDEActivity() {
     }
   }
 
-  override fun onStorageDenied() {
-    flashError(string.msg_storage_denied)
-    finishAffinity()
-  }
-
   override fun bindLayout(): View {
     _binding = ActivityMainBinding.inflate(layoutInflater)
     return binding.root
-  }
-
-  private fun showDialogInstallJdkSdk() {
-    val dp24 = SizeUtils.dp2px(24f)
-    val builder = DialogUtils.newMaterialDialogBuilder(this)
-    builder.setTitle(string.title_warning)
-    val view = TextView(this)
-    view.setPaddingRelative(dp24, dp24, dp24, dp24)
-    view.text = HtmlCompat.fromHtml(getString(string.msg_require_install_jdk_and_android_sdk),
-      HtmlCompat.FROM_HTML_MODE_COMPACT)
-    view.movementMethod = LinkMovementMethod.getInstance()
-    builder.setView(view)
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { _, _ -> openTerminal() }
-    builder.setNegativeButton(android.R.string.cancel) { _, _ -> finishAffinity() }
-    builder.setNeutralButton(string.btn_docs) { _, _ -> app.openDocs(); finishAffinity() }
-    builder.show()
-  }
-
-  private fun openTerminal() {
-    startActivity(Intent(this, TerminalActivity::class.java))
-  }
-
-  private fun checkDeviceSupported(): Boolean {
-    val configProvider = IDEBuildConfigProvider.getInstance()
-
-    if (!configProvider.supportsBuildFlavor()) {
-      DialogUtils.showUnSupportedDevice(this, configProvider.flavorArch.abi,
-        configProvider.deviceArch.abi)
-      return false
-    }
-
-    if (configProvider.flavorArch != configProvider.deviceArch) {
-      // IDE's build flavor is NOT the primary arch of the device
-      // warn the user
-      if (!prefManager.getBoolean("ide.archConfig.experimentalWarning.isShown", false)) {
-        DialogUtils.showExperimentalArchSupportWarning(this, configProvider.flavorArch.abi,
-          configProvider.deviceArch.abi)
-      }
-    }
-
-    return true
   }
 
   private fun openLastProject() {
@@ -293,10 +203,6 @@ class MainActivity : LimitlessIDEActivity() {
   internal fun openProject(root: File) {
     ProjectManagerImpl.getInstance().projectPath = root.absolutePath
     startActivity(Intent(this, EditorActivityKt::class.java))
-  }
-
-  private fun checkToolsIsInstalled(): Boolean {
-    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
   }
 
   override fun onDestroy() {
