@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Copiar</string>
-  <string name="terminal_more">More…</string>
+  <string name="terminal_more">Mais…</string>
   <string name="text_to_search">Texto a pesquisar</string>
   <string name="title_open_source_licenses">Licenças de código aberto</string>
   <string name="msg_about_licensed_under">Licenciado sob:</string>
@@ -45,8 +45,8 @@
   <string name="msg_pick_single_file">Por favor, escolha apenas um diretório</string>
   <string name="please_wait">Por favor aguarde um momento …</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
+  <string name="title_unsupported_device">Dispositivo não suportado</string>
+  <string name="msg_unsupported_device">Você está usando a variante %1$s do AndroidIDE em um dispositivo %2$s. Esta configuração não é suportada. Por favor, instale a variante %2$s do AndroidIDE.</string>
   <string name="build">Compilar</string>
   <string name="build_output">Saída de compilação</string>
   <string name="lint_tasks">Tarefas do Lint</string>
@@ -529,7 +529,7 @@
   <string name="msg_launch_failure_no_app_module">Não é possível executar a aplicação. Nenhum módulo de aplicativo encontrado no projeto.</string>
   <string name="title_launch_app">Iniciar aplicativo</string>
   <string name="title_experiment_flavor">Experimental</string>
-  <string name="msg_experimental_flavor">You are using %1$s variant of AndroidIDE on a %2$s device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="msg_experimental_flavor">Você está usando a variante %1$s do AndroidIDE em um dispositivo %2$s. Esta configuração pode funcionar, mas resultará em desempenho reduzido e possíveis vulnerabilidades de segurança. Por favor, evite usar essa configuração sempre que possível.</string>
   <string name="idepref_editor_pinLineNumbers_title">Fixar linha de números</string>
   <string name="idepref_editor_pinLineNumbers_summary">Se o editor deve fixar o painel de linha de números quando rolado horizontalmente.</string>
   <string name="theme_blue_wave">Onda Azul</string>
