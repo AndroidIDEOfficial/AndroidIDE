@@ -28,14 +28,14 @@
   <string name="permission_run_command_description">execute arbitrary commands within &amp;TERMUX_APP_NAME;
     environment and access files</string>
   <!-- Termux Bootstrap Packages Installation -->
-  <string name="bootstrap_installer_body">Installing bootstrap packages…</string>
-  <string name="bootstrap_error_title">Unable to install bootstrap</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; was unable to install the bootstrap packages.</string>
-  <string name="bootstrap_error_abort">Abort</string>
-  <string name="bootstrap_error_try_again">Try again</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; can only be run as the primary user.
-        \nBootstrap binaries compiled for &amp;TERMUX_APP_NAME; have hardcoded $PREFIX path and cannot be installed
-        under any path other than:\n%1$s.</string>
+  <string name="bootstrap_installer_body">Instalando pacotes de inicialização…</string>
+  <string name="bootstrap_error_title">Não foi possível instalar os arquivos de inicialização</string>
+  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; não foi possível instalar os pacotes de bootstrap.</string>
+  <string name="bootstrap_error_abort">Cancelar</string>
+  <string name="bootstrap_error_try_again">Tente novamente</string>
+  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; pode ser executado somente como o usuário principal.
+        \nBootstrap binários compilados para &amp;TERMUX_APP_NAME; codificou o caminho $PREFIX e não pode ser instalado
+        sob qualquer caminho que não seja:\n%1$s.</string>
   <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; cannot be installed on
         portable/external/removable sd card on your device.
         \nBootstrap binaries compiled for &amp;TERMUX_APP_NAME; have hardcoded $PREFIX path and cannot be installed
