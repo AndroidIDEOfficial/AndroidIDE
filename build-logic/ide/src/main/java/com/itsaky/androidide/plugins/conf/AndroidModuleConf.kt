@@ -109,6 +109,10 @@ fun Project.configureAndroidModule(
 
     buildFeatures.viewBinding = true
     buildFeatures.buildConfig = true
+
+    lintOptions {
+      isCheckDependencies = true
+    }
   }
 }
 
