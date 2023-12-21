@@ -52,8 +52,8 @@
   <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here.
         Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
-  <string name="title_share_with">Share With</string>
-  <string name="title_open_url_with">Open URL With</string>
+  <string name="title_share_with">Teilen mit</string>
+  <string name="title_open_url_with">URL öffnen mit</string>
   <string name="msg_storage_permission_not_granted">The storage permission not granted.</string>
   <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
   <!-- Shell -->
@@ -84,12 +84,12 @@
         It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_yes">Yes</string>
-  <string name="action_no">No</string>
-  <string name="action_copy">Copy</string>
-  <string name="action_share">Share</string>
-  <string name="action_cancel">Cancel</string>
-  <string name="action_save_to_file">Save To File</string>
+  <string name="action_yes">Ja</string>
+  <string name="action_no">Nein</string>
+  <string name="action_copy">Kopieren</string>
+  <string name="action_share">Teilen</string>
+  <string name="action_cancel">Abbrechen</string>
+  <string name="action_save_to_file">In Datei speichern</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
   <!-- Launcher Icons -->
@@ -97,15 +97,15 @@
   <string name="action_disable_launcher_icon">Disable Launcher Icon</string>
   <string name="msg_enabling_launcher_icon">Enabling %1$s app launcher icon</string>
   <string name="msg_disabling_launcher_icon">Disabling %1$s app launcher icon</string>
-  <string name="setting_launcher_icon_title">Launcher Icon Enabled</string>
-  <string name="setting_launcher_icon_enabled_off">Launcher Icon will be disabled.</string>
-  <string name="setting_launcher_icon_enabled_on">Launcher Icon will be enabled. (Default)</string>
+  <string name="setting_launcher_icon_title">Launcher-Symbol aktiviert</string>
+  <string name="setting_launcher_icon_enabled_off">Launcher-Symbol wird deaktiviert.</string>
+  <string name="setting_launcher_icon_enabled_on">Launcher-Symbol wird aktiviert. (Standard)</string>
   <!-- Log Level -->
   <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
-  <string name="log_level_normal">Normal</string>
+  <string name="log_level_off">Aus</string>
+  <string name="log_level_normal">Standard</string>
   <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_verbose">Detailliert</string>
+  <string name="log_level_unknown">*Unbekannt*</string>
+  <string name="log_level_value">Logcat Log-Level auf \"%1$s \" eingestellt</string>
 </resources>
