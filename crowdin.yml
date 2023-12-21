@@ -5,9 +5,3 @@ files:
       - /resources/string
       - /resources/string-array/item
       - /resources/plural/item
-  - source: /subprojects/appintro/src/main/res/values/*.xml
-    translation: /subprojects/appintro/src/main/res/values-%android_code%/%original_file_name%
-    translatable_elements:
-      - /resources/string
-      - /resources/string-array/item
-      - /resources/plural/item
