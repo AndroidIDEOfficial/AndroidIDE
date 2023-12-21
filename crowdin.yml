@@ -1,6 +1,13 @@
 files:
-  - source: /resources/src/main/res/values/strings.xml
-    translation: /resources/src/main/res/values-%two_letters_code%/strings.xml
-    content_segmentation: 0
+  - source: /resources/src/main/res/values/*.xml
+    translation: /resources/src/main/res/values-%android_code%/%original_file_name%
     translatable_elements:
-      - /resources/**
+      - /resources/string
+      - /resources/string-array/item
+      - /resources/plural/item
+  - source: /subprojects/appintro/src/main/res/values/*.xml
+    translation: /subprojects/appintro/src/main/res/values-%android_code%/%original_file_name%
+    translatable_elements:
+      - /resources/string
+      - /resources/string-array/item
+      - /resources/plural/item
