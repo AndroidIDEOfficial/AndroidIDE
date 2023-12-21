@@ -28,8 +28,8 @@
   <string name="permission_run_command_description">execute arbitrary commands within &amp;TERMUX_APP_NAME;
     environment and access files</string>
   <!-- Termux Bootstrap Packages Installation -->
-  <string name="bootstrap_installer_body">Installing bootstrap packages…</string>
-  <string name="bootstrap_error_title">Unable to install bootstrap</string>
+  <string name="bootstrap_installer_body">Installation der Bootstrap-Pakete…</string>
+  <string name="bootstrap_error_title">Bootstrap konnte nicht installiert werden</string>
   <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; was unable to install the bootstrap packages.</string>
   <string name="bootstrap_error_abort">Abort</string>
   <string name="bootstrap_error_try_again">Try again</string>
