@@ -20,12 +20,7 @@
 <!ENTITY TERMUX_APP_NAME "AndroidIDE">
 <!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
 ]>
-<resources>
-  <string name="application_name">&amp;TERMUX_APP_NAME;</string>
-  <string name="shared_user_label">&amp;TERMUX_APP_NAME; 用户</string>
-  <!-- Termux RUN_COMMAND permission -->
-  <string name="permission_run_command_label">在 &amp;TERMUX_APP_NAME; 环境中运行命令</string>
-  <string name="permission_run_command_description">在 &amp;TERMUX_APP_NAME; 环境中执行任意命令并访问文件</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">正在安装引导程序包…</string>
   <string name="bootstrap_error_title">无法安装引导程序</string>
@@ -39,8 +34,8 @@
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">新会话</string>
   <string name="action_new_session_failsafe">安全模式</string>
-  <string name="title_max_terminals_reached">Max terminals reached</string>
-  <string name="msg_max_terminals_reached">Close down existing ones before creating new.</string>
+  <string name="title_max_terminals_reached">已达到最大终端数量</string>
+  <string name="msg_max_terminals_reached">开始新会话之前关闭现会话。</string>
   <string name="title_rename_session">Set session name</string>
   <string name="action_rename_session_confirm">Set</string>
   <string name="title_create_named_session">New named session</string>
@@ -64,7 +59,6 @@
   <string name="msg_terminal_reset">Terminal reset</string>
   <string name="action_kill_process">Kill process (%d)</string>
   <string name="title_confirm_kill_process">Really kill this session?</string>
-  <string name="action_style_terminal">Style</string>
   <string name="action_toggle_keep_screen_on">Keep screen on</string>
   <string name="action_open_help">Help</string>
   <string name="action_open_settings">Settings</string>
@@ -83,11 +77,6 @@
   <string name="error_termux_service_unsupported_execution_command_runner">Unsupported execution command runner to TermuxService: `%1$s`</string>
   <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
   <string name="error_termux_service_execution_command_shell_name_unset">Shell name not set but `%1$s` shell create mode passed</string>
-  <!-- Termux RunCommandService -->
-  <string name="error_run_command_service_invalid_intent_action">Invalid intent action to RunCommandService: `%1$s`</string>
-  <string name="error_run_command_service_invalid_execution_command_runner">Invalid execution command runner to RunCommandService: `%1$s`</string>
-  <string name="error_run_command_service_mandatory_extra_missing">Mandatory extra missing to RunCommandService: \"%1$s\"</string>
-  <string name="error_run_command_service_api_help">Visit %1$s for more info on RUN_COMMAND Intent usage.</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Save file in ~/downloads/</string>
   <string name="action_file_received_edit">Edit</string>
@@ -112,10 +101,6 @@
   <string name="termux_terminal_view_key_logging_enabled_off">Logs will not have entries for terminal view keys. (Default)</string>
   <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys.
                     These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
-  <!-- Plugin Error Notifications -->
-  <string name="termux_plugin_error_notifications_enabled_title">Plugin Error Notifications</string>
-  <string name="termux_plugin_error_notifications_enabled_off">Disable flashes and notifications for plugin errors.</string>
-  <string name="termux_plugin_error_notifications_enabled_on">Show flashes and notifications for plugin errors. (Default)</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">Crash Report Notifications</string>
   <string name="termux_crash_report_notifications_enabled_off">Disable notifications for crash reports.</string>
@@ -146,8 +131,4 @@
   <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled.
                     It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view.
                     If it causes screen flickering on your devices, then disable it. (Default)</string>
-  <!-- About Preference -->
-  <string name="about_preference_title">About</string>
-  <!-- Donate Preference -->
-  <string name="donate_preference_title">Donate</string>
 </resources>
