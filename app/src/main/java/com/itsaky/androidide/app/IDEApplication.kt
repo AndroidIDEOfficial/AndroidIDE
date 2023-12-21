@@ -50,6 +50,7 @@ import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
 import com.itsaky.androidide.preferences.internal.UI_MODE
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.stats.AndroidIDEStats
 import com.itsaky.androidide.stats.StatUploadWorker
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
@@ -207,15 +208,15 @@ class IDEApplication : TermuxApplication() {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onPrefChanged(event: PreferenceChangeEvent) {
-    val enabled = event.value as? Boolean? ?: return
+    val enabled = event.value as? Boolean?
     if (event.key == STAT_OPT_IN) {
-      if (enabled) {
+      if (enabled == true) {
         reportStatsIfNecessary()
       } else {
         cancelStatUploadWorker()
       }
     } else if (event.key == KEY_DEVOPTS_DEBUGGING_DUMPLOGS) {
-      if (enabled) {
+      if (enabled == true) {
         startLogcatReader()
       } else {
         stopLogcatReader()
@@ -227,7 +228,7 @@ class IDEApplication : TermuxApplication() {
       // Use empty locale list if the locale has been reset to 'System Default'
       val selectedLocale = com.itsaky.androidide.preferences.internal.selectedLocale
       val localeListCompat = selectedLocale?.let {
-        LocaleListCompat.create(Locale.forLanguageTag(selectedLocale))
+        LocaleListCompat.create(LocaleProvider.getLocale(selectedLocale))
       } ?: LocaleListCompat.getEmptyLocaleList()
 
       AppCompatDelegate.setApplicationLocales(localeListCompat)

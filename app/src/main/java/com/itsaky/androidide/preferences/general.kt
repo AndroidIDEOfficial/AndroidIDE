@@ -38,10 +38,8 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
-import com.itsaky.androidide.ui.themes.ThemeManager
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import java.util.Locale
 
 @Parcelize
 class GeneralPreferences(
@@ -164,32 +162,40 @@ class LocaleSelector(
   override val summary: Int? = R.string.idepref_general_localeSelector_summary,
   override val icon: Int? = R.drawable.ic_translate
 ) : SingleChoicePreference() {
-  
+
   @IgnoredOnParcel
-  private val locales: Array<String>? = null
+  private val locales by lazy {
+    mutableListOf<String>().apply {
+      add("")
+      addAll(LocaleProvider.SUPPORTED_LOCALES.keys)
+    }
+  }
 
   override fun getChoices(context: Context): Array<String> {
-    return locales ?: mutableListOf<String>().apply { 
-      add(context.getString(R.string.locale_system_default))
-      
-      LocaleProvider.SUPPORTED_LOCALES.map {
-        val locale = Locale.forLanguageTag(it)
-        locale.getDisplayName(locale)
-      }.also { addAll(it) }
+    return locales.mapIndexed { index, locale ->
+      if (index == 0) {
+        context.getString(R.string.locale_system_default)
+      } else {
+        LocaleProvider.getLocale(locale)!!.let { it.getDisplayName(it) }
+      }
     }.toTypedArray()
   }
 
   override fun getInitiallySelectionItemPosition(context: Context): Int {
     val applicationLocales = AppCompatDelegate.getApplicationLocales()
     val locale = if (applicationLocales.size() > 0) {
-      applicationLocales.get(0)!!.language
-    } else selectedLocale ?: return 0 // Use system default if not set
-    return LocaleProvider.SUPPORTED_LOCALES.indexOf(locale) + 1
+      applicationLocales.get(0)
+    } else {
+      LocaleProvider.getLocale(selectedLocale)
+    }
+
+    val key = LocaleProvider.getKey(locale) ?: return 0
+    return locales.indexOf(key).coerceAtLeast(0)
   }
 
   override fun onChoiceConfirmed(position: Int) {
     // Reset to null if 'System Default' is selected
-    selectedLocale = if (position == 0) null else LocaleProvider.SUPPORTED_LOCALES[position - 1]
+    selectedLocale = if (position == 0) null else locales[position]
   }
 }
 
