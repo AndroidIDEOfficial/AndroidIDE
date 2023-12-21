@@ -25,6 +25,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import projectVersionCode
 
 private val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a", "x86_64")
+private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
 fun Project.configureAndroidModule(
   coreLibDesugDep: Dependency
@@ -52,9 +53,9 @@ fun Project.configureAndroidModule(
     compileOptions {
       sourceCompatibility = BuildConfig.javaVersion
       targetCompatibility = BuildConfig.javaVersion
-
-      isCoreLibraryDesugaringEnabled = true
     }
+
+    configureCoreLibDesugaring(this, coreLibDesugDep)
 
     if (":app" == project.path) {
       flavorDimensions("default")
@@ -108,7 +109,15 @@ fun Project.configureAndroidModule(
 
     buildFeatures.viewBinding = true
     buildFeatures.buildConfig = true
+  }
+}
 
+private fun Project.configureCoreLibDesugaring(baseExtension: BaseExtension, coreLibDesugDep: Dependency) {
+  val coreLibDesugaringEnabled = project.path !in disableCoreLibDesugaringForModules
+
+  baseExtension.compileOptions.isCoreLibraryDesugaringEnabled = coreLibDesugaringEnabled
+
+  if (coreLibDesugaringEnabled) {
     configurations.getByName("coreLibraryDesugaring").apply {
       dependencies.add(coreLibDesugDep)
     }
