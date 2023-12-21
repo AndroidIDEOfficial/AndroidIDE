@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <style name="Theme.AndroidIDE.Material3" parent="Theme.Material3.Light.NoActionBar"/>
+
+  <style name="Theme.AndroidIDE.Base" parent="Theme.AndroidIDE.Material3">
+    <item name="android:textCursorDrawable">@drawable/textfield_cursor</item>
+    <item name="fontFamily">@font/josefin_sans</item>
+    <item name="android:fontFamily">@font/josefin_sans</item>
+  </style>
+
+  <style name="Theme.AndroidIDE.Styled" parent="Theme.AndroidIDE.Base">
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="switchPreferenceStyle">@style/AppTheme.SwitchPreference</item>
+    <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
+    <item name="textAppearanceBodySmall">@style/TextAppearance.AndroidIDE.BodySmall</item>
+    <item name="colorSuccess">@color/green_500</item>
+  </style>
+
+  <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+
+    <!-- Left drawer. -->
+    <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Light</item>
+    <item name="termuxActivityDrawerBackground">@android:color/white</item>
+    <item name="termuxActivityDrawerImageTint">@android:color/black</item>
+
+    <!-- Extra keys colors. -->
+    <item name="extraKeysButtonTextColor">@android:color/white</item>
+    <item name="extraKeysButtonActiveTextColor">@color/red_400</item>
+    <item name="extraKeysButtonBackgroundColor">@android:color/black</item>
+    <item name="extraKeysButtonActiveBackgroundColor">@color/grey_500</item>
+  </style>
+
+  <style name="AndroidIDE.Widget.Chip.Warning" parent="Widget.MaterialComponents.Chip.Action">
+    <item name="chipIcon">@id/info</item>
+    <item name="chipIconTint">@color/log_warning</item>
+    <item name="chipStrokeColor">@color/log_warning</item>
+  </style>
+
+  <style name="TextAppearance.AndroidIDE.TitleLarge.Bold" parent="TextAppearance.Material3.TitleLarge">
+    <item name="android:textStyle">bold</item>
+    <item name="android:textAlignment">center</item>
+  </style>
+
+  <style name="TextAppearance.AndroidIDE.BodySmall" parent="TextAppearance.Material3.BodySmall">
+    <item name="android:textColor">@color/material_on_background_disabled</item>
+  </style>
+
+  <style name="AppTheme.Splash" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/splash_bg</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
+    <item name="windowSplashScreenAnimationDuration">200</item>
+    <item name="postSplashScreenTheme">@style/Theme.AndroidIDE</item>XZ
+  </style>
+
+  <style name="AppTheme.SwitchPreference" parent="Preference.SwitchPreference.Material">
+    <item name="android:widgetLayout">@layout/preference_widget_materialswitch</item>
+  </style>
+
+  <style name="AppTheme.TabLayout" parent="Widget.Material3.TabLayout">
+    <item name="tabIndicatorAnimationMode">elastic</item>
+    <item name="tabIndicatorFullWidth">false</item>
+    <item name="tabIndicatorGravity">bottom</item>
+    <item name="tabIndicatorHeight">3dp</item>
+    <item name="tabMode">scrollable</item>
+  </style>
+
+  <style name="AppTheme.TabLayout.Title" parent="TextAppearance.Design.Tab">
+    <item name="textAllCaps">false</item>
+    <item name="android:textAllCaps">false</item>
+  </style>
+
+  <style name="AppTheme.ShapeOverlay.Large" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSizeTopRight">16dp</item>
+    <item name="cornerSizeTopLeft">16dp</item>
+    <item name="cornerSizeBottomRight">0dp</item>
+    <item name="cornerSizeBottomLeft">0dp</item>
+  </style>
+
+  <style name="AppTheme.ShapeAppearance.MainFragment.Logo" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">25dp</item>
+  </style>
+
+  <style name="AppTheme.ShapeOverlay.TemplateImage" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">16dp</item>
+  </style>
+
+  <!-- Alert Dialog -->
+  <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+    <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
+    <item name="android:windowEnterAnimation">@animator/dialog_in</item>
+    <item name="android:windowExitAnimation">@animator/dialog_out</item>
+  </style>
+
+  <style name="MaterialDialog.ShapeAppearance" parent="">
+    <item name="cornerSize">28dp</item>
+  </style>
+
+  <style name="PopupAnimation">
+    <item name="android:windowEnterAnimation">@anim/popup_in</item>
+    <item name="android:windowExitAnimation">@anim/popup_out</item>
+  </style>
+
+  <style name="AppTheme.SheetAboveKeyboard" parent="Theme.Material3.Dark.BottomSheetDialog">
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowSoftInputMode">adjustResize</item>
+  </style>
+
+</resources>
