@@ -469,6 +469,6 @@
   <string name="action_install_git">安装 Git</string>
   <string name="action_install_openssh">安装 OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">无法创建会话，新会话被禁用！</string>
-  <string name="title_install_location_error">Install location error</string>
-  <string name="title_unsupported_user">Unsupported user</string>
+  <string name="title_install_location_error">安装位置错误</string>
+  <string name="title_unsupported_user">不支持的用户</string>
 </resources>
