@@ -72,62 +72,60 @@
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动终端会话。
          要授予权限，从系统设置 -&gt; 应用 -&gt; &amp;TERMUX_APP_NAME; -&gt; 高级</string>
-  <string name="error_termux_service_invalid_execution_command_runner">Invalid execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">Unsupported execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">Shell name not set but `%1$s` shell create mode passed</string>
+  <string name="error_termux_service_invalid_execution_command_runner">TermuxService 的命令执行器无效：`%1$s`</string>
+  <string name="error_termux_service_unsupported_execution_command_runner">TermuxService 不支持的命令执行器：`%1$s`</string>
+  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">TermuxService 不支持 shell 创建模式执行命令：`%1$s`</string>
+  <string name="error_termux_service_execution_command_shell_name_unset">未设置 shell 名称，但已通过`%1$s` shell 创建模式</string>
   <!-- Termux File Receiver -->
-  <string name="title_file_received">Save file in ~/downloads/</string>
-  <string name="action_file_received_edit">Edit</string>
-  <string name="action_file_received_open_directory">Open directory</string>
+  <string name="title_file_received">将文件保存在 ~/downloads/</string>
+  <string name="action_file_received_edit">编辑</string>
+  <string name="action_file_received_open_directory">打开目录</string>
   <!-- Miscellaneous -->
-  <string name="error_termux_service_start_failed_general">Failed to start TermuxService. Check logcat for exception message.</string>
-  <string name="error_termux_service_start_failed_bg">Failed to start TermuxService while app is in background due to android bg restrictions.</string>
+  <string name="error_termux_service_start_failed_general">无法启动 TermuxService，检查日志中的异常消息。</string>
+  <string name="error_termux_service_start_failed_bg">由于 android 的后台限制，应用在后台时无法启动 TermuxService。</string>
   <!-- Termux Settings -->
-  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; Settings</string>
+  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; 设置</string>
   <!-- Termux App Preferences -->
   <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
-  <string name="termux_preferences_summary">Preferences for &amp;TERMUX_APP_NAME; app</string>
+  <string name="termux_preferences_summary">&amp;TERMUX_APP_NAME; 应用的首选项</string>
   <!-- Debugging Preferences -->
-  <string name="termux_debugging_preferences_title">Debugging</string>
-  <string name="termux_debugging_preferences_summary">Preferences for debugging</string>
+  <string name="termux_debugging_preferences_title">调试</string>
+  <string name="termux_debugging_preferences_summary">调试首选项</string>
   <!-- Logging Category -->
-  <string name="termux_logging_header">Logging</string>
+  <string name="termux_logging_header">日志</string>
   <!-- Log Level -->
-  <string name="termux_log_level_title">Log Level</string>
+  <string name="termux_log_level_title">日志级别</string>
   <!-- Terminal View Key Logging -->
-  <string name="termux_terminal_view_key_logging_enabled_title">Terminal View Key Logging</string>
-  <string name="termux_terminal_view_key_logging_enabled_off">Logs will not have entries for terminal view keys. (Default)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys.
-                    These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
+  <string name="termux_terminal_view_key_logging_enabled_title">终端视图按键记录</string>
+  <string name="termux_terminal_view_key_logging_enabled_off">日志条目不会包含终端视图按键。（默认）</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Logcat 日志将包含终端视图按键的条目。
+                     非常冗长，在正常情况下应该禁用，否则会导致性能问题。</string>
   <!-- Crash Report Notifications -->
-  <string name="termux_crash_report_notifications_enabled_title">Crash Report Notifications</string>
-  <string name="termux_crash_report_notifications_enabled_off">Disable notifications for crash reports.</string>
-  <string name="termux_crash_report_notifications_enabled_on">Show notifications for crash reports. (Default)</string>
+  <string name="termux_crash_report_notifications_enabled_title">崩溃报告通知</string>
+  <string name="termux_crash_report_notifications_enabled_off">禁用崩溃报告通知。</string>
+  <string name="termux_crash_report_notifications_enabled_on">显示崩溃报告通知。（默认）</string>
   <!-- Terminal IO Preferences -->
-  <string name="termux_terminal_io_preferences_title">Terminal I/O</string>
-  <string name="termux_terminal_io_preferences_summary">Preferences for terminal I/O</string>
+  <string name="termux_terminal_io_preferences_title">终端 I/O</string>
+  <string name="termux_terminal_io_preferences_summary">终端 I/O 首选项</string>
   <!-- Keyboard Category -->
-  <string name="termux_keyboard_header">Keyboard</string>
+  <string name="termux_keyboard_header">键盘</string>
   <!-- Soft Keyboard -->
-  <string name="termux_soft_keyboard_enabled_title">Soft Keyboard Enabled</string>
-  <string name="termux_soft_keyboard_enabled_off">Soft keyboard will be disabled.</string>
-  <string name="termux_soft_keyboard_enabled_on">Soft keyboard will be enabled. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_title">软键盘已启用</string>
+  <string name="termux_soft_keyboard_enabled_off">软键盘被禁用。</string>
+  <string name="termux_soft_keyboard_enabled_on">将启用软键盘。（默认）</string>
   <!-- Soft Keyboard Only If No Hardware-->
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Soft Keyboard Only If No Hardware</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if
-                    hardware keyboard is connected. (Default)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if
-                    no hardware keyboard is connected.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">仅在没有硬件时才使用软键盘</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">即使连接了硬件键盘，软键盘也会启用。（默认）</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">仅在未连接硬件键盘时才启用软键盘。</string>
   <!-- Terminal View Preferences -->
-  <string name="termux_terminal_view_preferences_title">Terminal View</string>
-  <string name="termux_terminal_view_preferences_summary">Preferences for terminal view</string>
+  <string name="termux_terminal_view_preferences_title">终端视图</string>
+  <string name="termux_terminal_view_preferences_summary">终端视图首选项</string>
   <!-- View Category -->
-  <string name="termux_terminal_view_view_header">View</string>
+  <string name="termux_terminal_view_view_header">视图</string>
   <!-- Terminal View Margin Adjustment -->
-  <string name="termux_terminal_view_terminal_margin_adjustment_title">Terminal Margin Adjustment</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_off">Terminal margin adjustment will be disabled.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled.
-                    It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view.
-                    If it causes screen flickering on your devices, then disable it. (Default)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_title">终端边距调整</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_off">将禁用终端边距调整。</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">将启用终端边距调整。
+                     应该启用它来尝试解决软键盘覆盖部分额外按键/终端视图的问题。
+                     如果它导致您的设备屏幕闪烁，请将其禁用。（默认）</string>
 </resources>
