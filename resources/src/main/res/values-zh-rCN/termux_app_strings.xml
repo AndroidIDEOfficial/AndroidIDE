@@ -66,17 +66,12 @@
   <string name="msg_generating_report">生成报告</string>
   <string name="msg_add_termux_debug_info">将 termux 调试信息添加到报告中？</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_exit">退出</string>
   <string name="notification_action_wake_lock">获取唤醒锁</string>
   <string name="notification_action_wake_unlock">释放唤醒锁</string>
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
         \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
         Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
-  <string name="error_termux_service_invalid_execution_command_runner">TermuxService 的命令执行器无效：`%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">TermuxService 不支持的命令执行器：`%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">TermuxService 不支持 shell 创建模式执行命令：`%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">未设置 shell 名称，但已通过`%1$s` shell 创建模式</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">将文件保存在 ~/downloads/</string>
   <string name="action_file_received_edit">编辑</string>
