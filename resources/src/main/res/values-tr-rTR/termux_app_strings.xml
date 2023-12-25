@@ -41,62 +41,62 @@
   <string name="msg_max_terminals_reached">Yenisini oluşturmadan önce eskisini kapatın.</string>
   <string name="title_rename_session">Oturum adı ayarla</string>
   <string name="action_rename_session_confirm">Ayarla</string>
-  <string name="title_create_named_session">New named session</string>
-  <string name="action_create_named_session_confirm">Create</string>
-  <string name="action_toggle_soft_keyboard">Keyboard</string>
-  <string name="msg_enabling_terminal_toolbar">Enabling Terminal Toolbar</string>
-  <string name="msg_disabling_terminal_toolbar">Disabling Terminal Toolbar</string>
+  <string name="title_create_named_session">Yeniden adlandırılmış oturum</string>
+  <string name="action_create_named_session_confirm">Oluştur</string>
+  <string name="action_toggle_soft_keyboard">Klavye</string>
+  <string name="msg_enabling_terminal_toolbar">Terminal Araç Çubuğunu Etkinleştirme</string>
+  <string name="msg_disabling_terminal_toolbar">Terminal Araç Çubuğunu Kapatma</string>
   <!-- Terminal Popup -->
-  <string name="action_select_url">Select URL</string>
-  <string name="title_select_url_dialog">Click URL to copy or long press to open</string>
-  <string name="title_select_url_none_found">No URL found in the terminal.</string>
-  <string name="msg_select_url_copied_to_clipboard">URL copied to clipboard</string>
-  <string name="action_share_transcript">Share transcript</string>
-  <string name="title_share_transcript">Terminal transcript</string>
-  <string name="title_share_transcript_with">Send transcript to:</string>
-  <string name="action_share_selected_text">Share selected text</string>
-  <string name="title_share_selected_text">Terminal Text</string>
-  <string name="title_share_selected_text_with">Send selected text to:</string>
-  <string name="action_autofill_password">Autofill password</string>
-  <string name="action_reset_terminal">Reset</string>
-  <string name="msg_terminal_reset">Terminal reset</string>
-  <string name="action_kill_process">Kill process (%d)</string>
-  <string name="title_confirm_kill_process">Really kill this session?</string>
-  <string name="action_toggle_keep_screen_on">Keep screen on</string>
-  <string name="action_open_help">Help</string>
-  <string name="action_open_settings">Settings</string>
-  <string name="action_report_issue">Report Issue</string>
-  <string name="msg_generating_report">Generating Report</string>
-  <string name="msg_add_termux_debug_info">Add termux debug info to report?</string>
+  <string name="action_select_url">URL Seç</string>
+  <string name="title_select_url_dialog">Kopyalamak için URL\'ye tıklayın veya açmak için uzun basın</string>
+  <string name="title_select_url_none_found">Terminalde URL bulunamadı.</string>
+  <string name="msg_select_url_copied_to_clipboard">URL panoya kopyalandı</string>
+  <string name="action_share_transcript">Transkripti paylaş</string>
+  <string name="title_share_transcript">Terminal transcripti</string>
+  <string name="title_share_transcript_with">Transkripti şuna gönder:</string>
+  <string name="action_share_selected_text">Seçili metni paylaş</string>
+  <string name="title_share_selected_text">Terminal Metni</string>
+  <string name="title_share_selected_text_with">Seçilen metni şuna gönder:</string>
+  <string name="action_autofill_password">Otomatik şifre doldurma</string>
+  <string name="action_reset_terminal">Sıfırla</string>
+  <string name="msg_terminal_reset">Terminali sıfırla</string>
+  <string name="action_kill_process">Süreci öldür (%d)</string>
+  <string name="title_confirm_kill_process">Bu oturumu gerçekten öldürecek misin?</string>
+  <string name="action_toggle_keep_screen_on">Ekranı açık tut</string>
+  <string name="action_open_help">Yardım</string>
+  <string name="action_open_settings">Ayarlar</string>
+  <string name="action_report_issue">Sorun Bildir</string>
+  <string name="msg_generating_report">Rapor Oluşturma</string>
+  <string name="msg_add_termux_debug_info">Rapora termux hata ayıklama bilgisini ekleyin?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_wake_lock">Acquire wakelock</string>
-  <string name="notification_action_wake_unlock">Release wakelock</string>
+  <string name="notification_action_wake_lock">Wakelock Etkinleştir</string>
+  <string name="notification_action_wake_unlock">Wakelock etkinleştir</string>
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
         \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
         Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
   <!-- Termux File Receiver -->
-  <string name="title_file_received">Save file in ~/downloads/</string>
-  <string name="action_file_received_edit">Edit</string>
-  <string name="action_file_received_open_directory">Open directory</string>
+  <string name="title_file_received">Dosyayı ~/downloads/ içine kaydedin</string>
+  <string name="action_file_received_edit">Düzenle</string>
+  <string name="action_file_received_open_directory">Dizini aç</string>
   <!-- Miscellaneous -->
-  <string name="error_termux_service_start_failed_general">Failed to start TermuxService. Check logcat for exception message.</string>
-  <string name="error_termux_service_start_failed_bg">Failed to start TermuxService while app is in background due to android bg restrictions.</string>
+  <string name="error_termux_service_start_failed_general">TermuxServisi başlatılamadı. İstisna mesajı için logcati kontrol edin.</string>
+  <string name="error_termux_service_start_failed_bg">Android arkaplan kısıtlamaları nedeniyle uygulama arka plandayken TermuxService başlatılamadı.</string>
   <!-- Termux Settings -->
   <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; Settings</string>
   <!-- Termux App Preferences -->
   <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
   <string name="termux_preferences_summary">Preferences for &amp;TERMUX_APP_NAME; app</string>
   <!-- Debugging Preferences -->
-  <string name="termux_debugging_preferences_title">Debugging</string>
-  <string name="termux_debugging_preferences_summary">Preferences for debugging</string>
+  <string name="termux_debugging_preferences_title">Hata ayıklama</string>
+  <string name="termux_debugging_preferences_summary">Hata ayıklama ayarları</string>
   <!-- Logging Category -->
-  <string name="termux_logging_header">Logging</string>
+  <string name="termux_logging_header">Günlükler</string>
   <!-- Log Level -->
-  <string name="termux_log_level_title">Log Level</string>
+  <string name="termux_log_level_title">Günlük Düzeyi</string>
   <!-- Terminal View Key Logging -->
-  <string name="termux_terminal_view_key_logging_enabled_title">Terminal View Key Logging</string>
-  <string name="termux_terminal_view_key_logging_enabled_off">Logs will not have entries for terminal view keys. (Default)</string>
+  <string name="termux_terminal_view_key_logging_enabled_title">Terminal Görünümü Tuş Günlüğü</string>
+  <string name="termux_terminal_view_key_logging_enabled_off">Günlüklerde terminal görünümü tuşları için girişler bulunmayacaktır. (Varsayılan)</string>
   <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys.
                     These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
   <!-- Crash Report Notifications -->
