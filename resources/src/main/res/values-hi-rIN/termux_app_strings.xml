@@ -66,16 +66,10 @@
   <string name="msg_generating_report">रिपोर्ट बना रहा है...</string>
   <string name="msg_add_termux_debug_info">रिपोर्ट में Termux डिबग जानकारी जोड़ें?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_exit">बाहर निकलें</string>
   <string name="notification_action_wake_lock">वेक लॉक अर्जित करें</string>
   <string name="notification_action_wake_unlock">वेक लॉक मुक्त करें</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है।
-         कृपया सेटिंग्स -&gt; ऐप्स -&gt; &amp;TERMUX_APP_NAME -&gt; एडवांस्ड में जाकर अनुमति दें।</string>
-  <string name="error_termux_service_invalid_execution_command_runner">Invalid execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">Unsupported execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">शेल नाम सेट नहीं है लेकिन `%1$s` शेल निर्माण मोड पास हो गया है</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; &amp;TERMUX_APP_NAME -&gt; एडवांस्ड में जाकर अनुमति दें।</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">फ़ाइल को ~/downloads/ में सहेजें</string>
   <string name="action_file_received_edit">संपादित करें</string>
@@ -84,50 +78,46 @@
   <string name="error_termux_service_start_failed_general">TermuxService प्रारंभ करने में विफल. अपवाद संदेश के लिए लॉगकैट की जाँच करें।</string>
   <string name="error_termux_service_start_failed_bg">एंड्रॉइड बैकग्राउंड प्रतिबंधों के कारण ऐप बैकग्राउंड में होने पर टर्मक्ससर्विस प्रारंभ करने में विफल रहा।</string>
   <!-- Termux Settings -->
-  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; Settings</string>
+  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; सेटिंग्स</string>
   <!-- Termux App Preferences -->
   <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
-  <string name="termux_preferences_summary">Preferences for &amp;TERMUX_APP_NAME; app</string>
+  <string name="termux_preferences_summary">&amp;TERMUX_APP_NAME के ​​लिए प्राथमिकताएँ</string>
   <!-- Debugging Preferences -->
-  <string name="termux_debugging_preferences_title">Debugging</string>
-  <string name="termux_debugging_preferences_summary">Preferences for debugging</string>
+  <string name="termux_debugging_preferences_title">डिबगिंग</string>
+  <string name="termux_debugging_preferences_summary">डिबगिंग के लिए प्राथमिकताएँ</string>
   <!-- Logging Category -->
-  <string name="termux_logging_header">Logging</string>
+  <string name="termux_logging_header">लॉगिंग</string>
   <!-- Log Level -->
-  <string name="termux_log_level_title">Log Level</string>
+  <string name="termux_log_level_title">लॉग स्तर</string>
   <!-- Terminal View Key Logging -->
-  <string name="termux_terminal_view_key_logging_enabled_title">Terminal View Key Logging</string>
-  <string name="termux_terminal_view_key_logging_enabled_off">Logs will not have entries for terminal view keys. (Default)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys.
-                    These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
+  <string name="termux_terminal_view_key_logging_enabled_title">टर्मिनल दृश्य कुंजी लॉग करें</string>
+  <string name="termux_terminal_view_key_logging_enabled_off">लॉग में टर्मिनल दृश्य कुंजियों के लिए एंट्रीज नहीं होंगी। (डिफ़ॉल्ट)</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">लॉगकैट लॉग में टर्मिनल व्यू कुंजियों के लिए एंट्रीज होंगी।
+                     ये बहुत वाचाल हैं और इन्हें सामान्य परिस्थितियों में अक्षम कर दिया जाना चाहिए अन्यथा प्रदर्शन संबंधी समस्याएं पैदा होंगी।</string>
   <!-- Crash Report Notifications -->
-  <string name="termux_crash_report_notifications_enabled_title">Crash Report Notifications</string>
-  <string name="termux_crash_report_notifications_enabled_off">Disable notifications for crash reports.</string>
-  <string name="termux_crash_report_notifications_enabled_on">Show notifications for crash reports. (Default)</string>
+  <string name="termux_crash_report_notifications_enabled_title">क्रैश रिपोर्ट सूचनाएं</string>
+  <string name="termux_crash_report_notifications_enabled_off">क्रैश रिपोर्ट के लिए सूचनाएं अक्षम करें.</string>
+  <string name="termux_crash_report_notifications_enabled_on">क्रैश रिपोर्ट के लिए सूचनाएं दिखाएं. (डिफ़ॉल्ट)</string>
   <!-- Terminal IO Preferences -->
-  <string name="termux_terminal_io_preferences_title">Terminal I/O</string>
-  <string name="termux_terminal_io_preferences_summary">Preferences for terminal I/O</string>
+  <string name="termux_terminal_io_preferences_title">टर्मिनल I/O</string>
+  <string name="termux_terminal_io_preferences_summary">टर्मिनल I/O के लिए प्राथमिकताएँ</string>
   <!-- Keyboard Category -->
-  <string name="termux_keyboard_header">Keyboard</string>
+  <string name="termux_keyboard_header">कीबोर्ड</string>
   <!-- Soft Keyboard -->
-  <string name="termux_soft_keyboard_enabled_title">Soft Keyboard Enabled</string>
-  <string name="termux_soft_keyboard_enabled_off">Soft keyboard will be disabled.</string>
-  <string name="termux_soft_keyboard_enabled_on">Soft keyboard will be enabled. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_title">सॉफ्ट कीबोर्ड सक्षम</string>
+  <string name="termux_soft_keyboard_enabled_off">सॉफ्ट कीबोर्ड अक्षम कर दिया जाएगा.</string>
+  <string name="termux_soft_keyboard_enabled_on">सॉफ्ट कीबोर्ड सक्षम किया जाएगा. (डिफ़ॉल्ट)</string>
   <!-- Soft Keyboard Only If No Hardware-->
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Soft Keyboard Only If No Hardware</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if
-                    hardware keyboard is connected. (Default)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if
-                    no hardware keyboard is connected.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">यदि कोई हार्डवेयर नहीं है तो केवल सॉफ्ट कीबोर्ड</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">हार्डवेयर कीबोर्ड कनेक्ट होने पर भी सॉफ्ट कीबोर्ड सक्षम किया जाएगा। (डिफ़ॉल्ट)</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">सॉफ्ट कीबोर्ड केवल तभी सक्षम किया जाएगा जब कोई हार्डवेयर कीबोर्ड कनेक्ट न हो।</string>
   <!-- Terminal View Preferences -->
-  <string name="termux_terminal_view_preferences_title">Terminal View</string>
-  <string name="termux_terminal_view_preferences_summary">Preferences for terminal view</string>
+  <string name="termux_terminal_view_preferences_title">टर्मिनल व्यू</string>
+  <string name="termux_terminal_view_preferences_summary">टर्मिनल व्यू के लिए प्राथमिकताएँ</string>
   <!-- View Category -->
-  <string name="termux_terminal_view_view_header">View</string>
+  <string name="termux_terminal_view_view_header">व्यू</string>
   <!-- Terminal View Margin Adjustment -->
-  <string name="termux_terminal_view_terminal_margin_adjustment_title">Terminal Margin Adjustment</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_off">Terminal margin adjustment will be disabled.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled.
-                    It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view.
-                    If it causes screen flickering on your devices, then disable it. (Default)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_title">टर्मिनल मार्जिन समायोजन</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_off">टर्मिनल मार्जिन समायोजन अक्षम कर दिया जाएगा.</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">टर्मिनल मार्जिन समायोजन सक्षम किया जाएगा. इसे उस समस्या को ठीक करने का प्रयास करने के लिए सक्षम किया जाना चाहिए जहां सॉफ्ट कीबोर्ड अतिरिक्त कुंजियों/टर्मिनल दृश्य के हिस्से को कवर करता है। यदि यह आपके डिवाइस पर स्क्रीन फ़्लिकरिंग का कारण बनता है, तो इसे अक्षम करें। (डिफ़ॉल्ट)</string>
 </resources>
