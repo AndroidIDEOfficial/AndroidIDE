@@ -30,10 +30,9 @@
   <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
   <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
   <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to enable %1$s/%2$s component</string>
+  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
-  <string name="error_attempted_to_check_for_permissions_not_requested">Attempted to check for permissions that have not been requested in app manifest: %1$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
   <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
@@ -56,12 +55,6 @@
   <string name="msg_storage_permission_not_granted">Speicher Berechtigung nicht gewährt.</string>
   <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
   <!-- Shell -->
-  <string name="error_sending_sigkill_to_process">Sending SIGKILL to process on user request or because android is killing the execution service</string>
-  <string name="error_executable_unset">Executable not set \"%1$s\" for shell command</string>
-  <string name="error_execution_cancelled">Execution has been cancelled since execution service is being killed</string>
-  <string name="error_failed_to_execute_termux_session_command">Failed to execute \"%1$s\" termux session command</string>
-  <string name="error_failed_to_execute_app_shell_command">Fehler beim Ausführen des \"%1$s\" App-Shell Befehls</string>
-  <string name="error_exception_received_while_executing_app_shell_command">Exception received while to executing \"%1$s\" app shell command.\nException: %2$s</string>
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
         an issue on one of the following links.
@@ -82,11 +75,7 @@
         It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_yes">Ja</string>
-  <string name="action_no">Nein</string>
-  <string name="action_copy">Kopieren</string>
   <string name="action_share">Teilen</string>
-  <string name="action_cancel">Abbrechen</string>
   <string name="action_save_to_file">In Datei speichern</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
