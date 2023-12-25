@@ -469,4 +469,6 @@
   <string name="action_install_git">Установить Git</string>
   <string name="action_install_openssh">Установить OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Невозможно создать сессию. Новые сессии отключены!</string>
+  <string name="title_install_location_error">Install location error</string>
+  <string name="title_unsupported_user">Unsupported user</string>
 </resources>
