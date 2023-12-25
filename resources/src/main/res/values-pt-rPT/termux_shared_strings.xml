@@ -30,10 +30,9 @@
   <string name="error_get_package_context_failed_help_url_message">Verifique %1$s para mais detalhes.</string>
   <string name="error_get_component_state_failed">Falha ao obter o estado do componente %1$s/%2$s</string>
   <string name="error_enable_component_failed">Falha ao habilitar o componente %1$s/%2$s</string>
-  <string name="error_disable_component_failed">Falha ao habilitar o componente %1$s/%2$s</string>
+  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">Falha ao solicitar permissões com o código de solicitação %1$d: %2$s</string>
-  <string name="error_attempted_to_check_for_permissions_not_requested">Tentativa de verificar se há permissões que não foram solicitadas no manifesto do app: %1$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">Tentativa de pedir permissões que não foram solicitadas no manifesto do app: %1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">O pacote%1$s\" está direcionando targetSdkVersion %2$d e está sendo executado no android sdk %3$d mas não configurou requestLegacyExternalStorage para true no manifesto do aplicativo</string>
   <string name="msg_requires_dump_and_package_usage_stats_permissions">Requer permissão `DUMP` e `PACKAGE_USAGE_STATS`</string>
@@ -56,12 +55,6 @@
   <string name="msg_storage_permission_not_granted">Permissão de armazenamento não concedida.</string>
   <string name="msg_file_saved_successfully">O arquivo %1$s foi salvo com sucesso em \"%2$s\"</string>
   <!-- Shell -->
-  <string name="error_sending_sigkill_to_process">Enviando SIGKILL para processar a solicitação do usuário ou porque o Android está encerrando o serviço de execução</string>
-  <string name="error_executable_unset">Executável não definido \"%1$s\" para comando Shell</string>
-  <string name="error_execution_cancelled">A execução foi cancelada pois o serviço de execução está sendo encerrado</string>
-  <string name="error_failed_to_execute_termux_session_command">Falha ao executar o comando \"%1$s\" da sessão do Termux</string>
-  <string name="error_failed_to_execute_app_shell_command">Falha ao executar o comando do Shell do app %1$s\"</string>
-  <string name="error_exception_received_while_executing_app_shell_command">Exception received while to executing \"%1$s\" app shell command.\nException: %2$s</string>
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
         an issue on one of the following links.
@@ -82,20 +75,16 @@
         It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_yes">Yes</string>
-  <string name="action_no">No</string>
-  <string name="action_copy">Copy</string>
-  <string name="action_share">Share</string>
-  <string name="action_cancel">Cancel</string>
-  <string name="action_save_to_file">Save To File</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="action_share">Compartilhar</string>
+  <string name="action_save_to_file">Salvar em arquivo</string>
+  <string name="msg_storage_permission_granted_on_request">A permissão de armazenamento concedida pelo usuário a requisição</string>
+  <string name="msg_storage_permission_not_granted_on_request">A permissão de armazenamento não concedida pelo usuário a requisição</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
+  <string name="log_level_title">Nível dos Logs</string>
+  <string name="log_level_off">Desligado</string>
   <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_debug">Depuração</string>
+  <string name="log_level_verbose">Detalhado</string>
+  <string name="log_level_unknown">*Desconhecido*</string>
+  <string name="log_level_value">Nível de log do Logcat definido para \"%1$s\"</string>
 </resources>
