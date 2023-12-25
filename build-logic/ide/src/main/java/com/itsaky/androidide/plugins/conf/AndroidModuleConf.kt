@@ -21,7 +21,6 @@ import BuildConfig
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import projectVersionCode
 
 private val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a", "x86_64")
@@ -65,6 +64,7 @@ fun Project.configureAndroidModule(
 
         forEach {
           val name = it.name
+          it.versionNameSuffix = "-$name"
           defaultConfig.buildConfigField("String",
             "FLAVOR_${name.replace('-', '_').uppercase()}",
             "\"${name}\"")
@@ -116,7 +116,8 @@ fun Project.configureAndroidModule(
   }
 }
 
-private fun Project.configureCoreLibDesugaring(baseExtension: BaseExtension, coreLibDesugDep: Dependency) {
+private fun Project.configureCoreLibDesugaring(baseExtension: BaseExtension,
+  coreLibDesugDep: Dependency) {
   val coreLibDesugaringEnabled = project.path !in disableCoreLibDesugaringForModules
 
   baseExtension.compileOptions.isCoreLibraryDesugaringEnabled = coreLibDesugaringEnabled
