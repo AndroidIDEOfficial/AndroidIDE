@@ -9,13 +9,16 @@ import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
 import com.termux.shared.termux.terminal.TermuxTerminalSessionClientBase;
 import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
+import java.io.Closeable;
+import java.io.IOException;
 
 /** The {@link TerminalSessionClient} implementation that may require a {@link Service} for its interface methods. */
-public class TermuxTerminalSessionServiceClient extends TermuxTerminalSessionClientBase {
+public class TermuxTerminalSessionServiceClient extends TermuxTerminalSessionClientBase implements
+    Closeable {
 
     private static final String LOG_TAG = "TermuxTerminalSessionServiceClient";
 
-    private final TermuxService mService;
+    private TermuxService mService;
 
     public TermuxTerminalSessionServiceClient(TermuxService service) {
         this.mService = service;
@@ -28,4 +31,8 @@ public class TermuxTerminalSessionServiceClient extends TermuxTerminalSessionCli
             termuxSession.getExecutionCommand().mPid = pid;
     }
 
+    @Override
+    public void close() {
+        mService = null;
+    }
 }

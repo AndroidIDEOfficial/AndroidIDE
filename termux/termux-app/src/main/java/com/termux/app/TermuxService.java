@@ -49,6 +49,8 @@ import com.termux.terminal.TerminalEmulator;
 import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,11 +70,20 @@ import java.util.List;
 public final class TermuxService extends Service implements AppShell.AppShellClient, TermuxSession.TermuxSessionClient {
 
     /** This service is only bound from inside the same process and never uses IPC. */
-    class LocalBinder extends Binder {
-        public final TermuxService service = TermuxService.this;
+    static class LocalBinder extends Binder implements Closeable {
+        public TermuxService service;
+
+        LocalBinder(final TermuxService service) {
+            this.service = service;
+        }
+
+        @Override
+        public void close() {
+            service = null;
+        }
     }
 
-    private final IBinder mBinder = new LocalBinder();
+    private final LocalBinder mBinder = new LocalBinder(this);
 
     private final Handler mHandler = new Handler();
 
@@ -215,6 +226,10 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     private void requestStopService() {
         Logger.logDebug(LOG_TAG, "Requesting to stop service");
         runStopForeground();
+
+        mBinder.close();
+        mTermuxTerminalSessionServiceClient.close();
+
         stopSelf();
     }
 
