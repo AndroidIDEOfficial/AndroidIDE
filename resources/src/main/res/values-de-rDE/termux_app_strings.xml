@@ -69,17 +69,12 @@
   <string name="msg_generating_report">Generating Report</string>
   <string name="msg_add_termux_debug_info">Add termux debug info to report?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_exit">Beenden</string>
   <string name="notification_action_wake_lock">Acquire wakelock</string>
   <string name="notification_action_wake_unlock">Release wakelock</string>
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
         \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
         Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
-  <string name="error_termux_service_invalid_execution_command_runner">Invalid execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">Unsupported execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">Shell name not set but `%1$s` shell create mode passed</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Datei in ~/downloads/ speichern</string>
   <string name="action_file_received_edit">Bearbeiten</string>
