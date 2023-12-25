@@ -91,7 +91,7 @@
 
 
   <!-- Termux Notifications -->
-  <string name="notification_action_exit">Exit</string>
+  <string name="notification_action_exit" translatable="false">@string/exit</string>
   <string name="notification_action_wake_lock">Acquire wakelock</string>
   <string name="notification_action_wake_unlock">Release wakelock</string>
 
@@ -101,10 +101,10 @@
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&TERMUX_APP_NAME; requires
         \"Display over other apps\" permission to start terminal sessions from background on Android >= 10.
         Grants it from Settings -> Apps -> &TERMUX_APP_NAME; -> Advanced</string>
-  <string name="error_termux_service_invalid_execution_command_runner">Invalid execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">Unsupported execution command runner to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">Shell name not set but `%1$s` shell create mode passed</string>
+  <string name="error_termux_service_invalid_execution_command_runner" translatable="false">Invalid execution command runner to TermuxService: `%1$s`</string>
+  <string name="error_termux_service_unsupported_execution_command_runner" translatable="false">Unsupported execution command runner to TermuxService: `%1$s`</string>
+  <string name="error_termux_service_unsupported_execution_command_shell_create_mode" translatable="false">Unsupported execution command shell create mode to TermuxService: `%1$s`</string>
+  <string name="error_termux_service_execution_command_shell_name_unset" translatable="false">Shell name not set but `%1$s` shell create mode passed</string>
 
   <!-- Termux File Receiver -->
   <string name="title_file_received">Save file in ~/downloads/</string>
