@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">कापी</string>
-  <string name="terminal_more">More…</string>
+  <string name="terminal_more">अधिक विकल्प…</string>
   <string name="text_to_search">खोजने के लिए पाठ</string>
   <string name="about_option_email">ईमेल</string>
   <string name="about_option_website">वेबसाइट</string>
@@ -36,8 +36,8 @@
   <string name="msg_picked_isnt_dir">चुनी गई फ़ाइल एक डायरेक्टरी नहीं है!</string>
   <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें…</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">Device Not Supported</string>
-  <string name="msg_unsupported_device">You are using %1$s variant of AndroidIDE on a %2$s-only device. This configuration is not supported. Please install the %2$s variant of AndroidIDE.</string>
+  <string name="title_unsupported_device">डिवाइस समर्थित नहीं है</string>
+  <string name="msg_unsupported_device">आप %2$s डिवाइस पर AndroidIDE के %1$s संस्करण का उपयोग कर रहे हैं। यह कॉन्फ़िगरेशन समर्थित नहीं है. कृपया AndroidIDE का %2$s संस्करण इंस्टॉल करें।</string>
   <string name="title_clear_output">आउटपुट हटाएँ</string>
   <string name="build_output">बिल्ड आउटपुट</string>
   <string name="quick_run_debug">क्विक रन</string>
@@ -429,7 +429,7 @@
   <string name="err_cannot_determine_package">ऐप नहीं चला सकते. पैकेज का नाम निर्धारित करने में असमर्थ.</string>
   <string name="msg_launch_failure_no_app_module">एप्लिकेशन नहीं चला सकते. प्रोजेक्ट में कोई एप्लिकेशन मॉड्यूल नहीं मिला.</string>
   <string name="title_launch_app">ऐप को लांच करें</string>
-  <string name="title_experiment_flavor">Experimental</string>
+  <string name="title_experiment_flavor">प्रयोगात्मक</string>
   <string name="msg_experimental_flavor">You are using %1$s variant of AndroidIDE on a %2$s device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
   <string name="idepref_editor_pinLineNumbers_title">पिन लाइन नंबर</string>
   <string name="idepref_editor_pinLineNumbers_summary">क्या एडिटर को क्षैतिज रूप से स्क्रॉल करने पर लाइन नंबर पैनल को पिन करना चाहिए?</string>
