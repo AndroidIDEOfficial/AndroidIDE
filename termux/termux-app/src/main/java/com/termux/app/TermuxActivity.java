@@ -348,6 +348,11 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
         Logger.logDebug(LOG_TAG, "onDestroy");
 
+        if (mLastToast != null) {
+            mLastToast.cancel();
+            mLastToast = null;
+        }
+
         if (mIsInvalidState) return;
 
         if (mTermuxService != null) {
