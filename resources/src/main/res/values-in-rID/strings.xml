@@ -469,4 +469,6 @@
   <string name="action_install_git">Instal Git</string>
   <string name="action_install_openssh">Instal OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Tidak dapat membuat sesi. Sesi baru dinonaktifkan!</string>
+  <string name="title_install_location_error">Install location error</string>
+  <string name="title_unsupported_user">Unsupported user</string>
 </resources>
