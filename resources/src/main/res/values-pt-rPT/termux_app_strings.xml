@@ -69,17 +69,12 @@
   <string name="msg_generating_report">Criando relatório</string>
   <string name="msg_add_termux_debug_info">Adicionar informações de depuração do Termux ao relatório?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_exit">Sair</string>
   <string name="notification_action_wake_lock">Adquirir wakelock</string>
   <string name="notification_action_wake_unlock">Liberar wakelock</string>
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requer a permissão
         \"Exibir sobre outros aplicativos\" para iniciar sessões terminais em segundo plano no Android &gt;= 10.
         Conceda isso em Configurações -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Avançado</string>
-  <string name="error_termux_service_invalid_execution_command_runner">Executor de comando de execução inválido para TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_runner">Executor de comando de execução não suportado para TermuxService: `%1$s`</string>
-  <string name="error_termux_service_unsupported_execution_command_shell_create_mode">Modo de criação de comando de execução não suportado para o TermuxService: `%1$s`</string>
-  <string name="error_termux_service_execution_command_shell_name_unset">Nome do Shell não definido mas `%1$s` modo de criação do Shell passado</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Salvar arquivo em ~/downloads/</string>
   <string name="action_file_received_edit">Editar</string>
