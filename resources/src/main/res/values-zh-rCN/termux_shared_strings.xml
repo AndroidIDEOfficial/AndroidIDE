@@ -30,10 +30,9 @@
   <string name="error_get_package_context_failed_help_url_message">查看 %1$s 了解更多详情。</string>
   <string name="error_get_component_state_failed">无法获取 %1$s/%2$s 组件状态</string>
   <string name="error_enable_component_failed">无法启用 %1$s/%2$s 组件</string>
-  <string name="error_disable_component_failed">无法启用 %1$s/%2$s 组件</string>
+  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">请求权限失败，请求代码为 %1$d：%2$s</string>
-  <string name="error_attempted_to_check_for_permissions_not_requested">尝试检查应用清单中未要求的权限：%1$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">尝试请求应用清单中未要求的权限：%1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">“%1$s”软件包的目标 targetSdkVersion 为 %2$d，并且运行在 android sdk %3$d 上，但尚未在应用清单中将 requestLegacyExternalStorage 设置为 true</string>
   <string name="msg_requires_dump_and_package_usage_stats_permissions">需要“DUMP”和“PACKAGE_USAGE_STATS”权限</string>
@@ -52,12 +51,6 @@
   <string name="msg_storage_permission_not_granted">未授予存储权限。</string>
   <string name="msg_file_saved_successfully">%1$s 文件已成功保存在 “%2$s”</string>
   <!-- Shell -->
-  <string name="error_sending_sigkill_to_process">因为用户请求或 Android 正在终止执行服务而发送 SIGKILL 到进程</string>
-  <string name="error_executable_unset">可执行文件未设置 shell 命令的“%1$s”</string>
-  <string name="error_execution_cancelled">执行服务被终止，执行已被取消</string>
-  <string name="error_failed_to_execute_termux_session_command">无法执行 termux 会话命令“%1$s”</string>
-  <string name="error_failed_to_execute_app_shell_command">无法执行应用程序 shell 命令“%1$s”</string>
-  <string name="error_exception_received_while_executing_app_shell_command">执行应用程序 shell 命令“%1$s”时收到异常。\n异常: %2$s</string>
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
         an issue on one of the following links.
@@ -78,11 +71,7 @@
         It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_yes">Yes</string>
-  <string name="action_no">No</string>
-  <string name="action_copy">复制</string>
   <string name="action_share">分享</string>
-  <string name="action_cancel">取消</string>
   <string name="action_save_to_file">保存到文件</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
