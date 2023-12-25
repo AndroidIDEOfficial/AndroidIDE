@@ -97,17 +97,17 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">Terminal Görünümü Tuş Günlüğü</string>
   <string name="termux_terminal_view_key_logging_enabled_off">Günlüklerde terminal görünümü tuşları için girişler bulunmayacaktır. (Varsayılan)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys.
-                    These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Logcat günlüklerinde terminal görünüm tuşları için girişler olacaktır.
+                    Bunlar çok ayrıntılıdır ve normal şartlar altında devre dışı bırakılmalıdır, aksi takdirde performans sorunlarına neden olur.</string>
   <!-- Crash Report Notifications -->
-  <string name="termux_crash_report_notifications_enabled_title">Crash Report Notifications</string>
-  <string name="termux_crash_report_notifications_enabled_off">Disable notifications for crash reports.</string>
-  <string name="termux_crash_report_notifications_enabled_on">Show notifications for crash reports. (Default)</string>
+  <string name="termux_crash_report_notifications_enabled_title">Çökme Raporu Bildirimleri</string>
+  <string name="termux_crash_report_notifications_enabled_off">Kilitlenme raporları için bildirimleri devre dışı bırakın.</string>
+  <string name="termux_crash_report_notifications_enabled_on">Kilitlenme raporları için bildirimleri göster. (Varsayılan)</string>
   <!-- Terminal IO Preferences -->
   <string name="termux_terminal_io_preferences_title">Terminal I/O</string>
-  <string name="termux_terminal_io_preferences_summary">Preferences for terminal I/O</string>
+  <string name="termux_terminal_io_preferences_summary">Terminal I/O için tercihler</string>
   <!-- Keyboard Category -->
-  <string name="termux_keyboard_header">Keyboard</string>
+  <string name="termux_keyboard_header">Klavye</string>
   <!-- Soft Keyboard -->
   <string name="termux_soft_keyboard_enabled_title">Soft Keyboard Enabled</string>
   <string name="termux_soft_keyboard_enabled_off">Soft keyboard will be disabled.</string>
