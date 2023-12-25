@@ -30,7 +30,7 @@
   <string name="error_get_package_context_failed_help_url_message">查看 %1$s 了解更多详情。</string>
   <string name="error_get_component_state_failed">无法获取 %1$s/%2$s 组件状态</string>
   <string name="error_enable_component_failed">无法启用 %1$s/%2$s 组件</string>
-  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
+  <string name="error_disable_component_failed">无法禁用 %1$s/%2$s 组件</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">请求权限失败，请求代码为 %1$d：%2$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">尝试请求应用清单中未要求的权限：%1$s</string>
