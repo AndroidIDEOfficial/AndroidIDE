@@ -469,6 +469,6 @@
   <string name="action_install_git">Git\'i kur</string>
   <string name="action_install_openssh">OpenSSH\'ı kur</string>
   <string name="msg_terminal_new_sessions_disabled">Oturum oluşturulamıyor. Yeni oturumlar devre dışı bırakıldı!</string>
-  <string name="title_install_location_error">Install location error</string>
-  <string name="title_unsupported_user">Unsupported user</string>
+  <string name="title_install_location_error">Yükleme konumu hatası</string>
+  <string name="title_unsupported_user">Desteklenmeyen kullanıcı</string>
 </resources>
