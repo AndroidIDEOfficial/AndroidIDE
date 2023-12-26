@@ -59,7 +59,7 @@ abstract class NumberInputEditTextPreference(
     }
   }
 
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     setValue?.let { it((newValue as String?)?.toInt() ?: 0) }
     return true
   }

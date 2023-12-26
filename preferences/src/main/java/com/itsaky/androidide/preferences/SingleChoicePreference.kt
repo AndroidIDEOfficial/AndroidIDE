@@ -17,10 +17,8 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.lang.IndexOutOfBoundsException
 
 /**
  * A preference which allows selecting a single value from a list of values.
@@ -39,49 +37,44 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
    */
   protected open var currentSelection: Int = -1
 
-  /**
-   * Get the index of the selected item.
-   * @see MaterialAlertDialogBuilder.setSingleChoiceItems
-   */
-  abstract fun getInitiallySelectionItemPosition(context: Context): Int
-
-  final override fun getCheckedItems(choices: Array<String>): BooleanArray? {
-    return null
-  }
-
   override fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>,
-    checkedItems: BooleanArray?
+    entries: Array<PreferenceChoices.Entry>,
+    selections: BooleanArray
   ) {
-
-    this.currentSelection = getInitiallySelectionItemPosition(preference.context)
-    if (currentSelection < 0 || currentSelection >= choices.size) {
-      throw IndexOutOfBoundsException("Initial selection: $currentSelection, size=${choices.size}")
+    val checkedCount = entries.count { it.isChecked }
+    if (checkedCount != 1) {
+      throw IllegalArgumentException(
+        "Entries must have exactly one item checked, however, $checkedCount were checked")
     }
 
+    currentSelection = entries.indexOfFirst { it.isChecked }
+
     dialog.setSingleChoiceItems(
-      choices,
+      entries.labels,
       currentSelection
     )
     { _, position ->
-
       if (currentSelection != -1) {
-        onSelectionChanged(currentSelection, false)
+        onSelectionChanged(preference, entries[currentSelection], currentSelection, false)
       }
 
       currentSelection = position
-      onSelectionChanged(position, true)
+      onSelectionChanged(preference, entries[currentSelection], position, true)
     }
   }
 
-  final override fun onChoicesConfirmed(
-    selectedPositions: IntArray,
-    selections: Map<String, Boolean>
+  override fun onChoicesConfirmed(
+    preference: Preference,
+    entries: Array<PreferenceChoices.Entry>
   ) {
-    onChoiceConfirmed(currentSelection)
+    onChoiceConfirmed(preference, entries[currentSelection], currentSelection)
   }
 
-  protected open fun onChoiceConfirmed(position: Int) {}
+  protected open fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {}
 }

@@ -403,22 +403,22 @@ public class Logger {
 
 
 
-    public static CharSequence[] getLogLevelsArray() {
-        return new CharSequence[]{
-            String.valueOf(LOG_LEVEL_OFF),
-            String.valueOf(LOG_LEVEL_NORMAL),
-            String.valueOf(LOG_LEVEL_DEBUG),
-            String.valueOf(LOG_LEVEL_VERBOSE)
+    public static int[] getLogLevelsArray() {
+        return new int[]{
+            LOG_LEVEL_OFF,
+            LOG_LEVEL_NORMAL,
+            LOG_LEVEL_DEBUG,
+            LOG_LEVEL_VERBOSE
         };
     }
 
-    public static CharSequence[] getLogLevelLabelsArray(Context context, CharSequence[] logLevels, boolean addDefaultTag) {
+    public static CharSequence[] getLogLevelLabelsArray(Context context, int[] logLevels, boolean addDefaultTag) {
         if (logLevels == null) return null;
 
         CharSequence[] logLevelLabels = new CharSequence[logLevels.length];
 
         for(int i=0; i<logLevels.length; i++) {
-            logLevelLabels[i] = getLogLevelLabel(context, Integer.parseInt(logLevels[i].toString()), addDefaultTag);
+            logLevelLabels[i] = getLogLevelLabel(context, logLevels[i], addDefaultTag);
         }
 
         return logLevelLabels;

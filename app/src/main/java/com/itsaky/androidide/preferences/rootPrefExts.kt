@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.preferences
 
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.Parcelize
 
@@ -39,6 +38,7 @@ class ConfigurationPreferences(
     addPreference(GeneralPreferences())
     addPreference(EditorPreferences())
     addPreference(BuildAndRunPreferences())
+    addPreference(TermuxPreferences())
   }
 }
 
@@ -69,7 +69,7 @@ class DeveloperOptionsPreferences(
 @Parcelize
 class AboutPreferences(
   override val key: String = "idepref_category_about",
-  override val title: Int = R.string.about,
+  override val title: Int = string.about,
   override val children: List<IPreference> = mutableListOf()
 ) : IPreferenceGroup() {
 

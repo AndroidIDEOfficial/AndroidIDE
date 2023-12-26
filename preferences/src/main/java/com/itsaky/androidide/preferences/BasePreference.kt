@@ -53,7 +53,7 @@ abstract class BasePreference : IPreference() {
     return pref
   }
 
-  protected open fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  protected open fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     return false
   }
 

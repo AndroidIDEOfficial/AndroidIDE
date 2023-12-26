@@ -18,6 +18,7 @@
 package com.itsaky.androidide.preferences
 
 import android.content.Context
+import androidx.preference.Preference
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
 import com.itsaky.androidide.preferences.internal.EMPTY_ELEMENTS_BEHAVIOR
@@ -230,15 +231,24 @@ private class EmptyElementsBehavior(
   @IgnoredOnParcel
   override val dialogCancellable = true
 
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    return EmptyElements.valueOf(emptyElementsBehavior).ordinal
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val entries = EmptyElements.entries
+    val currentBehavior = EmptyElements.valueOf(emptyElementsBehavior)
+
+    return Array(entries.size) { index ->
+      PreferenceChoices.Entry(
+        label = entries[index].toString(),
+        _isChecked = currentBehavior == entries[index],
+        data = entries[index]
+      )
+    }
   }
 
-  override fun getChoices(context: Context): Array<String> {
-    return EmptyElements.values().map { it.toString() }.toTypedArray()
-  }
-
-  override fun onChoiceConfirmed(position: Int) {
-    emptyElementsBehavior = EmptyElements.values()[position].toString()
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    emptyElementsBehavior = (entry.data as EmptyElements).toString()
   }
 }

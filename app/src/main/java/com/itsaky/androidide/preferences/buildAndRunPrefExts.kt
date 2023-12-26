@@ -101,7 +101,7 @@ private class GradleDistrubution(
   override val icon: Int? = drawable.ic_gradle,
 ) : EditTextPreference() {
 
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     gradleInstallationDir = newValue as String? ?: ""
     return true
   }

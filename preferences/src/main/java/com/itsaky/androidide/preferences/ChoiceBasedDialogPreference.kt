@@ -17,49 +17,45 @@
 
 package com.itsaky.androidide.preferences
 
+import androidx.annotation.CallSuper
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Base class for dialog preferences which allows users to choose from multiple items.
+ * Base class for dialog preferences which allows users to choose from multiple items. Subclasses
+ * must call [onSelectionChanged] to notify about selection changes.
  *
  * @author Akash Yadav
  */
 abstract class ChoiceBasedDialogPreference : DialogPreference(), PreferenceChoices {
 
-  private var checkedPositions = intArrayOf()
+  private var choices = emptyArray<PreferenceChoices.Entry>()
 
   final override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
-    val choices = getChoices(preference.context)
-    val checkedItems = getCheckedItems(choices)
+    choices = getEntries(preference)
 
-    checkedPositions = checkedItems?.map { if(it) 1 else 0 }?.toIntArray() ?: intArrayOf()
-
-    onConfigureDialogChoices(preference, dialog, choices, checkedItems)
+    val selections = BooleanArray(choices.size) { choices[it].isChecked }
+    onConfigureDialogChoices(preference, dialog, choices, selections)
 
     dialog.setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
       dialogInterface.dismiss()
-
-      val selections = HashMap<String, Boolean>(choices.size)
-      for (i in 0..checkedPositions.lastIndex) {
-        selections[choices[i]] = checkedPositions[i] == 1
-      }
-
-      onChoicesConfirmed(checkedPositions, selections)
+      onChoicesConfirmed(preference, choices)
     }
 
     dialog.setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
       dialogInterface.dismiss()
-      onChoicesCancelled()
+      onChoicesCancelled(preference)
     }
   }
 
-  override fun onSelectionChanged(position: Int, isSelected: Boolean) {
-    if (position < 0 || position >= checkedPositions.size) {
-      return
-    }
-
-    checkedPositions[position] = if (isSelected) 1 else 0
+  @CallSuper
+  override fun onSelectionChanged(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int,
+    isSelected: Boolean
+  ) {
+    entry._isChecked = isSelected
   }
 
   /**
@@ -68,11 +64,12 @@ abstract class ChoiceBasedDialogPreference : DialogPreference(), PreferenceChoic
   protected abstract fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>,
-    checkedItems: BooleanArray?
+    entries: Array<PreferenceChoices.Entry>,
+    selections: BooleanArray
   )
 
-  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {}
+  override fun onChoicesConfirmed(preference: Preference, entries: Array<PreferenceChoices.Entry>) {
+  }
 
-  override fun onChoicesCancelled() {}
+  override fun onChoicesCancelled(preference: Preference) {}
 }

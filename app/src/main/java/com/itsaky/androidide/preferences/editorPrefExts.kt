@@ -23,6 +23,7 @@ import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding
+import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
 import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
@@ -176,26 +177,25 @@ private class TabSize(
   override val dialogCancellable = true
 
   @IgnoredOnParcel
-  private val choices = arrayOf("2", "4", "6", "8")
+  private val tabSizes = intArrayOf(2, 4, 6, 8)
 
-  override fun getChoices(context: Context): Array<String> {
-    return choices
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val currentTabSize = tabSize
+    return Array(tabSizes.size) { index ->
+      PreferenceChoices.Entry(
+        label = tabSizes[index].toString(),
+        _isChecked = currentTabSize == tabSizes[index],
+        data = tabSizes[index]
+      )
+    }
   }
 
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    var current = tabSize / 2 - 1
-    if (current < 0 || current >= choices.size) {
-      current = 1
-    }
-    return current
-  }
-
-  override fun onChoiceConfirmed(position: Int) {
-    var size = (position + 1) * 2
-    if (size < 2 || size > 8) {
-      size = 4
-    }
-    tabSize = size
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    tabSize = entry.data as Int
   }
 }
 
@@ -213,16 +213,23 @@ private class ColorSchemePreference(
   @IgnoredOnParcel
   private val schemes = IDEColorSchemeProvider.list()
 
-  override fun getChoices(context: Context): Array<String> {
-    return schemes.map { it.name }.toTypedArray()
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val currentColorScheme = colorScheme
+    return Array(schemes.size) { index ->
+      PreferenceChoices.Entry(
+        schemes[index].name,
+        currentColorScheme == schemes[index].key,
+        schemes[index]
+      )
+    }
   }
 
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    return schemes.indexOfFirst { it.key == colorScheme }
-  }
-
-  override fun onChoiceConfirmed(position: Int) {
-    colorScheme = schemes[position].key
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    colorScheme = (entry.data as IDEColorScheme).key
   }
 }
 

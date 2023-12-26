@@ -26,11 +26,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.LimitlessIDEActivity;
 import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
 import com.itsaky.androidide.fragments.IDEPreferencesFragment;
-import com.itsaky.androidide.preferences.AboutPreferences;
-import com.itsaky.androidide.preferences.ConfigurationPreferences;
-import com.itsaky.androidide.preferences.DeveloperOptionsPreferences;
 import com.itsaky.androidide.preferences.IDEPreferences;
-import com.itsaky.androidide.preferences.PrivacyPreferences;
 import com.itsaky.androidide.preferences.RootPrefExtsKt;
 import java.util.ArrayList;
 

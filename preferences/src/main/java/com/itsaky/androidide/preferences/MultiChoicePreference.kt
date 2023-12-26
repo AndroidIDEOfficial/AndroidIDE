@@ -34,15 +34,17 @@ abstract class MultiChoicePreference : ChoiceBasedDialogPreference(), Preference
   override fun onConfigureDialogChoices(
     preference: Preference,
     dialog: MaterialAlertDialogBuilder,
-    choices: Array<String>,
-    checkedItems: BooleanArray?
+    entries: Array<PreferenceChoices.Entry>,
+    selections: BooleanArray
   ) {
 
+    val labels = Array(entries.size) { entries[it].label }
+
     dialog.setMultiChoiceItems(
-      choices,
-      checkedItems!!
+      labels,
+      selections
     ) { _, which, checked ->
-      onSelectionChanged(which, checked)
+      onSelectionChanged(preference, entries[which], which, checked)
     }
   }
 }

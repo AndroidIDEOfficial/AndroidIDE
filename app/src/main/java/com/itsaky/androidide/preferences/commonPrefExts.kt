@@ -17,28 +17,34 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
+import androidx.preference.Preference
+import com.itsaky.androidide.utils.uncheckedCast
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlin.reflect.KMutableProperty0
 
 internal abstract class PropertyBasedMultiChoicePreference : MultiChoicePreference() {
 
-  @IgnoredOnParcel
-  private val choices by lazy { getProperties() }
-
   abstract fun getProperties(): Map<String, KMutableProperty0<Boolean>>
 
-  override fun getCheckedItems(choices: Array<String>): BooleanArray {
-    return BooleanArray(choices.size) { this.choices[choices[it]]?.get() == true }
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val properties = getProperties()
+    val entries = Array(properties.size) { PreferenceChoices.Entry.EMPTY }
+
+    var index = 0
+    properties.forEach { (key, property) ->
+      entries[index] = PreferenceChoices.Entry(key, property.get(), property)
+      ++index
+    }
+
+    return entries
   }
 
-  override fun getChoices(context: Context): Array<String> {
-    return choices.keys.toTypedArray()
-  }
-
-  override fun onChoicesConfirmed(selectedPositions: IntArray, selections: Map<String, Boolean>) {
-    selections.forEach { (key, value) ->
-      choices[key]?.set(value)
+  override fun onChoicesConfirmed(
+    preference: Preference,
+    entries: Array<PreferenceChoices.Entry>
+  ) {
+    entries.forEach { entry ->
+      uncheckedCast<KMutableProperty0<Boolean>>(entry.data).set(entry.isChecked)
     }
   }
 }

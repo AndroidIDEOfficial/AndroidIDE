@@ -19,6 +19,7 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
@@ -38,6 +39,7 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
+import com.itsaky.androidide.ui.themes.ThemeManager
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -106,28 +108,28 @@ class UiMode(
   @IgnoredOnParcel
   override val dialogCancellable = true
 
-  override fun getChoices(context: Context): Array<String> {
-    return arrayOf(
-      context.getString(R.string.uiMode_light),
-      context.getString(R.string.uiMode_dark),
-      context.getString(R.string.uiMode_system)
-    )
-  }
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val context = preference.context
+    val currentUiMode = uiMode
 
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    return when (uiMode) {
-      AppCompatDelegate.MODE_NIGHT_NO -> 0
-      AppCompatDelegate.MODE_NIGHT_YES -> 1
-      else -> 2
+    return Array(3) { index ->
+      val (label, mode) = when (index) {
+        0 -> context.getString(R.string.uiMode_light) to AppCompatDelegate.MODE_NIGHT_NO
+        1 -> context.getString(R.string.uiMode_dark) to AppCompatDelegate.MODE_NIGHT_YES
+        2 -> context.getString(R.string.uiMode_system) to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        else -> throw IllegalStateException("Invalid index")
+      }
+
+      PreferenceChoices.Entry(label, currentUiMode == mode, mode)
     }
   }
 
-  override fun onChoiceConfirmed(position: Int) {
-    uiMode = when (position) {
-      0 -> AppCompatDelegate.MODE_NIGHT_NO
-      1 -> AppCompatDelegate.MODE_NIGHT_YES
-      else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    }
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    uiMode = entry.data as Int
   }
 }
 
@@ -140,18 +142,27 @@ class ThemeSelector(
 ) : SingleChoicePreference() {
 
   @IgnoredOnParcel
-  private val themes = IDETheme.values()
+  private val themes = IDETheme.entries
 
-  override fun getChoices(context: Context): Array<String> {
-    return themes.map { context.getString(it.title) }.toTypedArray()
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val context = preference.context
+    val currentTheme = IThemeManager.getInstance().getCurrentTheme()
+    return Array(themes.size) { index ->
+      val ideTheme = themes[index]
+      PreferenceChoices.Entry(
+        label = ContextCompat.getString(context, ideTheme.title),
+        _isChecked = currentTheme.name == ideTheme.name,
+        data = ideTheme
+      )
+    }
   }
 
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    return themes.indexOf(IThemeManager.getInstance().getCurrentTheme())
-  }
-
-  override fun onChoiceConfirmed(position: Int) {
-    selectedTheme = themes[position].name
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    selectedTheme = (entry.data as IDETheme).name
   }
 }
 
@@ -163,39 +174,37 @@ class LocaleSelector(
   override val icon: Int? = R.drawable.ic_translate
 ) : SingleChoicePreference() {
 
-  @IgnoredOnParcel
-  private val locales by lazy {
-    mutableListOf<String>().apply {
-      add("")
-      addAll(LocaleProvider.SUPPORTED_LOCALES.keys)
-    }
-  }
-
-  override fun getChoices(context: Context): Array<String> {
-    return locales.mapIndexed { index, locale ->
+  override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
+    val context = preference.context
+    val currentLocale = selectedLocale
+    val supportedLocales = LocaleProvider.SUPPORTED_LOCALES.keys.toList()
+    return Array(supportedLocales.size + 1) { index ->
       if (index == 0) {
-        context.getString(R.string.locale_system_default)
+        PreferenceChoices.Entry(
+          label = ContextCompat.getString(context, R.string.locale_system_default),
+          _isChecked = selectedLocale == null,
+          data = 0
+        )
       } else {
-        LocaleProvider.getLocale(locale)!!.let { it.getDisplayName(it) }
+        val localeKey = supportedLocales[index - 1]
+        val locale = LocaleProvider.getLocale(localeKey)!!
+        PreferenceChoices.Entry(
+          label = locale.getDisplayName(locale),
+          _isChecked = currentLocale == localeKey,
+          data = localeKey
+        )
       }
-    }.toTypedArray()
-  }
-
-  override fun getInitiallySelectionItemPosition(context: Context): Int {
-    val applicationLocales = AppCompatDelegate.getApplicationLocales()
-    val locale = if (applicationLocales.size() > 0) {
-      applicationLocales.get(0)
-    } else {
-      LocaleProvider.getLocale(selectedLocale)
     }
-
-    val key = LocaleProvider.getKey(locale) ?: return 0
-    return locales.indexOf(key).coerceAtLeast(0)
   }
 
-  override fun onChoiceConfirmed(position: Int) {
-    // Reset to null if 'System Default' is selected
-    selectedLocale = if (position == 0) null else locales[position]
+  override fun onChoiceConfirmed(
+    preference: Preference,
+    entry: PreferenceChoices.Entry,
+    position: Int
+  ) {
+    selectedLocale = entry.data.let { localeKey ->
+      if (localeKey is Int) null else localeKey as String
+    }
   }
 }
 
@@ -213,7 +222,7 @@ class OpenLastProject(
     return pref
   }
 
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     autoOpenProjects = newValue as Boolean? ?: autoOpenProjects
     return true
   }
@@ -233,7 +242,7 @@ class ConfirmProjectOpen(
     return pref
   }
 
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     confirmProjectOpen = newValue as Boolean? ?: confirmProjectOpen
     return true
   }
@@ -253,7 +262,7 @@ class UseSytemShell(
     return pref
   }
 
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     useSystemShell = newValue as Boolean? ?: useSystemShell
     return true
   }

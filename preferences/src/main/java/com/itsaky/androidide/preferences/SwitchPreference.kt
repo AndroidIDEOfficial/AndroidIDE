@@ -19,6 +19,7 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import androidx.preference.Preference
+import kotlin.reflect.KMutableProperty0
 
 /**
  * A switch preference.
@@ -29,13 +30,16 @@ abstract class SwitchPreference
 @JvmOverloads
 constructor(val setValue: ((Boolean) -> Unit)? = null, val getValue: (() -> Boolean)? = null) :
   BasePreference() {
+
+    constructor(property: KMutableProperty0<Boolean>) : this(property::set, property::get)
+
   override fun onCreatePreference(context: Context): Preference {
     val pref = androidx.preference.SwitchPreference(context)
     pref.isChecked = prefValue()
     return pref
   }
   
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+  override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
     setValue?.let { it(newValue as Boolean? ?: prefValue()) }
     return true
   }
