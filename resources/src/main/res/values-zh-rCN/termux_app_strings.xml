@@ -79,11 +79,9 @@
   <!-- Miscellaneous -->
   <string name="error_termux_service_start_failed_general">无法启动 TermuxService，检查日志中的异常消息。</string>
   <string name="error_termux_service_start_failed_bg">由于 android 的后台限制，应用在后台时无法启动 TermuxService。</string>
-  <!-- Termux Settings -->
-  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; Settings</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
-  <string name="termux_preferences_summary">Preferences for &amp;TERMUX_APP_NAME; app</string>
+  <string name="termux_preferences_title">Termux</string>
+  <string name="termux_preferences_summary">Preferences for the Termux terminal.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">调试</string>
   <string name="termux_debugging_preferences_summary">调试首选项</string>
