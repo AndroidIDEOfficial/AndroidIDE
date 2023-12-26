@@ -1,0 +1,316 @@
+[
+  {
+    "id": "15548591",
+    "username": "itsaky",
+    "name": "Akash Yadav (itsaky)",
+    "translated": 39962,
+    "approved": 30878,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15548591/medium/3c5f3139891eb92915fcf4c1e7ca120e.jpeg",
+    "languages": [
+      {
+        "id": "ar",
+        "name": "Arabic"
+      },
+      {
+        "id": "bn-IN",
+        "name": "Bengali, India"
+      },
+      {
+        "id": "zh-CN",
+        "name": "Chinese Simplified"
+      },
+      {
+        "id": "fr",
+        "name": "French"
+      },
+      {
+        "id": "de",
+        "name": "German"
+      },
+      {
+        "id": "hi",
+        "name": "Hindi"
+      },
+      {
+        "id": "id",
+        "name": "Indonesian"
+      },
+      {
+        "id": "pt-PT",
+        "name": "Portuguese"
+      },
+      {
+        "id": "ro",
+        "name": "Romanian"
+      },
+      {
+        "id": "ru",
+        "name": "Russian"
+      },
+      {
+        "id": "es-ES",
+        "name": "Spanish"
+      },
+      {
+        "id": "tr",
+        "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "15563911",
+    "username": "esalessandrx",
+    "name": "Alessandro (esalessandrx)",
+    "translated": 4133,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15563911/medium/a2262fe354d51d9c991d06fcace20b7a.jpg",
+    "languages": [
+      {
+        "id": "es-ES",
+        "name": "Spanish"
+      }
+    ]
+  },
+  {
+    "id": "15757161",
+    "username": "liziq",
+    "name": "zhiq liu (liziq)",
+    "translated": 3405,
+    "approved": 1809,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15757161/medium/f3903c160404f095de68760f81609430.jpeg",
+    "languages": [
+      {
+        "id": "zh-CN",
+        "name": "Chinese Simplified"
+      }
+    ]
+  },
+  {
+    "id": "15550455",
+    "username": "smith8h",
+    "name": "Hussein Smith (smith8h)",
+    "translated": 2550,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550455/medium/9c5a3d089c209487340abb35d74b5b7c.jpg",
+    "languages": [
+      {
+        "id": "ar",
+        "name": "Arabic"
+      }
+    ]
+  },
+  {
+    "id": "15550047",
+    "username": "andihasan97",
+    "name": "Andi Hasan A (andihasan97)",
+    "translated": 2453,
+    "approved": 697,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png",
+    "languages": [
+      {
+        "id": "id",
+        "name": "Indonesian"
+      }
+    ]
+  },
+  {
+    "id": "15197694",
+    "username": "rafael_mn",
+    "name": "rafael_mn",
+    "translated": 2126,
+    "approved": 1850,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15197694/medium/e75e727190d17436b60e284b50bfb32f_default.png",
+    "languages": [
+      {
+        "id": "pt-PT",
+        "name": "Portuguese"
+      }
+    ]
+  },
+  {
+    "id": "15749489",
+    "username": "drakulaboy",
+    "name": "Adrian (drakulaboy)",
+    "translated": 2077,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15749489/medium/3b3b4c672b219fa985c0bf5d665a1d7c.png",
+    "languages": [
+      {
+        "id": "ro",
+        "name": "Romanian"
+      }
+    ]
+  },
+  {
+    "id": "15503338",
+    "username": "Baturax",
+    "name": "Bai (Baturax)",
+    "translated": 2035,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15503338/medium/84e6393daad44746e6f870fd1a19bcb6.png",
+    "languages": [
+      {
+        "id": "tr",
+        "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "15549947",
+    "username": "TheDonMarv",
+    "name": "Marvin Stelter (TheDonMarv)",
+    "translated": 1491,
+    "approved": 182,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15549947/medium/7e2d0178f0ff00eba107fac474caa6a2.png",
+    "languages": [
+      {
+        "id": "de",
+        "name": "German"
+      }
+    ]
+  },
+  {
+    "id": "12564628",
+    "username": "krc440002",
+    "name": "Furkan Karcıoğlu (krc440002)",
+    "translated": 1447,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/12564628/medium/addb4132479fae98076ae2fa4ccb42a4_default.png",
+    "languages": [
+      {
+        "id": "tr",
+        "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "15547677",
+    "username": "selyanlian17516",
+    "name": "Selyan Lian (selyanlian17516)",
+    "translated": 1406,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15547677/medium/f9e760635fee6bdc359732233aea790d.jpeg",
+    "languages": [
+      {
+        "id": "fr",
+        "name": "French"
+      }
+    ]
+  },
+  {
+    "id": "15555625",
+    "username": "Smooth-E",
+    "name": "Smooth-E",
+    "translated": 879,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15555625/medium/1fc098969551e0430a579242afe26c5f.png",
+    "languages": [
+      {
+        "id": "ru",
+        "name": "Russian"
+      }
+    ]
+  },
+  {
+    "id": "15548687",
+    "username": "deepkrg17",
+    "name": "Deep Kr. Ghosh (deepkrg17)",
+    "translated": 725,
+    "approved": 156,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png",
+    "languages": [
+      {
+        "id": "bn-IN",
+        "name": "Bengali, India"
+      },
+      {
+        "id": "tr",
+        "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "15549279",
+    "username": "friostd",
+    "name": "friostd",
+    "translated": 543,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg",
+    "languages": [
+      {
+        "id": "pt-PT",
+        "name": "Portuguese"
+      }
+    ]
+  },
+  {
+    "id": "15930373",
+    "username": "Marcus_Jeeves",
+    "name": "Владислав Сухов (Marcus_Jeeves)",
+    "translated": 279,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15930373/medium/64fdfbf36048d06fa800c60cfc455cba_default.png",
+    "languages": [
+      {
+        "id": "ru",
+        "name": "Russian"
+      }
+    ]
+  },
+  {
+    "id": "14307200",
+    "username": "Tanya7z",
+    "name": "Tanya7z",
+    "translated": 251,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/14307200/medium/1f9dbd438be62b9ca369cb2220f413bd.jpg",
+    "languages": [
+      {
+        "id": "zh-CN",
+        "name": "Chinese Simplified"
+      }
+    ]
+  },
+  {
+    "id": "15594415",
+    "username": "Rosemoe168",
+    "name": "Rosemoe (Rosemoe168)",
+    "translated": 131,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15594415/medium/0b5e9fd932dea6e26e4a19784a96af1d.jpeg",
+    "languages": [
+      {
+        "id": "zh-CN",
+        "name": "Chinese Simplified"
+      }
+    ]
+  },
+  {
+    "id": "16152462",
+    "username": "mhyh7466",
+    "name": "Pixel Line (mhyh7466)",
+    "translated": 114,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16152462/medium/f8348371b20dbd6826c0a0f41b99754e.jpeg",
+    "languages": [
+      {
+        "id": "ar",
+        "name": "Arabic"
+      }
+    ]
+  },
+  {
+    "id": "15765973",
+    "username": "n7800",
+    "name": "n7800",
+    "translated": 105,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15765973/medium/579634adb79b475504794d7e4806d3d8_default.png",
+    "languages": [
+      {
+        "id": "ru",
+        "name": "Russian"
+      }
+    ]
+  }
+]
