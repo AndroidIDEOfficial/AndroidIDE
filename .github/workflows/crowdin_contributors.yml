@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CONTRIBUTORS_JSON_FILENAME: crowdin-contributors.json
+  CONTRIBUTORS_JSON_FILENAME: crowdin-contributors
 
 jobs:
   crowdin-contributors:
@@ -34,9 +34,15 @@ jobs:
     - name: Write JSON report
       uses: "DamianReeves/write-file-action@master"
       with:
-        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}
+        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}_staging.json
         write-mode: overwrite
         contents: ${{ steps.generate_table.outputs.json_report }}
+
+    - name: Pretty-print JSON report
+      run: |
+        sudo apt-get install jq
+        cat ${{ env.CONTRIBUTORS_JSON_FILENAME }}_staging.json | jq '.' > ${{ env.CONTRIBUTORS_JSON_FILENAME }}.json
+        rm ${{ env.CONTRIBUTORS_JSON_FILENAME }}_staging.json
 
     - name: Upload JSON report
       uses: actions/upload-artifact@v3
