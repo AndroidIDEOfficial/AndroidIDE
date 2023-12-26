@@ -5,6 +5,9 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch: {}
 
+env:
+  CONTRIBUTORS_JSON_FILENAME: crowdin-contributors.json
+
 jobs:
   crowdin-contributors:
     runs-on: ubuntu-latest
@@ -14,7 +17,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Generate Crowdin Contributors table
+      id: generate_table
       uses: andrii-bodnar/action-crowdin-contributors@v1.0.1
+      continue-on-error: false
       with:
         contributors_per_line: 8
         max_contributors: 32
@@ -25,6 +30,16 @@ jobs:
       env:
         CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
         CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+    - name: Write JSON report
+      run: |
+        echo ${{ steps.generate_table.outputs.json_report }} > ${{ env.CONTRIBUTORS_JSON_FILENAME }}
+
+    - name: Upload JSON report
+      uses: actions/upload-artifact@v3
+      with:
+        name: crowdin-contributors-json
+        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
