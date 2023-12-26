@@ -77,11 +77,9 @@
   <!-- Miscellaneous -->
   <string name="error_termux_service_start_failed_general">TermuxService प्रारंभ करने में विफल. अपवाद संदेश के लिए लॉगकैट की जाँच करें।</string>
   <string name="error_termux_service_start_failed_bg">एंड्रॉइड बैकग्राउंड प्रतिबंधों के कारण ऐप बैकग्राउंड में होने पर टर्मक्ससर्विस प्रारंभ करने में विफल रहा।</string>
-  <!-- Termux Settings -->
-  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; सेटिंग्स</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
-  <string name="termux_preferences_summary">&amp;TERMUX_APP_NAME के ​​लिए प्राथमिकताएँ</string>
+  <string name="termux_preferences_title">Termux</string>
+  <string name="termux_preferences_summary">Preferences for the Termux terminal.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">डिबगिंग</string>
   <string name="termux_debugging_preferences_summary">डिबगिंग के लिए प्राथमिकताएँ</string>
