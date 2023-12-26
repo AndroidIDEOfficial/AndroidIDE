@@ -79,11 +79,9 @@
   <!-- Miscellaneous -->
   <string name="error_termux_service_start_failed_general">Failed to start TermuxService. Check logcat for exception message.</string>
   <string name="error_termux_service_start_failed_bg">Failed to start TermuxService while app is in background due to android bg restrictions.</string>
-  <!-- Termux Settings -->
-  <string name="title_activity_termux_settings">&amp;TERMUX_APP_NAME; Settings</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">&amp;TERMUX_APP_NAME;</string>
-  <string name="termux_preferences_summary">Preferences for &amp;TERMUX_APP_NAME; app</string>
+  <string name="termux_preferences_title">Termux</string>
+  <string name="termux_preferences_summary">Preferences for the Termux terminal.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">Debugging</string>
   <string name="termux_debugging_preferences_summary">Preferences for debugging</string>
