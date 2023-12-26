@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: crowdin-contributors-json
-        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}
+        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}.json
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
