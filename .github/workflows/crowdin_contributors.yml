@@ -32,8 +32,11 @@ jobs:
         CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
     - name: Write JSON report
-      run: |
-        echo ${{ steps.generate_table.outputs.json_report }} > ${{ env.CONTRIBUTORS_JSON_FILENAME }}
+      uses: "DamianReeves/write-file-action@master"
+      with:
+        path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}
+        write-mode: overwrite
+        contents: ${{ steps.generate_table.outputs.json_report }}
 
     - name: Upload JSON report
       uses: actions/upload-artifact@v3
