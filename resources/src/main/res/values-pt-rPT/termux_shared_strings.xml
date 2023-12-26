@@ -30,7 +30,7 @@
   <string name="error_get_package_context_failed_help_url_message">Verifique %1$s para mais detalhes.</string>
   <string name="error_get_component_state_failed">Falha ao obter o estado do componente %1$s/%2$s</string>
   <string name="error_enable_component_failed">Falha ao habilitar o componente %1$s/%2$s</string>
-  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
+  <string name="error_disable_component_failed">Falha ao desativar o componente %1$s/%2$s</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">Falha ao solicitar permissões com o código de solicitação %1$d: %2$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">Tentativa de pedir permissões que não foram solicitadas no manifesto do app: %1$s</string>
