@@ -51,11 +51,11 @@
   <string name="action_share_transcript">Share transcript</string>
   <string name="title_share_transcript">Terminal transcript</string>
   <string name="title_share_transcript_with">Send transcript to:</string>
-  <string name="action_share_selected_text">Share selected text</string>
-  <string name="title_share_selected_text">Terminal Text</string>
-  <string name="title_share_selected_text_with">Send selected text to:</string>
-  <string name="action_autofill_password">Autofill password</string>
-  <string name="action_reset_terminal">Reset</string>
+  <string name="action_share_selected_text">Поделиться выделением</string>
+  <string name="title_share_selected_text">Текст терминала</string>
+  <string name="title_share_selected_text_with">Получатель выделения:</string>
+  <string name="action_autofill_password">Автозаполнение пароля</string>
+  <string name="action_reset_terminal">Сброс</string>
   <string name="msg_terminal_reset">Terminal reset</string>
   <string name="action_kill_process">Kill process (%d)</string>
   <string name="title_confirm_kill_process">Really kill this session?</string>
@@ -80,7 +80,6 @@
   <string name="error_termux_service_start_failed_general">Failed to start TermuxService. Check logcat for exception message.</string>
   <string name="error_termux_service_start_failed_bg">Failed to start TermuxService while app is in background due to android bg restrictions.</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">Termux</string>
   <string name="termux_preferences_summary">Preferences for the Termux terminal.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">Debugging</string>
