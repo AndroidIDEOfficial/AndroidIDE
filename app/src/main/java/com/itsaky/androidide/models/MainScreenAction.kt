@@ -82,7 +82,7 @@ constructor(
         val donate = MainScreenAction(
           ACTION_DONATE,
           R.string.btn_donate,
-          R.drawable.ic_donate
+          R.drawable.ic_heart
         )
 
         val docs = MainScreenAction(

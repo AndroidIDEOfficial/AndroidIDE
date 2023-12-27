@@ -47,7 +47,7 @@
     app:layout_constraintVertical_bias="0.4" />
 
   <com.google.android.material.textview.MaterialTextView
-    android:id="@+id/subtitle"
+    android:id="@+id/description"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="32dp"

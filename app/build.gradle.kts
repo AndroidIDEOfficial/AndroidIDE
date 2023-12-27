@@ -69,6 +69,8 @@ dependencies {
   implementation(libs.common.glide)
   implementation(libs.common.jsoup)
   implementation(libs.common.kotlin.coroutines.android)
+  implementation(libs.common.retrofit)
+  implementation(libs.common.retrofit.gson)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)

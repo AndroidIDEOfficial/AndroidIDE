@@ -74,9 +74,6 @@ class AboutPreferences(
 ) : IPreferenceGroup() {
 
   init {
-    addPreference(github)
-    addPreference(channel)
-    addPreference(group)
     addPreference(changelog)
     addPreference(about)
   }

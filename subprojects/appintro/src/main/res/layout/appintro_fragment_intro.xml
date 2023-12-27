@@ -10,7 +10,7 @@
     tools:background="@color/appintro_background_color">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/ide_title"
         style="@style/AppIntroDefaultHeading"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toTopOf="@+id/description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/ide_title"
         app:layout_constraintVertical_weight="5" />
 
     <TextView

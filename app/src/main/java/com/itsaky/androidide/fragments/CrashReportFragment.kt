@@ -18,20 +18,16 @@ package com.itsaky.androidide.fragments
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.blankj.utilcode.util.AppUtils.getAppVersionCode
 import com.blankj.utilcode.util.ClipboardUtils
-import com.blankj.utilcode.util.DeviceUtils.getManufacturer
-import com.blankj.utilcode.util.DeviceUtils.getModel
-import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.databinding.LayoutCrashReportBinding
 import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.utils.BuildInfoUtils
 
 class CrashReportFragment : Fragment() {
 
@@ -44,26 +40,6 @@ class CrashReportFragment : Fragment() {
     const val KEY_MESSAGE = "crash_message"
     const val KEY_TRACE = "crash_trace"
     const val KEY_CLOSE_APP_ON_CLICK = "close_on_app_click"
-
-    private val CRASH_REPORT_HEADER by lazy {
-      val map = mapOf(
-        "Version" to "v${BuildInfo.VERSION_NAME_SIMPLE} (${getAppVersionCode()})",
-        "CI Build" to BuildInfo.CI_BUILD,
-        "Branch" to BuildInfo.CI_GIT_BRANCH,
-        "Commit" to BuildInfo.CI_GIT_COMMIT_HASH,
-        "Variant" to "${BuildConfig.FLAVOR} (${BuildConfig.BUILD_TYPE})",
-        "SDK Version" to Build.VERSION.SDK_INT,
-        "Supported ABIs" to "[${Build.SUPPORTED_ABIS.joinToString(separator = ", ")}]",
-        "Manufacturer" to getManufacturer(),
-        "Device" to getModel()
-      )
-      """
-AndroidIDE Crash Report
-${map.entries.joinToString(separator = System.lineSeparator()) { "${it.key} : ${it.value}" }}
-
-Stacktrace:
-""".trim()
-    }
 
     @JvmStatic
     fun newInstance(trace: String): CrashReportFragment {
@@ -147,7 +123,7 @@ Stacktrace:
 
   private fun buildReportText(trace: String?): String {
     return """
-$CRASH_REPORT_HEADER
+${BuildInfoUtils.getBuildInfoHeader()}
 $trace
     """
   }

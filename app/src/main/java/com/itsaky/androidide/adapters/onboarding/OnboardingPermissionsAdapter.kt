@@ -51,7 +51,7 @@ class OnboardingPermissionsAdapter(private val permissions: List<OnboardingPermi
 
     binding.infoContent.apply {
       title.setText(permission.title)
-      subtitle.setText(permission.description)
+      description.setText(permission.description)
     }
 
     binding.grantButton.setOnClickListener {

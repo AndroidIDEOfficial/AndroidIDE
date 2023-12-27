@@ -36,7 +36,7 @@ sealed class AppIntroPageTransformerType {
         val titleParallaxFactor: Double = 1.0,
         val imageParallaxFactor: Double = -1.0,
         val descriptionParallaxFactor: Double = 2.0,
-        @IdRes val titleViewId: Int = R.id.title,
+        @IdRes val titleViewId: Int = R.id.ide_title,
         @IdRes val imageViewId: Int = R.id.image,
         @IdRes val descriptionViewId: Int = R.id.description
     ) : AppIntroPageTransformerType()

@@ -25,7 +25,7 @@ import androidx.annotation.LayoutRes
 import androidx.viewbinding.ViewBinding
 
 /**
- * Handles inflation and release of [ViewBinding][androidx.viewbinding.ViewBinding] for the fragment.
+ * Handles inflation and release of [ViewHolder][androidx.viewbinding.ViewBinding] for the fragment.
  *
  * @author Akash Yadav
  */
@@ -36,7 +36,7 @@ abstract class FragmentWithBinding<T : ViewBinding> : BaseFragment {
 
   protected val binding: T
     get() = checkNotNull(
-      _binding) { "Cannot access ViewBinding. Fragment may have been destroyed." }
+      _binding) { "Cannot access ViewHolder. Fragment may have been destroyed." }
 
   private var bind: ((View) -> T)? = null
 

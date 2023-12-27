@@ -73,10 +73,10 @@
       android:windowSoftInputMode="adjustResize" />
     <activity android:name=".activities.PreferencesActivity" />
     <activity
-      android:configChanges="orientation|screenSize"
       android:name=".activities.AboutActivity" />
     <activity
-      android:configChanges="orientation|screenSize"
+      android:name=".activities.ContributorsActivity" />
+    <activity
       android:name=".activities.TerminalActivity"
       android:windowSoftInputMode="adjustResize" />
 

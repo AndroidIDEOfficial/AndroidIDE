@@ -20,11 +20,9 @@ package com.itsaky.androidide.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.itsaky.androidide.databinding.LayoutSimpleIconTextBinding;
+import com.itsaky.androidide.common.databinding.LayoutSimpleIconTextBinding;
 
 /**
  * A RecyclerView.Adapter which can be used to show a list with an icon and a text.
@@ -44,8 +42,8 @@ public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAd
   @Override
   public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     return new VH(
-        LayoutSimpleIconTextBinding.inflate(
-            LayoutInflater.from(parent.getContext()), parent, false));
+        LayoutSimpleIconTextBinding.inflate(LayoutInflater.from(parent.getContext()), parent,
+            false));
   }
 
   @Override
@@ -109,10 +107,12 @@ public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAd
   }
 
   public interface OnBindListener<T> {
+
     default boolean onBind(T item, VH holder, int position) {
       return false;
     }
 
-    default void postBind(T item, VH holder, int position) {}
+    default void postBind(T item, VH holder, int position) {
+    }
   }
 }

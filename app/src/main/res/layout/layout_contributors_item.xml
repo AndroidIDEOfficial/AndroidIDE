@@ -15,16 +15,17 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:layout_marginTop="4dp"
-  android:layout_marginBottom="4dp"
+<com.google.android.material.imageview.ShapeableImageView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="48dp"
+  android:layout_height="48dp"
+  android:layout_margin="4dp"
   android:clickable="true"
-  android:focusable="true">
+  android:focusable="true"
+  android:scaleType="centerCrop"
+  app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+  tools:tint="?colorOnSurface"
+  tools:srcCompat="@drawable/ic_android">
 
-  <include
-    android:id="@+id/content"
-    layout="@layout/layout_icon_title_description" />
-
-</com.google.android.material.card.MaterialCardView>
+</com.google.android.material.imageview.ShapeableImageView>

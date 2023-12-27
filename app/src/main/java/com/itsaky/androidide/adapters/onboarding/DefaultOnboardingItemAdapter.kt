@@ -57,9 +57,9 @@ open class DefaultOnboardingItemAdapter<T : OnboardingItem>(
     binding.content.title.text = item.title
 
     if (item.description.isNotBlank()) {
-      binding.content.subtitle.text = item.description
+      binding.content.description.text = item.description
     } else {
-      binding.content.subtitle.visibility = View.INVISIBLE
+      binding.content.description.visibility = View.INVISIBLE
     }
 
     if (item.icon != 0) {

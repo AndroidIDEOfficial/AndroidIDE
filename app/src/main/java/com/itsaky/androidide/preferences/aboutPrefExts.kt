@@ -19,44 +19,12 @@ package com.itsaky.androidide.preferences
 
 import android.content.Intent
 import com.itsaky.androidide.activities.AboutActivity
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.resources.R
-import kotlinx.parcelize.Parcelize
 
-private const val KEY_GITHUB = "idepref_gh"
-private const val KEY_TG_CHANNEL = "idepref_tg_channel"
-private const val KEY_TG_GROUP = "idepref_tg_group"
 private const val KEY_CHANGELOG = "idepref_changelog"
 private const val KEY_ABOUT = "idepref_about"
 
-val github =
-  SimpleClickablePreference(
-    key = KEY_GITHUB,
-    title = R.string.title_github,
-    summary = R.string.idepref_github_summary
-  ) {
-    BaseApplication.getBaseInstance().openGitHub()
-    true
-  }
-val channel =
-  SimpleClickablePreference(
-    key = KEY_TG_CHANNEL,
-    title = R.string.official_tg_channel,
-    summary = R.string.idepref_channel_summary
-  ) {
-    BaseApplication.getBaseInstance().openTelegramChannel()
-    true
-  }
-val group =
-  SimpleClickablePreference(
-    key = KEY_TG_GROUP,
-    title = R.string.discussions_on_telegram,
-    summary = R.string.idepref_group_summary
-  ) {
-    BaseApplication.getBaseInstance().openTelegramGroup()
-    true
-  }
 val changelog =
   SimpleClickablePreference(
     key = KEY_CHANGELOG,

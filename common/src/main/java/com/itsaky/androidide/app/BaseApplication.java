@@ -19,14 +19,15 @@ package com.itsaky.androidide.app;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.buildinfo.BuildInfo;
+import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
@@ -41,6 +42,7 @@ public class BaseApplication extends Application {
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
   public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
   public static final String DOCS_URL = BuildInfo.PROJECT_SITE + "/docs";
+  public static final String CONTRIBUTOR_GUIDE_URL = BuildInfo.REPO_URL + "/blob/dev/CONTRIBUTING.md";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
@@ -125,6 +127,8 @@ public class BaseApplication extends Application {
     } catch (Throwable th) {
       if (pkg != null) {
         openUrl(url);
+      } else if (th instanceof ActivityNotFoundException) {
+        FlashbarUtilsKt.flashError(R.string.msg_app_unavailable_for_intent);
       } else {
         FlashbarUtilsKt.flashError(th.getMessage());
       }

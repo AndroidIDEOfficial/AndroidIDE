@@ -17,46 +17,50 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content">
 
-  <com.google.android.material.imageview.ShapeableImageView
+  <androidx.appcompat.widget.AppCompatImageView
     android:id="@+id/icon"
-    android:layout_width="0dp"
-    android:layout_height="150dp"
-    android:src="@drawable/ic_launcher_fg_vector"
+    android:layout_width="36dp"
+    android:layout_height="36dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="16dp"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toStartOf="@id/title"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-    app:tint="?attr/colorOnSurface" />
+    app:tint="?attr/colorOnSurface"
+    tools:src="@drawable/ic_android" />
 
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/title"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
-    android:gravity="center"
-    android:text="@string/greeting_title"
-    android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
-    app:layout_constraintBottom_toBottomOf="@id/icon"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="bottom|start"
+    android:maxLines="1"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    app:layout_constraintBottom_toTopOf="@id/description"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toEndOf="@id/icon"
-    app:layout_constraintTop_toTopOf="@id/icon"
-    app:layout_constraintVertical_bias="0.4" />
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="@string/greeting_title" />
 
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/description"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="32dp"
-    android:layout_marginEnd="32dp"
-    android:gravity="center"
-    android:text="@string/greeting_subtitle"
-    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    android:layout_marginBottom="8dp"
+    android:maxLines="2"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="@id/title"
     app:layout_constraintStart_toStartOf="@id/title"
-    app:layout_constraintTop_toBottomOf="@id/title" />
+    app:layout_constraintTop_toBottomOf="@id/title"
+    tools:text="@string/greeting_subtitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

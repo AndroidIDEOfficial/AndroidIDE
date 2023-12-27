@@ -21,33 +21,26 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <com.google.android.material.textview.MaterialTextView
-    android:id="@+id/title"
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/section_items"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:gravity="bottom|start"
-    android:maxLines="1"
-    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-    app:layout_constraintBottom_toTopOf="@id/subtitle"
+    android:layout_marginTop="16dp"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:text="@string/greeting_title" />
+    app:layout_constraintTop_toBottomOf="@id/section_title"
+    tools:itemCount="5"
+    tools:listitem="@layout/layout_icon_title_description" />
 
   <com.google.android.material.textview.MaterialTextView
-    android:id="@+id/subtitle"
-    android:layout_width="0dp"
+    android:id="@+id/section_title"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:maxLines="2"
-    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@id/title"
-    app:layout_constraintStart_toStartOf="@id/title"
-    app:layout_constraintTop_toBottomOf="@id/title"
-    tools:text="@string/greeting_subtitle" />
+    android:layout_margin="16dp"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="@string/title_socials" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

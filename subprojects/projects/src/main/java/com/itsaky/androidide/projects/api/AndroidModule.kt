@@ -175,7 +175,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     sources.addAll(mainSourceSet.sourceProvider.kotlinDirectories)
 
     // build/generated/**
-    // AIDL, ViewBinding, Renderscript, BuildConfig i.e every generated source sources
+    // AIDL, ViewHolder, Renderscript, BuildConfig i.e every generated source sources
     val selectedVariant = getSelectedVariant()
     if (selectedVariant != null) {
       sources.addAll(selectedVariant.mainArtifact.generatedSourceFolders)

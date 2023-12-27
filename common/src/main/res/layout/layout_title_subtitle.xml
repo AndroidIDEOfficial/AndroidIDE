@@ -21,19 +21,6 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <androidx.appcompat.widget.AppCompatImageView
-    android:id="@+id/icon"
-    android:layout_width="36dp"
-    android:layout_height="36dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="16dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:src="@drawable/ic_android"
-    tools:tint="?attr/colorOnSurface" />
-
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/title"
     android:layout_width="0dp"
@@ -44,14 +31,14 @@
     android:gravity="bottom|start"
     android:maxLines="1"
     android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-    app:layout_constraintBottom_toTopOf="@id/subtitle"
+    app:layout_constraintBottom_toTopOf="@id/description"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toEndOf="@id/icon"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:text="@string/greeting_title" />
 
   <com.google.android.material.textview.MaterialTextView
-    android:id="@+id/subtitle"
+    android:id="@+id/description"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
