@@ -56,17 +56,17 @@
   <string name="msg_file_saved_successfully">File %1$s berhasil disimpan di \"%2$s\"</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
-  <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
-        an issue on one of the following links.
-        \n\nIf you are posting a Termux app crash report, then please provide details on what you were doing that
-        caused the crash and how to reproduce it, if possible.
-        \n\nIf you are posting an issue on GitHub, then post it in the repository at which the report belongs at.
-        Issues opened or emails sent with **(partial) screenshots** instead of copied text or a file of this report
-        **will likely be automatically closed/deleted**. You may optionally remove any device specific info that
-        you consider private or don\'t want to share or that is not relevant to the issue.
-        \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
-        on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
-        even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
+  <string name="msg_report_issue">Jika Anda ingin melaporkan masalah ini, salin teksnya dari menu opsi (3 titik di kanan atas) dan posting
+         masalah di salah satu tautan berikut.
+         \n\nJika Anda memposting laporan kerusakan aplikasi Termux, harap berikan detail tentang apa yang Anda lakukan
+         yang menyebabkan kerusakan dan cara mereproduksinya, jika memungkinkan.
+         \n\nJika Anda memposting masalah di GitHub, poskan masalah tersebut di repositori tempat laporan berada.
+         Masalah dibuka atau email dikirim dengan **tangkapan layar (sebagian)** dan bukan salinan teks atau file laporan ini
+         **kemungkinan besar akan ditutup/dihapus secara otomatis**.  Anda juga dapat menghapus informasi khusus perangkat apa pun itu yang
+         Anda anggap pribadi atau tidak ingin berbagi atau yang tidak relevan dengan permasalahannya.
+         \n\nKami tidak menyediakan dukungan untuk alat/skrip terkait peretasan apa pun.  Setiap pertanyaan yang diajukan tentang itu melalui email,
+         di GitHub atau forum komunitas termux resmi lainnya **kemungkinan akan ditutup/dihapus otomatis** dan mungkin
+         bahkan mengakibatkan larangan **sementara atau permanen**.  Periksa %1$s/wiki/Peretasan untuk detailnya.</string>
   <string name="msg_termux_app_required_by_app">&amp;TERMUX_APP_NAME; diperlukan oleh aplikasi %1$s untuk menjalankan perintah termux.</string>
   <string name="error_termux_app_package_context_not_accessible">&amp;TERMUX_APP_NAME; aplikasi (konteks paket) tidak dapat diakses.</string>
   <string name="error_termux_prefix_dir_path_not_accessible">&amp;TERMUX_APP_NAME;  Direktori $PREFIX aplikasi tidak dapat diakses oleh aplikasi %1$s.
