@@ -471,15 +471,15 @@
   <string name="msg_terminal_new_sessions_disabled">Não foi possível criar a sessão. Novas sessões estão desativadas!</string>
   <string name="title_install_location_error">Erro no local de instalação</string>
   <string name="title_unsupported_user">Usuário não suportado</string>
-  <string name="title_socials">Socials</string>
-  <string name="title_contributors">Contributors</string>
-  <string name="summary_contributors">Top community contributors.</string>
-  <string name="title_github_contributors">GitHub Contributors</string>
-  <string name="title_crowdin_translators">Crowdin Translators</string>
-  <string name="title_misc">Misc</string>
-  <string name="title_contribute">Contribute</string>
-  <string name="summary_contribute">It\'s not just an IDE, it\'s a community. Contribute code, ideas, and passion to AndroidIDE.</string>
-  <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
-  <string name="title_open_source_licenses">Open source licenses</string>
-  <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="title_socials">Sociais</string>
+  <string name="title_contributors">Contribuidores</string>
+  <string name="summary_contributors">Maiores contribuidores da comunidade.</string>
+  <string name="title_github_contributors">Contribuidores do Github</string>
+  <string name="title_crowdin_translators">Tradutores do Crowdin</string>
+  <string name="title_misc">Outros</string>
+  <string name="title_contribute">Contribuir</string>
+  <string name="summary_contribute">Não é apenas um IDE, é uma comunidade. Contribua com código, ideias e paixão pelo AndroidIDE.</string>
+  <string name="msg_app_unavailable_for_intent">Nenhum aplicativo disponível para lidar com a intenção.</string>
+  <string name="title_open_source_licenses">Licenças de código aberto</string>
+  <string name="summary_open_source_licenses">Ver licenças de código aberto.</string>
 </resources>
