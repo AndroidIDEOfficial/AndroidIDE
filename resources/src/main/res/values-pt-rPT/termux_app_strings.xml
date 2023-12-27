@@ -83,7 +83,6 @@
   <string name="error_termux_service_start_failed_general">Falha ao iniciar o TermuxService. Verifique o logcat pela mensagem de exceção.</string>
   <string name="error_termux_service_start_failed_bg">Falha ao iniciar o TermuxService enquanto o aplicativo está em segundo plano devido a restrições no android bg.</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">Termux</string>
   <string name="termux_preferences_summary">Preferências para o terminal de Termux.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">Depuração</string>
