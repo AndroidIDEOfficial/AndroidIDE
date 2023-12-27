@@ -15,22 +15,17 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!DOCTYPE resources [
-<!ENTITY TERMUX_PACKAGE_NAME "com.itsaky.androidide">
-<!ENTITY TERMUX_APP_NAME "AndroidIDE">
-<!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
-]>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">बूटस्ट्रैप पैकेज इनस्टॉल हो रहे हैं…</string>
   <string name="bootstrap_error_title">बूटस्ट्रैप इनस्टॉल करने में असमर्थ</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; बूटस्ट्रैप पैकेज स्थापित करने में असमर्थ हुआ.</string>
+  <string name="bootstrap_error_body">AndroidIDE बूटस्ट्रैप पैकेज स्थापित करने में असमर्थ हुआ.</string>
   <string name="bootstrap_error_abort">निरस्त करें</string>
   <string name="bootstrap_error_try_again">पुनः प्रयास करें</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; केवल प्राथमिक उपयोगकर्ता के रूप में चलाया जा सकता है।
-         \nबूटस्ट्रैप बायनेरिज़ &amp;TERMUX_APP_NAME के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; आपके डिवाइस पर पोर्टेबल/एक्सटर्नल/रिमूवेबल एसडी कार्ड पर इंस्टॉल नहीं किया जा सकता।
-         \nबूटस्ट्रैप बायनेरिज़ &amp;TERMUX_APP_NAME के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE केवल प्राथमिक उपयोगकर्ता के रूप में चलाया जा सकता है।
+         \nबूटस्ट्रैप बायनेरिज़ AndroidIDE के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE आपके डिवाइस पर पोर्टेबल/एक्सटर्नल/रिमूवेबल एसडी कार्ड पर इंस्टॉल नहीं किया जा सकता।
+         \nबूटस्ट्रैप बायनेरिज़ AndroidIDE के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">नया सेशन</string>
   <string name="action_new_session_failsafe">असफलता से सुरक्षित</string>
@@ -69,7 +64,7 @@
   <string name="notification_action_wake_lock">वेक लॉक अर्जित करें</string>
   <string name="notification_action_wake_unlock">वेक लॉक मुक्त करें</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; &amp;TERMUX_APP_NAME -&gt; एडवांस्ड में जाकर अनुमति दें।</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; AndroidIDE -&gt; एडवांस्ड में जाकर अनुमति दें।</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">फ़ाइल को ~/downloads/ में सहेजें</string>
   <string name="action_file_received_edit">संपादित करें</string>

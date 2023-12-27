@@ -15,11 +15,6 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!DOCTYPE resources [
-<!ENTITY TERMUX_PACKAGE_NAME "com.itsaky.androidide">
-<!ENTITY TERMUX_APP_NAME "AndroidIDE">
-<!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
-]>
 <resources>
   <string name="msg_directory_absolute_path">%1$s Jalur Absolut Direktori: \"%2$s\"</string>
   <!-- PackageUtils -->
@@ -67,12 +62,12 @@
          \n\nKami tidak menyediakan dukungan untuk alat/skrip terkait peretasan apa pun.  Setiap pertanyaan yang diajukan tentang itu melalui email,
          di GitHub atau forum komunitas termux resmi lainnya **kemungkinan akan ditutup/dihapus otomatis** dan mungkin
          bahkan mengakibatkan larangan **sementara atau permanen**.  Periksa %1$s/wiki/Peretasan untuk detailnya.</string>
-  <string name="msg_termux_app_required_by_app">&amp;TERMUX_APP_NAME; diperlukan oleh aplikasi %1$s untuk menjalankan perintah termux.</string>
-  <string name="error_termux_app_package_context_not_accessible">&amp;TERMUX_APP_NAME; aplikasi (konteks paket) tidak dapat diakses.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">&amp;TERMUX_APP_NAME;  Direktori $PREFIX aplikasi tidak dapat diakses oleh aplikasi %1$s.
-         Hal ini mungkin terjadi karena Anda belum memasang atau menyiapkan &amp;TERMUX_APP_NAME;  aplikasi atau
-     &amp;TERMUX_APP_NAME;  aplikasi dan aplikasi %1$s keduanya memiliki tanda tangan APK yang berbeda karena Anda berhasil menginstal kedua aplikasi dari sumber yang berbeda.
-         Mungkin juga karena &amp;TERMUX_APP_NAME;  direktori $PREFIX \"&amp;TERMUX_PREFIX_DIR_PATH;\"  tidak ada atau belum terbaca,
+  <string name="msg_termux_app_required_by_app">AndroidIDE diperlukan oleh aplikasi %1$s untuk menjalankan perintah termux.</string>
+  <string name="error_termux_app_package_context_not_accessible">AndroidIDE aplikasi (konteks paket) tidak dapat diakses.</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">AndroidIDE  Direktori $PREFIX aplikasi tidak dapat diakses oleh aplikasi %1$s.
+         Hal ini mungkin terjadi karena Anda belum memasang atau menyiapkan AndroidIDE  aplikasi atau
+     AndroidIDE  aplikasi dan aplikasi %1$s keduanya memiliki tanda tangan APK yang berbeda karena Anda berhasil menginstal kedua aplikasi dari sumber yang berbeda.
+         Mungkin juga karena AndroidIDE  direktori $PREFIX \"/data/data/com.itsaky.androidide/files/usr\"  tidak ada atau belum terbaca,
          menulis dan menjalankan izin.</string>
   <!-- Miscellaneous -->
   <string name="action_share">Bagikan</string>

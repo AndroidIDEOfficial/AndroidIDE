@@ -15,24 +15,19 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!DOCTYPE resources [
-<!ENTITY TERMUX_PACKAGE_NAME "com.itsaky.androidide">
-<!ENTITY TERMUX_APP_NAME "AndroidIDE">
-<!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
-]>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Instalando pacotes de inicialização…</string>
   <string name="bootstrap_error_title">Não foi possível instalar os arquivos de inicialização</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; não foi possível instalar os pacotes de bootstrap.</string>
+  <string name="bootstrap_error_body">AndroidIDE não foi possível instalar os pacotes de bootstrap.</string>
   <string name="bootstrap_error_abort">Cancelar</string>
   <string name="bootstrap_error_try_again">Tente novamente</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; pode ser executado somente como o usuário principal.
-        \nBootstrap binários compilados para &amp;TERMUX_APP_NAME; codificou o caminho $PREFIX e não pode ser instalado
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE pode ser executado somente como o usuário principal.
+        \nBootstrap binários compilados para AndroidIDE codificou o caminho $PREFIX e não pode ser instalado
         sob qualquer caminho que não seja:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; não pode ser instalado no cartão sd
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE não pode ser instalado no cartão sd
         portátil/externo/removível em seu dispositivo.
-        \nbinários Bootstrap compilados para &amp;TERMUX_APP_NAME; codificou o caminho $PREFIX e não pode ser instalado
+        \nbinários Bootstrap compilados para AndroidIDE codificou o caminho $PREFIX e não pode ser instalado
         em qualquer caminho que não seja:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Nova sessão</string>
@@ -72,9 +67,9 @@
   <string name="notification_action_wake_lock">Adquirir wakelock</string>
   <string name="notification_action_wake_unlock">Liberar wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requer a permissão
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requer a permissão
         \"Exibir sobre outros aplicativos\" para iniciar sessões terminais em segundo plano no Android &gt;= 10.
-        Conceda isso em Configurações -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Avançado</string>
+        Conceda isso em Configurações -&gt; Apps -&gt; AndroidIDE -&gt; Avançado</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Salvar arquivo em ~/downloads/</string>
   <string name="action_file_received_edit">Editar</string>

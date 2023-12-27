@@ -15,22 +15,17 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!DOCTYPE resources [
-<!ENTITY TERMUX_PACKAGE_NAME "com.itsaky.androidide">
-<!ENTITY TERMUX_APP_NAME "AndroidIDE">
-<!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
-]>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Установка базовых пакетов…</string>
   <string name="bootstrap_error_title">Не удалось установить базовые пакеты</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; не удалось установить пакеты базовые пакеты.</string>
+  <string name="bootstrap_error_body">AndroidIDE не удалось установить пакеты базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; может быть запущено только от лица основного пользователя.
-        \nБазовые пакеты собраны для &amp;TERMUX_APP_NAME; с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; не может быть установлено на внешний носитель или SD карту.
-\nБазовые пакеты собраны для &amp;TERMUX_APP_NAME; с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE может быть запущено только от лица основного пользователя.
+        \nБазовые пакеты собраны для AndroidIDE с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE не может быть установлено на внешний носитель или SD карту.
+\nБазовые пакеты собраны для AndroidIDE с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Новая сессия</string>
   <string name="action_new_session_failsafe">Безопасный режим</string>
@@ -69,9 +64,9 @@
   <string name="notification_action_wake_lock">Установить wakelock</string>
   <string name="notification_action_wake_unlock">Снять wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires
         \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
-        Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
+        Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Сохранить файл в ~/downloads/</string>
   <string name="action_file_received_edit">Редактировать</string>

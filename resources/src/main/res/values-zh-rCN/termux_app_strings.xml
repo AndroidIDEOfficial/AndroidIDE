@@ -15,22 +15,17 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!DOCTYPE resources [
-<!ENTITY TERMUX_PACKAGE_NAME "com.itsaky.androidide">
-<!ENTITY TERMUX_APP_NAME "AndroidIDE">
-<!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
-]>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">正在安装引导程序包…</string>
   <string name="bootstrap_error_title">无法安装引导程序</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; 无法安装引导程序包。</string>
+  <string name="bootstrap_error_body">AndroidIDE 无法安装引导程序包。</string>
   <string name="bootstrap_error_abort">取消</string>
   <string name="bootstrap_error_try_again">重试</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; 只能以主用户身份运行。
-         \n为 &amp;TERMUX_APP_NAME; 编译的引导程序二进制文件，已硬编码 $PREFIX 路径 ，且只能在以下路径安装：\n%1$s。</string>
-  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; 无法安装在您设备上的便携式/外部/可移动 SD 卡上。
-         \n为 &amp;TERMUX_APP_NAME 编译的引导程序二进制文件，已硬编码 $PREFIX 路径，且只能安装在以下路径：\n%1$s。</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE 只能以主用户身份运行。
+         \n为 AndroidIDE 编译的引导程序二进制文件，已硬编码 $PREFIX 路径 ，且只能在以下路径安装：\n%1$s。</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE 无法安装在您设备上的便携式/外部/可移动 SD 卡上。
+         \n为 AndroidIDE 编译的引导程序二进制文件，已硬编码 $PREFIX 路径，且只能安装在以下路径：\n%1$s。</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">新会话</string>
   <string name="action_new_session_failsafe">安全模式</string>
@@ -69,9 +64,9 @@
   <string name="notification_action_wake_lock">获取唤醒锁</string>
   <string name="notification_action_wake_unlock">释放唤醒锁</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires
         \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
-        Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
+        Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">将文件保存在 ~/downloads/</string>
   <string name="action_file_received_edit">编辑</string>
