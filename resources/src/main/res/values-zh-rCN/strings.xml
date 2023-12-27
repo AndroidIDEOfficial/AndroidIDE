@@ -471,4 +471,15 @@
   <string name="msg_terminal_new_sessions_disabled">无法创建会话，新会话被禁用！</string>
   <string name="title_install_location_error">安装位置错误</string>
   <string name="title_unsupported_user">不支持的用户</string>
+  <string name="title_socials">Socials</string>
+  <string name="title_contributors">Contributors</string>
+  <string name="summary_contributors">Top community contributors.</string>
+  <string name="title_github_contributors">GitHub Contributors</string>
+  <string name="title_crowdin_translators">Crowdin Translators</string>
+  <string name="title_misc">Misc</string>
+  <string name="title_contribute">Contribute</string>
+  <string name="summary_contribute">It\'s not just an IDE, it\'s a community. Contribute code, ideas, and passion to AndroidIDE.</string>
+  <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
+  <string name="title_open_source_licenses">Open source licenses</string>
+  <string name="summary_open_source_licenses">View open source licenses.</string>
 </resources>
