@@ -19,13 +19,13 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Установка базовых пакетов…</string>
   <string name="bootstrap_error_title">Не удалось установить базовые пакеты</string>
-  <string name="bootstrap_error_body">AndroidIDE не удалось установить пакеты базовые пакеты.</string>
+  <string name="bootstrap_error_body">AnddroidIDE не удалось установить базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
   <string name="bootstrap_error_not_primary_user_message">AndroidIDE может быть запущено только от лица основного пользователя.
-        \nБазовые пакеты собраны для AndroidIDE с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE не может быть установлено на внешний носитель или SD карту.
-\nБазовые пакеты собраны для AndroidIDE с заранее обозначенным путем $PREFIX, вследствие чего они могут быть установлены только по следующему пути:\n%1$s.</string>
+        \nВ заранее собранные файлы базовых пакетов AndroidIDE включен путь $PREFIX, поэтому они могут быть установлены только по следующему пути:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AnddroidIDE не может быть установлено на внешний носитель или SD карту.
+        \nВ заранее собранные файлы базовых пакетов AndroidIDE включен путь $PREFIX, поэтому они могут быть установлены только по следующему пути:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Новая сессия</string>
   <string name="action_new_session_failsafe">Безопасный режим</string>
