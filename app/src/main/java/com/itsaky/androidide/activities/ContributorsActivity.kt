@@ -80,17 +80,12 @@ class ContributorsActivity : LimitlessIDEActivity() {
 
     val connectionInfo = getConnectionInfo(this)
     binding.apply {
-      if (connectionInfo.isConnected) {
-        // hide the 'no internet' message
-        noConnection.root.updateLayoutParams<MarginLayoutParams> {
-          updateMarginsRelative(0, 0, 0, 0)
-          height = 0
-        }
+      noConnection.root.isVisible = !connectionInfo.isConnected
+      githubContributorsCard.isVisible = connectionInfo.isConnected
+      translationContributorsCard.isVisible = connectionInfo.isConnected
 
+      if (connectionInfo.isConnected) {
         viewModel.fetchAll()
-      } else {
-        githubContributorsCard.visibility = View.INVISIBLE
-        translationContributorsCard.visibility = View.INVISIBLE
       }
     }
   }
