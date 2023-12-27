@@ -43,7 +43,7 @@
   <string name="action_rename_session_confirm">Atur</string>
   <string name="title_create_named_session">Sesi bernama baru</string>
   <string name="action_create_named_session_confirm">Buat</string>
-  <string name="action_toggle_soft_keyboard">Keyboard</string>
+  <string name="action_toggle_soft_keyboard">Papan ketik</string>
   <string name="msg_enabling_terminal_toolbar">Mengaktifkan Bilah Alat Terminal</string>
   <string name="msg_disabling_terminal_toolbar">Menonaktifkan Bilah Alat Terminal</string>
   <!-- Terminal Popup -->
@@ -83,7 +83,6 @@
   <string name="error_termux_service_start_failed_general">Gagal memulai TermuxService. Periksa logcat untuk pesan pengecualian.</string>
   <string name="error_termux_service_start_failed_bg">Gagal memulai TermuxService saat aplikasi berjalan di latar belakang karena pembatasan bg Android.</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_title">Termux</string>
   <string name="termux_preferences_summary">Preferensi untuk terminal Termux.</string>
   <!-- Debugging Preferences -->
   <string name="termux_debugging_preferences_title">Men-debug</string>
