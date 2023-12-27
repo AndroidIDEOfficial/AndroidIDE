@@ -41,12 +41,6 @@ class ContributorsViewModel : ViewModel() {
     private const val CONTRIBUTORS_MAX_SIZE = 30
   }
 
-  val crowdinTranslators: List<CrowdinTranslator>
-    get() = _crowdinTranslators.value ?: emptyList()
-
-  val githubContributors: List<GitHubContributor>
-    get() = _githubContributors.value ?: emptyList()
-
   fun fetchCrowdinTranslators() {
     viewModelScope.launch(Dispatchers.Default) {
       val translators = CrowdinTranslators.getAllTranslators()

@@ -18,12 +18,7 @@
 package com.itsaky.androidide.contributors
 
 import com.google.gson.annotations.SerializedName
-import com.itsaky.androidide.utils.ILogger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 private interface CrowdinTranslatorsService {
@@ -35,30 +30,15 @@ private interface CrowdinTranslatorsService {
 object CrowdinTranslators {
 
   internal const val CROWDIN_CONTRIBUTORS_JSON = "crowdin-contributors.json"
-  private val log = ILogger.newInstance("CrowdinTranslators")
 
   /**
    * Get all Crowdin translators.
    */
   suspend fun getAllTranslators(): List<CrowdinTranslator> {
-    val retrofit = Retrofit.Builder()
-      .baseUrl("${GITHUB_RAW_API_REPO_BRANCH_URL}/")
-      .addConverterFactory(GsonConverterFactory.create())
-      .build()
-
-    val service = retrofit.create(CrowdinTranslatorsService::class.java)
-    val response = withContext(Dispatchers.IO) { service.getAllTranslators().execute() }
-
-    if (!response.isSuccessful) {
-      log.error("Failed to get Crowdin translators list, request unsuccessful",
-        response.errorBody()?.string() ?: "(empty error response)")
-      return emptyList()
-    }
-
-    return response.body() ?: run {
-      log.error("Response body is null")
-      emptyList()
-    }
+    return Contributors.getAllContributors<CrowdinTranslatorsService, CrowdinTranslator>(
+      "${GITHUB_RAW_API_REPO_BRANCH_URL}/",
+      CrowdinTranslatorsService::getAllTranslators
+    )
   }
 }
 

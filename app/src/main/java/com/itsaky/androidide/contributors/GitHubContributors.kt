@@ -18,12 +18,7 @@
 package com.itsaky.androidide.contributors
 
 import com.google.gson.annotations.SerializedName
-import com.itsaky.androidide.utils.ILogger
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 /**
@@ -37,30 +32,14 @@ interface GitHubContributorsService {
 
 object GitHubContributors {
 
-  private val log = ILogger.newInstance("GitHubContributors")
-
   /**
    * Get all GitHub contributors.
    */
   suspend fun getAllContributors(): List<GitHubContributor> {
-    val retrofit = Retrofit.Builder()
-      .baseUrl("${GITHUB_API_REPO_URL}/")
-      .addConverterFactory(GsonConverterFactory.create())
-      .build()
-
-    val service = retrofit.create(GitHubContributorsService::class.java)
-    val response = withContext(Dispatchers.IO) { service.getAllContributors().execute() }
-
-    if (!response.isSuccessful) {
-      log.error("Failed to get GitHub contributors list, request unsuccessful",
-        response.errorBody()?.string() ?: "(empty error response)")
-      return emptyList()
-    }
-
-    return response.body() ?: run {
-      log.error("Response body is null")
-      emptyList()
-    }
+    return Contributors.getAllContributors<GitHubContributorsService, GitHubContributor>(
+      "${GITHUB_API_REPO_URL}/",
+      GitHubContributorsService::getAllContributors
+    )
   }
 }
 
