@@ -24,16 +24,16 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Menginstal paket bootstrap…</string>
   <string name="bootstrap_error_title">Tidak dapat menginstal bootstrap</string>
-  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; was unable to install the bootstrap packages.</string>
+  <string name="bootstrap_error_body">&amp;TERMUX_APP_NAME; tidak dapat menginstal paket bootstrap.</string>
   <string name="bootstrap_error_abort">Menggugurkan</string>
   <string name="bootstrap_error_try_again">Coba lagi</string>
-  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME; can only be run as the primary user.
-        \nBootstrap binaries compiled for &amp;TERMUX_APP_NAME; have hardcoded $PREFIX path and cannot be installed
-        under any path other than:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME; cannot be installed on
-        portable/external/removable sd card on your device.
-        \nBootstrap binaries compiled for &amp;TERMUX_APP_NAME; have hardcoded $PREFIX path and cannot be installed
-        under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">&amp;TERMUX_APP_NAME;  hanya dapat dijalankan sebagai pengguna utama.
+         \nBiner bootstrap dikompilasi untuk &amp;TERMUX_APP_NAME;  memiliki jalur $PREFIX yang di-hardcode dan tidak dapat diinstal
+         di bawah jalur apa pun selain:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">&amp;TERMUX_APP_NAME;  tidak dapat diinstal di
+         portabel/eksternal/kartu sd yang dapat dilepas di perangkat Anda.
+         \nBiner bootstrap dikompilasi untuk &amp;TERMUX_APP_NAME;  memiliki jalur $PREFIX yang di-hardcode dan tidak dapat diinstal
+         di bawah jalur apa pun selain:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Sesi baru</string>
   <string name="action_new_session_failsafe">Aman dari kegagalan</string>
@@ -72,9 +72,9 @@
   <string name="notification_action_wake_lock">Dapatkan wakelock</string>
   <string name="notification_action_wake_unlock">Rilis wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME; requires
-        \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
-        Grants it from Settings -&gt; Apps -&gt; &amp;TERMUX_APP_NAME; -&gt; Advanced</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">&amp;TERMUX_APP_NAME;  memerlukan
+         Izin \"Tampilkan di aplikasi lain\" untuk memulai sesi terminal dari latar belakang di Android &gt;= 10.
+         Memberikannya dari Pengaturan -&gt; Aplikasi -&gt; &amp;TERMUX_APP_NAME; -&gt; Lanjutan</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Simpan file di ~/downloads/</string>
   <string name="action_file_received_edit">Edit</string>
