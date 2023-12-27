@@ -62,13 +62,13 @@
          \n\nKami tidak menyediakan dukungan untuk alat/skrip terkait peretasan apa pun.  Setiap pertanyaan yang diajukan tentang itu melalui email,
          di GitHub atau forum komunitas termux resmi lainnya **kemungkinan akan ditutup/dihapus otomatis** dan mungkin
          bahkan mengakibatkan larangan **sementara atau permanen**.  Periksa %1$s/wiki/Peretasan untuk detailnya.</string>
-  <string name="msg_termux_app_required_by_app">AndroidIDE diperlukan oleh aplikasi %1$s untuk menjalankan perintah termux.</string>
-  <string name="error_termux_app_package_context_not_accessible">AndroidIDE aplikasi (konteks paket) tidak dapat diakses.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">AndroidIDE  Direktori $PREFIX aplikasi tidak dapat diakses oleh aplikasi %1$s.
-         Hal ini mungkin terjadi karena Anda belum memasang atau menyiapkan AndroidIDE  aplikasi atau
-     AndroidIDE  aplikasi dan aplikasi %1$s keduanya memiliki tanda tangan APK yang berbeda karena Anda berhasil menginstal kedua aplikasi dari sumber yang berbeda.
-         Mungkin juga karena AndroidIDE  direktori $PREFIX \"/data/data/com.itsaky.androidide/files/usr\"  tidak ada atau belum terbaca,
-         menulis dan menjalankan izin.</string>
+  <string name="msg_termux_app_required_by_app">The AndroidIDE is required by the %1$s app to run termux commands.</string>
+  <string name="error_termux_app_package_context_not_accessible">The AndroidIDE app (package context) is not accessible.</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">The AndroidIDE app $PREFIX directory is not accessible by the %1$s app.
+        This may be because you have not installed or setup AndroidIDE app or
+    AndroidIDE app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
+        It may also be because AndroidIDE $PREFIX directory \"/data/data/com.itsaky.androidide/files/usr\" does not exist or does not have read,
+        write and execute permissions.</string>
   <!-- Miscellaneous -->
   <string name="action_share">Bagikan</string>
   <string name="action_save_to_file">Simpan ke File</string>
