@@ -30,7 +30,7 @@
   <string name="error_attempted_to_ask_for_permissions_not_requested">उन अनुमतियों को मांगने का प्रयास किया गया जिनका अनुरोध ऐप मेनिफेस्ट में नहीं किया गया है: %1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">\"%1$s\" पैकेज targetSdkVersion %2$d को लक्षित कर रहा है और एंड्रॉइड sdk %3$d पर चल रहा है, लेकिन ऐप मेनिफेस्ट में requestLegacyExternalStorage को सही पर सेट नहीं किया है</string>
   <string name="msg_requires_dump_and_package_usage_stats_permissions">`DUMP` और `PACKAGE_USAGE_STATS` अनुमति की आवश्यकता है</string>
-  <string name="error_display_over_other_apps_permission_not_granted">%1$s Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; AndroidIDE -&gt; एडवांस्ड में जाकर अनुमति दें। अनुमति का नाम अलग-अलग डिवाइस पर अलग-अलग हो सकता है. डिवाइस विशिष्ट समस्याओं के लिए https://dontkillmyapp.com देखें.</string>
+  <string name="error_display_over_other_apps_permission_not_granted">%1$s Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; &amp;TERMUX_APP_NAME -&gt; एडवांस्ड में जाकर अनुमति दें। अनुमति का नाम अलग-अलग डिवाइस पर अलग-अलग हो सकता है. डिवाइस विशिष्ट समस्याओं के लिए https://dontkillmyapp.com देखें.</string>
   <!-- TermuxPluginUtils -->
   <string name="error_allow_external_apps_ungranted">%1$s को `%2$s` फ़ाइल में `allow-extern-apps` प्रॉपर्टी को `true` पर सेट करने की आवश्यकता है।</string>
   <!-- ReportActivity -->
@@ -51,10 +51,7 @@
          \n\nहम हैकिंग से संबंधित किसी भी टूल/स्क्रिप्ट के लिए सहायता प्रदान नहीं करते हैं। ईमेल, GitHub या अन्य आधिकारिक टर्मक्स सामुदायिक मंचों पर उनके बारे में पूछा गया कोई भी प्रश्न **संभवतः स्वचालित रूप से बंद/हटा दिया जाएगा** और इसके परिणामस्वरूप **अस्थायी या स्थायी** प्रतिबंध भी लग सकता है। विवरण के लिए %1$s/wiki/हैकिंग की जाँच करें।</string>
   <string name="msg_termux_app_required_by_app">AndroidIDE %1$s ऐप को टर्मक्स कमांड चलाने के लिए आवश्यक है।</string>
   <string name="error_termux_app_package_context_not_accessible">AndroidIDE ऐप (पैकेज संदर्भ) पहुंच योग्य नहीं है।</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">AndroidIDE ऐप $PREFIX डायरेक्टरी %1$s ऐप द्वारा पहुंच योग्य नहीं है।
-         ऐसा इसलिए हो सकता है क्योंकि आपने AndroidIDE इंस्टॉल या सेटअप नहीं किया है; या AndroidIDE ऐप और %1$s ऐप दोनों के एपीके हस्ताक्षर अलग-अलग हैं क्योंकि आप दोनों ऐप को अलग-अलग स्रोतों से इंस्टॉल करने में कामयाब रहे हैं।
-         ऐसा इसलिए भी हो सकता है क्योंकि AndroidIDE $PREFIX निर्देशिका \"/data/data/com.itsaky.androidide/files/usr\" मौजूद नहीं है या पढ़ा नहीं है,
-         अनुमतियाँ लिखें और निष्पादित करें।</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">AndroidIDE ऐप $PREFIX डायरेक्टरी %1$s ऐप द्वारा पहुंच योग्य नहीं है। ऐसा इसलिए हो सकता है क्योंकि आपने AndroidIDE इंस्टॉल या सेटअप नहीं किया है; या AndroidIDE ऐप और %1$s ऐप दोनों के एपीके हस्ताक्षर अलग-अलग हैं क्योंकि आप दोनों ऐप को अलग-अलग स्रोतों से इंस्टॉल करने में कामयाब रहे हैं। ऐसा इसलिए भी हो सकता है क्योंकि AndroidIDE $PREFIX निर्देशिका \"/data/data/com.itsaky.androidide/files/usr\" मौजूद नहीं है या पढ़ा नहीं है, अनुमतियाँ लिखें और निष्पादित करें।</string>
   <!-- Miscellaneous -->
   <string name="action_share">साझा करें</string>
   <string name="action_save_to_file">फ़ाइल में सेव करें</string>
