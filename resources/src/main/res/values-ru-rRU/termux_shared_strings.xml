@@ -21,39 +21,31 @@
 <!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
 ]>
 <resources>
-  <string name="msg_directory_absolute_path">%1$s Directory Absolute Path: \"%2$s\"</string>
+  <string name="msg_directory_absolute_path">%1$s абсолютный путь: %2$s</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">The %1$s (%2$s) app is not installed or is disabled.</string>
-  <string name="error_get_package_context_failed_title">Failed To Get Package Context</string>
-  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package.
-        This may be because the app package is not installed or it has different APK signature from the current app.</string>
-  <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
-  <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
-  <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
+  <string name="error_app_not_installed_or_disabled_warning">Приложение %1$s (%2$s) не установлено или отключено.</string>
+  <string name="error_get_package_context_failed_title">Не удалось получить контекст пакета</string>
+  <string name="error_get_package_context_failed_message">Не удалось получить контекст для пакета \"%1$s\". Приложение не установлено или подпись его APK отличается от подписи текущего приложения.</string>
+  <string name="error_get_package_context_failed_help_url_message">Посетите %1$s для получения более подробной информации.</string>
+  <string name="error_get_component_state_failed">Не удалось получить состояние компонента %1$s/%2$s</string>
+  <string name="error_enable_component_failed">Не удалось включить компонент %1$s/%2$s</string>
+  <string name="error_disable_component_failed">Не удалось отключить компонент %1$s/%2$s</string>
   <!-- PermissionUtils -->
-  <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
-  <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
-  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
-  <string name="error_display_over_other_apps_permission_not_granted">%1$s requires
-        \"Display over other apps\" permission to start activities and services from background on Android &gt;= 10.
-        Grants it from Android Settings -&gt; Apps -&gt; %1$s -&gt; Advanced -&gt; Draw over other apps.
-        The permission name may be different on different devices, like on Xiaomi, its called
-        \"Display pop-up windows while running in the background\", check https://dontkillmyapp.com
-        for device specific issues.</string>
+  <string name="error_failed_to_request_permissions">Не удалось запросить разрешения с кодом %1$d: %2$s</string>
+  <string name="error_attempted_to_ask_for_permissions_not_requested">Запрошено разрешение, не указанное в Manifest-файле приложения: %1$s</string>
+  <string name="error_has_not_requested_legacy_external_storage">Пакет \"%1$s\" нацелен на SDK %2$d (targetSdkVersion) и запущен на SDK %3$d, однако опция requestLegacyExternalStorage не включена в его Manifest-файле</string>
+  <string name="msg_requires_dump_and_package_usage_stats_permissions">Требуются разрешения `DUMP` и `PACKAGE_USAGE_STATS`</string>
+  <string name="error_display_over_other_apps_permission_not_granted">Разрешение \"Отображение поверх других приложений\" требуется для запуска процессов в фоновом режиме на Android 10 и новее. Выдайте его из настроек устройства (Приложения -&gt; %1$s -&gt; Дополнительно -&gt; Отображение поверх других приложений). Имя разрешения может отличаться, например, на устройствах Xiaomi оно называется \"Показывать всплывающие окна\". Посетите https://dontkillmyapp.com для более точной информации для вашего устройства.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps`
-        property to be set to `true` in `%2$s` file.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s необходима опция `allow-external-apps` как `true` в файле %2$s.</string>
   <!-- ReportActivity -->
-  <string name="title_report_text">Report Text</string>
-  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here.
-        Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
+  <string name="title_report_text">Текст отчета</string>
+  <string name="msg_report_truncated">**Текст отчета сокращен**\n\nТекст отчета слишком большой, чтобы просмотреть его здесь. Используйте опцию \"Сохранить в файл\" в меню дополнительных опций (3 точки в правом верхнем углу), а затем откройте сохраненный текст отчета во внешнем текстовом редакторе.\n\n##\n\n</string>
   <!-- ShareUtils -->
-  <string name="title_share_with">Share With</string>
-  <string name="title_open_url_with">Open URL With</string>
-  <string name="msg_storage_permission_not_granted">The storage permission not granted.</string>
-  <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
+  <string name="title_share_with">Поделиться с помощью</string>
+  <string name="title_open_url_with">Открыть URL с помощью</string>
+  <string name="msg_storage_permission_not_granted">Доступ к памяти устройства не предоставлен.</string>
+  <string name="msg_file_saved_successfully">Файл %1$s успешно сохранен в \"%2$s\"</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
@@ -75,16 +67,16 @@
         It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_share">Share</string>
-  <string name="action_save_to_file">Save To File</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="action_share">Поделиться</string>
+  <string name="action_save_to_file">Сохранить в файл</string>
+  <string name="msg_storage_permission_granted_on_request">Доступ к памяти устройства предоставлен пользователем по запросу</string>
+  <string name="msg_storage_permission_not_granted_on_request">Доступ к памяти устройства не предоставлен пользователем по запросу</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
-  <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_title">Уровень логирования</string>
+  <string name="log_level_off">Отключено</string>
+  <string name="log_level_normal">Нормально</string>
+  <string name="log_level_debug">Отладка</string>
+  <string name="log_level_verbose">Подробно</string>
+  <string name="log_level_unknown">*Неизвестно*</string>
+  <string name="log_level_value">Уровень логирования logcat выставлен в \"%1$s\"</string>
 </resources>
