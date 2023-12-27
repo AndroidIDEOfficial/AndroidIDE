@@ -678,15 +678,16 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         nameBuilder.addPath(it, it.path)
       }
 
-      for (i in 0 until binding.tabs.tabCount) {
-        val file = files[i]
+      for (index in 0 until binding.tabs.tabCount) {
+        val file = files.getOrNull(index) ?: continue
         val count = dupliCount[file.name] ?: 0
-        val isModified = getEditorAtIndex(i)?.isModified ?: false
+        val isModified = getEditorAtIndex(index)?.isModified ?: false
         var name = if (count > 1) nameBuilder.getShortPath(file) else file.name
         if (isModified) {
           name = "*${name}"
         }
-        names[i] = name
+
+        names[index] = name
       }
 
       withContext(Dispatchers.Main) {
