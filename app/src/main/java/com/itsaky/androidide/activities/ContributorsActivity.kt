@@ -20,11 +20,16 @@ package com.itsaky.androidide.activities
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMarginsRelative
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.ContributorsGridAdapter
 import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityContributorsBinding
+import com.itsaky.androidide.utils.getConnectionInfo
 import com.itsaky.androidide.viewmodel.ContributorsViewModel
 
 /**
@@ -57,9 +62,12 @@ class ContributorsActivity : LimitlessIDEActivity() {
       githubContributors.apply {
         sectionTitle.setText(R.string.title_github_contributors)
       }
+
       translationContributors.apply {
         sectionTitle.setText(R.string.title_crowdin_translators)
       }
+
+      noConnection.root.setText(R.string.msg_no_internet)
     }
 
     viewModel._crowdinTranslators.observe(this) { translators ->
@@ -70,7 +78,21 @@ class ContributorsActivity : LimitlessIDEActivity() {
       binding.githubContributors.sectionItems.adapter = ContributorsGridAdapter(githubContributors)
     }
 
-    viewModel.fetchAll()
+    val connectionInfo = getConnectionInfo(this)
+    binding.apply {
+      if (connectionInfo.isConnected) {
+        // hide the 'no internet' message
+        noConnection.root.updateLayoutParams<MarginLayoutParams> {
+          updateMarginsRelative(0, 0, 0, 0)
+          height = 0
+        }
+
+        viewModel.fetchAll()
+      } else {
+        githubContributorsCard.visibility = View.INVISIBLE
+        translationContributorsCard.visibility = View.INVISIBLE
+      }
+    }
   }
 
   override fun onInsetsUpdated(insets: Rect) {
