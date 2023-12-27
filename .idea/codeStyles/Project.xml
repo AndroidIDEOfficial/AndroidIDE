@@ -73,6 +73,9 @@
     <TypeScriptCodeStyleSettings>
       <option name="INDENT_CHAINED_CALLS" value="false" />
     </TypeScriptCodeStyleSettings>
+    <XML>
+      <option name="XML_ALIGN_ATTRIBUTES" value="true" />
+    </XML>
     <files>
       <extensions>
         <pair source="cc" header="h" fileNamingConvention="NONE" />

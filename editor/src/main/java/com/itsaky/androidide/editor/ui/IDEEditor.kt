@@ -881,8 +881,8 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
 
   private fun configureFlashbar(builder: Flashbar.Builder, @StringRes message: Int,
     cancelChecker: ICancelChecker) {
-    builder.message(message).negativeActionText(android.R.string.cancel)
-      .negativeActionTapListener { bar: Flashbar ->
+    builder.message(message).primaryActionText(android.R.string.cancel)
+      .primaryActionTapListener { bar: Flashbar ->
         cancelChecker.cancel()
         bar.dismiss()
       }

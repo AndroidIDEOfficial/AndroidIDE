@@ -25,6 +25,8 @@ android {
 }
 
 dependencies {
+  implementation(libs.common.utilcode)
+
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.core.ktx)

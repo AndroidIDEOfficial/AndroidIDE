@@ -75,9 +75,10 @@ class Flashbar private constructor(private var builder: Builder) {
     flashbarContainerView = FlashbarContainerView(builder.activity)
     flashbarContainerView.adjustOrientation(builder.activity)
     flashbarContainerView.addParent(this)
+    flashbarContainerView.fitsSystemWindows = true
 
     flashbarView = FlashbarView(builder.activity)
-    flashbarView.init(builder.gravity, builder.castShadow, builder.shadowStrength)
+    flashbarView.init(builder.gravity)
     flashbarView.adjustWitPositionAndOrientation(builder.activity, builder.gravity)
     flashbarView.addParent(flashbarContainerView)
 
@@ -181,7 +182,6 @@ class Flashbar private constructor(private var builder: Builder) {
     internal var overlay: Boolean = false
     internal var overlayColor: Int = ContextCompat.getColor(activity, R.color.modal)
     internal var overlayBlockable: Boolean = false
-    internal var castShadow: Boolean = true
     internal var shadowStrength: Int = DEFAULT_SHADOW_STRENGTH
     internal var enableSwipeToDismiss: Boolean = false
     internal var vibrationTargets: List<Vibration> = emptyList()
@@ -307,15 +307,6 @@ class Flashbar private constructor(private var builder: Builder) {
 
     /** Specifies if modal overlay is blockable and should comsume touch events */
     fun overlayBlockable() = apply { this.overlayBlockable = true }
-
-    /** Specifies if the flashbar should cast shadow and the strength of it */
-    @JvmOverloads
-    fun castShadow(shadow: Boolean = true, strength: Int = DEFAULT_SHADOW_STRENGTH) = apply {
-      require(strength > 0) { "Shadow strength can not be negative or zero" }
-
-      this.castShadow = shadow
-      this.shadowStrength = strength
-    }
 
     /** Specifies the enter animation of the flashbar */
     fun enterAnimation(builder: FlashAnimBarBuilder) = apply { this.enterAnimBuilder = builder }

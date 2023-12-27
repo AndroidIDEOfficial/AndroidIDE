@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="fb_card_elevation">8dp</dimen>
+
     <dimen name="fb_content_padding_all">16dp</dimen>
     <dimen name="fb_title_text_size">16sp</dimen>
     <dimen name="fb_message_text_size">14sp</dimen>

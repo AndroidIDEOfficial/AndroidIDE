@@ -20,6 +20,7 @@ package com.itsaky.androidide.flashbar
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.Typeface
@@ -37,6 +38,13 @@ import android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM
 import android.widget.RelativeLayout.ALIGN_PARENT_TOP
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.itsaky.androidide.flashbar.Flashbar.Gravity
 import com.itsaky.androidide.flashbar.Flashbar.Gravity.BOTTOM
 import com.itsaky.androidide.flashbar.Flashbar.Gravity.TOP
@@ -48,11 +56,7 @@ import com.itsaky.androidide.flashbar.Flashbar.ProgressPosition.RIGHT
 import com.itsaky.androidide.flashbar.SwipeDismissTouchListener.DismissCallbacks
 import com.itsaky.androidide.flashbar.anim.FlashAnimIconBuilder
 import com.itsaky.androidide.flashbar.databinding.FlashBarViewBinding
-import com.itsaky.androidide.flashbar.util.convertDpToPx
 import com.itsaky.androidide.flashbar.util.getStatusBarHeightInPx
-import com.itsaky.androidide.flashbar.view.FbButton
-import com.itsaky.androidide.flashbar.view.FbProgress
-import com.itsaky.androidide.flashbar.view.ShadowView
 
 /**
  * The actual Flashbar withView representation that can consist of the title, message, button, icon,
@@ -84,22 +88,22 @@ class FlashbarView(context: Context) : LinearLayout(context) {
   private val fbIcon: ImageView
     get() = this.binding.fbIcon
 
-  private val fbLeftProgress: FbProgress
+  private val fbLeftProgress: CircularProgressIndicator
     get() = this.binding.fbLeftProgress
 
-  private val fbRightProgress: FbProgress
+  private val fbRightProgress: CircularProgressIndicator
     get() = this.binding.fbRightProgress
 
   private val fbMessage: TextView
     get() = this.binding.fbMessage
 
-  private val fbPrimaryAction: FbButton
+  private val fbPrimaryAction: MaterialButton
     get() = this.binding.fbPrimaryAction
 
-  private val fbPositiveAction: FbButton
+  private val fbPositiveAction: MaterialButton
     get() = this.binding.fbPositiveAction
 
-  private val fbNegativeAction: FbButton
+  private val fbNegativeAction: MaterialButton
     get() = this.binding.fbNegativeAction
 
   private val fbSecondaryActionContainer: LinearLayout
@@ -123,22 +127,27 @@ class FlashbarView(context: Context) : LinearLayout(context) {
     }
   }
 
-  internal fun init(gravity: Gravity, castShadow: Boolean, shadowStrength: Int) {
+  internal fun init(gravity: Gravity) {
     this.gravity = gravity
     this.orientation = VERTICAL
-
-    // If the bar appears with the bottom, then the shadow needs to added to the top of it,
-    // Thus, before the inflation of the bar
-    if (castShadow && gravity == BOTTOM) {
-      castShadow(ShadowView.ShadowType.TOP, shadowStrength)
-    }
-
     this.binding = FlashBarViewBinding.inflate(LayoutInflater.from(context), this, true)
 
-    // If the bar appears with the top, then the shadow needs to added to the bottom of it,
-    // Thus, after the inflation of the bar
-    if (castShadow && gravity == TOP) {
-      castShadow(ShadowView.ShadowType.BOTTOM, shadowStrength)
+    this.binding.root.apply {
+      // add margin to the card view so that the card elevation is visible
+      val dp16 = context.resources.getDimensionPixelSize(R.dimen.fb_card_elevation)
+      val (topIncr, bottomIncr) = when (gravity) {
+        TOP -> 0 to dp16
+        BOTTOM -> dp16 to 0
+      }
+
+      updateLayoutParams<MarginLayoutParams> {
+        setMargins(
+          /* left = */ marginLeft,
+          /* top = */ marginTop + topIncr,
+          /* right = */ marginRight,
+          /* bottom = */ marginBottom + bottomIncr
+        )
+      }
     }
   }
 
@@ -153,6 +162,7 @@ class FlashbarView(context: Context) : LinearLayout(context) {
         flashbarViewContentLp.topMargin = statusBarHeight.plus(compensationMarginTop / 2)
         flashbarViewLp.addRule(ALIGN_PARENT_TOP)
       }
+
       BOTTOM -> {
         flashbarViewContentLp.bottomMargin = compensationMarginBottom
         flashbarViewLp.addRule(ALIGN_PARENT_BOTTOM)
@@ -456,6 +466,7 @@ class FlashbarView(context: Context) : LinearLayout(context) {
         fbLeftProgress.visibility = VISIBLE
         fbRightProgress.visibility = GONE
       }
+
       RIGHT -> {
         fbLeftProgress.visibility = GONE
         fbRightProgress.visibility = VISIBLE
@@ -472,13 +483,6 @@ class FlashbarView(context: Context) : LinearLayout(context) {
         RIGHT -> fbRightProgress
       }
 
-    progressBar.setBarColor(progressTint)
-  }
-
-  private fun castShadow(shadowType: ShadowView.ShadowType, strength: Int) {
-    val params = RelativeLayout.LayoutParams(MATCH_PARENT, context.convertDpToPx(strength))
-    val shadow = ShadowView(context)
-    shadow.applyShadow(shadowType)
-    addView(shadow, params)
+    progressBar.progressTintList = ColorStateList.valueOf(progressTint)
   }
 }
