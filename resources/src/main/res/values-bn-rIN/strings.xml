@@ -436,7 +436,7 @@
   <string name="idepref_editor_pinLineNumbers_summary">অনুভূমিকভাবে স্ক্রোল করার সময় সম্পাদকের লাইন নম্বর প্যানেল পিন করা উচিত কিনা।.</string>
   <string name="theme_blue_wave">নীল তরঙ্গ</string>
   <string name="theme_sunny_glow">সানি গ্লো</string>
-  <string name="theme_material_you">Material You</string>
+  <string name="theme_material_you">মেটেরিয়াল ইউ</string>
   <string name="idepref_general_localeSelector_title">ভাষা</string>
   <string name="idepref_general_localeSelector_summary">AndroidIDE-এর জন্য একটি ভাষা নির্বাচন করুন।.</string>
   <string name="locale_system_default">সিস্টেমের ডিফল্ট</string>
@@ -481,6 +481,6 @@
   <string name="title_contribute">অবদান</string>
   <string name="summary_contribute">এটি শুধুমাত্র একটি IDE নয়, এটি একটি সম্প্রদায়। AndroidIDE-এ কোড, ধারনা এবং আবেগ অবদান রাখুন।.</string>
   <string name="msg_app_unavailable_for_intent">অভিপ্রায় পরিচালনা করার জন্য কোনো অ্যাপ্লিকেশন উপলব্ধ নেই৷.</string>
-  <string name="title_open_source_licenses">Open source licenses</string>
-  <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্স</string>
+  <string name="summary_open_source_licenses">ওপেন সোর্স লাইসেন্স দেখুন।.</string>
 </resources>
