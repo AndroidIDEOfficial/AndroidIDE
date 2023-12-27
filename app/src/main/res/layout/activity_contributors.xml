@@ -17,6 +17,7 @@
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:animateLayoutChanges="true">
@@ -66,6 +67,17 @@
           layout="@layout/layout_contributors_list_section" />
 
       </com.google.android.material.card.MaterialCardView>
+
+      <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loading_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:indeterminate="false"
+        tools:progress="50" />
 
       <com.itsaky.androidide.ui.BottomInsetHeightDistributor
         android:id="@+id/height_distributor"

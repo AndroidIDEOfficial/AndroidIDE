@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.viewmodel
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itsaky.androidide.contributors.Contributor
@@ -37,24 +39,44 @@ class ContributorsViewModel : ViewModel() {
   internal val _crowdinTranslators = MutableLiveData(emptyList<CrowdinTranslator>())
   internal val _githubContributors = MutableLiveData(emptyList<GitHubContributor>())
 
+  private val _crowdinTranslatorsLoading = MutableLiveData(false)
+  private val _githubContributorsLoading = MutableLiveData(false)
+
+  val isLoading: Boolean
+    get() = _githubContributorsLoading.value!! || _crowdinTranslatorsLoading.value!!
+
   companion object {
+
     private const val CONTRIBUTORS_MAX_SIZE = 30
   }
 
+  fun observeLoadingState(owner: LifecycleOwner, observer: Observer<Boolean>) {
+    _crowdinTranslatorsLoading.observe(owner) {
+      observer.onChanged(isLoading)
+    }
+    _githubContributorsLoading.observe(owner) {
+      observer.onChanged(isLoading)
+    }
+  }
+
   fun fetchCrowdinTranslators() {
+    _crowdinTranslatorsLoading.value = true
     viewModelScope.launch(Dispatchers.Default) {
       val translators = CrowdinTranslators.getAllTranslators()
       withContext(Dispatchers.Main) {
         _crowdinTranslators.value = translators.trimToMaxSize()
+        _crowdinTranslatorsLoading.value = false
       }
     }
   }
 
   fun fetchGitHubTranslators() {
+    _githubContributorsLoading.value = true
     viewModelScope.launch(Dispatchers.Default) {
       val contributors = GitHubContributors.getAllContributors()
       withContext(Dispatchers.Main) {
         _githubContributors.value = contributors.trimToMaxSize()
+        _githubContributorsLoading.value = false
       }
     }
   }
@@ -64,7 +86,7 @@ class ContributorsViewModel : ViewModel() {
     fetchGitHubTranslators()
   }
 
-  private fun <T : Contributor> List<T>.trimToMaxSize() : List<T> {
+  private fun <T : Contributor> List<T>.trimToMaxSize(): List<T> {
     return if (size > CONTRIBUTORS_MAX_SIZE) {
       subList(0, CONTRIBUTORS_MAX_SIZE)
     } else {
