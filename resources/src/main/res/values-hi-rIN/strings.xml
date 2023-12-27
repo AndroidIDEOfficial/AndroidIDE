@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">कापी</string>
+  <string name="copy" tools:override="true">कॉपी</string>
   <string name="terminal_more">अधिक विकल्प…</string>
   <string name="text_to_search">खोजने के लिए पाठ</string>
   <string name="about_option_email">ईमेल</string>
