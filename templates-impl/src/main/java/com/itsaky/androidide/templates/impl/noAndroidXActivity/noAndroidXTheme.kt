@@ -19,10 +19,10 @@ package com.itsaky.androidide.templates.impl.noAndroidXActivity
 
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 
-internal fun AndroidModuleTemplateBuilder.noAndroidXTheme() = """
+internal fun AndroidModuleTemplateBuilder.noAndroidXTheme(themeMode: String) = """
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.${manifest.themeRes}" parent="android:Theme.Material.Light.DarkActionBar">
+    <style name="Base.${manifest.themeRes}" parent="android:Theme.Material.$themeMode.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
     
