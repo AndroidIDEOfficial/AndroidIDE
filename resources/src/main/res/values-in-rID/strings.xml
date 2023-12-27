@@ -469,4 +469,17 @@
   <string name="action_install_git">Instal Git</string>
   <string name="action_install_openssh">Instal OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Tidak dapat membuat sesi. Sesi baru dinonaktifkan!</string>
+  <string name="title_install_location_error">Kesalahan lokasi pemasangan</string>
+  <string name="title_unsupported_user">Pengguna tidak didukung</string>
+  <string name="title_socials">Sosial</string>
+  <string name="title_contributors">Kontributor</string>
+  <string name="summary_contributors">Kontributor komunitas teratas.</string>
+  <string name="title_github_contributors">Kontributor GitHub</string>
+  <string name="title_crowdin_translators">Penerjemah Crowdin</string>
+  <string name="title_misc">Lain-lain</string>
+  <string name="title_contribute">Menyumbang</string>
+  <string name="summary_contribute">Ini bukan hanya sebuah IDE, ini adalah sebuah komunitas. Kontribusikan kode, ide, dan semangat ke AndroidIDE.</string>
+  <string name="msg_app_unavailable_for_intent">Tidak ada aplikasi yang tersedia untuk menangani maksud.</string>
+  <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
+  <string name="summary_open_source_licenses">Lihat lisensi sumber terbuka.</string>
 </resources>

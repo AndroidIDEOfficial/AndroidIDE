@@ -469,4 +469,17 @@
   <string name="action_install_git">Instalar Git</string>
   <string name="action_install_openssh">Instalar OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Não foi possível criar a sessão. Novas sessões estão desativadas!</string>
+  <string name="title_install_location_error">Erro no local de instalação</string>
+  <string name="title_unsupported_user">Usuário não suportado</string>
+  <string name="title_socials">Sociais</string>
+  <string name="title_contributors">Contribuidores</string>
+  <string name="summary_contributors">Maiores contribuidores da comunidade.</string>
+  <string name="title_github_contributors">Contribuidores do Github</string>
+  <string name="title_crowdin_translators">Tradutores do Crowdin</string>
+  <string name="title_misc">Outros</string>
+  <string name="title_contribute">Contribuir</string>
+  <string name="summary_contribute">Não é apenas um IDE, é uma comunidade. Contribua com código, ideias e paixão pelo AndroidIDE.</string>
+  <string name="msg_app_unavailable_for_intent">Nenhum aplicativo disponível para lidar com a intenção.</string>
+  <string name="title_open_source_licenses">Licenças de código aberto</string>
+  <string name="summary_open_source_licenses">Ver licenças de código aberto.</string>
 </resources>

@@ -21,81 +21,56 @@
 <!ENTITY TERMUX_PREFIX_DIR_PATH "/data/data/com.itsaky.androidide/files/usr">
 ]>
 <resources>
-  <string name="msg_directory_absolute_path">%1$s Directory Absolute Path: \"%2$s\"</string>
+  <string name="msg_directory_absolute_path">%1$s डायरेक्टरी निरपेक्ष पथ: \"%2$s\"</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">The %1$s (%2$s) app is not installed or is disabled.</string>
-  <string name="error_get_package_context_failed_title">Failed To Get Package Context</string>
-  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package.
-        This may be because the app package is not installed or it has different APK signature from the current app.</string>
-  <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
-  <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
-  <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to enable %1$s/%2$s component</string>
+  <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) ऐप इंस्टॉल नहीं है या अक्षम है।</string>
+  <string name="error_get_package_context_failed_title">पैकेज संदर्भ प्राप्त करने में विफल</string>
+  <string name="error_get_package_context_failed_message">\"%1$s\" पैकेज के लिए पैकेज संदर्भ प्राप्त करने में विफल। ऐसा इसलिए हो सकता है क्योंकि ऐप पैकेज इंस्टॉल नहीं है या इसमें मौजूदा ऐप से अलग एपीके हस्ताक्षर हैं।</string>
+  <string name="error_get_package_context_failed_help_url_message">अधिक विवरण के लिए %1$s जांचें।</string>
+  <string name="error_get_component_state_failed">%1$s/%2$s घटक स्थिति प्राप्त करने में विफल</string>
+  <string name="error_enable_component_failed">%1$s/%2$s घटक को सक्षम करने में विफल</string>
+  <string name="error_disable_component_failed">%1$s/%2$s घटक को अक्षम करने में विफल</string>
   <!-- PermissionUtils -->
-  <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
-  <string name="error_attempted_to_check_for_permissions_not_requested">Attempted to check for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
-  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
-  <string name="error_display_over_other_apps_permission_not_granted">%1$s requires
-        \"Display over other apps\" permission to start activities and services from background on Android &gt;= 10.
-        Grants it from Android Settings -&gt; Apps -&gt; %1$s -&gt; Advanced -&gt; Draw over other apps.
-        The permission name may be different on different devices, like on Xiaomi, its called
-        \"Display pop-up windows while running in the background\", check https://dontkillmyapp.com
-        for device specific issues.</string>
+  <string name="error_failed_to_request_permissions">अनुमतियों का अनुरोध करने में विफल, अनुरोध कोड %1$d: %2$s</string>
+  <string name="error_attempted_to_ask_for_permissions_not_requested">उन अनुमतियों को मांगने का प्रयास किया गया जिनका अनुरोध ऐप मेनिफेस्ट में नहीं किया गया है: %1$s</string>
+  <string name="error_has_not_requested_legacy_external_storage">\"%1$s\" पैकेज targetSdkVersion %2$d को लक्षित कर रहा है और एंड्रॉइड sdk %3$d पर चल रहा है, लेकिन ऐप मेनिफेस्ट में requestLegacyExternalStorage को सही पर सेट नहीं किया है</string>
+  <string name="msg_requires_dump_and_package_usage_stats_permissions">`DUMP` और `PACKAGE_USAGE_STATS` अनुमति की आवश्यकता है</string>
+  <string name="error_display_over_other_apps_permission_not_granted">%1$s Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; &amp;TERMUX_APP_NAME -&gt; एडवांस्ड में जाकर अनुमति दें। अनुमति का नाम अलग-अलग डिवाइस पर अलग-अलग हो सकता है. डिवाइस विशिष्ट समस्याओं के लिए https://dontkillmyapp.com देखें.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps`
-        property to be set to `true` in `%2$s` file.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s को `%2$s` फ़ाइल में `allow-extern-apps` प्रॉपर्टी को `true` पर सेट करने की आवश्यकता है।</string>
   <!-- ReportActivity -->
-  <string name="title_report_text">Report Text</string>
-  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here.
-        Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
+  <string name="title_report_text">रिपोर्ट पाठ</string>
+  <string name="msg_report_truncated">**रिपोर्ट काट दी गई**\n\nरिपोर्ट यहां देखने के लिए बहुत बड़ी है।
+         विकल्प मेनू (ऊपर दाईं ओर 3-बिंदु) से \'फ़ाइल में सहेजें\' विकल्प का उपयोग करें और इसे बाहरी टेक्स्ट संपादक ऐप में देखें।\n\n##\n\n</string>
   <!-- ShareUtils -->
-  <string name="title_share_with">Share With</string>
-  <string name="title_open_url_with">Open URL With</string>
-  <string name="msg_storage_permission_not_granted">The storage permission not granted.</string>
-  <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
+  <string name="title_share_with">साँझा करें</string>
+  <string name="title_open_url_with">यूआरएल खोलें</string>
+  <string name="msg_storage_permission_not_granted">स्टोरेज की अनुमति से इनकार कर दिया गया है</string>
+  <string name="msg_file_saved_successfully">%1$s फ़ाइल \"%2$s\" पर सफलतापूर्वक सहेजी गई</string>
   <!-- Shell -->
-  <string name="error_sending_sigkill_to_process">Sending SIGKILL to process on user request or because android is killing the execution service</string>
-  <string name="error_executable_unset">Executable not set \"%1$s\" for shell command</string>
-  <string name="error_execution_cancelled">Execution has been cancelled since execution service is being killed</string>
-  <string name="error_failed_to_execute_termux_session_command">Failed to execute \"%1$s\" termux session command</string>
-  <string name="error_failed_to_execute_app_shell_command">Failed to execute \"%1$s\" app shell command</string>
-  <string name="error_exception_received_while_executing_app_shell_command">Exception received while to executing \"%1$s\" app shell command.\nException: %2$s</string>
   <!-- TermuxUtils -->
-  <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
-        an issue on one of the following links.
-        \n\nIf you are posting a Termux app crash report, then please provide details on what you were doing that
-        caused the crash and how to reproduce it, if possible.
-        \n\nIf you are posting an issue on GitHub, then post it in the repository at which the report belongs at.
-        Issues opened or emails sent with **(partial) screenshots** instead of copied text or a file of this report
-        **will likely be automatically closed/deleted**. You may optionally remove any device specific info that
-        you consider private or don\'t want to share or that is not relevant to the issue.
-        \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
-        on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
-        even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The &amp;TERMUX_APP_NAME; is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The &amp;TERMUX_APP_NAME; app (package context) is not accessible.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">The &amp;TERMUX_APP_NAME; app $PREFIX directory is not accessible by the %1$s app.
-        This may be because you have not installed or setup &amp;TERMUX_APP_NAME; app or
-    &amp;TERMUX_APP_NAME; app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
-        It may also be because &amp;TERMUX_APP_NAME; $PREFIX directory \"&amp;TERMUX_PREFIX_DIR_PATH;\" does not exist or does not have read,
-        write and execute permissions.</string>
+  <string name="msg_report_issue">यदि आप इस समस्या की रिपोर्ट करना चाहते हैं, तो विकल्प मेनू (ऊपर दाईं ओर 3-बिंदु) से इसका पाठ कॉपी करें और निम्नलिखित लिंक में से किसी एक पर समस्या पोस्ट करें।
+         \n\nयदि आप टर्मक्स ऐप क्रैश रिपोर्ट पोस्ट कर रहे हैं, तो कृपया विवरण प्रदान करें कि आप क्या कर रहे थे जिसके कारण क्रैश हुआ और यदि संभव हो तो इसे कैसे पुन: उत्पन्न करें।
+         \n\nयदि आप GitHub पर कोई समस्या पोस्ट कर रहे हैं, तो उसे उस रिपॉजिटरी में पोस्ट करें जहां रिपोर्ट है।
+         इस रिपोर्ट के कॉपी किए गए टेक्स्ट या फ़ाइल के बजाय **(आंशिक) स्क्रीनशॉट** के साथ खोले गए मुद्दे या भेजे गए ईमेल **संभवतः स्वचालित रूप से बंद/हटा दिए जाएंगे**। आप वैकल्पिक रूप से किसी भी डिवाइस विशिष्ट जानकारी को हटा सकते हैं जिसे आप निजी मानते हैं या साझा नहीं करना चाहते हैं या जो समस्या से प्रासंगिक नहीं है।
+         \n\nहम हैकिंग से संबंधित किसी भी टूल/स्क्रिप्ट के लिए सहायता प्रदान नहीं करते हैं। ईमेल, GitHub या अन्य आधिकारिक टर्मक्स सामुदायिक मंचों पर उनके बारे में पूछा गया कोई भी प्रश्न **संभवतः स्वचालित रूप से बंद/हटा दिया जाएगा** और इसके परिणामस्वरूप **अस्थायी या स्थायी** प्रतिबंध भी लग सकता है। विवरण के लिए %1$s/wiki/हैकिंग की जाँच करें।</string>
+  <string name="msg_termux_app_required_by_app">&amp;TERMUX_APP_NAME; %1$s ऐप को टर्मक्स कमांड चलाने के लिए आवश्यक है।</string>
+  <string name="error_termux_app_package_context_not_accessible">&amp;TERMUX_APP_NAME; ऐप (पैकेज संदर्भ) पहुंच योग्य नहीं है।</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">&amp;TERMUX_APP_NAME; ऐप $PREFIX डायरेक्टरी %1$s ऐप द्वारा पहुंच योग्य नहीं है।
+         ऐसा इसलिए हो सकता है क्योंकि आपने &amp;TERMUX_APP_NAME; इंस्टॉल या सेटअप नहीं किया है; या &amp;TERMUX_APP_NAME; ऐप और %1$s ऐप दोनों के एपीके हस्ताक्षर अलग-अलग हैं क्योंकि आप दोनों ऐप को अलग-अलग स्रोतों से इंस्टॉल करने में कामयाब रहे हैं।
+         ऐसा इसलिए भी हो सकता है क्योंकि &amp;TERMUX_APP_NAME; $PREFIX निर्देशिका \"&amp;TERMUX_PREFIX_DIR_PATH;\" मौजूद नहीं है या पढ़ा नहीं है,
+         अनुमतियाँ लिखें और निष्पादित करें।</string>
   <!-- Miscellaneous -->
-  <string name="action_yes">Yes</string>
-  <string name="action_no">No</string>
-  <string name="action_copy">Copy</string>
-  <string name="action_share">Share</string>
-  <string name="action_cancel">Cancel</string>
-  <string name="action_save_to_file">Save To File</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="action_share">साझा करें</string>
+  <string name="action_save_to_file">फ़ाइल में सेव करें</string>
+  <string name="msg_storage_permission_granted_on_request">अनुरोध पर उपयोगकर्ता द्वारा दी गई स्टोरेज अनुमति</string>
+  <string name="msg_storage_permission_not_granted_on_request">अनुरोध पर उपयोगकर्ता द्वारा स्टोरेज की अनुमति नहीं दी गई</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
-  <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_title">लॉग स्तर</string>
+  <string name="log_level_off">बंद</string>
+  <string name="log_level_normal">सामान्य</string>
+  <string name="log_level_debug">डीबग</string>
+  <string name="log_level_verbose">वाचाल</string>
+  <string name="log_level_unknown">*अज्ञात*</string>
+  <string name="log_level_value">लॉगकैट लॉग स्तर \"%1$s\" पर सेट किया गया</string>
 </resources>

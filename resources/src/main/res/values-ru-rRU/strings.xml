@@ -469,4 +469,17 @@
   <string name="action_install_git">Установить Git</string>
   <string name="action_install_openssh">Установить OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Невозможно создать сессию. Новые сессии отключены!</string>
+  <string name="title_install_location_error">Недопустимая локация для установки</string>
+  <string name="title_unsupported_user">Недопустимый пользователь</string>
+  <string name="title_socials">Свяжитесь с нами</string>
+  <string name="title_contributors">Разработчики</string>
+  <string name="summary_contributors">Лучшие разработчики из сообщества.</string>
+  <string name="title_github_contributors">Разработчики на GitHub</string>
+  <string name="title_crowdin_translators">Переводчики на Crowdin</string>
+  <string name="title_misc">Прочее</string>
+  <string name="title_contribute">Внести свой вклад</string>
+  <string name="summary_contribute">AndroidIDE - это не только инструмент, но и сообщество вокруг него. Внесите свой вклад, предложив идею, код, или оставаясь преданным нашему проекту.</string>
+  <string name="msg_app_unavailable_for_intent">Приложений для этого действия не найдено.</string>
+  <string name="title_open_source_licenses">Лицензии открытого ПО</string>
+  <string name="summary_open_source_licenses">Просмотр лицензий открытого ПО.</string>
 </resources>
