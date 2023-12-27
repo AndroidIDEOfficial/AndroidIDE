@@ -48,19 +48,12 @@
   <string name="msg_file_saved_successfully">Файл %1$s успешно сохранен в \"%2$s\"</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
-  <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
-        an issue on one of the following links.
-        \n\nIf you are posting a Termux app crash report, then please provide details on what you were doing that
-        caused the crash and how to reproduce it, if possible.
-        \n\nIf you are posting an issue on GitHub, then post it in the repository at which the report belongs at.
-        Issues opened or emails sent with **(partial) screenshots** instead of copied text or a file of this report
-        **will likely be automatically closed/deleted**. You may optionally remove any device specific info that
-        you consider private or don\'t want to share or that is not relevant to the issue.
-        \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
-        on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
-        even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The &amp;TERMUX_APP_NAME; is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The &amp;TERMUX_APP_NAME; app (package context) is not accessible.</string>
+  <string name="msg_report_issue">Если вы хотите рассказать об этой проблеме, то скопируйте её тексте при помощи кнопки из меню опций (3 точки в правом верхнем углу), а затем воспользуйтесь одной из ссылок ниже.
+        \n\nЕсли вы выкладываете отчет об ошибке Termux, расскажите, что привело к ошибке и как мы можем её воссоздать (повторить), если это возможно.
+        \n\nЕсли вы создаете Issue на GitHub, то его создавайте его в соответствующем репозитории. Issue или электронные письма, содержащие только **(частичные) скриншоты** вместо скопированного текста или файла с этим отчетом, скорее всего **будут оавтоматически отклонены**. Вы можетее вручную удалить информацию о девайсе или любую другую информацию, которую считатете приватной или не релевантной, из данного отчета.
+        \n\nМы не предоставляем поддержку касательно любых инструментов (скриптов) для хакинга (взлома). Подобные вопросы, заданные посредствам GitHub, по электронной почте или на официальных форумах Termux, скорее всего **будут автоматически отклонены**, а также могут повлечь за собой **временную или перманентную блокировку (бан)**. Посетите %1$s/wiki/Hacking, чтобы узнать больше.</string>
+  <string name="msg_termux_app_required_by_app">&amp;TERMUX_APP_NAME; необходимо для приложения %1$s, чтобы запускать команды Termux.</string>
+  <string name="error_termux_app_package_context_not_accessible">Приложение &amp;TERMUX_APP_NAME; (контекст пакета) недоступно.</string>
   <string name="error_termux_prefix_dir_path_not_accessible">The &amp;TERMUX_APP_NAME; app $PREFIX directory is not accessible by the %1$s app.
         This may be because you have not installed or setup &amp;TERMUX_APP_NAME; app or
     &amp;TERMUX_APP_NAME; app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
