@@ -22,10 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE बूटस्ट्रैप पैकेज स्थापित करने में असमर्थ हुआ.</string>
   <string name="bootstrap_error_abort">निरस्त करें</string>
   <string name="bootstrap_error_try_again">पुनः प्रयास करें</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE केवल प्राथमिक उपयोगकर्ता के रूप में चलाया जा सकता है।
-         \nबूटस्ट्रैप बायनेरिज़ AndroidIDE के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE आपके डिवाइस पर पोर्टेबल/एक्सटर्नल/रिमूवेबल एसडी कार्ड पर इंस्टॉल नहीं किया जा सकता।
-         \nबूटस्ट्रैप बायनेरिज़ AndroidIDE के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE केवल प्राथमिक उपयोगकर्ता के रूप में चलाया जा सकता है। \nबूटस्ट्रैप बायनेरिज़ AndroidIDE के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE आपके डिवाइस पर पोर्टेबल/एक्सटर्नल/रिमूवेबल एसडी कार्ड पर इंस्टॉल नहीं किया जा सकता। \nबूटस्ट्रैप बायनेरिज़ &amp;TERMUX_APP_NAME के लिए कम्पाइल की गयीं है; इनमे $PREFIX पथ हार्डकोड किया गया है और इसी कारण निम्नलिखित पथ के अलावा किसी भी पथ के अंतर्गत इंस्टॉल नहीं किया जा सकता:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">नया सेशन</string>
   <string name="action_new_session_failsafe">असफलता से सुरक्षित</string>
