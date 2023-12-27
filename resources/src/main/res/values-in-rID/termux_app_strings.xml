@@ -104,16 +104,16 @@
   <string name="termux_terminal_io_preferences_title">Terminal I/O</string>
   <string name="termux_terminal_io_preferences_summary">Preferensi untuk terminal I/O</string>
   <!-- Keyboard Category -->
-  <string name="termux_keyboard_header">Keyboard</string>
+  <string name="termux_keyboard_header">Papan ketik</string>
   <!-- Soft Keyboard -->
-  <string name="termux_soft_keyboard_enabled_title">Keyboard Lembut Diaktifkan</string>
-  <string name="termux_soft_keyboard_enabled_off">Keyboard lunak akan dinonaktifkan.</string>
-  <string name="termux_soft_keyboard_enabled_on">Keyboard lunak akan diaktifkan. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_title">Papan ketik Lembut Diaktifkan</string>
+  <string name="termux_soft_keyboard_enabled_off">Papan ketik lembut akan dinonaktifkan.</string>
+  <string name="termux_soft_keyboard_enabled_on">Papan ketik lembut akan diaktifkan. (Default)</string>
   <!-- Soft Keyboard Only If No Hardware-->
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Keyboard Lunak Hanya Jika Tidak Ada Perangkat Keras</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Keyboard lunak akan diaktifkan meskipun
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Papan ketik Lembut Hanya Jika Tidak Ada Perangkat Keras</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Papan ketik lembut akan diaktifkan meskipun
                      keyboard perangkat keras terhubung.  (Default)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Keyboard lunak hanya akan diaktifkan jika
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Papan ketik lembut hanya akan diaktifkan jika
                      tidak ada keyboard perangkat keras yang terhubung.</string>
   <!-- Terminal View Preferences -->
   <string name="termux_terminal_view_preferences_title">Tampilan Terminal</string>
