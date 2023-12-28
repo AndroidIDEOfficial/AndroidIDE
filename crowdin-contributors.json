@@ -3,8 +3,8 @@
     "id": "15548591",
     "username": "itsaky",
     "name": "Akash Yadav (itsaky)",
-    "translated": 40006,
-    "approved": 30922,
+    "translated": 40197,
+    "approved": 31176,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15548591/medium/3c5f3139891eb92915fcf4c1e7ca120e.jpeg",
     "languages": [
       {
@@ -89,8 +89,8 @@
     "id": "15550047",
     "username": "andihasan97",
     "name": "Andi Hasan A (andihasan97)",
-    "translated": 2793,
-    "approved": 863,
+    "translated": 3338,
+    "approved": 1877,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png",
     "languages": [
       {
@@ -117,8 +117,8 @@
     "id": "15197694",
     "username": "rafael_mn",
     "name": "rafael_mn",
-    "translated": 2138,
-    "approved": 1862,
+    "translated": 2177,
+    "approved": 1901,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15197694/medium/e75e727190d17436b60e284b50bfb32f_default.png",
     "languages": [
       {
@@ -159,7 +159,7 @@
     "id": "15555625",
     "username": "Smooth-E",
     "name": "Smooth-E",
-    "translated": 1723,
+    "translated": 1791,
     "approved": 0,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15555625/medium/1fc098969551e0430a579242afe26c5f.png",
     "languages": [
@@ -208,6 +208,20 @@
       {
         "id": "tr",
         "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "16160248",
+    "username": "ranjitsingha",
+    "name": "Ranjit (ranjitsingha)",
+    "translated": 902,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16160248/medium/fc57448235af07fb7198e51157bd3d9b.jpeg",
+    "languages": [
+      {
+        "id": "bn-IN",
+        "name": "Bengali, India"
       }
     ]
   },
