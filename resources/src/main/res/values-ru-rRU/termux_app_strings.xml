@@ -19,7 +19,7 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Установка базовых пакетов…</string>
   <string name="bootstrap_error_title">Не удалось установить базовые пакеты</string>
-  <string name="bootstrap_error_body">AnddroidIDE не удалось установить базовые пакеты.</string>
+  <string name="bootstrap_error_body">AndroidIDE не удалось установить базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
   <string name="bootstrap_error_not_primary_user_message">AndroidIDE может быть запущено только от лица основного пользователя.
