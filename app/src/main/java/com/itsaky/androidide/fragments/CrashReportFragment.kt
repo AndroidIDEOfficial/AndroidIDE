@@ -123,7 +123,10 @@ class CrashReportFragment : Fragment() {
 
   private fun buildReportText(trace: String?): String {
     return """
+AndroidIDE Crash Report
 ${BuildInfoUtils.getBuildInfoHeader()}
+
+Stacktrace:
 $trace
     """
   }

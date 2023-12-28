@@ -46,12 +46,7 @@ object BuildInfoUtils {
       "Manufacturer" to DeviceUtils.getManufacturer(),
       "Device" to DeviceUtils.getModel(),
     )
-    """
-AndroidIDE Crash Report
-${map.entries.joinToString(separator = System.lineSeparator()) { "${it.key} : ${it.value}" }}
-
-Stacktrace:
-""".trim()
+    map.entries.joinToString(separator = System.lineSeparator()) { "${it.key} : ${it.value}" }.trim()
   }
 
   @JvmStatic
