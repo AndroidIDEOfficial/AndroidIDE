@@ -63,11 +63,11 @@
          di GitHub atau forum komunitas termux resmi lainnya **kemungkinan akan ditutup/dihapus otomatis** dan mungkin
          bahkan mengakibatkan larangan **sementara atau permanen**.  Periksa %1$s/wiki/Peretasan untuk detailnya.</string>
   <string name="msg_termux_app_required_by_app">AndroidIDE diperlukan oleh aplikasi %1$s untuk menjalankan perintah termux.</string>
-  <string name="error_termux_app_package_context_not_accessible">AndroidIDE aplikasi (konteks paket) tidak dapat diakses.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">AndroidIDE  Direktori $PREFIX aplikasi tidak dapat diakses oleh aplikasi %1$s.
-         Hal ini mungkin terjadi karena Anda belum memasang atau menyiapkan AndroidIDE  aplikasi atau
-     AndroidIDE  aplikasi dan aplikasi %1$s keduanya memiliki tanda tangan APK yang berbeda karena Anda berhasil menginstal kedua aplikasi dari sumber yang berbeda.
-         Mungkin juga karena AndroidIDE  direktori $PREFIX \"/data/data/com.itsaky.androidide/files/usr\"  tidak ada atau belum terbaca,
+  <string name="error_termux_app_package_context_not_accessible">Aplikasi AndroidIDE (konteks paket) tidak dapat diakses.</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">Direktori $PREFIX aplikasi AndroidIDE tidak dapat diakses oleh aplikasi %1$s.
+         Ini mungkin karena Anda belum menginstal atau menyiapkan aplikasi AndroidIDE atau
+     Aplikasi AndroidIDE dan aplikasi %1$s keduanya memiliki tanda tangan APK yang berbeda karena Anda berhasil memasang kedua aplikasi tersebut dari sumber yang berbeda.
+         Mungkin juga karena direktori AndroidIDE $PREFIX \"/data/data/com.itsaky.androidide/files/usr\" tidak ada atau belum terbaca,
          menulis dan menjalankan izin.</string>
   <!-- Miscellaneous -->
   <string name="action_share">Bagikan</string>
