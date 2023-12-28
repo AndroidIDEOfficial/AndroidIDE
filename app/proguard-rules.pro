@@ -122,3 +122,8 @@
 -keep enum com.itsaky.androidide.ui.themes.IDETheme {
   *;
 }
+
+## Contributor models - deserialized with GSON
+-keep class * implements com.itsaky.androidide.contributors.Contributor {
+  *;
+}
