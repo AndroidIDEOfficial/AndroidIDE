@@ -86,8 +86,8 @@ class AboutActivity : LimitlessIDEActivity() {
         ideVersion.isClickable = true
         ideVersion.isFocusable = true
         ideVersion.setBackgroundResource(R.drawable.bg_ripple)
-        ideVersion.setOnClickListener { view ->
-          ClipboardUtils.copyText((view as TextView).text.toString())
+        ideVersion.setOnClickListener {
+          ClipboardUtils.copyText(BuildInfoUtils.getBuildInfoHeader())
           flashSuccess(R.string.copied)
         }
       }
