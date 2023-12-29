@@ -36,6 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -100,9 +101,14 @@ internal class TsAnalyzeWorker(
     log.debug("Stopping TsAnalyzeWorker...")
     isDestroyed = true
 
+    if (parser.isParsing) {
+      parser.requestCancellationAndWait()
+    }
+
     analyzerContext.close()
     messageChannel.clear()
     analyzerJob?.cancel(CancellationException("Requested to be stopped"))
+    analyzerScope.cancel(CancellationException("Requested to be stopped"))
     localText.close()
     tree?.close()
     parser.close()
@@ -110,8 +116,9 @@ internal class TsAnalyzeWorker(
 
   fun start() {
     check(!isDestroyed) { "TsAnalyeWorker has already been destroyed" }
+
     analyzerJob = analyzerScope.launch {
-      while (isActive) {
+      while (!isDestroyed && isActive) {
         processNextMessage()
       }
     }.also { job ->
@@ -127,6 +134,9 @@ internal class TsAnalyzeWorker(
 
   private fun processNextMessage() {
     val message = messageChannel.take()
+    if (isDestroyed) {
+      return
+    }
 
     try {
       when (message) {
@@ -191,13 +201,18 @@ internal class TsAnalyzeWorker(
       parser.requestCancellationAndWait()
     }
 
+    if (isDestroyed) {
+      return
+    }
+
     tree = parser.parseString(oldTree, localText)
     oldTree.close()
     updateStyles()
   }
 
   private fun updateStyles() {
-    if (messageChannel.isNotEmpty()) {
+    if (isDestroyed || messageChannel.isNotEmpty() || this.tree?.canAccess() != true) {
+      // analyzer stopped or
       // more message need to be processed
       return
     }
@@ -243,6 +258,7 @@ internal class TsAnalyzeWorker(
         query = languageSpec.blocksQuery,
         tree = tree,
         recycleNodeAfterUse = true,
+        matchCondition = { !isDestroyed },
         onClosedOrEdited = { blocks.clear() },
         debugName = "TsAnalyzeManager.updateCodeBlocks()"
       ) { match ->
