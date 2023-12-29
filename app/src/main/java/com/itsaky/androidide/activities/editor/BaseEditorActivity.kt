@@ -118,7 +118,7 @@ abstract class BaseEditorActivity :
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
   val editorViewModel by viewModels<EditorViewModel>()
 
-  private var _binding: ActivityEditorBinding? = null
+  internal var _binding: ActivityEditorBinding? = null
   val binding: ActivityEditorBinding
     get() = checkNotNull(_binding) { "Activity has been destroyed" }
 
