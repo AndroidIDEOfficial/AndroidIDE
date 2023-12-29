@@ -24,6 +24,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -64,6 +65,7 @@ public class EmptyView extends RelativeLayout {
     text.setText(getMessage());
     text.setTextColor(ResourceUtilsKt.resolveAttr(getContext(), R.attr.colorSecondaryVariant));
     text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+    text.setGravity(Gravity.CENTER);
 
     LayoutParams params = new LayoutParams(-2, -2);
     params.addRule(CENTER_IN_PARENT);

@@ -23,6 +23,7 @@
     android:id="@+id/empty_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/content_padding_double"
     android:background="?attr/colorSurface"
     android:clickable="false"
     android:focusable="false" />
