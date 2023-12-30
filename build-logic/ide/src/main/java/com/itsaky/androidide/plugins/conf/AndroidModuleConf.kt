@@ -23,7 +23,16 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import projectVersionCode
 
-private val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a", "x86_64")
+/**
+ * ABIs for which the product flavors will be created.
+ * The keys in this map are the names of the product flavors whereas,
+ * the value for each flavor is a number that will be appended to the base version code of the IDE
+ * and set as the version code of that flavor.
+ *
+ * For example, if the base version code of the IDE is 270 (for v2.7.0), then for arm64-v8a
+ * flavor, the version code will be `"270" + "1"` i.e. `"2701".toInt()
+ */
+private val flavorsAbis = mapOf("arm64-v8a" to 1, "armeabi-v7a" to 2, "x86_64" to 3)
 private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
 fun Project.configureAndroidModule(
@@ -60,21 +69,22 @@ fun Project.configureAndroidModule(
       flavorDimensions("default")
 
       productFlavors {
-        flavorsAbis.forEach(this::create)
+        flavorsAbis.forEach { (abi, verCodeSuffix) ->
+          val flavor = create(abi)
+          flavor.versionNameSuffix = "-$abi"
+          flavor.versionCode = "${projectVersionCode}${verCodeSuffix}".toInt()
 
-        forEach {
-          val name = it.name
-          it.versionNameSuffix = "-$name"
+          // the common defaultConfig, not the flavor-specific
           defaultConfig.buildConfigField("String",
-            "FLAVOR_${name.replace('-', '_').uppercase()}",
-            "\"${name}\"")
+            "FLAVOR_${abi.replace('-', '_').uppercase()}",
+            "\"${abi}\"")
         }
       }
     } else {
       defaultConfig {
         ndk {
           abiFilters.clear()
-          abiFilters += flavorsAbis
+          abiFilters += flavorsAbis.keys
         }
       }
     }
@@ -93,8 +103,7 @@ fun Project.configureAndroidModule(
           //       we can configure it to generate APK only for 'arm64-v8a'.
           //
           //  See the contribution guidelines for more information.
-          @Suppress("ChromeOsAbiSupport")
-          include(*flavorsAbis)
+          include(*flavorsAbis.keys.toTypedArray())
         }
       }
     }
