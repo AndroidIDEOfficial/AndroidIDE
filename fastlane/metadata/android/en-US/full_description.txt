@@ -1,11 +1,17 @@
-AndroidIDE is an IDE for Android to build real Android applications. The main goal is to bring support for building Gradle-based Android projects on Android devices itself.
+ndroidIDE, an open-source Integrated Development Environment (IDE) designed for developing real Android applications directly on Android devices.
+The main goal is to bring support for building Gradle-based Android projects on Android devices itself.
 
 With AndroidIDE, you can :
 
-* Build real android applications. Android Studio projects are fully supported.
-* Stay UP-TO-DATE and make use of latest Gradle distribution to build your projects.
-* Code faster with advanced Java and XML code completions.
-* Use code actions to perform common tasks easily.
-* Checkout projects with Git and subversion.
+- ☑️ Gradle Support
+- ☑️ JDK 17 & 21 support.
+- ☑️ Terminal (based on Termux, with limited packages).
+- ☑️ SDK Manager (via terminal).
+- ☑️ Log reader - Real-time display of your app's logs.
+- ☑️ API Information - Provides information on classes and their members, including details on since, removed, and deprecated elements.
+- ☑️ Java language support.
+- ☑️ XML language support.
+- ☑️ UI Designer
+- ☑️ Git support (via terminal).
 
-A basic installation (Android SDK, JDK, etc) is needed before you can start working with projects. Installation instructions are provided in the GitHub repository's README.
+A basic installation (Android SDK, JDK, etc) is needed before you can start working with projects. Read the documentation at docs.androidide.com for more details.

@@ -1,1 +1,1 @@
-An IDE to build real Android apps on Android devices
+AndroidIDE is an IDE for Android to develop full featured Android apps on Android smartphones.
