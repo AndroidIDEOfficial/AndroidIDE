@@ -19,7 +19,11 @@ android {
   namespace = BuildConfig.packageName
 
   defaultConfig {
+    // The following comments are used to insert the applicationId, versionName and versionCode
+    // when building with F-Droid
+    // @@FDROID_PREBUILD_REPLACE_BEGIN@@
     applicationId = BuildConfig.packageName
+    // @@FDROID_PREBUILD_REPLACE_END@@
     vectorDrawables.useSupportLibrary = true
   }
 
