@@ -86,10 +86,9 @@ fun Project.configureAndroidModule(
       if (!isFDroidBuild) {
 
         productFlavors {
-          val fdroidSuffix = if (isFDroidBuild) "-fdroid" else ""
           flavorsAbis.forEach { (abi, verCodeIncrement) ->
             val flavor = create(abi)
-            flavor.versionNameSuffix = "-${abi}${fdroidSuffix}"
+            flavor.versionNameSuffix = "-${abi}"
             flavor.versionCode = 100 * projectVersionCode + verCodeIncrement
           }
         }
