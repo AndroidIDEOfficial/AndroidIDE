@@ -77,3 +77,9 @@ services:
         REPOSITORY_OWNER: "AndroidIDEOfficial"
         REPOSITORY_NAME: "AndroidIDE"
         AUTHENTICATION_TOKEN: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
+
+git:
+  remotes:
+    origin:
+      user: '{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}'
+      password: ''

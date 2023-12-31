@@ -11,23 +11,24 @@ pluginManagement {
   }
 }
 
-// DO NOT REMOVE THESE COMMENTS!
-// @@FDROID_PREBUILD_SETTINGS_REPLACE_BEGIN@@
-plugins {
-  id("com.mooltiverse.oss.nyx") version "2.5.1"
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("com.mooltiverse.oss.nyx:gradle:2.5.1")
+  }
 }
 
-// DO NOT REPLACE WITH IMPORT!!
-extensions.configure<com.mooltiverse.oss.nyx.gradle.NyxExtension> {
-  git {
-    remotes.register("origin") {
-      user.set("{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}")
-      password.set("")
-    }
+FDroidConfig.load(rootDir)
+
+if (FDroidConfig.hasRead && FDroidConfig.isFDroidBuild) {
+  gradle.rootProject { project.setProperty("version", FDroidConfig.fDroidVersionName!!) }
+} else {
+  apply {
+    plugin("com.mooltiverse.oss.nyx")
   }
-  configurationFile.set(".nyx.yml")
 }
-// @@FDROID_PREBUILD_SETTINGS_REPLACE_END@@
 
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -108,3 +109,43 @@ include(
   ":testing:tooling",
   ":testing:unit",
 )
+
+object FDroidConfig {
+
+  var hasRead: Boolean = false
+    private set
+
+  var isFDroidBuild: Boolean = false
+    private set
+
+  var fDroidVersionName: String? = null
+    private set
+
+  var fDroidVersionCode: Int? = null
+    private set
+
+  const val PROP_FDROID_BUILD = "ide.build.fdroid"
+  const val PROP_FDROID_BUILD_VERSION = "ide.build.fdroid.version"
+  const val PROP_FDROID_BUILD_VERCODE = "ide.build.fdroid.vercode"
+
+  fun load(rootDir: File) {
+    val propsFile = File(rootDir, "fdroid.properties")
+    if (!propsFile.exists() || !propsFile.isFile) {
+      hasRead = true
+      isFDroidBuild = false
+      return
+    }
+
+    val properties = propsFile.let { props ->
+      java.util.Properties().also {
+        it.load(props.reader())
+      }
+    }
+
+    hasRead = true
+    isFDroidBuild = properties.getProperty(PROP_FDROID_BUILD, null).toBoolean()
+
+    fDroidVersionName = properties.getProperty(PROP_FDROID_BUILD_VERSION, null)
+    fDroidVersionCode =  properties.getProperty(PROP_FDROID_BUILD_VERCODE, null)?.toInt()
+  }
+}

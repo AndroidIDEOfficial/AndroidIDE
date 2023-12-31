@@ -78,19 +78,12 @@ fun Project.configureAndroidModule(
           "\"${abi}\"")
       }
 
-      // Do not configure flavorDimensions here when building with F-Droid
-      // flavor dimensions for F-Droid builds are configured in <root>/scripts/setup_fdroid_build.sh
-      //
-      // IMPORTANT: When changing the configuration here, make sure to update the following file:
-      //    - <root>/scripts/setup_fdroid_build.sh
-      if (!isFDroidBuild) {
-
-        productFlavors {
-          flavorsAbis.forEach { (abi, verCodeIncrement) ->
-            val flavor = create(abi)
-            flavor.versionNameSuffix = "-${abi}"
-            flavor.versionCode = 100 * projectVersionCode + verCodeIncrement
-          }
+      productFlavors {
+        val fdroidSuffix = if (isFDroidBuild) "-fdroid" else ""
+        flavorsAbis.forEach { (abi, verCodeIncrement) ->
+          val flavor = create(abi)
+          flavor.versionNameSuffix = "-${abi}${fdroidSuffix}"
+          flavor.versionCode = 100 * projectVersionCode + verCodeIncrement
         }
       }
     } else {
