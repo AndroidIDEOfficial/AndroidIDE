@@ -19,6 +19,7 @@ package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
 import com.android.build.gradle.BaseExtension
+import isFDroidBuild
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import projectVersionCode
@@ -26,12 +27,14 @@ import projectVersionCode
 /**
  * ABIs for which the product flavors will be created.
  * The keys in this map are the names of the product flavors whereas,
- * the value for each flavor is a number that will be appended to the base version code of the IDE
+ * the value for each flavor is a number that will be incremented to the base version code of the IDE
  * and set as the version code of that flavor.
  *
  * For example, if the base version code of the IDE is 270 (for v2.7.0), then for arm64-v8a
- * flavor, the version code will be `"270" + "1"` i.e. `"2701".toInt()
+ * flavor, the version code will be `100 * 270 + 1` i.e. `2701`
  */
+// IMPORTANT: When changing the configuration here, make sure to update the following file:
+//    - <root>/scripts/setup_fdroid_build.sh
 private val flavorsAbis = mapOf("arm64-v8a" to 1, "armeabi-v7a" to 2, "x86_64" to 3)
 private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
@@ -68,16 +71,27 @@ fun Project.configureAndroidModule(
     if (":app" == project.path) {
       flavorDimensions("default")
 
-      productFlavors {
-        flavorsAbis.forEach { (abi, verCodeSuffix) ->
-          val flavor = create(abi)
-          flavor.versionNameSuffix = "-$abi"
-          flavor.versionCode = "${projectVersionCode}${verCodeSuffix}".toInt()
+      flavorsAbis.forEach { (abi, _) ->
+        // the common defaultConfig, not the flavor-specific
+        defaultConfig.buildConfigField("String",
+          "FLAVOR_${abi.replace('-', '_').uppercase()}",
+          "\"${abi}\"")
+      }
 
-          // the common defaultConfig, not the flavor-specific
-          defaultConfig.buildConfigField("String",
-            "FLAVOR_${abi.replace('-', '_').uppercase()}",
-            "\"${abi}\"")
+      // Do not configure flavorDimensions here when building with F-Droid
+      // flavor dimensions for F-Droid builds are configured in <root>/scripts/setup_fdroid_build.sh
+      //
+      // IMPORTANT: When changing the configuration here, make sure to update the following file:
+      //    - <root>/scripts/setup_fdroid_build.sh
+      if (!isFDroidBuild) {
+
+        productFlavors {
+          val fdroidSuffix = if (isFDroidBuild) "-fdroid" else ""
+          flavorsAbis.forEach { (abi, verCodeIncrement) ->
+            val flavor = create(abi)
+            flavor.versionNameSuffix = "-${abi}${fdroidSuffix}"
+            flavor.versionCode = 100 * projectVersionCode + verCodeIncrement
+          }
         }
       }
     } else {

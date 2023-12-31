@@ -32,5 +32,7 @@ const val KEY_BIN = "IDE_SIGNING_KEY_BIN"
  */
 const val AGP_VERSION_MINIMUM = "7.2.0"
 
+const val PROP_IDE_BUILD_FDROID = "ide.build.fdroid"
+
 val Project.signingKey: Provider<RegularFile>
   get() = rootProject.layout.buildDirectory.file("signing/signing-key.jks")

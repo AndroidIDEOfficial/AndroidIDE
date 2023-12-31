@@ -34,6 +34,12 @@ object ProjectConfig {
 
 private var shouldPrintVersionName = true
 
+/**
+ * Whether this build is being executed in the F-Droid build server.
+ */
+val Project.isFDroidBuild: Boolean
+  get() = hasProperty(PROP_IDE_BUILD_FDROID) && property(PROP_IDE_BUILD_FDROID) == "true"
+
 val Project.simpleVersionName: String
   get() {
 

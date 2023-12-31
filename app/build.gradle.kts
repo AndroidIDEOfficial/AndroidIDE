@@ -15,23 +15,31 @@ apply {
   plugin(AndroidIDEAssetsPlugin::class.java)
 }
 
+// The comments starting with @@FDROID_PREBUILD_ are used to insert various configurations
+// when building with F-Droid buildserver
+// These comments must not be removed
+
 android {
   namespace = BuildConfig.packageName
 
   defaultConfig {
-    // The following comments are used to insert the applicationId, versionName and versionCode
-    // when building with F-Droid
-    // @@FDROID_PREBUILD_REPLACE_BEGIN@@
+    // @@FDROID_PREBUILD_DEFCONFIG_REPLACE_BEGIN@@
     applicationId = BuildConfig.packageName
-    // @@FDROID_PREBUILD_REPLACE_END@@
+    // @@FDROID_PREBUILD_DEFCONFIG_REPLACE_END@@
     vectorDrawables.useSupportLibrary = true
   }
+
+  // @@FDROID_PREBUILD_FLAVORS_INSERT@@
 
   androidResources {
     generateLocaleConfig = true
   }
 
-  buildTypes { release { isShrinkResources = true } }
+  buildTypes {
+    release {
+      isShrinkResources = true
+    }
+  }
 
   packaging {
     resources.excludes.addAll(

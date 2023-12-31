@@ -58,7 +58,7 @@ object SigningKeyUtils {
     logger.info("Downloading signing key...")
     val result = exec {
       workingDir(rootProject.projectDir)
-      commandLine("bash", "./.tools/download_key.sh", signingKey.absolutePath, url, user, pass)
+      commandLine("bash", "./scripts/download_key.sh", signingKey.absolutePath, url, user, pass)
     }
 
     result.assertNormalExitValue()
