@@ -40,7 +40,7 @@ flavorDef="productFlavors {\n"
 i=1
 for arch in arm64-v8a armeabi-v7a x86_64; do
   flavorDef+="create(\"$arch\") { \n"
-  flavorDef+="  versionNameSuffix = \"$arch-fdroid\" \n"
+  flavorDef+="  versionNameSuffix = \"$arch\" \n"
   flavorDef+="  versionCode = 100 * $versionCode + $i \n"
   flavorDef+="}\n"
   i=$(( i + 1))
