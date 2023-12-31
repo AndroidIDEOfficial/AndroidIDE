@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import com.mooltiverse.oss.nyx.gradle.NyxExtension
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -13,9 +11,14 @@ pluginManagement {
   }
 }
 
-plugins { id("com.mooltiverse.oss.nyx") version "2.5.1" }
+// DO NOT REMOVE THESE COMMENTS!
+// @@FDROID_PREBUILD_SETTINGS_REPLACE_BEGIN@@
+plugins {
+  id("com.mooltiverse.oss.nyx") version "2.5.1"
+}
 
-extensions.configure<NyxExtension> {
+// DO NOT REPLACE WITH IMPORT!!
+extensions.configure<com.mooltiverse.oss.nyx.gradle.NyxExtension> {
   git {
     remotes.register("origin") {
       user.set("{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}")
@@ -24,6 +27,7 @@ extensions.configure<NyxExtension> {
   }
   configurationFile.set(".nyx.yml")
 }
+// @@FDROID_PREBUILD_SETTINGS_REPLACE_END@@
 
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)

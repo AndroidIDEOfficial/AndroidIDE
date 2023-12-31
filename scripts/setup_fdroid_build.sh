@@ -29,11 +29,20 @@ versionCode="$2"
 DEFCONFIG_REPLACE_BEGIN="FDROID_PREBUILD_DEFCONFIG_REPLACE_BEGIN"
 DEFCONFIG_REPLACE_END="FDROID_PREBUILD_DEFCONFIG_REPLACE_END"
 
+# settings.gradle
+SETTINGS_GRADLE_REPLACE_BEGIN="FDROID_PREBUILD_SETTINGS_REPLACE_BEGIN"
+SETTINGS_GRADLE_REPLACE_END="FDROID_PREBUILD_SETTINGS_REPLACE_END"
+
 # Android productFlavors
 FLAVORS_INSERT="FDROID_PREBUILD_FLAVORS_INSERT"
 
+# Insert Gradle properties
+PROPS_INSERT="FDROID_PREBUILD_PROPS_INSERT"
+
 # File to update
-target_file="build.gradle.kts"
+build_gradle="build.gradle.kts"
+gradle_props="../gradle.properties"
+settings_gradle="../settings.gradle.kts"
 
 flavorDef="productFlavors {\n"
 
@@ -48,12 +57,61 @@ done
 
 flavorDef+="}"
 
+# Gradle properties
+propsDef="ide.build.fdroid=true\n"
+propsDef+="ide.build.fdroid.version=${versionName}\n"
+propsDef+="ide.build.fdroid.vercode=${versionCode}\n"
+
+
+# settings.gradle
+settingsDef=$(cat <<- END
+  val properties = File(rootDir, "gradle.properties").let { props ->
+    java.util.Properties().also {
+      it.load(props.reader())
+    }
+  }
+
+  val isFDroidBuild = properties.getProperty("ide.build.fdroid", "true").toBoolean()
+
+  val fdroidVersionName = requireNotNull(properties.getProperty("ide.build.fdroid.version", null)) {
+    "'ide.build.fdroid' is 'true' but no 'ide.build.fdroid.version' is defined!"
+  }
+
+  gradle.beforeProject {
+    if (project.path == ":") {
+      gradle.rootProject.version = "v" + fdroidVersionName
+    }
+  }
+END
+
+)
+
 # Replace properties in defaultConfig with constants
 sed -i "/\/\/ @@$DEFCONFIG_REPLACE_BEGIN@@/,/\/\/ @@$DEFCONFIG_REPLACE_END@@/c\
     applicationId = \"com.itsaky.androidide\" \n \
     versionName = \"$versionName\" \n \
-    versionCode = $versionCode \n" $target_file
+    versionCode = $versionCode \n" $build_gradle
 
 # Add product flavors
 sed -i "/\/\/ @@$FLAVORS_INSERT@@/c\
-    $flavorDef" $target_file
+    $flavorDef" $build_gradle
+
+# Remove the Nyx plugin from settings.gradle
+awk -v begin="$SETTINGS_GRADLE_REPLACE_BEGIN" -v end="$SETTINGS_GRADLE_REPLACE_END" -v replacement="$settingsDef" '
+    $0 ~ ("// @@" begin "@@") {
+        printing = 1;
+        print replacement;
+        next;
+    }
+    printing && $0 ~ ("// @@" end "@@") {
+        printing = 0;
+        next;
+    }
+    !printing
+' $settings_gradle > temp_settings.gradle && mv temp_settings.gradle $settings_gradle
+
+
+
+# Insert Gradle properties
+sed -i "/# @@$PROPS_INSERT@@/c\
+$propsDef" $gradle_props
