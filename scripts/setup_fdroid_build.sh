@@ -50,9 +50,9 @@ flavorDef+="}"
 
 # Replace properties in defaultConfig with constants
 sed -i "/\/\/ @@$DEFCONFIG_REPLACE_BEGIN@@/,/\/\/ @@$DEFCONFIG_REPLACE_END@@/c\
-    applicationId = \"com.itsaky.androidide\" \
-    versionName = \"$versionName\" \
-    versionCode = \"$versionCode\"" $target_file
+    applicationId = \"com.itsaky.androidide\" \n \
+    versionName = \"$versionName\" \n \
+    versionCode = $versionCode \n" $target_file
 
 # Add product flavors
 sed -i "/\/\/ @@$FLAVORS_INSERT@@/c\
