@@ -23,6 +23,7 @@ import KEY_STORE_PASS
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.util.SigningKeyUtils.downloadSigningKey
 import com.itsaky.androidide.plugins.util.SigningKeyUtils.getEnvOrProp
+import isFDroidBuild
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import signingKey
@@ -36,6 +37,11 @@ class SigningConfigPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
+
+      if (isFDroidBuild) {
+        logger.warn("!!! Do not apply ${javaClass.simpleName} when building or F-Droid.")
+        return
+      }
 
       // Download the signing key
       downloadSigningKey()

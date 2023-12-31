@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.plugins
 
+import isFDroidBuild
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -41,7 +42,7 @@ class AndroidIDEPlugin : Plugin<Project> {
       val isAndroidModule = plugins.hasPlugin("com.android.application") ||
           plugins.hasPlugin("com.android.library")
 
-      if (isAndroidModule) {
+      if (isAndroidModule && !isFDroidBuild) {
         // setup signing configuration
         plugins.apply(SigningConfigPlugin::class.java)
       }
