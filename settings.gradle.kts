@@ -23,7 +23,14 @@ buildscript {
 FDroidConfig.load(rootDir)
 
 if (FDroidConfig.hasRead && FDroidConfig.isFDroidBuild) {
-  gradle.rootProject { project.setProperty("version", FDroidConfig.fDroidVersionName!!) }
+  gradle.rootProject {
+    val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
+
+    val simpleVersion = regex.find(FDroidConfig.fDroidVersionName!!)?.value
+      ?: throw IllegalArgumentException("Invalid version '${FDroidConfig.fDroidVersionName}. Version name must have semantic version format.'")
+
+    project.setProperty("version", simpleVersion)
+  }
 } else {
   apply {
     plugin("com.mooltiverse.oss.nyx")
