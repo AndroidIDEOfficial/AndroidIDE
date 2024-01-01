@@ -22,6 +22,7 @@ import VersionUtils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.itsaky.androidide.plugins.tasks.AddFileToAssetsTask
 import com.itsaky.androidide.plugins.tasks.GenerateInitScriptTask
+import com.itsaky.androidide.plugins.tasks.GradleWrapperBuilderTask
 import downloadVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -36,10 +37,17 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
+      val wrapperBuilderTaskProvider = tasks.register("generateGradleWrapper",
+        GradleWrapperBuilderTask::class.java
+      )
+
       extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants { variant ->
 
           val variantNameCapitalized = variant.name.capitalized()
+
+          variant.sources.assets?.addGeneratedSourceDirectory(wrapperBuilderTaskProvider,
+            GradleWrapperBuilderTask::outputDirectory)
 
           // Init script generator
           val generateInitScript = tasks.register(
