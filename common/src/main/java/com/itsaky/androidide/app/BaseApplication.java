@@ -17,12 +17,9 @@
 package com.itsaky.androidide.app;
 
 import android.app.Application;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.common.R;
@@ -42,7 +39,8 @@ public class BaseApplication extends Application {
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
   public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
   public static final String DOCS_URL = "https://docs.androidide.com";
-  public static final String CONTRIBUTOR_GUIDE_URL = BuildInfo.REPO_URL + "/blob/dev/CONTRIBUTING.md";
+  public static final String CONTRIBUTOR_GUIDE_URL =
+      BuildInfo.REPO_URL + "/blob/dev/CONTRIBUTING.md";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
