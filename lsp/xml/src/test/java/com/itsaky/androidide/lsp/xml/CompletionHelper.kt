@@ -26,6 +26,6 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 interface CompletionHelper {
 
   fun complete(
-    transform: (CompletionItem) -> CharSequence = { it.label }
+    transform: (CompletionItem) -> CharSequence = { it.ideLabel }
   ): Pair<Boolean, List<CharSequence>>
 }

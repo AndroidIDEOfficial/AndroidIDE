@@ -101,7 +101,7 @@ internal class ValueCompletionProvider(
         if (result.isIncomplete) "(incomplete)" else "",
       )
 
-      onComplete(result.items.mapNotNull { it.label?.toString() })
+      onComplete(result.items.map { it.ideLabel })
     }
   }
 }

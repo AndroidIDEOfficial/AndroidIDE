@@ -383,7 +383,7 @@ public class GroovyAutoComplete {
 
   private CompletionItem createCompletionItem(String itemLabel) {
     CompletionItem item = new CompletionItem();
-    item.setLabel(itemLabel);
+    item.setIdeLabel(itemLabel);
     item.setDetail("");
     item.setInsertText(itemLabel);
     item.setIdeSortText("0" + itemLabel);

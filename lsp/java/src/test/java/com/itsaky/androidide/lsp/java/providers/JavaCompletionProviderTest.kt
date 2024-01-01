@@ -89,6 +89,6 @@ class JavaCompletionProviderTest {
       .complete(
         CompletionParams(pos, JavaLSPTest.file!!, ICancelChecker.NOOP).apply { prefix = "" })
       .items
-      .map { it.label }
+      .map { it.ideLabel }
   }
 }

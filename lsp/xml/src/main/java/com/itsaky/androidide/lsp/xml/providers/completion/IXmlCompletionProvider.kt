@@ -143,9 +143,9 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     isPlatformWidget: Boolean = false
   ): CompletionItem =
     CompletionItem().apply {
-      this.label = simpleName
+      this.ideLabel = simpleName
       this.detail = qualifiedName
-      this.ideSortText = label.toString()
+      this.ideSortText = ideLabel
       this.insertText = if (isPlatformWidget) simpleName else qualifiedName
       this.insertTextFormat = PLAIN_TEXT
       this.editHandler = TagEditHandler()
@@ -178,13 +178,13 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
       val title = "$prefix${attr.name.entry!!}"
       val insertText = if (hasNamespace) attr.name.entry!! else title
-      this.label = title
+      this.ideLabel = title
       this.completionKind = FIELD
       this.detail = "From package '$resPkg'"
       this.insertText = "$insertText=\"$0\""
       this.insertTextFormat = SNIPPET
       this.snippetDescription = describeSnippet(partial)
-      this.ideSortText = label.toString()
+      this.ideSortText = ideLabel
       this.matchLevel = matchLevel
       this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
     }
@@ -215,7 +215,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
     val text = sb.toString()
     return CompletionItem().apply {
-      this.label = text
+      this.ideLabel = text
       this.detail = "From package '$pck'"
       this.completionKind = VALUE
       this.overrideTypeText = type.uppercase()
@@ -240,7 +240,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     matchLevel: MatchLevel
   ): CompletionItem {
     return CompletionItem().apply {
-      this.label = name
+      this.ideLabel = name
       this.detail = if (pck.isBlank()) "" else "From package '$pck'"
       this.completionKind = VALUE
       this.ideSortText = "000$name"

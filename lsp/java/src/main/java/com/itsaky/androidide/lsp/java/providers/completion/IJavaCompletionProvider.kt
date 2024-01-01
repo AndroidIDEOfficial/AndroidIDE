@@ -151,7 +151,7 @@ abstract class IJavaCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
-    item.setLabel(keyword)
+    item.ideLabel = keyword
     item.completionKind = KEYWORD
     item.detail = "keyword"
     item.ideSortText = keyword
@@ -170,10 +170,10 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val first = overloads[0]
     val item = JavaCompletionItem()
-    item.setLabel(first.simpleName.toString())
+    item.ideLabel = first.simpleName.toString()
     item.completionKind = CompletionItemKind.METHOD
     item.detail = printMethodDetail(first)
-    item.ideSortText = item.label.toString()
+    item.ideSortText = item.ideLabel
     item.matchLevel = matchLevel
     item.overrideTypeText = EditHelper.printType(first.returnType)
     val data = data(task, first, overloads.size)
@@ -221,11 +221,11 @@ abstract class IJavaCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
-    item.setLabel(element.simpleName.toString())
+    item.ideLabel = element.simpleName.toString()
     item.completionKind = kind(element)
     item.detail = element.toString()
     item.data = data(task, element, 1)
-    item.ideSortText = item.label.toString()
+    item.ideSortText = item.ideLabel
     item.matchLevel = matchLevel
 
     if (element is VariableElement) {
@@ -251,10 +251,10 @@ abstract class IJavaCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
-    item.setLabel(simpleName(className).toString())
+    item.ideLabel = simpleName(className).toString()
     item.completionKind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
-    item.ideSortText = item.label.toString()
+    item.ideSortText = item.ideLabel
     item.matchLevel = matchLevel
     item.data = ClassCompletionData(className)
 
@@ -284,7 +284,7 @@ abstract class IJavaCompletionProvider(
       packageName = " "
     }
     return JavaCompletionItem().apply {
-      setLabel(simpleName)
+      this.ideLabel = simpleName
       this.detail = packageName
       this.insertText = simpleName
       this.completionKind = MODULE
@@ -300,7 +300,7 @@ abstract class IJavaCompletionProvider(
     indent: Int
   ): CompletionItem {
     return JavaCompletionItem().apply {
-      this.label = snippet.prefix
+      this.ideLabel = snippet.prefix
       this.detail = snippet.description
       this.completionKind = CompletionItemKind.SNIPPET
       this.matchLevel = matchLevel

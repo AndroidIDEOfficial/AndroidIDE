@@ -29,7 +29,7 @@ class CompletionHelperImpl : CompletionHelper {
       val result = server.complete(createCompletionParams)
       result.isIncomplete to
         result.items
-          .filter { it.label != null }
+          .filter { it.ideLabel.isNotBlank() }
           .map { transform(it) }
           .filter { it.isNotBlank() }
           .toList()

@@ -169,10 +169,10 @@ class ScopeCompletionProvider(
     abortCompletionIfCancelled()
 
     val item = JavaCompletionItem()
-    item.setLabel(methodSpec.name)
+    item.ideLabel = methodSpec.name
     item.completionKind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method
-    item.ideSortText = item.label.toString()
+    item.ideSortText = item.ideLabel
     item.insertText = insertText
     item.insertTextFormat = SNIPPET
     item.snippetDescription = describeSnippet(partial)

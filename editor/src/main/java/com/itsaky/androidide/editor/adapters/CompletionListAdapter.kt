@@ -74,7 +74,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
       convertView?.let { LayoutCompletionItemBinding.bind(it) }
         ?: LayoutCompletionItemBinding.inflate(LayoutInflater.from(context), parent, false)
     val item = getItem(position) as LspCompletionItem
-    val label = item.getLabel()
+    val label = item.ideLabel
     val desc = item.detail
     var type: String? = item.completionKind.toString()
     val header = if (type!!.isEmpty()) "O" else type[0].toString()

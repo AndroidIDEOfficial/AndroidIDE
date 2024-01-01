@@ -92,7 +92,7 @@ open class CompletionResult(items: Collection<CompletionItem>) {
     ): CompletionResult {
       val newItems = src.items.toMutableList()
       newItems.forEach(map)
-      newItems.removeIf { !it.label.startsWith(partial) }
+      newItems.removeIf { !it.ideLabel.startsWith(partial) }
       return CompletionResult(newItems)
     }
   }
@@ -121,7 +121,7 @@ open class CompletionResult(items: Collection<CompletionItem>) {
 }
 
 open class CompletionItem(
-  @JvmField var label: String,
+  var ideLabel: String,
   var detail: String,
   insertText: String?,
   insertTextFormat: InsertTextFormat?,
@@ -133,12 +133,12 @@ open class CompletionItem(
   var data: ICompletionData?,
   var editHandler: IEditHandler = DefaultEditHandler()
 ) :
-  io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
+  io.github.rosemoe.sora.lang.completion.CompletionItem(ideLabel, detail), Comparable<CompletionItem> {
 
   var ideSortText: String? = sortText
     get() {
       if (field == null) {
-        return label.toString()
+        return ideLabel
       }
 
       return field
@@ -147,7 +147,7 @@ open class CompletionItem(
   var insertText: String = insertText ?: ""
     get() {
       if (field.isEmpty()) {
-        return this.label.toString()
+        return this.ideLabel
       }
 
       return field
@@ -208,12 +208,6 @@ open class CompletionItem(
     }
   }
 
-  fun setLabel(label: String) {
-    this.label = label
-  }
-
-  fun getLabel(): String = this.label as String
-
   override fun performCompletion(editor: CodeEditor, text: Content, position: CharPosition) {
     editHandler.performEdits(this, editor, text, position.line, position.column, position.index)
   }
@@ -230,7 +224,7 @@ open class CompletionItem(
     if (this === other) return true
     if (other !is CompletionItem) return false
 
-    if (label != other.label) return false
+    if (ideLabel != other.ideLabel) return false
     if (detail != other.detail) return false
     if (command != other.command) return false
     if (completionKind != other.completionKind) return false
@@ -248,7 +242,7 @@ open class CompletionItem(
   }
 
   override fun hashCode(): Int {
-    var result = label.hashCode()
+    var result = ideLabel.hashCode()
     result = 31 * result + detail.hashCode()
     result = 31 * result + (command?.hashCode() ?: 0)
     result = 31 * result + completionKind.hashCode()
@@ -265,7 +259,7 @@ open class CompletionItem(
   }
 
   override fun toString(): String {
-    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$completionKind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$ideSortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
+    return "CompletionItem(label='$ideLabel', detail='$detail', command=$command, kind=$completionKind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$ideSortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
 
