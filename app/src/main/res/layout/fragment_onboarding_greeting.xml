@@ -35,9 +35,10 @@
 
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/title"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
+    android:gravity="center"
     android:text="@string/greeting_title"
     android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
     app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +47,7 @@
 
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/description"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="32dp"
     android:layout_marginEnd="32dp"
