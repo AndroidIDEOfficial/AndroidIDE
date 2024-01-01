@@ -41,7 +41,7 @@ public class BaseApplication extends Application {
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
   public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
-  public static final String DOCS_URL = BuildInfo.PROJECT_SITE + "/docs";
+  public static final String DOCS_URL = "https://docs.androidide.com";
   public static final String CONTRIBUTOR_GUIDE_URL = BuildInfo.REPO_URL + "/blob/dev/CONTRIBUTING.md";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
