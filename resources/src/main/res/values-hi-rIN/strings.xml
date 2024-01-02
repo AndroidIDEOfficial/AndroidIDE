@@ -465,7 +465,6 @@
   <string name="action_manual_install">मैन्युअल इंस्टालेशन</string>
   <string name="hint_android_sdk_version">Android SDK वर्जन</string>
   <string name="hin_jdk_version">JDK वर्जन</string>
-  <string name="msg_with_command_line_tools">कमांड लाइन टूल्स के साथ</string>
   <string name="action_install_git">Git इनस्टॉल करें</string>
   <string name="action_install_openssh">OpenSSH इनस्टॉल करें</string>
   <string name="msg_terminal_new_sessions_disabled">सेशन नहीं बनाया जा सकता. नए सेशन अक्षम हैं!</string>
