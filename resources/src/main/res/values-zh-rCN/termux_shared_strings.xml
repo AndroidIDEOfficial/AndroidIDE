@@ -58,18 +58,16 @@
         \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
         on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
         even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The AndroidIDE is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The AndroidIDE app (package context) is not accessible.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">The AndroidIDE app $PREFIX directory is not accessible by the %1$s app.
-        This may be because you have not installed or setup AndroidIDE app or
-    AndroidIDE app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
-        It may also be because AndroidIDE $PREFIX directory \"/data/data/com.itsaky.androidide/files/usr\" does not exist or does not have read,
-        write and execute permissions.</string>
+  <string name="msg_termux_app_required_by_app">%1$s 应用需要 AndroidIDE 来运行 termux 命令。</string>
+  <string name="error_termux_app_package_context_not_accessible">AndroidIDE 应用程序（包上下文）无法访问。</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">%1$s 应用无法访问 AndroidIDE 应用的 $PREFIX 目录。
+         这可能是因为您尚未安装或设置 AndroidIDE 应用，或者 AndroidIDE 应用和 %1$s 应用具有不同的 APK 签名，因为您已设法从不同来源安装这两个应用程序。
+         也可能是因为 AndroidIDE 的 $PREFIX 目录“/data/data/com.itsaky.androidide/files/usr”不存在或者没有读、写、执行权限。</string>
   <!-- Miscellaneous -->
   <string name="action_share">分享</string>
   <string name="action_save_to_file">保存到文件</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="msg_storage_permission_granted_on_request">用户根据请求授予存储权限</string>
+  <string name="msg_storage_permission_not_granted_on_request">用户未根据请求授予存储权限</string>
   <!-- Log Level -->
   <string name="log_level_title">日志级别</string>
   <string name="log_level_off">关闭</string>
