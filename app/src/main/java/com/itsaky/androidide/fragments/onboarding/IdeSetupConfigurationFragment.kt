@@ -127,9 +127,6 @@ class IdeSetupConfigurationFragment : OnboardingFragment(), SlidePolicy {
     args.setArgument(IdeSetupArgument.JDK_VERSION,
       JdkVersion.fromDisplayName(content.jdkVersion.text).version)
     args.setArgument(IdeSetupArgument.ASSUME_YES)
-    if (content.withCmdlineTools.isChecked) {
-      args.setArgument(IdeSetupArgument.WITH_CMDLINE_TOOLS)
-    }
     if (content.installGit.isChecked) {
       args.setArgument(IdeSetupArgument.WITH_GIT)
     }

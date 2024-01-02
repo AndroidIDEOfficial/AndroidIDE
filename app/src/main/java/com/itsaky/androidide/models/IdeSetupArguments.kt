@@ -26,7 +26,6 @@ package com.itsaky.androidide.models
  */
 enum class IdeSetupArgument(val argumentName: String, val requiresValue: Boolean = false) {
   INSTALL_DIR("--install-dir", true),
-  WITH_CMDLINE_TOOLS("--with-cmdline-tools"),
   WITH_GIT("--with-git"),
   ASSUME_YES("--assume-yes"),
   WITH_OPENSSH("--with-openssh"),
