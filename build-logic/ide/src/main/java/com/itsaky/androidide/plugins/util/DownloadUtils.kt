@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.plugins
+package com.itsaky.androidide.plugins.util
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
 import java.io.File
 import java.math.BigInteger
 import java.net.HttpURLConnection
@@ -29,13 +29,14 @@ import java.security.MessageDigest
 /**
  * @author Akash Yadav
  */
-abstract class AbstractDownloadTask : DefaultTask() {
+object DownloadUtils {
 
   /**
    * Download the file at given [URL][remoteUrl] to the given [local file][file] and verify the
    * SHA-256 checksum of the downloaded file with the [expected checksum][expectedChecksum].
    */
-  protected fun doDownload(file: File, remoteUrl: String, expectedChecksum: String) {
+  fun doDownload(file: File, remoteUrl: String, expectedChecksum: String,
+    logger: Logger) {
 
     logger.info("Download $remoteUrl to $file having checksum ${expectedChecksum}...")
 

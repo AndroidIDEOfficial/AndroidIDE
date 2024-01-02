@@ -17,12 +17,10 @@
 
 package com.itsaky.androidide.plugins
 
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.itsaky.androidide.plugins.tasks.TerminalBootstrapDownloadTask
+import com.itsaky.androidide.plugins.util.DownloadUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.compile.JavaCompile
+import java.io.File
 
 /**
  * Gradle plugin which downloads the bootstrap packages for the terminal.
@@ -46,33 +44,50 @@ class TerminalBootstrapPackagesPlugin : Plugin<Project> {
      * The bootstrap packages version, basically the tag name of the GitHub release.
      */
     private const val BOOTSTRAP_PACKAGES_VERSION = "16.12.2023"
+
+    private const val PACKAGES_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/terminal-packages/releases/download/bootstrap-%1\$s/bootstrap-%2\$s.zip"
   }
 
   override fun apply(target: Project) {
     target.run {
-      val downloadTask = tasks.register("downloadBootstrapPackages",
-        TerminalBootstrapDownloadTask::class.java) {
-        packages.set(BOOTSTRAP_PACKAGES)
-        version.set(BOOTSTRAP_PACKAGES_VERSION)
-      }
 
-      val cleanTask = tasks.register("deleteBootstrapPackages", Delete::class.java)  {
-        doLast {
-          fileTree("src/main/cpp").apply {
-            include("bootstrap-*.zip")
-          }.forEach { file ->
-            file.delete()
-          }
-        }
-      }
+      val bootstrapOut = project.layout.buildDirectory.file("intermediates/bootstrap-packages")
+        .get().asFile
 
-      tasks.withType(JavaCompile::class.java).configureEach {
-        dependsOn(downloadTask)
-      }
+      val files = BOOTSTRAP_PACKAGES.map { (arch, sha256) ->
+        val file = File(bootstrapOut, "bootstrap-${arch}.zip")
+        file.parentFile.mkdirs()
 
-      tasks.named("clean").configure {
-        dependsOn(cleanTask)
-      }
+        DownloadUtils.doDownload(file = file,
+          remoteUrl = PACKAGES_DOWNLOAD_URL.format(BOOTSTRAP_PACKAGES_VERSION, arch),
+          expectedChecksum = sha256,
+          logger = logger
+        )
+
+        return@map arch to file
+      }.toMap()
+
+      project.file("src/main/cpp/termux-bootstrap-zip.S").writeText(
+        """
+             .global blob
+             .global blob_size
+             .section .rodata
+         blob:
+        #if defined __aarch64__
+             .incbin "${files["aarch64"]!!.absolutePath}"
+         #elif defined __arm__
+             .incbin "${files["arm"]!!.absolutePath}"
+         #elif defined __x86_64__
+             .incbin "${files["x86_64"]!!.absolutePath}"
+         #else
+         # error Unsupported arch
+         #endif
+         1:
+         blob_size:
+             .int 1b - blob
+         
+      """.trimIndent()
+      )
     }
   }
 }

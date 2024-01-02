@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.plugins.tasks
 
-import com.itsaky.androidide.plugins.AbstractDownloadTask
+import com.itsaky.androidide.plugins.util.DownloadUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -27,7 +28,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * @author Akash Yadav
  */
-abstract class DownloadAapt2Task : AbstractDownloadTask() {
+abstract class DownloadAapt2Task : DefaultTask() {
 
   /**
    * The CPU architecture for which the `aapt2` should be downloaded.
@@ -59,6 +60,7 @@ abstract class DownloadAapt2Task : AbstractDownloadTask() {
   }
 
   companion object {
+
     private const val DEFAULT_VERSION = "34.0.4"
     private val AAPT2_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v%1\$s/aapt2-%2\$s"
   }
@@ -74,6 +76,6 @@ abstract class DownloadAapt2Task : AbstractDownloadTask() {
 
     val remoteUrl = AAPT2_DOWNLOAD_URL.format(version, arch)
 
-    doDownload(file, remoteUrl, expectedChecksum)
+    DownloadUtils.doDownload(file, remoteUrl, expectedChecksum, logger)
   }
 }
