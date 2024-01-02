@@ -470,7 +470,7 @@
   <string name="msg_terminal_new_sessions_disabled">无法创建会话，新会话被禁用！</string>
   <string name="title_install_location_error">安装位置错误</string>
   <string name="title_unsupported_user">不支持的用户</string>
-  <string name="title_socials">Socials</string>
+  <string name="title_socials">社交</string>
   <string name="title_contributors">Contributors</string>
   <string name="summary_contributors">Top community contributors.</string>
   <string name="title_github_contributors">GitHub Contributors</string>
