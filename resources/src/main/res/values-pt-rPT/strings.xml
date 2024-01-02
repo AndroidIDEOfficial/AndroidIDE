@@ -465,7 +465,6 @@
   <string name="action_manual_install">Instalação manual</string>
   <string name="hint_android_sdk_version">Versão do SDK do Android</string>
   <string name="hin_jdk_version">Versão do JDK</string>
-  <string name="msg_with_command_line_tools">Com ferramentas de linha de comando</string>
   <string name="action_install_git">Instalar Git</string>
   <string name="action_install_openssh">Instalar OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Não foi possível criar a sessão. Novas sessões estão desativadas!</string>
