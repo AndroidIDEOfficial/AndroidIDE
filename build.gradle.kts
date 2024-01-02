@@ -41,6 +41,9 @@ buildscript {
 }
 
 subprojects {
+  // Always load the F-Droid config
+  FDroidConfig.load(project)
+
   afterEvaluate {
     apply { plugin(AndroidIDEPlugin::class.java) }
   }

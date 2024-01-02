@@ -18,9 +18,11 @@
 package com.itsaky.androidide.plugins
 
 import BuildConfig
+import FDroidConfig
 import VersionUtils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.plugins.conf.flavorsAbis
 import com.itsaky.androidide.plugins.tasks.AddAndroidJarToAssetsTask
 import com.itsaky.androidide.plugins.tasks.AddFileToAssetsTask
 import com.itsaky.androidide.plugins.tasks.DownloadAapt2Task
@@ -31,6 +33,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.configurationcache.extensions.capitalized
+import java.io.File
 
 /**
  * Handles asset copying and generation.
@@ -57,15 +60,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
       val androidComponentsExtension = extensions.getByType(AndroidComponentsExtension::class.java)
       val baseExtension = extensions.getByType(BaseExtension::class.java)
 
-      val aapt2Tasks = mutableMapOf<String, TaskProvider<DownloadAapt2Task>>()
-      baseExtension.productFlavors.forEach { flavor ->
-        aapt2Tasks[flavor.name] = tasks.register("downloadAapt2${flavor.name.capitalized()}",
-          DownloadAapt2Task::class.java) {
-          arch.set(flavor.name)
-          checksum.set(AAPT2_CHECKSUMS[flavor.name] ?: throw IllegalStateException(
-            "Checksum for aapt2-${flavor.name} not found!"))
-        }
-      }
+      val aapt2Tasks = getAapt2DownloadTasks(baseExtension)
 
       val addAndroidJarTaskProvider = tasks.register("addAndroidJarToAssets",
         AddAndroidJarToAssetsTask::class.java) {
@@ -74,9 +69,17 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
       androidComponentsExtension.onVariants { variant ->
 
-        val downloadAapt2TaskProvider = aapt2Tasks[variant.flavorName]
-          ?: throw IllegalStateException(
-            "'aapt2' task not registered for flavor '${variant.flavorName}'")
+        if (aapt2Tasks.isNotEmpty()) {
+          val downloadAapt2TaskProvider = aapt2Tasks[variant.flavorName]
+            ?: throw IllegalStateException(
+              "'aapt2' task not registered for flavor '${variant.flavorName}'")
+
+          variant.sources.assets?.addGeneratedSourceDirectory(downloadAapt2TaskProvider,
+            DownloadAapt2Task::outputDirectory)
+        } else {
+          variant.sources.assets?.addStaticSourceDirectory(
+            getStaticFDroidAapt2Dir(variant.flavorName!!))
+        }
 
         val variantNameCapitalized = variant.name.capitalized()
 
@@ -85,9 +88,6 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
         variant.sources.assets?.addGeneratedSourceDirectory(addAndroidJarTaskProvider,
           AddAndroidJarToAssetsTask::outputDirectory)
-
-        variant.sources.assets?.addGeneratedSourceDirectory(downloadAapt2TaskProvider,
-          DownloadAapt2Task::outputDirectory)
 
         // Init script generator
         val generateInitScript = tasks.register(
@@ -125,6 +125,65 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         )
       }
     }
+  }
+
+  private fun Project.getStaticFDroidAapt2Dir(flavorName: String): String {
+    val fdroidArch = FDroidConfig.fDroidBuildArch!!
+    val fdroidAapt2 = FDroidConfig.fDroidAapt2File!!
+
+    require(fdroidArch in flavorsAbis.keys) {
+      "F-Droid arch '${fdroidArch}' is not supported!"
+    }
+
+
+    val inFile = File(fdroidAapt2)
+    require(inFile.exists() && inFile.isFile) {
+      "F-Droid AAPT2 file does not exist or is not a file: $inFile"
+    }
+
+    val assetDir = project.layout.buildDirectory.dir("intermediates/fdroid-aapt2-${flavorName}")
+      .get().asFile
+
+    if (assetDir.exists()) {
+      assetDir.deleteRecursively()
+    }
+
+    assetDir.mkdirs()
+
+    val outFile = File(assetDir, "data/$flavorName/aapt2")
+    outFile.parentFile.mkdirs()
+
+    inFile.copyTo(outFile, overwrite = true)
+
+    return assetDir.absolutePath
+  }
+
+  private fun Project.getAapt2DownloadTasks(
+    baseExtension: BaseExtension
+  ): Map<String, TaskProvider<DownloadAapt2Task>> {
+
+    if (FDroidConfig.isFDroidBuild) {
+      // Do not download AAPT2 when building for F-Droid
+      return emptyMap()
+    }
+
+    val aapt2Tasks = mutableMapOf<String, TaskProvider<DownloadAapt2Task>>()
+
+    baseExtension.productFlavors.forEach { flavor ->
+
+      val task = tasks.register(
+        "downloadAapt2${flavor.name.capitalized()}",
+        DownloadAapt2Task::class.java
+      ) {
+        arch.set(flavor.name)
+        checksum.set(AAPT2_CHECKSUMS[flavor.name] ?: throw IllegalStateException(
+          "Checksum for aapt2-${flavor.name} not found!"))
+      }
+
+      aapt2Tasks[flavor.name] = task
+    }
+
+    return aapt2Tasks
   }
 }
 
