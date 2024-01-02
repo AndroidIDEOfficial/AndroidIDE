@@ -465,7 +465,6 @@
   <string name="action_manual_install">手动安装</string>
   <string name="hint_android_sdk_version">Android SDK 版本</string>
   <string name="hin_jdk_version">JDK 版本</string>
-  <string name="msg_with_command_line_tools">使用命令行工具</string>
   <string name="action_install_git">安装 Git</string>
   <string name="action_install_openssh">安装 OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">无法创建会话，新会话被禁用！</string>
