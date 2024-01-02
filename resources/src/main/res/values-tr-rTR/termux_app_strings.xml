@@ -19,7 +19,7 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Bootstrap paketleri yükleniyor…</string>
   <string name="bootstrap_error_title">Bootstrap yüklenmedi</string>
-  <string name="bootstrap_error_body">AndroidIDE was unable to install the bootstrap packages.</string>
+  <string name="bootstrap_error_body">AndroidIDE kaynak paketlerini yükleyemedi.</string>
   <string name="bootstrap_error_abort">İptal et</string>
   <string name="bootstrap_error_try_again">Tekrar deneyin</string>
   <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.
