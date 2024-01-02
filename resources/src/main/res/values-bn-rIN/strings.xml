@@ -466,7 +466,6 @@
   <string name="action_manual_install">ম্যানুয়াল ইনস্টলেশন</string>
   <string name="hint_android_sdk_version">অ্যান্ড্রয়েড SDK ভার্সন</string>
   <string name="hin_jdk_version">JDK ভার্সন</string>
-  <string name="msg_with_command_line_tools">কমান্ড লাইন টুল সহ</string>
   <string name="action_install_git">Git ইনস্টল করুন</string>
   <string name="action_install_openssh">OpenSSH ইনস্টল করুন</string>
   <string name="msg_terminal_new_sessions_disabled">সেশন তৈরি করা যাবে না। নতুন সেশন তৈরি করা নিষ্ক্রিয়!</string>
