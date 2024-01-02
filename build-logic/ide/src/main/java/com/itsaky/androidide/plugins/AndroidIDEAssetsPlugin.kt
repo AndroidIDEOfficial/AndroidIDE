@@ -23,11 +23,13 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.tasks.AddAndroidJarToAssetsTask
 import com.itsaky.androidide.plugins.tasks.AddFileToAssetsTask
+import com.itsaky.androidide.plugins.tasks.DownloadAapt2Task
 import com.itsaky.androidide.plugins.tasks.GenerateInitScriptTask
 import com.itsaky.androidide.plugins.tasks.GradleWrapperBuilderTask
 import downloadVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.configurationcache.extensions.capitalized
 
 /**
@@ -37,6 +39,15 @@ import org.gradle.configurationcache.extensions.capitalized
  */
 class AndroidIDEAssetsPlugin : Plugin<Project> {
 
+  companion object {
+
+    private val AAPT2_CHECKSUMS = mapOf(
+      "arm64-v8a" to "be2cea61814678f7a9e61bf818a6666e6097a7d67d6c19498a4d7aa690bc4151",
+      "armeabi-v7a" to "ba3413c680933dffd3c3d35da8d450c474ff5ccab95c4b9db28841c53b7a3cdf",
+      "x86_64" to "4861171c1efcffe41f4466937e6a392b243ffb014813b4e60f0b77bb46ab254d"
+    )
+  }
+
   override fun apply(target: Project) {
     target.run {
       val wrapperBuilderTaskProvider = tasks.register("generateGradleWrapper",
@@ -44,6 +55,17 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
       )
 
       val androidComponentsExtension = extensions.getByType(AndroidComponentsExtension::class.java)
+      val baseExtension = extensions.getByType(BaseExtension::class.java)
+
+      val aapt2Tasks = mutableMapOf<String, TaskProvider<DownloadAapt2Task>>()
+      baseExtension.productFlavors.forEach { flavor ->
+        aapt2Tasks[flavor.name] = tasks.register("downloadAapt2${flavor.name.capitalized()}",
+          DownloadAapt2Task::class.java) {
+          arch.set(flavor.name)
+          checksum.set(AAPT2_CHECKSUMS[flavor.name] ?: throw IllegalStateException(
+            "Checksum for aapt2-${flavor.name} not found!"))
+        }
+      }
 
       val addAndroidJarTaskProvider = tasks.register("addAndroidJarToAssets",
         AddAndroidJarToAssetsTask::class.java) {
@@ -52,6 +74,10 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
       androidComponentsExtension.onVariants { variant ->
 
+        val downloadAapt2TaskProvider = aapt2Tasks[variant.flavorName]
+          ?: throw IllegalStateException(
+            "'aapt2' task not registered for flavor '${variant.flavorName}'")
+
         val variantNameCapitalized = variant.name.capitalized()
 
         variant.sources.assets?.addGeneratedSourceDirectory(wrapperBuilderTaskProvider,
@@ -59,6 +85,9 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
         variant.sources.assets?.addGeneratedSourceDirectory(addAndroidJarTaskProvider,
           AddAndroidJarToAssetsTask::outputDirectory)
+
+        variant.sources.assets?.addGeneratedSourceDirectory(downloadAapt2TaskProvider,
+          DownloadAapt2Task::outputDirectory)
 
         // Init script generator
         val generateInitScript = tasks.register(

@@ -17,22 +17,17 @@
 
 package com.itsaky.androidide.plugins.tasks
 
-import org.gradle.api.DefaultTask
+import com.itsaky.androidide.plugins.AbstractDownloadTask
 import org.gradle.api.GradleException
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
-import java.math.BigInteger
-import java.net.HttpURLConnection
-import java.net.URL
-import java.security.DigestInputStream
-import java.security.MessageDigest
 
 /**
  * @author Akash Yadav
  */
-abstract class TerminalBootstrapDownloadTask : DefaultTask() {
+abstract class TerminalBootstrapDownloadTask : AbstractDownloadTask() {
 
   companion object {
 
@@ -62,54 +57,9 @@ abstract class TerminalBootstrapDownloadTask : DefaultTask() {
     }
 
     packages.forEach { (arch, sha256) ->
-      doDownload(arch, sha256, version)
-    }
-  }
-
-  private fun doDownload(arch: String, expectedChecksum: String, version: String) {
-    val digest = MessageDigest.getInstance("SHA-256")
-    val localPath = "src/main/cpp/bootstrap-${arch}.zip"
-    val file = project.file(localPath)
-
-    if (file.exists()) {
-      digest.update(file.readBytes())
-      var checksum = BigInteger(1, digest.digest()).toString(16)
-      while (checksum.length < 64) {
-        checksum = "0$checksum"
-      }
-
-      if (checksum == expectedChecksum) {
-        logger.info("$localPath is already downloaded and valid. Skipping download.")
-        return
-      } else {
-        logger.info(
-          "Deleting old bootstrap package with invalid checksum: $checksum expected: $expectedChecksum file: $localPath")
-        file.delete()
-      }
-    }
-
-    val remoteUrl = PACKAGES_DOWNLOAD_URL.format(version, arch)
-    logger.info("Downloading ${remoteUrl}...")
-
-    file.parentFile.mkdirs()
-
-    val connection = URL(remoteUrl).openConnection() as HttpURLConnection
-    connection.instanceFollowRedirects = true
-
-    file.outputStream().use { out ->
-      DigestInputStream(connection.inputStream, digest).transferTo(out.buffered())
-    }
-    connection.inputStream.buffered().transferTo(file.outputStream())
-
-    var checksum = BigInteger(1, digest.digest()).toString(16)
-    while (checksum.length < 64) {
-      checksum = "0$checksum"
-    }
-
-    if (checksum != expectedChecksum) {
-      file.delete()
-      throw GradleException(
-        "Wrong checksum for $remoteUrl: expected: $expectedChecksum, actual: $checksum")
+      val localPath = "src/main/cpp/bootstrap-${arch}.zip"
+      val file = project.file(localPath)
+      doDownload(file, PACKAGES_DOWNLOAD_URL.format(version, arch), sha256)
     }
   }
 }

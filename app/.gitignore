@@ -1,3 +1,8 @@
+# aapt2 file
+src/arm64-v8a/assets/data/arm64-v8a/aapt2
+src/armeabi-v7a/assets/data/arm64-v8a/aapt2
+src/x86_64/assets/data/arm64-v8a/aapt2
+
 # Directories that are created when generating signed APK in Android Studio
 /debug
 /release
