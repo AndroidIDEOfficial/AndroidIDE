@@ -471,14 +471,14 @@
   <string name="title_install_location_error">安装位置错误</string>
   <string name="title_unsupported_user">不支持的用户</string>
   <string name="title_socials">社交</string>
-  <string name="title_contributors">Contributors</string>
-  <string name="summary_contributors">Top community contributors.</string>
-  <string name="title_github_contributors">GitHub Contributors</string>
-  <string name="title_crowdin_translators">Crowdin Translators</string>
-  <string name="title_misc">Misc</string>
-  <string name="title_contribute">Contribute</string>
-  <string name="summary_contribute">It\'s not just an IDE, it\'s a community. Contribute code, ideas, and passion to AndroidIDE.</string>
-  <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
-  <string name="title_open_source_licenses">Open source licenses</string>
-  <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="title_contributors">贡献者</string>
+  <string name="summary_contributors">顶级社区贡献者。</string>
+  <string name="title_github_contributors">GitHub 贡献者</string>
+  <string name="title_crowdin_translators">Crowdin 翻译员</string>
+  <string name="title_misc">杂项</string>
+  <string name="title_contribute">贡献</string>
+  <string name="summary_contribute">它不仅仅是一个 IDE，更是一个社区。为 AndroidIDE 贡献代码、想法和热情。</string>
+  <string name="msg_app_unavailable_for_intent">没有可用于处理意图的应用。</string>
+  <string name="title_open_source_licenses">开源许可</string>
+  <string name="summary_open_source_licenses">查看开放源代码许可。</string>
 </resources>
