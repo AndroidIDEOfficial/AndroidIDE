@@ -465,7 +465,6 @@
   <string name="action_manual_install">Manuel Kurulum</string>
   <string name="hint_android_sdk_version">Android SDK sürümü</string>
   <string name="hin_jdk_version">JDK sürümü</string>
-  <string name="msg_with_command_line_tools">Komut satırı araçları ile</string>
   <string name="action_install_git">Git\'i kur</string>
   <string name="action_install_openssh">OpenSSH\'ı kur</string>
   <string name="msg_terminal_new_sessions_disabled">Oturum oluşturulamıyor. Yeni oturumlar devre dışı bırakıldı!</string>
