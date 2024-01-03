@@ -66,7 +66,6 @@ class AndroidIDEPlugin : Plugin<Project> {
       }
 
       val taskName = when {
-        project.path == ":app" -> "testArm64-v8aDebugUnitTest"
         isAndroidModule -> "testDebugUnitTest"
         else -> "test"
       }
