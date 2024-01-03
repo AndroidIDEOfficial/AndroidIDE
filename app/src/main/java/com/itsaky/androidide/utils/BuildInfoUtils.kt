@@ -39,7 +39,7 @@ object BuildInfoUtils {
       "CI Build" to BuildInfo.CI_BUILD,
       "Branch" to BuildInfo.CI_GIT_BRANCH,
       "Commit" to BuildInfo.CI_GIT_COMMIT_HASH,
-      "Variant" to "${BuildConfig.FLAVOR} (${BuildConfig.BUILD_TYPE})",
+      "Variant" to "${BuildConfig.ABI_CURRENT} (${BuildConfig.BUILD_TYPE})",
       "Build type" to getBuildType(),
       "SDK Version" to Build.VERSION.SDK_INT,
       "Supported ABIs" to "[${Build.SUPPORTED_ABIS.joinToString(separator = ", ")}]",

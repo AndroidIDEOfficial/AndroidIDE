@@ -19,9 +19,11 @@ package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.FilterConfiguration
+import com.android.build.api.variant.impl.getFilter
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
-import isFDroidBuild
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import projectVersionCode
@@ -36,6 +38,7 @@ import projectVersionCode
  * flavor, the version code will be `100 * 270 + 1` i.e. `2701`
  */
 internal val flavorsAbis = mapOf("arm64-v8a" to 1, "armeabi-v7a" to 2, "x86_64" to 3)
+private const val BUILD_CONFIG_ABI_FIELD_BASE_NAME = "ABI_"
 private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
 fun Project.configureAndroidModule(
@@ -78,21 +81,28 @@ fun Project.configureAndroidModule(
     configureCoreLibDesugaring(this, coreLibDesugDep)
 
     if (":app" == project.path) {
-      flavorDimensions("default")
-
       flavorsAbis.forEach { (abi, _) ->
         // the common defaultConfig, not the flavor-specific
         defaultConfig.buildConfigField("String",
-          "FLAVOR_${abi.replace('-', '_').uppercase()}",
+          "${BUILD_CONFIG_ABI_FIELD_BASE_NAME}${abi.replace('-', '_').uppercase()}",
           "\"${abi}\"")
       }
 
-      productFlavors {
-        val fdroidSuffix = if (isFDroidBuild) "-fdroid" else ""
-        flavorsAbis.forEach { (abi, verCodeIncrement) ->
-          val flavor = create(abi)
-          flavor.versionNameSuffix = "-${abi}${fdroidSuffix}"
-          flavor.versionCode = 100 * projectVersionCode + verCodeIncrement
+      splits {
+        abi {
+          reset()
+          isEnable = true
+          isUniversalApk = true
+          include(*flavorsAbis.keys.toTypedArray())
+        }
+      }
+
+      extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
+        onVariants { variant ->
+          variant.outputs.forEach { output ->
+            val verCodeIncr = flavorsAbis[output.getFilter(FilterConfiguration.FilterType.ABI)?.identifier] ?: 0
+            output.versionCode.set(100 * projectVersionCode + verCodeIncr)
+          }
         }
       }
     } else {
@@ -100,25 +110,6 @@ fun Project.configureAndroidModule(
         ndk {
           abiFilters.clear()
           abiFilters += flavorsAbis.keys
-        }
-      }
-    }
-
-    // configure split APKs for ':app' module only
-    if (this@configureAndroidModule == rootProject.findProject(":app")) {
-      splits {
-        abi {
-          reset()
-
-          isEnable = true
-          isUniversalApk = false
-
-          // TODO: Find a way to enable split APKs in product flavors. If this is possible, we can configure
-          //       each flavor to include only a single ABI. For example, for the 'arm64-v8a' flavor,
-          //       we can configure it to generate APK only for 'arm64-v8a'.
-          //
-          //  See the contribution guidelines for more information.
-          include(*flavorsAbis.keys.toTypedArray())
         }
       }
     }

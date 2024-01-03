@@ -20,6 +20,7 @@ package com.itsaky.androidide.app.configuration
 import android.os.Build
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.BuildConfig
+import com.itsaky.androidide.app.IDEApplication
 
 /**
  * @author Akash Yadav
@@ -28,35 +29,23 @@ import com.itsaky.androidide.BuildConfig
 @Suppress("UNUSED")
 open class IDEBuildConfigProviderImpl : IDEBuildConfigProvider {
 
-  override val buildFlavor: String
-    get() = BuildConfig.FLAVOR
+  override val cpuAbiName: String by lazy {
+    val applicationInfo = IDEApplication.instance.applicationInfo!!
 
-  override val flavorArch: CpuArch
-    get() = CpuArch.forAbi(buildFlavor)!!
+    // transform to valid ABI names
+    return@lazy when (val abi = applicationInfo.nativeLibraryDir!!.substringAfterLast('/')) {
+      "arm64" -> BuildConfig.ABI_ARM64_V8A
+      "arm" -> BuildConfig.ABI_ARMEABI_V7A
+      else -> abi
+    }
+  }
+
+  override val cpuArch: CpuArch
+    get() = CpuArch.forAbi(cpuAbiName)!!
 
   override val deviceArch: CpuArch
     get() = CpuArch.forAbi(supportedAbis[0])!!
 
   override val supportedAbis: Array<String>
     get() = Build.SUPPORTED_ABIS
-
-  override val supportedBuildFlavors: Array<String> by lazy {
-    val flavors = mutableListOf<String>()
-    if (supportedAbis.contains(BuildConfig.FLAVOR_ARM64_V8A)) {
-      flavors.add(BuildConfig.FLAVOR_ARM64_V8A)
-    }
-    if (supportedAbis.contains(BuildConfig.FLAVOR_X86_64)) {
-      flavors.add(BuildConfig.FLAVOR_X86_64)
-    }
-    if (supportedAbis.contains(BuildConfig.FLAVOR_ARMEABI_V7A)) {
-      flavors.add(BuildConfig.FLAVOR_ARMEABI_V7A)
-    }
-    return@lazy flavors.toTypedArray()
-  }
-
-  companion object {
-    private fun Array<String>?.checkIsPrimaryArch(arch: String): Boolean {
-      return this?.isNotEmpty() == true && this[0] == arch
-    }
-  }
 }

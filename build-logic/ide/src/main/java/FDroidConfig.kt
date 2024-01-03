@@ -39,14 +39,16 @@ object FDroidConfig {
   var fDroidVersionCode: Int? = null
     private set
 
-  var fDroidAapt2File: String? = null
+  var aapt2Files: Map<String, String?> = emptyMap()
     private set
 
   const val PROP_FDROID_BUILD = "ide.build.fdroid"
   const val PROP_FDROID_BUILD_ARCH = "ide.build.fdroid.arch"
   const val PROP_FDROID_BUILD_VERSION = "ide.build.fdroid.version"
   const val PROP_FDROID_BUILD_VERCODE = "ide.build.fdroid.vercode"
-  const val PROP_FDROID_AAPT2FILE = "ide.build.fdroid.aapt2File"
+  const val PROP_FDROID_AAPT2FILE_ARM64 = "ide.build.fdroid.aapt2File.arm64"
+  const val PROP_FDROID_AAPT2FILE_ARM = "ide.build.fdroid.aapt2File.arm"
+  const val PROP_FDROID_AAPT2FILE_X86_64 = "ide.build.fdroid.aapt2File.x86_64"
 
   fun load(project: Project) {
     val propsFile = File(project.rootDir, "fdroid.properties")
@@ -67,7 +69,13 @@ object FDroidConfig {
 
     fDroidBuildArch = properties.getProperty(PROP_FDROID_BUILD_ARCH, null)
     fDroidVersionName = properties.getProperty(PROP_FDROID_BUILD_VERSION, null)
-    fDroidVersionCode =  properties.getProperty(PROP_FDROID_BUILD_VERCODE, null)?.toInt()
-    fDroidAapt2File = properties.getProperty(PROP_FDROID_AAPT2FILE, null)
+    fDroidVersionCode = properties.getProperty(PROP_FDROID_BUILD_VERCODE, null)?.toInt()
+
+    aapt2Files = mutableMapOf<String, String?>().also { files ->
+      files[PROP_FDROID_AAPT2FILE_ARM64] = properties.getProperty(PROP_FDROID_AAPT2FILE_ARM64, null)
+      files[PROP_FDROID_AAPT2FILE_ARM] = properties.getProperty(PROP_FDROID_AAPT2FILE_ARM, null)
+      files[PROP_FDROID_AAPT2FILE_X86_64] = properties.getProperty(PROP_FDROID_AAPT2FILE_X86_64,
+        null)
+    }
   }
 }

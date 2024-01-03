@@ -18,10 +18,9 @@
 package com.itsaky.androidide.app
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.BuildConfig
-import com.itsaky.androidide.BuildConfig.FLAVOR_ARM64_V8A
-import com.itsaky.androidide.BuildConfig.FLAVOR_ARMEABI_V7A
-import com.itsaky.androidide.BuildConfig.FLAVOR_X86_64
+import com.itsaky.androidide.BuildConfig.ABI_ARM64_V8A
+import com.itsaky.androidide.BuildConfig.ABI_ARMEABI_V7A
+import com.itsaky.androidide.BuildConfig.ABI_X86_64
 import com.itsaky.androidide.app.configuration.CpuArch
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProviderImpl
 import org.junit.Test
@@ -31,18 +30,18 @@ import org.junit.Test
  */
 class IDEBuildConfigProviderImplTest {
 
-  class TestBuildConfigProvider(override val buildFlavor: String,
+  class TestBuildConfigProvider(override val cpuAbiName: String,
     override val supportedAbis: Array<String>) : IDEBuildConfigProviderImpl()
 
   @Test
   fun `test aarch64 build on aarch64-only device`() {
-    TestBuildConfigProvider(FLAVOR_ARM64_V8A, arrayOf(FLAVOR_ARM64_V8A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARM64_V8A)
-      assertThat(flavorArch).isEqualTo(CpuArch.AARCH64)
+    TestBuildConfigProvider(ABI_ARM64_V8A, arrayOf(ABI_ARM64_V8A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
+      assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.AARCH64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_ARM64_V8A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_ARM64_V8A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_ARM64_V8A)
+
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
@@ -53,19 +52,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isEqualTo(deviceArch)
+      assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test arm build on arm-only device`() {
-    TestBuildConfigProvider(FLAVOR_ARMEABI_V7A, arrayOf(FLAVOR_ARMEABI_V7A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARMEABI_V7A)
-      assertThat(flavorArch).isEqualTo(CpuArch.ARM)
+    TestBuildConfigProvider(ABI_ARMEABI_V7A, arrayOf(ABI_ARMEABI_V7A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARMEABI_V7A)
+      assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.ARM)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_ARMEABI_V7A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_ARMEABI_V7A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_ARMEABI_V7A)
+
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
@@ -76,19 +75,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isTrue()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isEqualTo(deviceArch)
+      assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test x86_64 build on x86_64-only device`() {
-    TestBuildConfigProvider(FLAVOR_X86_64, arrayOf(FLAVOR_X86_64)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_X86_64)
-      assertThat(flavorArch).isEqualTo(CpuArch.X86_64)
+    TestBuildConfigProvider(ABI_X86_64, arrayOf(ABI_X86_64)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_X86_64)
+      assertThat(cpuArch).isEqualTo(CpuArch.X86_64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_X86_64)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_X86_64)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64)
+
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isTrue()
@@ -99,19 +98,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isEqualTo(deviceArch)
+      assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test arm build on (aarch64,arm) device`() {
-    TestBuildConfigProvider(FLAVOR_ARMEABI_V7A, arrayOf(FLAVOR_ARM64_V8A, FLAVOR_ARMEABI_V7A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARMEABI_V7A)
-      assertThat(flavorArch).isEqualTo(CpuArch.ARM)
+    TestBuildConfigProvider(ABI_ARMEABI_V7A, arrayOf(ABI_ARM64_V8A, ABI_ARMEABI_V7A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARMEABI_V7A)
+      assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.AARCH64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_ARM64_V8A, FLAVOR_ARMEABI_V7A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_ARM64_V8A, FLAVOR_ARMEABI_V7A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_ARM64_V8A, ABI_ARMEABI_V7A)
+
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
@@ -122,19 +121,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isNotEqualTo(deviceArch)
+      assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test arm build on (x86_64,arm) device`() {
-    TestBuildConfigProvider(FLAVOR_ARMEABI_V7A, arrayOf(FLAVOR_X86_64, FLAVOR_ARMEABI_V7A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARMEABI_V7A)
-      assertThat(flavorArch).isEqualTo(CpuArch.ARM)
+    TestBuildConfigProvider(ABI_ARMEABI_V7A, arrayOf(ABI_X86_64, ABI_ARMEABI_V7A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARMEABI_V7A)
+      assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_X86_64, FLAVOR_ARMEABI_V7A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_X86_64, FLAVOR_ARMEABI_V7A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64, ABI_ARMEABI_V7A)
+
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
@@ -145,19 +144,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isNotEqualTo(deviceArch)
+      assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test aarch64 build on arm-only device`() {
-    TestBuildConfigProvider(FLAVOR_ARM64_V8A, arrayOf(FLAVOR_ARMEABI_V7A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARM64_V8A)
-      assertThat(flavorArch).isEqualTo(CpuArch.AARCH64)
+    TestBuildConfigProvider(ABI_ARM64_V8A, arrayOf(ABI_ARMEABI_V7A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
+      assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.ARM)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_ARMEABI_V7A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_ARMEABI_V7A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_ARMEABI_V7A)
+
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
@@ -168,19 +167,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isTrue()
 
       assertThat(supportsBuildFlavor()).isFalse()
-      assertThat(flavorArch).isNotEqualTo(deviceArch)
+      assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test aarch64 build on x86_64-only device`() {
-    TestBuildConfigProvider(FLAVOR_ARM64_V8A, arrayOf(FLAVOR_X86_64)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARM64_V8A)
-      assertThat(flavorArch).isEqualTo(CpuArch.AARCH64)
+    TestBuildConfigProvider(ABI_ARM64_V8A, arrayOf(ABI_X86_64)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
+      assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_X86_64)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_X86_64)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64)
+
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
@@ -191,19 +190,19 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isFalse()
-      assertThat(flavorArch).isNotEqualTo(deviceArch)
+      assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
 
   @Test
   fun `test aarch64 build on (x86_64,aarch64) device`() {
-    TestBuildConfigProvider(FLAVOR_ARM64_V8A, arrayOf(FLAVOR_X86_64, FLAVOR_ARM64_V8A)).apply {
-      assertThat(buildFlavor).isEqualTo(FLAVOR_ARM64_V8A)
-      assertThat(flavorArch).isEqualTo(CpuArch.AARCH64)
+    TestBuildConfigProvider(ABI_ARM64_V8A, arrayOf(ABI_X86_64, ABI_ARM64_V8A)).apply {
+      assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
+      assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(FLAVOR_X86_64, FLAVOR_ARM64_V8A)
-      assertThat(supportedBuildFlavors.toList()).containsExactly(FLAVOR_X86_64, FLAVOR_ARM64_V8A)
+      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64, ABI_ARM64_V8A)
+
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
@@ -214,7 +213,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isArmeabiv7aDevice()).isFalse()
 
       assertThat(supportsBuildFlavor()).isTrue()
-      assertThat(flavorArch).isNotEqualTo(deviceArch)
+      assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
 }

@@ -17,11 +17,10 @@
 
 package com.itsaky.androidide.plugins.tasks
 
+import FDroidConfig
 import com.itsaky.androidide.plugins.util.DownloadUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
@@ -32,44 +31,18 @@ import java.io.File
 abstract class SetupAapt2Task : DefaultTask() {
 
   /**
-   * The CPU architecture for which the `aapt2` should be downloaded.
-   */
-  @get:Input
-  abstract val arch: Property<String>
-
-  /**
-   * The version of the file, basically the tag name of the release.
-   */
-  @get:Input
-  abstract val version: Property<String>
-
-  /**
-   * The SHA-256 checksum of the file to download. This will be used to verify the file's
-   * integrity.
-   */
-  @get:Input
-  abstract val checksum: Property<String>
-
-  /**
-   * The path of the static `aapt2` file which should be used instead of downloading it from GitHub.
-   */
-  @get:Input
-  abstract val staticAapt2: Property<String>
-
-  /**
    * The output directory.
    */
   @get:OutputDirectory
   abstract val outputDirectory: DirectoryProperty
 
-  init {
-    run {
-      version.convention(DEFAULT_VERSION)
-      staticAapt2.convention("")
-    }
-  }
-
   companion object {
+
+    private val AAPT2_CHECKSUMS = mapOf(
+      "arm64-v8a" to "be2cea61814678f7a9e61bf818a6666e6097a7d67d6c19498a4d7aa690bc4151",
+      "armeabi-v7a" to "ba3413c680933dffd3c3d35da8d450c474ff5ccab95c4b9db28841c53b7a3cdf",
+      "x86_64" to "4861171c1efcffe41f4466937e6a392b243ffb014813b4e60f0b77bb46ab254d"
+    )
 
     private const val DEFAULT_VERSION = "34.0.4"
     private const val AAPT2_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v%1\$s/aapt2-%2\$s"
@@ -77,27 +50,29 @@ abstract class SetupAapt2Task : DefaultTask() {
 
   @TaskAction
   fun setupAapt2() {
-    val file = outputDirectory.file("${arch.get()}/libaapt2.so").get().asFile
-    file.parentFile.deleteRecursively()
-    file.parentFile.mkdirs()
 
-    if (staticAapt2.getOrElse("").isNotBlank()) {
-      val aapt2 = File(staticAapt2.get())
+    AAPT2_CHECKSUMS.forEach { (arch, checksum) ->
+      val file = outputDirectory.file("${arch}/libaapt2.so").get().asFile
+      file.parentFile.deleteRecursively()
+      file.parentFile.mkdirs()
 
-      require(aapt2.exists() && aapt2.isFile) {
-        "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
+      if (FDroidConfig.isFDroidBuild) {
+        val aapt2File = requireNotNull(FDroidConfig.aapt2Files[arch]) {
+          "F-Droid build is enabled but path to AAPT2 file for $arch is not set."
+        }
+
+        val aapt2 = File(aapt2File)
+
+        require(aapt2.exists() && aapt2.isFile) {
+          "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
+        }
+
+        aapt2.copyTo(file, overwrite = true)
+        return
       }
 
-      aapt2.copyTo(file, overwrite = true)
-      return
+      val remoteUrl = AAPT2_DOWNLOAD_URL.format(DEFAULT_VERSION, arch)
+      DownloadUtils.doDownload(file, remoteUrl, checksum, logger)
     }
-
-    val arch = this.arch.get()
-    val version = this.version.get()
-    val expectedChecksum = this.checksum.get()
-
-    val remoteUrl = AAPT2_DOWNLOAD_URL.format(version, arch)
-
-    DownloadUtils.doDownload(file, remoteUrl, expectedChecksum, logger)
   }
 }

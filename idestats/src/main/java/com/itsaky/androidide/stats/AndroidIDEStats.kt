@@ -59,7 +59,7 @@ object AndroidIDEStats {
   }
 
   val cpuArch by lazy {
-    IDEBuildConfigProvider.getInstance().buildFlavor
+    IDEBuildConfigProvider.getInstance().cpuAbiName
   }
 
   val statData by lazy {

@@ -177,7 +177,7 @@ class OnboardingActivity : AppIntro2() {
         getString(string.title_unsupported_device),
         getString(
           string.msg_unsupported_device,
-          configProvider.flavorArch.abi,
+          configProvider.cpuArch.abi,
           configProvider.deviceArch.abi
         ),
         R.drawable.ic_alert,
@@ -186,14 +186,14 @@ class OnboardingActivity : AppIntro2() {
       return false
     }
 
-    if (configProvider.flavorArch != configProvider.deviceArch) {
+    if (configProvider.cpuArch != configProvider.deviceArch) {
       // IDE's build flavor is NOT the primary arch of the device
       // warn the user
       if (!archConfigExperimentalWarningIsShown()) {
         addSlide(OnboardingInfoFragment.newInstance(
           getString(string.title_experiment_flavor),
           getString(string.msg_experimental_flavor,
-            configProvider.flavorArch.abi,
+            configProvider.cpuArch.abi,
             configProvider.deviceArch.abi
           ),
           R.drawable.ic_alert,

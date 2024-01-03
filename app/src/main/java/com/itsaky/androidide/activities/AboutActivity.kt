@@ -204,7 +204,7 @@ class AboutActivity : LimitlessIDEActivity() {
     builder.append("v")
     builder.append(BuildInfo.VERSION_NAME_SIMPLE)
     builder.append("-")
-    builder.append(BuildConfig.FLAVOR)
+    builder.append(BuildConfig.ABI_CURRENT)
     builder.append(" ")
 
     val colorPositive = ContextCompat.getColor(this, R.color.color_success)

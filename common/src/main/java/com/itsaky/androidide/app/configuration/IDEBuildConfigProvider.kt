@@ -29,17 +29,12 @@ interface IDEBuildConfigProvider {
   /**
    * The current product flavor of the IDE.
    */
-  val buildFlavor: String
+  val cpuAbiName: String
 
   /**
    * Get the [CpuArch] for the build flavor.
    */
-  val flavorArch: CpuArch
-
-  /**
-   * The build flavors which can be installed on the current device.
-   */
-  val supportedBuildFlavors: Array<String>
+  val cpuArch: CpuArch
 
   /**
    * Get the primary CPU architecture of the device.
@@ -54,7 +49,7 @@ interface IDEBuildConfigProvider {
   /**
    * @return Whether this build is the `arm64-v8a` variant of the IDE.
    */
-  fun isArm64v8aBuild(): Boolean = flavorArch == CpuArch.AARCH64
+  fun isArm64v8aBuild(): Boolean = cpuArch == CpuArch.AARCH64
 
   /**
    * @return Whether the device supports `arm64-v8a` instructions.
@@ -64,7 +59,7 @@ interface IDEBuildConfigProvider {
   /**
    * @return Whether this build is the 32-bit variant of the IDE.
    */
-  fun isArmeabiv7aBuild(): Boolean = flavorArch == CpuArch.ARM
+  fun isArmeabiv7aBuild(): Boolean = cpuArch == CpuArch.ARM
 
   /**
    * @return Whether the device supports `armeabi-v7a` instructions.
@@ -74,7 +69,7 @@ interface IDEBuildConfigProvider {
   /**
    * @return Whether this build is the `x86_64` variant of the IDE.
    */
-  fun isX86_64Build(): Boolean = flavorArch == CpuArch.X86_64
+  fun isX86_64Build(): Boolean = cpuArch == CpuArch.X86_64
 
   /**
    * @return Whether the device supports `x86_64` instructions.
@@ -84,7 +79,7 @@ interface IDEBuildConfigProvider {
   /**
    * @return Whether the IDE can be run on the device's CPU arch.
    */
-  fun supportsBuildFlavor(): Boolean = supportedBuildFlavors.contains(buildFlavor)
+  fun supportsBuildFlavor(): Boolean = supportedAbis.contains(cpuAbiName)
 
   companion object {
 

@@ -46,7 +46,6 @@ jobs:
     strategy:
       matrix:
         build_type: ['debug', 'release']
-        flavor: ['arm64-v8a', 'armeabi-v7a', 'x86_64']
     name: Build APK
     runs-on: ubuntu-latest
     steps:
@@ -74,20 +73,29 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Assemble ${{ matrix.flavor }} ${{ matrix.build_type }} APK
+      - name: Assemble ${{ matrix.build_type }} APK
         run: |
           build_type=${{ matrix.build_type }}
-          flavor=${{ matrix.flavor }}
-          ./gradlew :app:assemble${flavor^}${build_type^}
-      - name: Copy ${{ matrix.flavor }} ${{ matrix.build_type }} APK
+          ./gradlew :app:assemble${build_type^}
+      - name: Copy ${{ matrix.build_type }} APK
         run: |
-          cp app/build/outputs/apk/${{ matrix.flavor }}/${{ matrix.build_type }}/app-${{ matrix.flavor }}-${{ matrix.flavor }}-${{ matrix.build_type }}.apk ./
-      - name: Upload ${{ matrix.flavor }} ${{ matrix.build_type }} APK
+          cp app/build/outputs/apk/${{ matrix.build_type }}/app-*.apk ./
+      - name: Upload arm64-v8a ${{ matrix.build_type }} APK
         uses: actions/upload-artifact@v3
         with:
-          name: apk-${{ matrix.flavor }}-${{ matrix.build_type }}
-          path: app-${{ matrix.flavor }}-${{ matrix.flavor }}-${{ matrix.build_type }}.apk
-      - name: Upload ${{ matrix.flavor }} ${{ matrix.build_type }} mappings
+          name: apk-arm64-v8a-${{ matrix.build_type }}
+          path: app-arm64-v8a-${{ matrix.build_type }}.apk
+      - name: Upload armeabi-v7a ${{ matrix.build_type }} APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-armeabi-v7a-${{ matrix.build_type }}
+          path: app-armeabi-v7a-${{ matrix.build_type }}.apk
+      - name: Upload x86_64 ${{ matrix.build_type }} APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-x86_64-${{ matrix.build_type }}
+          path: app-x86_64-${{ matrix.build_type }}.apk
+      - name: Upload ${{ matrix.build_type }} mappings
         if: ${{ matrix.build_type == 'release' }}
         uses: actions/upload-artifact@v3
         with:
