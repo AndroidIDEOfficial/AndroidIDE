@@ -28,6 +28,7 @@ import com.itsaky.androidide.plugins.tasks.AddFileToAssetsTask
 import com.itsaky.androidide.plugins.tasks.DownloadAapt2Task
 import com.itsaky.androidide.plugins.tasks.GenerateInitScriptTask
 import com.itsaky.androidide.plugins.tasks.GradleWrapperBuilderTask
+import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import downloadVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -64,7 +65,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
       val addAndroidJarTaskProvider = tasks.register("addAndroidJarToAssets",
         AddAndroidJarToAssetsTask::class.java) {
-        sdkDirectory = androidComponentsExtension.sdkComponents.sdkDirectory.get().asFile
+        androidJar = androidComponentsExtension.getAndroidJar(assertExists = true)
       }
 
       androidComponentsExtension.onVariants { variant ->

@@ -18,7 +18,9 @@
 package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
+import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import isFDroidBuild
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -42,6 +44,15 @@ fun Project.configureAndroidModule(
   assert(
     plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
     "${javaClass.simpleName} can only be applied to Android projects"
+  }
+
+  val androidJar = extensions.getByType(AndroidComponentsExtension::class.java)
+    .getAndroidJar(assertExists = true)
+  val frameworkStubsJar = findProject(":subprojects:framework-stubs")!!.file("libs/android.jar")
+    .also { it.parentFile.mkdirs() }
+
+  if (!(frameworkStubsJar.exists() && frameworkStubsJar.isFile)) {
+    androidJar.copyTo(frameworkStubsJar)
   }
 
   extensions.getByType(BaseExtension::class.java).run {
