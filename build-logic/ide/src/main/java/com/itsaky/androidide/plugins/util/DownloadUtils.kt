@@ -35,14 +35,20 @@ object DownloadUtils {
    * Download the file at given [URL][remoteUrl] to the given [local file][file] and verify the
    * SHA-256 checksum of the downloaded file with the [expected checksum][expectedChecksum].
    */
-  fun doDownload(file: File, remoteUrl: String, expectedChecksum: String,
-    logger: Logger) {
+  fun doDownload(
+    file: File,
+    remoteUrl: String,
+    expectedChecksum: String,
+    logger: Logger
+  ) {
 
     logger.info("Download $remoteUrl to $file having checksum ${expectedChecksum}...")
 
     val digest = MessageDigest.getInstance("SHA-256")
 
     if (file.exists()) {
+      logger.debug("{} already exists. Checking checksum...", file)
+
       digest.update(file.readBytes())
       var checksum = BigInteger(1, digest.digest()).toString(16)
       while (checksum.length < 64) {
@@ -59,7 +65,7 @@ object DownloadUtils {
       }
     }
 
-    logger.info("Downloading ${remoteUrl}...")
+    logger.info("File does not exist. Downloading ${remoteUrl}...")
 
     file.parentFile.mkdirs()
 

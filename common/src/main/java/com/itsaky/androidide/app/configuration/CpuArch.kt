@@ -30,14 +30,19 @@ enum class CpuArch(val abi: String) {
   AARCH64("arm64-v8a"),
 
   /**
-   * `x86_64` (64-bit).
-   */
-  X86_64("x86_64"),
-
-  /**
    * `armeabi-v7a` flavor (32-bit).
    */
-  ARM("armeabi-v7a");
+  ARM("armeabi-v7a"),
+
+  /**
+   * `x86` (32-bit).
+   */
+  X86("x86"),
+
+  /**
+   * `x86_64` (64-bit).
+   */
+  X86_64("x86_64");
 
   companion object {
 

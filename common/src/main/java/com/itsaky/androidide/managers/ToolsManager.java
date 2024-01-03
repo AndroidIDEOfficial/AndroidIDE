@@ -176,13 +176,11 @@ public class ToolsManager {
       final var context = BaseApplication.getBaseInstance();
       final var nativeLibraryDir = context.getApplicationInfo().nativeLibraryDir;
       final var sourceAapt2 = new File(nativeLibraryDir, "libaapt2.so");
-      if (!(sourceAapt2.exists() && sourceAapt2.isFile())) {
-        // halt the application
-        TaskExecutorKt.runOnUiThread(() -> {
-          throw new IllegalStateException(sourceAapt2 + " does not exist!");
-        });
+      if (sourceAapt2.exists() && sourceAapt2.isFile()) {
+        FilesKt.copyTo(sourceAapt2, Environment.AAPT2, true, ConstantsKt.DEFAULT_BUFFER_SIZE);
+      } else {
+        LOG.error(sourceAapt2 + " file does not exist! This can be problematic.");
       }
-      FilesKt.copyTo(sourceAapt2, Environment.AAPT2, true, ConstantsKt.DEFAULT_BUFFER_SIZE);
     }
 
     if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {

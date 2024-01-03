@@ -40,9 +40,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.AARCH64)
 
-      assertThat(supportedAbis.toList()).containsExactly(ABI_ARM64_V8A)
-
-
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
       assertThat(isArmeabiv7aBuild()).isFalse()
@@ -62,9 +59,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuAbiName).isEqualTo(ABI_ARMEABI_V7A)
       assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.ARM)
-
-      assertThat(supportedAbis.toList()).containsExactly(ABI_ARMEABI_V7A)
-
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
@@ -86,9 +80,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuArch).isEqualTo(CpuArch.X86_64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64)
-
-
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isTrue()
       assertThat(isArmeabiv7aBuild()).isFalse()
@@ -108,9 +99,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuAbiName).isEqualTo(ABI_ARMEABI_V7A)
       assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.AARCH64)
-
-      assertThat(supportedAbis.toList()).containsExactly(ABI_ARM64_V8A, ABI_ARMEABI_V7A)
-
 
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
@@ -132,9 +120,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuArch).isEqualTo(CpuArch.ARM)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64, ABI_ARMEABI_V7A)
-
-
       assertThat(isArm64v8aBuild()).isFalse()
       assertThat(isX86_64Build()).isFalse()
       assertThat(isArmeabiv7aBuild()).isTrue()
@@ -154,9 +139,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
       assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.ARM)
-
-      assertThat(supportedAbis.toList()).containsExactly(ABI_ARMEABI_V7A)
-
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
@@ -178,9 +160,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
 
-      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64)
-
-
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()
       assertThat(isArmeabiv7aBuild()).isFalse()
@@ -200,9 +179,6 @@ class IDEBuildConfigProviderImplTest {
       assertThat(cpuAbiName).isEqualTo(ABI_ARM64_V8A)
       assertThat(cpuArch).isEqualTo(CpuArch.AARCH64)
       assertThat(deviceArch).isEqualTo(CpuArch.X86_64)
-
-      assertThat(supportedAbis.toList()).containsExactly(ABI_X86_64, ABI_ARM64_V8A)
-
 
       assertThat(isArm64v8aBuild()).isTrue()
       assertThat(isX86_64Build()).isFalse()

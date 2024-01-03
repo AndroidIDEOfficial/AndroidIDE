@@ -67,6 +67,7 @@ abstract class SetupAapt2Task : DefaultTask() {
           "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
         }
 
+        logger.info("Copying $aapt2 to $file")
         aapt2.copyTo(file, overwrite = true)
         return
       }
