@@ -37,10 +37,19 @@ object VersionUtils {
   const val LATEST_INTEGRATION = "latest.integration"
 
   /**
+   * The cached version name.
+   */
+  private var cachedVersion: String? = null
+
+  /**
    * Gets the latest snapshot version of the given artifact from the Sonatype snapshots repository.
    */
   @JvmStatic
   fun getLatestSnapshotVersion(artifact: String): String {
+    cachedVersion?.also { cached ->
+      return cached
+    }
+
     val groupId = BuildConfig.packageName.replace('.', '/')
     val moduleMetadata = "${SNAPSHOTS_REPO}/$groupId/${artifact}/maven-metadata.xml"
     return try {
@@ -53,6 +62,7 @@ object VersionUtils {
         val xPath = xPathFactory.newXPath()
 
         val latestVersion = xPath.evaluate("/metadata/versioning/latest", document)
+         cachedVersion = latestVersion
         println("Found latest version of artifact '$artifact' : '$latestVersion'")
         return@use latestVersion
       }
