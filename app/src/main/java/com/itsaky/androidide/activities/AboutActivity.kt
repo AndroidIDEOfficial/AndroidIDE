@@ -36,6 +36,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.SimpleIconTitleDescriptionAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.LimitlessIDEActivity
+import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.databinding.ActivityAboutBinding
 import com.itsaky.androidide.models.IconTitleDescriptionItem
@@ -204,7 +205,7 @@ class AboutActivity : LimitlessIDEActivity() {
     builder.append("v")
     builder.append(BuildInfo.VERSION_NAME_SIMPLE)
     builder.append("-")
-    builder.append(BuildConfig.ABI_CURRENT)
+    builder.append(IDEBuildConfigProvider.getInstance().cpuAbiName)
     builder.append(" ")
 
     val colorPositive = ContextCompat.getColor(this, R.color.color_success)
