@@ -15,21 +15,13 @@ apply {
   plugin(AndroidIDEAssetsPlugin::class.java)
 }
 
-// The comments starting with @@FDROID_PREBUILD_ are used to insert various configurations
-// when building with F-Droid buildserver
-// These comments must not be removed
-
 android {
   namespace = BuildConfig.packageName
 
   defaultConfig {
-    // @@FDROID_PREBUILD_DEFCONFIG_REPLACE_BEGIN@@
     applicationId = BuildConfig.packageName
-    // @@FDROID_PREBUILD_DEFCONFIG_REPLACE_END@@
     vectorDrawables.useSupportLibrary = true
   }
-
-  // @@FDROID_PREBUILD_FLAVORS_INSERT@@
 
   androidResources {
     generateLocaleConfig = true
