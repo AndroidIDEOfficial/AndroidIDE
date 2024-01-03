@@ -23,6 +23,8 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
+import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tasks.TaskExecutorKt;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
@@ -33,6 +35,8 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import kotlin.io.ConstantsKt;
+import kotlin.io.FilesKt;
 import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
@@ -181,8 +185,14 @@ public class ToolsManager {
 
   private static void extractAapt2() {
     if (!Environment.AAPT2.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("aapt2"), Environment.AAPT2.getAbsolutePath());
+      final var context = BaseApplication.getBaseInstance();
+      final var nativeLibraryDir = context.getApplicationInfo().nativeLibraryDir;
+      final var sourceAapt2 = new File(nativeLibraryDir, "libaapt2.so");
+      if (!(sourceAapt2.exists() && sourceAapt2.isFile())) {
+        // halt the application
+        TaskExecutorKt.runOnUiThread(() -> {throw new IllegalStateException(sourceAapt2 + " does not exist!");});
+      }
+      FilesKt.copyTo(sourceAapt2, Environment.AAPT2, true, ConstantsKt.DEFAULT_BUFFER_SIZE);
     }
 
     if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {

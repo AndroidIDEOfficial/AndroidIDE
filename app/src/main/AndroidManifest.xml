@@ -28,6 +28,7 @@
     android:allowBackup="false"
     android:allowNativeHeapPointerTagging="false"
     android:enableOnBackInvokedCallback="true"
+    android:extractNativeLibs="true"
     android:hardwareAccelerated="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
@@ -71,10 +72,8 @@
       android:name=".activities.editor.EditorActivityKt"
       android:windowSoftInputMode="adjustResize" />
     <activity android:name=".activities.PreferencesActivity" />
-    <activity
-      android:name=".activities.AboutActivity" />
-    <activity
-      android:name=".activities.ContributorsActivity" />
+    <activity android:name=".activities.AboutActivity" />
+    <activity android:name=".activities.ContributorsActivity" />
     <activity
       android:name=".activities.TerminalActivity"
       android:windowSoftInputMode="adjustResize" />
@@ -99,6 +98,7 @@
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/ide_file_provider_paths" />
     </provider>
+
     <receiver
       android:enabled="true"
       android:exported="true"

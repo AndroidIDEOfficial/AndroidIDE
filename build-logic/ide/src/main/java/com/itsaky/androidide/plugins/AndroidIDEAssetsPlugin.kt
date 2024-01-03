@@ -71,7 +71,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
           ?: throw IllegalStateException(
             "'aapt2' task not registered for flavor '${variant.flavorName}'")
 
-        variant.sources.assets?.addGeneratedSourceDirectory(aapt2SetupTaskProvider,
+        variant.sources.jniLibs?.addGeneratedSourceDirectory(aapt2SetupTaskProvider,
           SetupAapt2Task::outputDirectory)
 
         val variantNameCapitalized = variant.name.capitalized()
