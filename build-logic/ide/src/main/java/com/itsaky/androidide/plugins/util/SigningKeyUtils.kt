@@ -31,6 +31,8 @@ import java.util.Base64
  * @author Akash Yadav
  */
 object SigningKeyUtils {
+  
+  private val _warned = mutableMapOf<String, Boolean>()
 
   @JvmStatic
   fun Project.downloadSigningKey() {
@@ -71,7 +73,7 @@ object SigningKeyUtils {
     }
 
     if (value.isNullOrBlank()) {
-      if (warn) {
+      if (warn && _warned.putIfAbsent(key, true) != true) {
         logger.warn("$key is not set. Debug key will be used to sign the APK")
       }
       return null
