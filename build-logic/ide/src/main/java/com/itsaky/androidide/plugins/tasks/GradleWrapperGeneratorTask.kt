@@ -21,8 +21,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.wrapper.Wrapper
 import java.io.File
-import java.nio.charset.StandardCharsets
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -31,7 +31,7 @@ import java.util.zip.ZipOutputStream
  *
  * @author Akash Yadav
  */
-abstract class GradleWrapperBuilderTask : DefaultTask() {
+abstract class GradleWrapperGeneratorTask : DefaultTask() {
 
   /**
    * The output directory.
@@ -42,14 +42,6 @@ abstract class GradleWrapperBuilderTask : DefaultTask() {
   companion object {
 
     private const val GRADLE_VERSION = "7.4.2"
-
-    private val GRADLE_PROPERTIES_CONTENTS = """
-      distributionBase=GRADLE_USER_HOME
-      distributionPath=wrapper/dists
-      distributionUrl=https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-      zipStoreBase=GRADLE_USER_HOME
-      zipStorePath=wrapper/dists
-    """.trimIndent()
   }
 
   @TaskAction
@@ -63,24 +55,37 @@ abstract class GradleWrapperBuilderTask : DefaultTask() {
       destFile.delete()
     }
 
+    val stagingDir = File(outputDirectory, "staging")
+    if (stagingDir.exists()) {
+      stagingDir.deleteRecursively()
+    }
+    stagingDir.mkdirs()
+
+    // Generate the files
+    val generator = IDEWrapperGenerator()
+    generator.jarFile = File(stagingDir, "gradle/wrapper/gradle-wrapper.jar")
+    generator.scriptFile = File(stagingDir, "gradlew")
+    generator.gradleVersion = GRADLE_VERSION
+    generator.distributionType = Wrapper.DistributionType.BIN
+
+    generator.generate(project)
+
+    // Archive all generated files
     ZipOutputStream(destFile.outputStream().buffered()).use { zipOut ->
-
-      // Add static files
-      for (file in arrayOf("gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar")) {
-        val fileIn = File(project.rootProject.rootDir, file)
-        val entry = ZipEntry(file)
-        zipOut.putNextEntry(entry)
-        fileIn.inputStream().buffered().use { fileInStream ->
-          fileInStream.transferTo(zipOut)
+      stagingDir.walk(direction = FileWalkDirection.TOP_DOWN)
+        .filter { it.isFile }
+        .forEach { file ->
+          val entry = ZipEntry(file.relativeTo(stagingDir).path)
+          zipOut.putNextEntry(entry)
+          file.inputStream().buffered().use { fileInStream ->
+            fileInStream.transferTo(zipOut)
+          }
         }
-      }
-
-      zipOut.putNextEntry(ZipEntry("gradle/wrapper/gradle-wrapper.properties"))
-      zipOut.write(GRADLE_PROPERTIES_CONTENTS.toByteArray(charset = StandardCharsets.UTF_8))
 
       zipOut.flush()
     }
 
-    destFile.setLastModified(System.currentTimeMillis())
+    // finally, delete the staging directory
+    stagingDir.deleteRecursively()
   }
 }

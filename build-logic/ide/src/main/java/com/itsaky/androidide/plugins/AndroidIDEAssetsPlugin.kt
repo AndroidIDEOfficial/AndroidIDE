@@ -23,9 +23,9 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.tasks.AddAndroidJarToAssetsTask
 import com.itsaky.androidide.plugins.tasks.AddFileToAssetsTask
-import com.itsaky.androidide.plugins.tasks.SetupAapt2Task
 import com.itsaky.androidide.plugins.tasks.GenerateInitScriptTask
-import com.itsaky.androidide.plugins.tasks.GradleWrapperBuilderTask
+import com.itsaky.androidide.plugins.tasks.GradleWrapperGeneratorTask
+import com.itsaky.androidide.plugins.tasks.SetupAapt2Task
 import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import downloadVersion
 import org.gradle.api.Plugin
@@ -51,8 +51,8 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
-      val wrapperBuilderTaskProvider = tasks.register("generateGradleWrapper",
-        GradleWrapperBuilderTask::class.java
+      val wrapperGeneratorTaskProvider = tasks.register("generateGradleWrapper",
+        GradleWrapperGeneratorTask::class.java
       )
 
       val androidComponentsExtension = extensions.getByType(AndroidComponentsExtension::class.java)
@@ -76,8 +76,8 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
         val variantNameCapitalized = variant.name.capitalized()
 
-        variant.sources.assets?.addGeneratedSourceDirectory(wrapperBuilderTaskProvider,
-          GradleWrapperBuilderTask::outputDirectory)
+        variant.sources.assets?.addGeneratedSourceDirectory(wrapperGeneratorTaskProvider,
+          GradleWrapperGeneratorTask::outputDirectory)
 
         variant.sources.assets?.addGeneratedSourceDirectory(addAndroidJarTaskProvider,
           AddAndroidJarToAssetsTask::outputDirectory)
