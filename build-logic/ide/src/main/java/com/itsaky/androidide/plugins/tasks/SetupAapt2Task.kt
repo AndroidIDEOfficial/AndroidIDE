@@ -63,8 +63,10 @@ abstract class SetupAapt2Task : DefaultTask() {
   abstract val outputDirectory: DirectoryProperty
 
   init {
-    @Suppress("LeakingThis")
-    version.convention(DEFAULT_VERSION)
+    run {
+      version.convention(DEFAULT_VERSION)
+      staticAapt2.convention("")
+    }
   }
 
   companion object {
@@ -79,7 +81,7 @@ abstract class SetupAapt2Task : DefaultTask() {
     file.parentFile.deleteRecursively()
     file.parentFile.mkdirs()
 
-    if (staticAapt2.isPresent) {
+    if (staticAapt2.getOrElse("").isNotBlank()) {
       val aapt2 = File(staticAapt2.get())
 
       require(aapt2.exists() && aapt2.isFile) {
