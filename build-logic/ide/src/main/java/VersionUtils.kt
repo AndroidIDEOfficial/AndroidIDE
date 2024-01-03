@@ -47,6 +47,7 @@ object VersionUtils {
   @JvmStatic
   fun getLatestSnapshotVersion(artifact: String): String {
     cachedVersion?.also { cached ->
+      println("Found latest version of artifact '$artifact' : '$cached' (cached)")
       return cached
     }
 
@@ -67,7 +68,11 @@ object VersionUtils {
         return@use latestVersion
       }
     } catch (err: Throwable) {
-      throw GradleException("Failed to download $moduleMetadata", err)
+      if (CI.isCiBuild) {
+        throw GradleException("Failed to download: $moduleMetadata", err)
+      }
+      println("Failed to download $moduleMetadata: ${err.message}")
+      return LATEST_INTEGRATION
     }
   }
 }
