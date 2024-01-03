@@ -7,7 +7,6 @@ plugins {
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
-  id("com.google.android.gms.oss-licenses-plugin")
   id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -103,7 +102,6 @@ dependencies {
   implementation(libs.androidx.work.ktx)
   implementation(libs.google.material)
   implementation(libs.google.flexbox)
-  implementation(libs.google.oss.licenses)
 
   // Kotlin
   implementation(libs.androidx.core.ktx)

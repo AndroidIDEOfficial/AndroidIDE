@@ -79,7 +79,6 @@ androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = 
 androidx-transition = { module = "androidx.transition:transition-ktx", version = "1.4.1" }
 androidx-nav-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
 androidx-nav-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
-androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
 androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
 androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2.0" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version = "1.0.0" }
@@ -97,7 +96,6 @@ google-auto-value-annotations = { module = "com.google.auto.value:auto-value-ann
 google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.4" }
 google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
-google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.25.1" }
 google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.18.1" }
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
@@ -142,7 +140,6 @@ tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
 
 # Classpaths
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", version = "0.10.6" }
 nav-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation" }
 maven-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish-plugin" }
 

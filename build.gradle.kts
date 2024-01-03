@@ -34,7 +34,6 @@ plugins {
 
 buildscript {
   dependencies {
-    classpath(libs.oss.licenses.plugin)
     classpath(libs.kotlin.gradle.plugin)
     classpath(libs.nav.safe.args.gradle.plugin)
   }

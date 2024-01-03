@@ -372,7 +372,7 @@ abstract class BaseEditorActivity :
 
   open fun showFirstBuildNotice() {
     newMaterialDialogBuilder(this)
-      .setPositiveButton(string.ok, null)
+      .setPositiveButton(android.R.string.ok, null)
       .setTitle(string.title_first_build)
       .setMessage(string.msg_first_build)
       .setCancelable(false)
@@ -595,7 +595,7 @@ abstract class BaseEditorActivity :
     val builder = newMaterialDialogBuilder(this)
     builder.setTitle(string.need_help)
     builder.setMessage(string.msg_need_help)
-    builder.setPositiveButton(string.ok, null)
+    builder.setPositiveButton(android.R.string.ok, null)
     builder.create().show()
   }
 

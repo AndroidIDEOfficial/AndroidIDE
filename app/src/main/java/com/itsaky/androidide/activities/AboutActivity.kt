@@ -31,7 +31,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.updatePaddingRelative
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.SizeUtils
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.SimpleIconTitleDescriptionAdapter
@@ -67,12 +66,10 @@ class AboutActivity : LimitlessIDEActivity() {
     private val ACTION_TG_GROUP = id++
     private val ACTION_CONTRIBUTE = id++
     private val ACTION_CONTRIBUTORS = id++
-    private val ACTION_OSS_LICENSES = id++
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    OssLicensesMenuActivity.setActivityTitle(getString(R.string.oss_license_title))
 
     binding.apply {
 
@@ -122,7 +119,6 @@ class AboutActivity : LimitlessIDEActivity() {
       ACTION_EMAIL -> app.emailUs()
       ACTION_TG_GROUP -> app.openTelegramGroup()
       ACTION_TG_CHANNEL -> app.openTelegramChannel()
-      ACTION_OSS_LICENSES -> startActivity(Intent(this, OssLicensesMenuActivity::class.java))
       ACTION_CONTRIBUTE -> app.openUrl(BaseApplication.CONTRIBUTOR_GUIDE_URL)
       ACTION_CONTRIBUTORS -> startActivity(Intent(this, ContributorsActivity::class.java))
     }
@@ -176,13 +172,6 @@ class AboutActivity : LimitlessIDEActivity() {
         R.drawable.ic_heart_outline,
         R.string.title_contributors,
         R.string.summary_contributors
-      ))
-      add(SimpleIconTitleDescriptionItem.create(
-        this@AboutActivity,
-        ACTION_OSS_LICENSES,
-        R.drawable.ic_licenses,
-        R.string.title_open_source_licenses,
-        R.string.summary_open_source_licenses
       ))
     }
   }

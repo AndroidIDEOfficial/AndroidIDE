@@ -11,7 +11,6 @@
     android:protectionLevel="normal"
     tools:ignore="ManifestOrder" />
 
-
   <uses-permission android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -80,12 +79,6 @@
       android:name=".activities.TerminalActivity"
       android:windowSoftInputMode="adjustResize" />
 
-    <activity
-      android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-      android:theme="@style/Theme.AndroidIDE" />
-    <activity
-      android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-      android:theme="@style/Theme.AndroidIDE" />
     <provider
       android:authorities="com.itsaky.androidide.documents"
       android:exported="true"

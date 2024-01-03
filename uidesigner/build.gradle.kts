@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.nav.fragment)
   implementation(libs.androidx.nav.ui)
-  implementation(libs.androidx.nav.dynamic.features)
   implementation(libs.common.editor)
   implementation(libs.common.kotlin)
   implementation(libs.common.utilcode)
