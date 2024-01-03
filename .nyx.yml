@@ -29,6 +29,11 @@ releaseAssets:
     description: "AndroidIDE {{version}} armeabi-v7a release APK"
     path: app-armeabi-v7a-release.apk
     type: application/octet-stream
+  apk_universal:
+    fileName: "androidide-{{version}}-universal.apk"
+    description: "AndroidIDE {{version}} universal release APK"
+    path: app-universal-release.apk
+    type: application/octet-stream
 
 releaseTypes:
   enabled:

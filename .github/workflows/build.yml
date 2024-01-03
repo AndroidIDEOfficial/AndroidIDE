@@ -95,6 +95,11 @@ jobs:
         with:
           name: apk-x86_64-${{ matrix.build_type }}
           path: app-x86_64-${{ matrix.build_type }}.apk
+      - name: Upload universal ${{ matrix.build_type }} APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-universal-${{ matrix.build_type }}
+          path: app-universal-${{ matrix.build_type }}.apk
       - name: Upload ${{ matrix.build_type }} mappings
         if: ${{ matrix.build_type == 'release' }}
         uses: actions/upload-artifact@v3
