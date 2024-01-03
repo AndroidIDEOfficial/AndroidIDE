@@ -24,11 +24,12 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 /**
  * @author Akash Yadav
  */
-abstract class DownloadAapt2Task : DefaultTask() {
+abstract class SetupAapt2Task : DefaultTask() {
 
   /**
    * The CPU architecture for which the `aapt2` should be downloaded.
@@ -50,29 +51,48 @@ abstract class DownloadAapt2Task : DefaultTask() {
   abstract val checksum: Property<String>
 
   /**
+   * The path of the static `aapt2` file which should be used instead of downloading it from GitHub.
+   */
+  @get:Input
+  abstract val staticAapt2: Property<String>
+
+  /**
    * The output directory.
    */
   @get:OutputDirectory
   abstract val outputDirectory: DirectoryProperty
 
   init {
+    @Suppress("LeakingThis")
     version.convention(DEFAULT_VERSION)
   }
 
   companion object {
 
     private const val DEFAULT_VERSION = "34.0.4"
-    private val AAPT2_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v%1\$s/aapt2-%2\$s"
+    private const val AAPT2_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/platform-tools/releases/download/v%1\$s/aapt2-%2\$s"
   }
 
   @TaskAction
-  fun downloadAapt2() {
+  fun setupAapt2() {
+    val file = outputDirectory.file("data/$arch/aapt2").get().asFile
+    file.parentFile.deleteRecursively()
+    file.parentFile.mkdirs()
+
+    if (staticAapt2.isPresent) {
+      val aapt2 = File(staticAapt2.get())
+
+      require(aapt2.exists() && aapt2.isFile) {
+        "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
+      }
+
+      aapt2.copyTo(file, overwrite = true)
+      return
+    }
+
     val arch = this.arch.get()
     val version = this.version.get()
     val expectedChecksum = this.checksum.get()
-
-    val file = outputDirectory.file("data/$arch/aapt2").get().asFile
-    file.parentFile.mkdirs()
 
     val remoteUrl = AAPT2_DOWNLOAD_URL.format(version, arch)
 
