@@ -77,7 +77,7 @@ abstract class SetupAapt2Task : DefaultTask() {
 
   @TaskAction
   fun setupAapt2() {
-    val file = outputDirectory.file("data/$arch/aapt2").get().asFile
+    val file = outputDirectory.file("data/${arch.get()}/aapt2").get().asFile
     file.parentFile.deleteRecursively()
     file.parentFile.mkdirs()
 
