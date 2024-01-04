@@ -37,8 +37,7 @@ import projectVersionCode
  * For example, if the base version code of the IDE is 270 (for v2.7.0), then for arm64-v8a
  * flavor, the version code will be `100 * 270 + 1` i.e. `27001`
  */
-internal val flavorsAbis = mapOf("arm64-v8a" to 1, "armeabi-v7a" to 2, "x86_64" to 3)
-private const val BUILD_CONFIG_ABI_FIELD_BASE_NAME = "ABI_"
+internal val flavorsAbis = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2, "x86_64" to 3)
 private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
 fun Project.configureAndroidModule(
@@ -90,7 +89,7 @@ fun Project.configureAndroidModule(
       flavorsAbis.forEach { (abi, _) ->
         // the common defaultConfig, not the flavor-specific
         defaultConfig.buildConfigField("String",
-          "${BUILD_CONFIG_ABI_FIELD_BASE_NAME}${abi.replace('-', '_').uppercase()}",
+          "ABI_${abi.replace('-', '_').uppercase()}",
           "\"${abi}\"")
       }
 
