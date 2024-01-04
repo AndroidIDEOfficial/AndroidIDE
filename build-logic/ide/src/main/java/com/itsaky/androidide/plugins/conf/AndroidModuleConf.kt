@@ -18,12 +18,14 @@
 package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
+import FDroidConfig
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.FilterConfiguration
 import com.android.build.api.variant.impl.getFilter
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
+import isFDroidBuild
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import projectVersionCode
@@ -98,7 +100,11 @@ fun Project.configureAndroidModule(
           reset()
           isEnable = true
           isUniversalApk = false
-          include(*flavorsAbis.keys.toTypedArray())
+          if (isFDroidBuild) {
+            include(FDroidConfig.fDroidBuildArch!!)
+          } else {
+            include(*flavorsAbis.keys.toTypedArray())
+          }
         }
       }
 
