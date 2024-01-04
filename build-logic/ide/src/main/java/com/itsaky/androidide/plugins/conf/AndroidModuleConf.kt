@@ -81,6 +81,12 @@ fun Project.configureAndroidModule(
     configureCoreLibDesugaring(this, coreLibDesugDep)
 
     if (":app" == project.path) {
+      packagingOptions {
+        jniLibs {
+          useLegacyPackaging = true
+        }
+      }
+
       flavorsAbis.forEach { (abi, _) ->
         // the common defaultConfig, not the flavor-specific
         defaultConfig.buildConfigField("String",
