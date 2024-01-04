@@ -18,6 +18,7 @@
 package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
+import areSplitApksEnabled
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.FilterConfiguration
@@ -35,7 +36,7 @@ import projectVersionCode
  * and set as the version code of that flavor.
  *
  * For example, if the base version code of the IDE is 270 (for v2.7.0), then for arm64-v8a
- * flavor, the version code will be `100 * 270 + 1` i.e. `2701`
+ * flavor, the version code will be `100 * 270 + 1` i.e. `27001`
  */
 internal val flavorsAbis = mapOf("arm64-v8a" to 1, "armeabi-v7a" to 2, "x86_64" to 3)
 private const val BUILD_CONFIG_ABI_FIELD_BASE_NAME = "ABI_"
@@ -88,20 +89,26 @@ fun Project.configureAndroidModule(
           "\"${abi}\"")
       }
 
-      splits {
-        abi {
-          reset()
-          isEnable = true
-          isUniversalApk = true
-          include(*flavorsAbis.keys.toTypedArray())
+      if (project.areSplitApksEnabled) {
+        splits {
+          abi {
+            reset()
+            isEnable = true
+            isUniversalApk = true
+            include(*flavorsAbis.keys.toTypedArray())
+          }
         }
-      }
 
-      extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
-        onVariants { variant ->
-          variant.outputs.forEach { output ->
-            val verCodeIncr = flavorsAbis[output.getFilter(FilterConfiguration.FilterType.ABI)?.identifier] ?: 0
-            output.versionCode.set(100 * projectVersionCode + verCodeIncr)
+        extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
+          onVariants { variant ->
+            variant.outputs.forEach { output ->
+
+              // version code increment
+              val verCodeIncr = flavorsAbis[output.getFilter(
+                FilterConfiguration.FilterType.ABI)?.identifier] ?: 0
+
+              output.versionCode.set(100 * projectVersionCode + verCodeIncr)
+            }
           }
         }
       }

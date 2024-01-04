@@ -54,14 +54,6 @@ class AndroidIDEPlugin : Plugin<Project> {
         logger.warn("applicationId = ${baseExtension.defaultConfig.applicationId}")
         logger.warn("versionName = ${baseExtension.defaultConfig.versionName}")
         logger.warn("versionCode = ${baseExtension.defaultConfig.versionCode}")
-        logger.warn("---")
-        baseExtension.productFlavors.forEach { flavor ->
-          logger.warn("Product flavor: ${flavor.name}")
-          logger.warn("Flavor versionNameSuffix: ${flavor.versionNameSuffix}")
-          logger.warn("Flavor versionName: ${flavor.versionName}")
-          logger.warn("Flavor versionCode: ${flavor.versionCode}")
-          logger.warn("---")
-        }
         logger.warn("--- x --- x ---")
       }
 

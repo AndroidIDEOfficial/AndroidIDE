@@ -45,6 +45,12 @@ val Project.isFDroidBuild: Boolean
     return FDroidConfig.isFDroidBuild
   }
 
+/**
+ * Whether split APKs should be enabled.
+ */
+val Project.areSplitApksEnabled: Boolean
+  get() = !isFDroidBuild
+
 val Project.simpleVersionName: String
   get() {
 
@@ -86,7 +92,11 @@ val Project.projectVersionCode: Int
       ?: throw IllegalStateException(
         "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
 
-    return versionCode
+    // When split APKs are enabled, version codes will be handled by AndroidModuleConf
+    // For universal APKs, the version code will be the verisonCode * 100 + incr e.g. 270 * 100 + 1 = 27001
+    // If split APKs are disabled, then this version code operation will be applied by default
+    // this is because the APK that will be produced in this case will effectively be a universal APK
+    return versionCode * (if (areSplitApksEnabled) 1 else 100)
   }
 
 val Project.publishingVersion: String

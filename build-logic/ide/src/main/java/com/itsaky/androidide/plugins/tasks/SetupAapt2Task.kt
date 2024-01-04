@@ -19,6 +19,7 @@ package com.itsaky.androidide.plugins.tasks
 
 import FDroidConfig
 import com.itsaky.androidide.plugins.util.DownloadUtils
+import isFDroidBuild
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
@@ -56,7 +57,7 @@ abstract class SetupAapt2Task : DefaultTask() {
       file.parentFile.deleteRecursively()
       file.parentFile.mkdirs()
 
-      if (FDroidConfig.isFDroidBuild) {
+      if (project.isFDroidBuild) {
         val aapt2File = requireNotNull(FDroidConfig.aapt2Files[arch]) {
           "F-Droid build is enabled but path to AAPT2 file for $arch is not set."
         }
