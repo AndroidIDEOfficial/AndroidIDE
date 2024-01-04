@@ -44,6 +44,12 @@ public class BuildInfo {
   public static final String CI_GIT_BRANCH = "@@CI_GIT_BRANCH@@";
   public static final String CI_GIT_COMMIT_HASH = "@@CI_COMMIT_HASH@@";
 
+  // --------- CI info --------------------
+
+  public static final boolean FDROID_BUILD = @@FDROID_BUILD@@;
+  public static final String FDROID_BUILD_VERSION_NAME = "@@FDROID_BUILD_VERSION_NAME@@";
+  public static final int FDROID_BUILD_VERSION_CODE = @@FDROID_BUILD_VERSION_CODE@@;
+
   // ------- SCM info --------------------
 
   public static final String REPO_HOST = "@@REPO_HOST@@";

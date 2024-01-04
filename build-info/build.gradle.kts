@@ -41,13 +41,20 @@ tasks.create("generateBuildInfo") {
         arrayOf(
           "PACKAGE_NAME" to BuildConfig.packageName,
           "MVN_GROUP_ID" to BuildConfig.packageName,
+
           "VERSION_NAME" to rootProject.version.toString(),
           "VERSION_NAME_SIMPLE" to rootProject.simpleVersionName,
           "VERSION_NAME_PUBLISHING" to rootProject.publishingVersion,
           "VERSION_NAME_DOWNLOAD" to rootProject.downloadVersion,
+
+          "FDROID_BUILD" to FDroidConfig.isFDroidBuild.toString(),
+          "FDROID_BUILD_VERSION_NAME" to (FDroidConfig.fDroidVersionName ?: "null"),
+          "FDROID_BUILD_VERSION_CODE" to (FDroidConfig.fDroidVersionCode ?: -1).toString(),
+
           "CI_BUILD" to CI.isCiBuild.toString(),
           "CI_GIT_BRANCH" to CI.branchName,
           "CI_COMMIT_HASH" to CI.commitHash,
+
           "REPO_HOST" to ProjectConfig.REPO_HOST,
           "REPO_OWNER" to ProjectConfig.REPO_OWNER,
           "REPO_NAME" to ProjectConfig.REPO_NAME,
