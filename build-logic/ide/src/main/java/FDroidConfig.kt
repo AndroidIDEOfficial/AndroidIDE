@@ -30,9 +30,6 @@ object FDroidConfig {
     private set
     get() = hasRead && field
 
-  var fDroidBuildArch: String? = null
-    private set
-
   var fDroidVersionName: String? = null
     private set
 
@@ -43,7 +40,6 @@ object FDroidConfig {
     private set
 
   const val PROP_FDROID_BUILD = "ide.build.fdroid"
-  const val PROP_FDROID_BUILD_ARCH = "ide.build.fdroid.arch"
   const val PROP_FDROID_BUILD_VERSION = "ide.build.fdroid.version"
   const val PROP_FDROID_BUILD_VERCODE = "ide.build.fdroid.vercode"
   const val PROP_FDROID_AAPT2FILE_ARM64 = "ide.build.fdroid.aapt2File.arm64"
@@ -67,7 +63,6 @@ object FDroidConfig {
     hasRead = true
     isFDroidBuild = properties.getProperty(PROP_FDROID_BUILD, null).toBoolean()
 
-    fDroidBuildArch = properties.getProperty(PROP_FDROID_BUILD_ARCH, null)
     fDroidVersionName = properties.getProperty(PROP_FDROID_BUILD_VERSION, null)
     fDroidVersionCode = properties.getProperty(PROP_FDROID_BUILD_VERCODE, null)?.toInt()
 
