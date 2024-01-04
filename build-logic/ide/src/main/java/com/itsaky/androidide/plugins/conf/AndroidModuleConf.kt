@@ -18,7 +18,6 @@
 package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
-import areSplitApksEnabled
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.FilterConfiguration
@@ -89,26 +88,25 @@ fun Project.configureAndroidModule(
           "\"${abi}\"")
       }
 
-      if (project.areSplitApksEnabled) {
-        splits {
-          abi {
-            reset()
-            isEnable = true
-            isUniversalApk = true
-            include(*flavorsAbis.keys.toTypedArray())
-          }
+      splits {
+        abi {
+          reset()
+          isEnable = true
+          isUniversalApk = false
+          include(*flavorsAbis.keys.toTypedArray())
         }
+      }
 
-        extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
-          onVariants { variant ->
-            variant.outputs.forEach { output ->
+      extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
+        onVariants { variant ->
+          variant.outputs.forEach { output ->
 
-              // version code increment
-              val verCodeIncr = flavorsAbis[output.getFilter(
-                FilterConfiguration.FilterType.ABI)?.identifier] ?: 0
+            // version code increment
+            val verCodeIncr = flavorsAbis[output.getFilter(
+              FilterConfiguration.FilterType.ABI)?.identifier]
+              ?: throw UnsupportedOperationException("Universal APKs are not supported!")
 
-              output.versionCode.set(100 * projectVersionCode + verCodeIncr)
-            }
+            output.versionCode.set(100 * projectVersionCode + verCodeIncr)
           }
         }
       }

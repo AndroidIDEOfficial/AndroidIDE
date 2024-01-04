@@ -52,26 +52,34 @@ abstract class SetupAapt2Task : DefaultTask() {
   @TaskAction
   fun setupAapt2() {
 
-    AAPT2_CHECKSUMS.forEach { (arch, checksum) ->
+    // When building for F-Droid, simply copy the aapt2 file
+    if (project.isFDroidBuild) {
+      val arch = FDroidConfig.fDroidBuildArch!!
+
       val file = outputDirectory.file("${arch}/libaapt2.so").get().asFile
       file.parentFile.deleteRecursively()
       file.parentFile.mkdirs()
 
-      if (project.isFDroidBuild) {
-        val aapt2File = requireNotNull(FDroidConfig.aapt2Files[arch]) {
-          "F-Droid build is enabled but path to AAPT2 file for $arch is not set."
-        }
-
-        val aapt2 = File(aapt2File)
-
-        require(aapt2.exists() && aapt2.isFile) {
-          "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
-        }
-
-        logger.info("Copying $aapt2 to $file")
-        aapt2.copyTo(file, overwrite = true)
-        return
+      val aapt2File = requireNotNull(FDroidConfig.aapt2Files[arch]) {
+        "F-Droid build is enabled but path to AAPT2 file for $arch is not set."
       }
+
+      val aapt2 = File(aapt2File)
+
+      require(aapt2.exists() && aapt2.isFile) {
+        "F-Droid AAPT2 file does not exist or is not a file: $aapt2"
+      }
+
+      logger.info("Copying $aapt2 to $file")
+      aapt2.copyTo(file, overwrite = true)
+      return
+    }
+
+    // When not building for F-Droid, download aapt2 files from GitHub
+    AAPT2_CHECKSUMS.forEach { (arch, checksum) ->
+      val file = outputDirectory.file("${arch}/libaapt2.so").get().asFile
+      file.parentFile.deleteRecursively()
+      file.parentFile.mkdirs()
 
       val remoteUrl = AAPT2_DOWNLOAD_URL.format(DEFAULT_VERSION, arch)
       DownloadUtils.doDownload(file, remoteUrl, checksum, logger)
