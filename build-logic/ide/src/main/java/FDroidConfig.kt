@@ -42,8 +42,8 @@ object FDroidConfig {
   const val PROP_FDROID_BUILD = "ide.build.fdroid"
   const val PROP_FDROID_BUILD_VERSION = "ide.build.fdroid.version"
   const val PROP_FDROID_BUILD_VERCODE = "ide.build.fdroid.vercode"
-  const val PROP_FDROID_AAPT2FILE_ARM64 = "ide.build.fdroid.aapt2File.arm64"
-  const val PROP_FDROID_AAPT2FILE_ARM = "ide.build.fdroid.aapt2File.arm"
+  const val PROP_FDROID_AAPT2FILE_ARM64 = "ide.build.fdroid.aapt2File.arm64-v8a"
+  const val PROP_FDROID_AAPT2FILE_ARM = "ide.build.fdroid.aapt2File.armeabi-v7a"
   const val PROP_FDROID_AAPT2FILE_X86_64 = "ide.build.fdroid.aapt2File.x86_64"
 
   fun load(project: Project) {
@@ -67,9 +67,14 @@ object FDroidConfig {
     fDroidVersionCode = properties.getProperty(PROP_FDROID_BUILD_VERCODE, null)?.toInt()
 
     aapt2Files = mutableMapOf<String, String?>().also { files ->
-      files[PROP_FDROID_AAPT2FILE_ARM64] = properties.getProperty(PROP_FDROID_AAPT2FILE_ARM64, null)
-      files[PROP_FDROID_AAPT2FILE_ARM] = properties.getProperty(PROP_FDROID_AAPT2FILE_ARM, null)
-      files[PROP_FDROID_AAPT2FILE_X86_64] = properties.getProperty(PROP_FDROID_AAPT2FILE_X86_64,
+      files[PROP_FDROID_AAPT2FILE_ARM64.substringAfterLast('.')] = properties.getProperty(
+        PROP_FDROID_AAPT2FILE_ARM64, null)
+
+      files[PROP_FDROID_AAPT2FILE_ARM.substringAfterLast('.')] = properties.getProperty(
+        PROP_FDROID_AAPT2FILE_ARM, null)
+
+      files[PROP_FDROID_AAPT2FILE_X86_64.substringAfterLast('.')] = properties.getProperty(
+        PROP_FDROID_AAPT2FILE_X86_64,
         null)
     }
   }
