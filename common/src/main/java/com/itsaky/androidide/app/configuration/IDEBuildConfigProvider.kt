@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.app.configuration
 
+import android.os.Build
 import com.itsaky.androidide.utils.ServiceLoader
 
 /**
@@ -79,7 +80,7 @@ interface IDEBuildConfigProvider {
   /**
    * @return Whether the IDE can be run on the device's CPU arch.
    */
-  fun supportsBuildFlavor(): Boolean = supportedAbis.contains(cpuAbiName)
+  fun supportsCpuAbi(): Boolean = Build.SUPPORTED_ABIS.contains(cpuAbiName)
 
   companion object {
 

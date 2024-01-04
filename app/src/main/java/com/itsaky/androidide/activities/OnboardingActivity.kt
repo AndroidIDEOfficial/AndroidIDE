@@ -131,7 +131,7 @@ class OnboardingActivity : AppIntro2() {
   override fun onDonePressed(currentFragment: Fragment?) {
     (currentFragment as? StatisticsFragment?)?.updateStatOptInStatus()
 
-    if (!IDEBuildConfigProvider.getInstance().supportsBuildFlavor()) {
+    if (!IDEBuildConfigProvider.getInstance().supportsCpuAbi()) {
       finishAffinity()
       return
     }
@@ -172,7 +172,7 @@ class OnboardingActivity : AppIntro2() {
   private fun checkDeviceSupported(): Boolean {
     val configProvider = IDEBuildConfigProvider.getInstance()
 
-    if (!configProvider.supportsBuildFlavor()) {
+    if (!configProvider.supportsCpuAbi()) {
       addSlide(OnboardingInfoFragment.newInstance(
         getString(string.title_unsupported_device),
         getString(

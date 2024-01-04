@@ -23,7 +23,6 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
-import com.itsaky.androidide.tasks.TaskExecutorKt;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
@@ -46,7 +45,7 @@ public class ToolsManager {
 
   public static void init(@NonNull BaseApplication app, Runnable onFinish) {
 
-    if (!IDEBuildConfigProvider.getInstance().supportsBuildFlavor()) {
+    if (!IDEBuildConfigProvider.getInstance().supportsCpuAbi()) {
       LOG.error("Device not supported");
       return;
     }

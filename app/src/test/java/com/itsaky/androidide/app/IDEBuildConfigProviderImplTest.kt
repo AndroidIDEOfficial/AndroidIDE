@@ -30,8 +30,16 @@ import org.junit.Test
  */
 class IDEBuildConfigProviderImplTest {
 
-  class TestBuildConfigProvider(override val cpuAbiName: String,
-    override val supportedAbis: Array<String>) : IDEBuildConfigProviderImpl()
+  class TestBuildConfigProvider(
+    override val cpuAbiName: String,
+    val deviceArchs: Array<String>,
+  ) : IDEBuildConfigProviderImpl() {
+
+    override val deviceArch: CpuArch
+      get() = CpuArch.forAbi(deviceArchs[0])!!
+
+    override fun supportsCpuAbi(): Boolean = deviceArchs.contains(cpuAbiName)
+  }
 
   @Test
   fun `test aarch64 build on aarch64-only device`() {
@@ -48,7 +56,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isFalse()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
@@ -68,7 +76,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isFalse()
       assertThat(isArmeabiv7aDevice()).isTrue()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
@@ -88,7 +96,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isTrue()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isEqualTo(deviceArch)
     }
   }
@@ -108,7 +116,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isFalse()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
@@ -128,7 +136,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isTrue()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
@@ -148,7 +156,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isFalse()
       assertThat(isArmeabiv7aDevice()).isTrue()
 
-      assertThat(supportsBuildFlavor()).isFalse()
+      assertThat(supportsCpuAbi()).isFalse()
       assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
@@ -168,7 +176,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isTrue()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isFalse()
+      assertThat(supportsCpuAbi()).isFalse()
       assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
@@ -188,7 +196,7 @@ class IDEBuildConfigProviderImplTest {
       assertThat(isX86_64Device()).isTrue()
       assertThat(isArmeabiv7aDevice()).isFalse()
 
-      assertThat(supportsBuildFlavor()).isTrue()
+      assertThat(supportsCpuAbi()).isTrue()
       assertThat(cpuArch).isNotEqualTo(deviceArch)
     }
   }
