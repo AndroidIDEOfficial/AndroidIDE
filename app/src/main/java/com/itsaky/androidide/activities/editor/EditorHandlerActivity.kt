@@ -266,7 +266,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getEditorAtIndex(index: Int): CodeEditorView? {
-    return binding.editorContainer.getChildAt(index) as CodeEditorView?
+    return _binding?.editorContainer?.getChildAt(index) as CodeEditorView?
   }
 
   override fun openFileAndSelect(file: File, selection: Range?) {

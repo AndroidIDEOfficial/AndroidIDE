@@ -38,11 +38,22 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
   private var activityReference: WeakReference<EditorHandlerActivity> = WeakReference(null)
 
+  private val isActivityInaccessible: Boolean
+    get() {
+      return activityReference.get()?.let { activity ->
+        activity.isDestroyed || activity.isFinishing || activity.isDestroying
+      } == true
+    }
+
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
 
   override fun prepareBuild(buildInfo: BuildInfo) {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     val isFirstBuild = isFirstBuild
     activity()
       .setStatus(
@@ -63,6 +74,10 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   }
 
   override fun onBuildSuccessful(tasks: List<String?>) {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     analyzeCurrentFile()
 
     isFirstBuild = false
@@ -72,12 +87,20 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     if (event is ProjectConfigurationStartEvent || event is TaskStartEvent) {
       activity().setStatus(event.descriptor.displayName)
     }
   }
 
   override fun onBuildFailed(tasks: List<String?>) {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     analyzeCurrentFile()
 
     isFirstBuild = false
@@ -87,6 +110,10 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   }
 
   override fun onOutput(line: String?) {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     line?.let { activity().appendBuildOutput(it) }
     // TODO This can be handled better when ProgressEvents are received from Tooling API server
     if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
@@ -95,6 +122,10 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   }
 
   private fun analyzeCurrentFile() {
+    if (!isActivityInaccessible) {
+      return
+    }
+
     val editorView = activity().getCurrentEditor()
     if (editorView != null) {
       val editor = editorView.editor

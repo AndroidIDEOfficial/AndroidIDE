@@ -104,7 +104,9 @@ abstract class BaseEditorActivity :
   protected var diagnosticInfoBinding: LayoutDiagnosticInfoBinding? = null
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
-  protected var isDestroying = false
+
+  var isDestroying = false
+    protected set
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
 
