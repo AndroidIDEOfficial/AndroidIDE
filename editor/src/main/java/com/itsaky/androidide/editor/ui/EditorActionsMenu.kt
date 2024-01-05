@@ -310,12 +310,12 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     data.put(
       JavaLanguageServer::class.java,
       ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
-          as JavaLanguageServer
+          as? JavaLanguageServer?
     )
     data.put(
       XMLLanguageServer::class.java,
       ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
-          as XMLLanguageServer
+          as? XMLLanguageServer?
     )
     return data
   }
