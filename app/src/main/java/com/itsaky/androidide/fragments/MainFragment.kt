@@ -177,9 +177,11 @@ class MainFragment : BaseFragment() {
         git?.close()
       } finally {
         val success = git != null
-        getDialog?.invoke()?.also { dialog ->
-          if (dialog.isShowing) dialog.dismiss()
-          if (success) flashSuccess(string.git_clone_success)
+        withContext(Dispatchers.Main) {
+          getDialog?.invoke()?.also { dialog ->
+            if (dialog.isShowing) dialog.dismiss()
+            if (success) flashSuccess(string.git_clone_success)
+          }
         }
       }
     }
@@ -190,7 +192,8 @@ class MainFragment : BaseFragment() {
       cloneJob.cancel(CancellationException("Cancelled by user"))
     }
 
-    getDialog = { builder.show() }
+    val dialog = builder.show()
+    getDialog = { dialog }
   }
 
   private fun showCloneError(error: Throwable?) {
