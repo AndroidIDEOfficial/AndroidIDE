@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.managers.ToolsManager
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ProjectTemplate
@@ -24,11 +25,13 @@ import com.itsaky.androidide.templates.ProjectTemplateData
 import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.base.root.buildGradleSrcGroovy
 import com.itsaky.androidide.templates.base.root.buildGradleSrcKts
-import com.itsaky.androidide.templates.base.root.gradleWrapperJar
 import com.itsaky.androidide.templates.base.root.gradleWrapperProps
 import com.itsaky.androidide.templates.base.root.settingsGradleSrcStr
 import com.itsaky.androidide.templates.base.util.optonallyKts
+import com.itsaky.androidide.utils.transferToStream
 import java.io.File
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 /**
  * Builder for building project templates.
@@ -123,15 +126,42 @@ class ProjectTemplateBuilder :
    * Writes/copies the Gradle Wrapper related files in the project directory.
    */
   fun gradleWrapper() {
-    val gradlew = File(data.projectDir, "gradlew")
-    val gradlewBat = File(data.projectDir, "${gradlew.name}.bat")
-    executor.copyAsset(baseAsset(gradlew.name), gradlew)
-    executor.copyAsset(baseAsset(gradlewBat.name), gradlewBat)
 
-    gradlew.setExecutable(true)
-    gradlewBat.setExecutable(true)
+    ZipInputStream(
+      executor.openAsset(ToolsManager.getCommonAsset("gradle-wrapper.zip")).buffered()
+    ).use { zipIn ->
+      val entriesToCopy = arrayOf("gradlew", "gradlew.bat", "gradle/wrapper/gradle-wrapper.jar")
 
-    gradleWrapperJar()
+      var zipEntry: ZipEntry? = zipIn.nextEntry
+      while (zipEntry != null) {
+        if (zipEntry.name in entriesToCopy) {
+          val fileOut = File(data.projectDir, zipEntry.name)
+          fileOut.parentFile!!.mkdirs()
+
+          fileOut.outputStream().buffered().use { outStream ->
+            zipIn.transferToStream(outStream)
+            outStream.flush()
+          }
+        }
+
+        zipEntry = zipIn.nextEntry
+      }
+
+
+      val gradlew = File(data.projectDir, "gradlew")
+      val gradlewBat = File(data.projectDir, "${gradlew.name}.bat")
+
+      check(gradlew.exists()) {
+        "'$gradlew' does not exist!"
+      }
+      check(gradlewBat.exists()) {
+        "'$gradlew' does not exist!"
+      }
+
+      gradlew.setExecutable(true)
+      gradlewBat.setExecutable(true)
+    }
+
     gradleWrapperProps()
   }
 

@@ -20,14 +20,6 @@ package com.itsaky.androidide.templates.base.root
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import java.io.File
 
-internal fun ProjectTemplateBuilder.gradleWrapperJar() {
-  val name = "gradle-wrapper.jar"
-  val wrapperJar = File(data.projectDir, "gradle/wrapper/${name}")
-  wrapperJar.parentFile!!.mkdirs()
-
-  executor.copyAsset(baseAsset(name), wrapperJar)
-}
-
 internal fun ProjectTemplateBuilder.gradleWrapperProps() {
   val name = "gradle-wrapper.properties"
   val wrapperProps = File(data.projectDir, "gradle/wrapper/${name}")
