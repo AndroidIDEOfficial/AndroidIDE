@@ -211,6 +211,11 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Generate checksums
+        run:
+          md5sum *.apk > CHECKSUMS-md5.txt
+          sha256sum *.apk > CHECKSUMS-sha256.txt
+          sha512sum *.apk > CHECKSUMS-sha512.txt
       - name: Publish release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
       - name: Archive Nyx state file
