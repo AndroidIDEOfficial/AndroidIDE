@@ -217,7 +217,7 @@ jobs:
   publish:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: [ build_apk, run_unit_tests, run_tooling_api_tests ]
+    needs: [ build_apk, run_unit_tests, run_tooling_api_tests, run_connected_checks ]
     if: |
       always()
       && github.ref == 'refs/heads/main'
