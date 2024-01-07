@@ -28,7 +28,7 @@ var statConsentDialogShown: Boolean
   }
 
 var statOptIn: Boolean
-  get() = prefManager.getBoolean(STAT_OPT_IN, false)
+  get() = prefManager.getBoolean(STAT_OPT_IN, true)
   set(value) {
     prefManager.putBoolean(STAT_OPT_IN, value)
   }

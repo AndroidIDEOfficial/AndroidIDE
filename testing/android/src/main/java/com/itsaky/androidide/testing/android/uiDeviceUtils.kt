@@ -18,11 +18,11 @@
 package com.itsaky.androidide.testing.android
 
 import android.view.KeyCharacterMap
-import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
+import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.buildinfo.BuildInfo
 
 private val keyCharMap by lazy {
@@ -45,7 +45,7 @@ fun UiDevice.hasObjectWithText(text: String) =
  * @see UiDevice.hasObject
  */
 fun UiDevice.hasObjectWithText(@StringRes text: Int) =
-  hasObject(By.text(stringRes(text)))
+  hasObjectWithText(stringRes(text))
 
 /**
  * @see UiDevice.findObject
@@ -57,7 +57,16 @@ fun UiDevice.findObjectWithText(text: String): UiObject2? =
  * @see UiDevice.findObjectWithText
  */
 fun UiDevice.findObjectWithText(@StringRes text: Int): UiObject2? =
-  findObject(By.text(stringRes(text)))
+  findObjectWithText(stringRes(text))
+
+
+fun UiDevice.getObjectWithText(text: String): UiObject2 {
+  val obj = findObjectWithText(text)
+  assertThat(obj).isNotNull()
+  return obj!!
+}
+
+fun UiDevice.getObjectWithText(@StringRes text: Int): UiObject2 = getObjectWithText(stringRes(text))
 
 /**
  * Sends key events to this [UiDevice] to type the given [text].
@@ -67,7 +76,6 @@ fun UiDevice.sendKeyEvents(text: String) {
   val keyEvents = keyCharMap.getEvents(text.toCharArray())
   for (keyEvent in keyEvents) {
     uiAutomation.injectInputEvent(keyEvent, true)
-//    pressKeyCode(keyEvent.keyCode, keyEvent.metaState)
     waitForIdle()
   }
 }

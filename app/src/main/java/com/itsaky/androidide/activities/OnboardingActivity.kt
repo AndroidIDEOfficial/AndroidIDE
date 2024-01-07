@@ -42,12 +42,6 @@ import com.termux.shared.termux.TermuxConstants
 
 class OnboardingActivity : AppIntro2() {
 
-  private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-    override fun handleOnBackPressed() {
-      finishAffinity()
-    }
-  }
-
   companion object {
 
     private const val KEY_ARCHCONFIG_WARNING_IS_SHOWN = "ide.archConfig.experimentalWarning.isShown"
@@ -62,8 +56,6 @@ class OnboardingActivity : AppIntro2() {
       openActivity(MainActivity::class.java)
       finish()
     }
-
-    onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
     setSwipeLock(true)
     setTransformer(AppIntroPageTransformerType.Fade)

@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.testing.android
 
+import androidx.annotation.StringRes
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -44,3 +46,36 @@ fun UiObject2?.clickAndWaitForNewWindow(timeout: Long = LAUNCH_TIMEOUT) =
     assertThat(this).isNotNull()
     this!!.clickAndWait(Until.newWindow(), timeout)
   }
+
+/**
+ * @see UiDevice.hasObject
+ */
+fun UiObject2.hasObjectWithText(text: String) =
+  hasObject(By.text(text))
+
+/**
+ * @see UiObject2.hasObject
+ */
+fun UiObject2.hasObjectWithText(@StringRes text: Int) =
+  hasObjectWithText(stringRes(text))
+
+/**
+ * @see UiObject2.findObject
+ */
+fun UiObject2.findObjectWithText(text: String): UiObject2? =
+  findObject(By.text(text))
+
+/**
+ * @see UiObject2.findObjectWithText
+ */
+fun UiObject2.findObjectWithText(@StringRes text: Int): UiObject2? =
+  findObjectWithText(stringRes(text))
+
+
+fun UiObject2.getObjectWithText(text: String): UiObject2 {
+  val obj = findObjectWithText(text)
+  assertThat(obj).isNotNull()
+  return obj!!
+}
+
+fun UiObject2.getObjectWithText(@StringRes text: Int): UiObject2 = getObjectWithText(stringRes(text))

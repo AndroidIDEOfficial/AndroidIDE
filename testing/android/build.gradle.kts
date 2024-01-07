@@ -35,6 +35,9 @@ dependencies {
   api(libs.tests.androidx.uiautomator)
   api(libs.tests.junit)
   api(libs.tests.google.truth)
+  api(libs.tests.barista) {
+    exclude("org.jetbrains.kotlin")
+  }
 
   api(projects.buildInfo)
   api(projects.common)

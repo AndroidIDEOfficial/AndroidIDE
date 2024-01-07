@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 public class PreferenceManager {
 
   private final SharedPreferences prefs;
+  private boolean isReadOnly = false;
 
   public PreferenceManager(Context ctx) {
     this(ctx, null);
@@ -46,7 +47,9 @@ public class PreferenceManager {
   }
 
   public PreferenceManager remove(String key) {
-    prefs.edit().remove(key).apply();
+    final var edit = prefs.edit();
+    edit.remove(key);
+    applyChanges(edit);
     dispatchRemoveEvent(key);
     return this;
   }
@@ -55,8 +58,27 @@ public class PreferenceManager {
     EventBus.getDefault().post(new PreferenceRemoveEvent(key));
   }
 
+  /**
+   * @return Whether this preference manager is read-only.
+   */
+  public boolean isReadOnly() {
+    return isReadOnly;
+  }
+
+  /**
+   * Whether this preference manager is read-only.
+   *
+   * @param readOnly <code>true</code>, if the preference manager is read-only, <code>false</code>
+   *                 otherwise.
+   */
+  public void setReadOnly(boolean readOnly) {
+    isReadOnly = readOnly;
+  }
+
   public PreferenceManager putInt(String key, int val) {
-    prefs.edit().putInt(key, val).apply();
+    final var edit = prefs.edit();
+    edit.putInt(key, val);
+    applyChanges(edit);
     dispatchChangeEvent(key, val);
     return this;
   }
@@ -70,7 +92,9 @@ public class PreferenceManager {
   }
 
   public void putFloat(String key, float val) {
-    prefs.edit().putFloat(key, val).apply();
+    final var edit = prefs.edit();
+    edit.putFloat(key, val);
+    applyChanges(edit);
     dispatchChangeEvent(key, val);
   }
 
@@ -91,7 +115,9 @@ public class PreferenceManager {
   }
 
   public PreferenceManager putString(String key, String value) {
-    prefs.edit().putString(key, value).apply();
+    final var edit = prefs.edit();
+    edit.putString(key, value);
+    applyChanges(edit);
     dispatchChangeEvent(key, value);
     return this;
   }
@@ -105,7 +131,9 @@ public class PreferenceManager {
   }
 
   public void putBoolean(String key, boolean value) {
-    prefs.edit().putBoolean(key, value).apply();
+    final var edit = prefs.edit();
+    edit.putBoolean(key, value);
+    applyChanges(edit);
     dispatchChangeEvent(key, value);
   }
 
@@ -114,7 +142,9 @@ public class PreferenceManager {
   }
 
   public void putLong(String key, long value) {
-    prefs.edit().putLong(key, value).apply();
+    final var edit = prefs.edit();
+    edit.putLong(key, value);
+    applyChanges(edit);
     dispatchChangeEvent(key, value);
   }
 
@@ -122,4 +152,7 @@ public class PreferenceManager {
     return prefs.getInt(key, def);
   }
 
+  protected void applyChanges(SharedPreferences.Editor editor) {
+    editor.apply();
+  }
 }
