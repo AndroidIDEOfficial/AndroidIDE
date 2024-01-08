@@ -1,1 +1,1 @@
-AndroidIDE is an IDE for Android to develop full featured Android apps on Android smartphones.
+AndroidIDE is an IDE for Android to develop full featured Android apps.
