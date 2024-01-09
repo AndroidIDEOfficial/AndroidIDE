@@ -56,17 +56,22 @@
 
 ## Installation
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.svg"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/com.itsaky.androidide)
+[<img src="https://github.com/Kunzisoft/Github-badge/raw/main/get-it-on-github.svg"
+    alt="Get it on F-Droid"
+    height="80">](https://github.com/AndroidIDEOfficial/AndroidIDE/releases)
+
 > _Please install AndroidIDE from trusted sources only i.e._
 > - [_The AndroidIDE website_](https://androidide.com)
 > - [_GitHub Releases_](https://github.com/AndroidIDEOfficial/AndroidIDE/releases)
 > - [_GitHub Actions_](https://github.com/AndroidIDEOfficial/AndroidIDE/actions?query=branch%3Adev+event%3Apush)
+> - [_F-Droid_](https://f-droid.org/packages/com.itsaky.androidide/)
 
-- Download the AndroidIDE APK
-  from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
-  can also download APKs
-  from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions?query=branch%3Adev+event%3Apush).
+- Download the AndroidIDE APK from the mentioned trusted sources.
 - Follow the
-  instructions [here](https://androidide.com/docs/installation/) to
+  instructions [here](https://docs.androidide.com/tutorials/get-started.html) to
   install the build tools.
 
 ## Limitations
