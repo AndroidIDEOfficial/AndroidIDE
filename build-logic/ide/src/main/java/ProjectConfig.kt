@@ -29,7 +29,7 @@ object ProjectConfig {
   const val SCM_SSH =
     "scm:git:ssh://git@${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
 
-  const val PROJECT_SITE = "https://androidide.com"
+  const val PROJECT_SITE = "https://m.androidide.com"
 }
 
 private var shouldPrintVersionName = true
