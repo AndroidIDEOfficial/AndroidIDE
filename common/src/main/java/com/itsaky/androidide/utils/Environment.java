@@ -45,7 +45,6 @@ public final class Environment {
   public static File BIN_DIR;
   public static File LIB_DIR;
   public static File PROJECTS_DIR;
-  public static File LIB_HOOK;
 
   /**
    * Used by Java LSP until the project is initialized.
@@ -55,7 +54,6 @@ public final class Environment {
   public static File TOOLING_API_JAR;
 
   public static File INIT_SCRIPT;
-  public static File PROJECT_DATA_FILE;
   public static File GRADLE_USER_HOME;
   public static File AAPT2;
   public static File JAVA;
@@ -76,9 +74,6 @@ public final class Environment {
         "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
     ANDROIDIDE_UI = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "ui"));
-
-    LIB_HOOK = new File(LIB_DIR, "libhook.so");
-    PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
