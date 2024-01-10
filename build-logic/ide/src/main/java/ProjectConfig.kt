@@ -45,12 +45,6 @@ val Project.isFDroidBuild: Boolean
     return FDroidConfig.isFDroidBuild
   }
 
-/**
- * Whether split APKs should be enabled.
- */
-val Project.areSplitApksEnabled: Boolean
-  get() = !isFDroidBuild
-
 val Project.simpleVersionName: String
   get() {
 
@@ -99,6 +93,13 @@ val Project.publishingVersion: String
   get() {
 
     var publishing = simpleVersionName
+    if (isFDroidBuild) {
+      // when building for F-Droid, the release is already published so we should have
+      // the maven dependencies already published
+      // simply return the simple version name here.
+      return publishing
+    }
+
     if (CI.isCiBuild && CI.branchName != "main") {
       publishing += "-${CI.commitHash}-SNAPSHOT"
     }
@@ -110,12 +111,12 @@ val Project.publishingVersion: String
  * The version name which is used to download the artifacts at runtime.
  *
  * The value varies based on the following cases :
- * - For CI builds: same as [publishingVersion].
+ * - For CI and F-Droid builds: same as [publishingVersion].
  * - For local builds: `latest.integration` to make sure that Gradle downloads the latest snapshots.
  */
 val Project.downloadVersion: String
   get() {
-    return if (CI.isCiBuild) {
+    return if (CI.isCiBuild || isFDroidBuild) {
       publishingVersion
     } else {
       // sometimes, when working locally, Gradle fails to download the latest snapshot version
