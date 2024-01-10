@@ -63,7 +63,8 @@ tasks.create("generateBuildInfo") {
           "AGP_VERSION_MININUM" to AGP_VERSION_MINIMUM,
           "AGP_VERSION_LATEST" to libs.versions.agp.tooling.get(),
 
-          "SNAPSHOTS_REPOSITORY" to VersionUtils.SNAPSHOTS_REPO,
+          "SNAPSHOTS_REPOSITORY" to VersionUtils.SONATYPE_SNAPSHOTS_REPO,
+          "PUBLIC_REPOSITORY" to VersionUtils.SONATYPE_PUBLIC_REPO,
         )
     )
   }

@@ -70,7 +70,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         val generateInitScript = tasks.register("generate${variantNameCapitalized}InitScript",
           GenerateInitScriptTask::class.java) {
           mavenGroupId.set(BuildConfig.packageName)
-          snapshotsRepository.set(VersionUtils.SNAPSHOTS_REPO)
+          snapshotsRepository.set(VersionUtils.SONATYPE_SNAPSHOTS_REPO)
           downloadVersion.set(this@run.downloadVersion)
         }
 

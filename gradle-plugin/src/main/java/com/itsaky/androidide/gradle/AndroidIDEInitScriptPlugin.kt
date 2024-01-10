@@ -121,6 +121,10 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     // for AGP API dependency
     google()
 
+    maven { repository ->
+      repository.setUrl(BuildInfo.PUBLIC_REPOSITORY)
+    }
+
     mavenCentral()
     gradlePluginPortal()
   }
