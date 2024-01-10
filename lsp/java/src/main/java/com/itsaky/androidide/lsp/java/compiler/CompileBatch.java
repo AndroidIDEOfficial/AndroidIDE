@@ -144,7 +144,6 @@ public class CompileBatch implements AutoCloseable {
     return borrow;
   }
 
-  @SuppressWarnings("Since15")
   @NonNull
   private List<String> options() {
     List<String> options = new ArrayList<>();
