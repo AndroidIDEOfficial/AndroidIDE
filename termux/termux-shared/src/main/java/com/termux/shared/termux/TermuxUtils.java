@@ -532,6 +532,11 @@ public class TermuxUtils {
         ) {
             return TermuxConstants.APK_RELEASE_ANDROIDIDE;
         }
+        if (signingCertificateSHA256Digest
+            .equalsIgnoreCase(TermuxConstants.APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST)
+        ) {
+            return TermuxConstants.APK_RELEASE_FDROID;
+        }
         return "Unknown";
     }
 

@@ -72,7 +72,10 @@ object BuildInfoUtils {
       context,
       TermuxConstants.TERMUX_PACKAGE_NAME
     )
-    return TermuxConstants.APK_RELEASE_ANDROIDIDE == TermuxUtils.getAPKRelease(
-      sha256DigestForPackage)
+
+    val signer = TermuxUtils.getAPKRelease(sha256DigestForPackage)
+
+    return TermuxConstants.APK_RELEASE_ANDROIDIDE == signer
+        || TermuxConstants.APK_RELEASE_FDROID == signer
   }
 }
