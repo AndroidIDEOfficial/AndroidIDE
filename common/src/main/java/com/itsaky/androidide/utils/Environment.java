@@ -81,14 +81,6 @@ public final class Environment {
     ANDROID_HOME = new File(DEFAULT_ANDROID_HOME);
     JAVA_HOME = new File(DEFAULT_JAVA_HOME);
 
-    // If JDK 17 is not installed, check for any JDK in home directory
-    if (!JAVA_HOME.exists()) {
-      final var java_home = new File(HOME, "jdk");
-      if (java_home.exists()) {
-        JAVA_HOME = java_home;
-      }
-    }
-
     JAVA = new File(JAVA_HOME, "bin/java");
     SHELL = new File(BIN_DIR, "bash");
     LOGIN_SHELL = new File(BIN_DIR, "login");
