@@ -51,7 +51,7 @@ public class ShellCommandShellEnvironment {
         ExecutionCommand.Runner runner = ExecutionCommand.Runner.runnerOf(executionCommand.runner);
         if (runner == null) return environment;
 
-        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_SHELL_CMD__RUNNER_NAME, runner.getName());
+        ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_SHELL_CMD__RUNNER_NAME, runner.getRunnerName());
         ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_SHELL_CMD__PACKAGE_NAME, currentPackageContext.getPackageName());
         ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_SHELL_CMD__SHELL_ID, String.valueOf(executionCommand.id));
         ShellEnvironmentUtils.putToEnvIfSet(environment, ENV_SHELL_CMD__SHELL_NAME, executionCommand.shellName);

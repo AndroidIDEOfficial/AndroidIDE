@@ -71,25 +71,25 @@ public class ExecutionCommand {
         ///** Run command in {@link RootShell}. */
         //ROOT_SHELL("root-shell");
 
-        private final String name;
+        private final String runnerName;
 
-        Runner(final String name) {
-            this.name = name;
+        Runner(final String runnerName) {
+            this.runnerName = runnerName;
         }
 
-        public String getName() {
-            return name;
+        public String getRunnerName() {
+            return runnerName;
         }
 
         public boolean equalsRunner(String runner) {
-            return runner != null && runner.equals(this.name);
+            return runner != null && runner.equals(this.runnerName);
         }
 
         /** Get {@link Runner} for {@code name} if found, otherwise {@code null}. */
         @Nullable
         public static Runner runnerOf(String name) {
             for (Runner v : Runner.values()) {
-                if (v.name.equals(name)) {
+                if (v.runnerName.equals(name)) {
                     return v;
                 }
             }

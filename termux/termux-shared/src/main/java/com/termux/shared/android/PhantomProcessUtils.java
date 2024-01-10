@@ -80,7 +80,7 @@ public class PhantomProcessUtils {
         // Dumpsys logs the currently enforced MAX_PHANTOM_PROCESSES value and not the device config setting.
         String script = "/system/bin/dumpsys activity settings | /system/bin/grep -iE '^[\t ]+" + KEY_MAX_PHANTOM_PROCESSES + "=[0-9]+$' | /system/bin/cut -d = -f2";
         ExecutionCommand executionCommand = new ExecutionCommand(-1, "/system/bin/sh", null,
-            script + "\n", "/", ExecutionCommand.Runner.APP_SHELL.getName(), true);
+            script + "\n", "/", ExecutionCommand.Runner.APP_SHELL.getRunnerName(), true);
         executionCommand.commandLabel = " ActivityManager " + KEY_MAX_PHANTOM_PROCESSES + " Command";
         executionCommand.backgroundCustomLogLevel = Logger.LOG_LEVEL_OFF;
         AppShell appShell = AppShell.execute(context, executionCommand, null, new AndroidShellEnvironment(), null, true);
