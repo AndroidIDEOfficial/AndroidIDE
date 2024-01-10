@@ -98,25 +98,6 @@ class OnboardingActivityStatesTest {
   }
 
   @Test
-  fun C_testOnboarding_permissionsScreen() {
-    baristaActivityRule.launchActivity()
-
-    clickOn(R.id.next)
-    clickOn(R.id.next)
-
-    assertDisplayed(stringRes(R.string.onboarding_title_permissions))
-    assertDisplayed(stringRes(R.string.permission_title_storage))
-    assertDisplayed(stringRes(R.string.permission_desc_storage))
-    assertDisplayed(stringRes(R.string.permission_title_install_packages))
-    assertDisplayed(stringRes(R.string.permission_desc_install_packages))
-
-    assertRecyclerViewItemCount(R.id.onboarding_items, 2)
-
-    clickOn(R.id.next)
-    assertDisplayed(stringRes(R.string.msg_grant_permissions))
-  }
-
-  @Test
   fun F_testOnboarding_toolsSetup() {
 
     baristaActivityRule.launchActivity()

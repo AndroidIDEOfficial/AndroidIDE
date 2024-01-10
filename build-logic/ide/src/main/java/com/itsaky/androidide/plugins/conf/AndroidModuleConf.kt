@@ -19,6 +19,7 @@ package com.itsaky.androidide.plugins.conf
 
 import BuildConfig
 import FDroidConfig
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.FilterConfiguration
@@ -57,6 +58,38 @@ fun Project.configureAndroidModule(
 
   if (!(frameworkStubsJar.exists() && frameworkStubsJar.isFile)) {
     androidJar.copyTo(frameworkStubsJar)
+  }
+
+  extensions.getByType(CommonExtension::class.java).run {
+    lint {
+      checkDependencies = true
+    }
+
+    packaging {
+      resources {
+        excludes.addAll(
+          arrayOf(
+            "META-INF/CHANGES",
+            "META-INF/README.md",
+          )
+        )
+        pickFirsts.addAll(
+          arrayOf(
+            "META-INF/eclipse.inf",
+            "META-INF/LICENSE.md",
+            "META-INF/AL2.0",
+            "META-INF/LGPL2.1",
+            "about_files/LICENSE-2.0.txt",
+            "plugin.xml",
+            "plugin.properties",
+            "about.mappings",
+            "about.properties",
+            "about.ini",
+            "modeling32.png"
+          )
+        )
+      }
+    }
   }
 
   extensions.getByType(BaseExtension::class.java).run {
@@ -140,10 +173,6 @@ fun Project.configureAndroidModule(
 
     buildFeatures.viewBinding = true
     buildFeatures.buildConfig = true
-
-    lintOptions {
-      isCheckDependencies = true
-    }
   }
 }
 

@@ -32,25 +32,6 @@ android {
     }
   }
 
-  packaging {
-    resources.excludes.addAll(
-      arrayOf(
-        "META-INF/eclipse.inf",
-        "META-INF/CHANGES",
-        "META-INF/README.md",
-        "about_files/LICENSE-2.0.txt",
-        "META-INF/AL2.0",
-        "META-INF/LGPL2.1",
-        "plugin.xml",
-        "plugin.properties",
-        "about.mappings",
-        "about.properties",
-        "about.ini",
-        "modeling32.png"
-      )
-    )
-  }
-
   lint {
     abortOnError = false
     disable.addAll(arrayOf("VectorPath", "NestedWeights", "ContentDescription", "SmallSp"))

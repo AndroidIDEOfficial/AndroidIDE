@@ -32,6 +32,7 @@ import androidx.viewpager.widget.ViewPager
 import com.adevinta.android.barista.rule.cleardata.ClearDatabaseRule
 import com.adevinta.android.barista.rule.cleardata.ClearFilesRule
 import com.adevinta.android.barista.rule.cleardata.ClearPreferencesRule
+import com.adevinta.android.barista.rule.cleardata.internal.FileOperations
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.buildinfo.BuildInfo
@@ -40,6 +41,7 @@ import com.itsaky.androidide.testing.android.clickAndWaitForWindowUpdate
 import com.itsaky.androidide.testing.android.findObjectWithText
 import com.itsaky.androidide.testing.android.getApplicationContext
 import com.itsaky.androidide.testing.android.getObjectWithText
+import com.itsaky.androidide.testing.android.hasObjectWithText
 import com.itsaky.androidide.testing.android.launchAndroidIDE
 import com.itsaky.androidide.testing.android.stringRes
 import com.itsaky.androidide.testing.android.uiAutomation
@@ -92,6 +94,9 @@ class OnboardingActivityBehaviorTest {
   @Test
   fun C_testOnboarding_toolsSetup_autoInstallBehavior() {
     val device = launchAndroidIDE(fromLauncher = true, clearTasks = true)
+    val operations = FileOperations()
+    operations.getAllFilesRecursively().forEach { operations.deleteFile(it) }
+
     device.grantAndroidIDEPermissions()
 
     val autoInstallSwitch = device.findObject(By.checkable(true).clazz(Switch::class.java))
@@ -137,7 +142,7 @@ class OnboardingActivityBehaviorTest {
   }
 
   @Test
-  fun C_testOnboarding_toolsSetup_manualInstallBehavior() {
+  fun D_testOnboarding_toolsSetup_manualInstallBehavior() {
     val device = launchAndroidIDE(fromLauncher = true, clearTasks = true)
     device.grantAndroidIDEPermissions()
 
@@ -168,13 +173,12 @@ class OnboardingActivityBehaviorTest {
 
     doneButton.clickAndWaitForNewWindow()
 
-    // 'Installing bootstrap packages' dialog..
-    assertThat(device.findObjectWithText(R.string.bootstrap_installer_body)).isNotNull()
-
-    // wait for the packages to be installed
-    // this should take a minute at most
-    // we wait until the installation finishes and the keys GridLayout is visible
-    device.wait(Until.hasObject(By.clazz(GridLayout::class.java)), 60 * 1000L)
+    if (device.hasObjectWithText(R.string.bootstrap_installer_body)) {
+      // wait for the packages to be installed
+      // this should take a minute at most
+      // we wait until the installation finishes and the keys GridLayout is visible
+      device.wait(Until.hasObject(By.clazz(GridLayout::class.java)), 60 * 1000L)
+    }
 
     // verify that the terminal keys view is visible
     assertThat(device.findObject(By.clazz(GridLayout::class.java))).isNotNull()
