@@ -270,6 +270,7 @@ class EditorViewModel : ViewModel() {
 
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
+      file.createNewFile()
       file.writeText(string)
     }.also { job ->
       handleOpenedFilesCacheJobCompletion(job, "write")
