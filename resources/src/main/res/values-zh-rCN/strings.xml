@@ -481,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">没有可用于处理意图的应用。</string>
   <string name="title_open_source_licenses">开源许可</string>
   <string name="summary_open_source_licenses">查看开放源代码许可。</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
