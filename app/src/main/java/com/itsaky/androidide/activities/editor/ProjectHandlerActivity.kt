@@ -230,7 +230,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
   private fun notifySyncNeeded(onConfirm: () -> Unit) {
     val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
-    if (buildService == null || buildService.isBuildInProgress) return
+    if (buildService == null || editorViewModel.isInitializing || buildService.isBuildInProgress) return
 
     this.syncNotificationFlashbar?.dismiss()
 

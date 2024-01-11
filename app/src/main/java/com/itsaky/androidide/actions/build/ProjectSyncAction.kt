@@ -40,7 +40,7 @@ class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAc
   }
 
   override suspend fun execAction(data: ActionData): Any {
-    return data.requireActivity().saveAll()
+    return data.requireActivity().saveAll(requestSync = false)
   }
 
   override fun postExec(data: ActionData, result: Any) {
