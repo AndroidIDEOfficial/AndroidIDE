@@ -68,7 +68,7 @@ fun UiDevice.nextButton(): UiObject2 {
 fun UiDevice.handleAndroidRPermissions(
   allowPermission: Boolean = true,
 ) {
-  assertThat(currentPackageName).isEqualTo("com.android.settings")
+  assertThat(currentPackageName).isAnyOf("com.android.settings", "com.android.permissioncontroller")
   assertThat(hasObjectWithText(R.string.app_name)).isTrue()
 
   val storageSwitch = findObject(UiSelector().className(Switch::class.java))
