@@ -15,14 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.app
+package com.itsaky.androidide.app.configuration
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.BuildConfig.ABI_ARM64_V8A
 import com.itsaky.androidide.BuildConfig.ABI_ARMEABI_V7A
 import com.itsaky.androidide.BuildConfig.ABI_X86_64
-import com.itsaky.androidide.app.configuration.CpuArch
-import com.itsaky.androidide.app.configuration.IDEBuildConfigProviderImpl
 import org.junit.Test
 
 /**

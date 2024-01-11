@@ -59,6 +59,8 @@ public class Main {
     server.connect(client);
 
     LOG.debug("Server started. Will run until shutdown message is received...");
+    LOG.debug("Running on Java version:", System.getProperty("java.version", "<unknown>"));
+
     try {
       Main.future.get();
     } catch (CancellationException cancellationException) {

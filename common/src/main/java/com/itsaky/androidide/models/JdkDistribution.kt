@@ -15,20 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.activities
-
-import android.app.Activity
-import android.content.Intent
-import android.os.Bundle
+package com.itsaky.androidide.models
 
 /**
+ * An installed JDK distribution.
+ *
+ * @param javaVersion The Java version.
+ * @param javaHome The path to the installed JDK.
  * @author Akash Yadav
  */
-class SplashActivity : Activity() {
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    startActivity(Intent(this, OnboardingActivity::class.java))
-    finish()
-  }
-}
+data class JdkDistribution(
+  val javaVersion: String,
+  val javaHome: String
+)

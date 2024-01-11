@@ -26,7 +26,6 @@ import static com.itsaky.androidide.utils.Environment.JAVA_HOME;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
-
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.javac.services.compiler.ReusableBorrow;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
@@ -35,12 +34,10 @@ import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
-import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.ProjectType;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,7 +51,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import jdkx.lang.model.SourceVersion;
 import jdkx.tools.Diagnostic;
 import jdkx.tools.JavaFileObject;

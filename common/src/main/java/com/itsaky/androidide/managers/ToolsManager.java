@@ -23,6 +23,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
+import com.itsaky.androidide.app.configuration.IJdkDistributionProvider;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
@@ -51,6 +52,9 @@ public class ToolsManager {
     }
 
     CompletableFuture.runAsync(() -> {
+      // Load installed JDK distributions
+      IJdkDistributionProvider.getInstance().getInstalledDistributions();
+
       writeNoMediaFile();
       extractAapt2();
       extractToolingApi();

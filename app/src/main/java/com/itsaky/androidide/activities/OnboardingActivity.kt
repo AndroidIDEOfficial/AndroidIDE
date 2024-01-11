@@ -19,7 +19,6 @@ package com.itsaky.androidide.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
@@ -27,6 +26,7 @@ import com.github.appintro.AppIntroPageTransformerType
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
+import com.itsaky.androidide.app.configuration.IJdkDistributionProvider
 import com.itsaky.androidide.fragments.onboarding.GreetingFragment
 import com.itsaky.androidide.fragments.onboarding.IdeSetupConfigurationFragment
 import com.itsaky.androidide.fragments.onboarding.OnboardingInfoFragment
@@ -147,14 +147,15 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun checkToolsIsInstalled(): Boolean {
-    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists()
+    return IJdkDistributionProvider.getInstance().installedDistributions.isNotEmpty()
+        && Environment.ANDROID_HOME.exists()
   }
 
   private fun isSetupDone() =
     (checkToolsIsInstalled() && statConsentDialogShown && PermissionsFragment.areAllPermissionsGranted(
       this))
 
-  private fun isInstalledOnSdCard() : Boolean {
+  private fun isInstalledOnSdCard(): Boolean {
     // noinspection SdCardPath
     return PackageUtils.isAppInstalledOnExternalStorage(this) &&
         TermuxConstants.TERMUX_FILES_DIR_PATH != filesDir.absolutePath

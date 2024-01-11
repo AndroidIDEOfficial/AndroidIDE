@@ -19,6 +19,7 @@ package com.itsaky.androidide.utils;
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileUtils;
+import com.itsaky.androidide.syntax.highlighters.JavaHighlighter;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public final class Environment {
   public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
   private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
-  private static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
+  public static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
   private static final String ANDROIDIDE_PROJECT_CACHE_DIR = ".androidide";
   private static final ILogger LOG = ILogger.newInstance("Environment");
   public static File ROOT;
@@ -57,7 +58,7 @@ public final class Environment {
   public static File GRADLE_USER_HOME;
   public static File AAPT2;
   public static File JAVA;
-  public static File SHELL;
+  public static File BASH_SHELL;
   public static File LOGIN_SHELL;
 
   public static void init() {
@@ -82,11 +83,11 @@ public final class Environment {
     JAVA_HOME = new File(DEFAULT_JAVA_HOME);
 
     JAVA = new File(JAVA_HOME, "bin/java");
-    SHELL = new File(BIN_DIR, "bash");
+    BASH_SHELL = new File(BIN_DIR, "bash");
     LOGIN_SHELL = new File(BIN_DIR, "login");
 
     setExecutable(JAVA);
-    setExecutable(SHELL);
+    setExecutable(BASH_SHELL);
 
     System.setProperty("user.home", HOME.getAbsolutePath());
   }
