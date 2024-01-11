@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
 import android.view.LayoutInflater
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -28,6 +27,7 @@ import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
 import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
+import com.itsaky.androidide.preferences.internal.DEFAULT_COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.DELETE_EMPTY_LINES
 import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
@@ -192,10 +192,10 @@ private class TabSize(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    tabSize = entry.data as Int
+    tabSize = (entry?.data as? Int?) ?: 4
   }
 }
 
@@ -226,10 +226,10 @@ private class ColorSchemePreference(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    colorScheme = (entry.data as IDEColorScheme).key
+    colorScheme = (entry?.data as? IDEColorScheme?)?.key ?: DEFAULT_COLOR_SCHEME
   }
 }
 

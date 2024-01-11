@@ -117,10 +117,10 @@ class TermuxDebuggingLogLevelPreference(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    val newLevel = entry.data as Int
+    val newLevel = (entry?.data as? Int?) ?: Logger.DEFAULT_LOG_LEVEL
     TermuxAppSharedPreferences.build(preference.context, false)
       ?.setLogLevel(preference.context, newLevel)
 

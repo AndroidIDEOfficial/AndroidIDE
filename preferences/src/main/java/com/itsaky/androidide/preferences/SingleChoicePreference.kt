@@ -43,12 +43,6 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
     entries: Array<PreferenceChoices.Entry>,
     selections: BooleanArray
   ) {
-    val checkedCount = entries.count { it.isChecked }
-    if (checkedCount != 1) {
-      throw IllegalArgumentException(
-        "Entries must have exactly one item checked, however, $checkedCount were checked")
-    }
-
     currentSelection = entries.indexOfFirst { it.isChecked }
 
     dialog.setSingleChoiceItems(
@@ -69,12 +63,17 @@ abstract class SingleChoicePreference : ChoiceBasedDialogPreference(), Preferenc
     preference: Preference,
     entries: Array<PreferenceChoices.Entry>
   ) {
-    onChoiceConfirmed(preference, entries[currentSelection], currentSelection)
+    if (currentSelection < 0 || currentSelection > entries.lastIndex) {
+      onChoiceConfirmed(preference, null, currentSelection)
+    } else {
+      onChoiceConfirmed(preference, entries[currentSelection], currentSelection)
+    }
   }
 
   protected open fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
-  ) {}
+  ) {
+  }
 }

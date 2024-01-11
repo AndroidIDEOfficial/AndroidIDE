@@ -39,7 +39,6 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
-import com.itsaky.androidide.ui.themes.ThemeManager
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -126,10 +125,10 @@ class UiMode(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    uiMode = entry.data as Int
+    uiMode = (entry?.data as? Int?) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
   }
 }
 
@@ -159,10 +158,10 @@ class ThemeSelector(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    selectedTheme = (entry.data as IDETheme).name
+    selectedTheme = (entry?.data as? IDETheme?)?.name ?: IDETheme.DEFAULT.name
   }
 }
 
@@ -199,10 +198,10 @@ class LocaleSelector(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    selectedLocale = entry.data.let { localeKey ->
+    selectedLocale = entry?.data?.let { localeKey ->
       if (localeKey is Int) null else localeKey as String
     }
   }

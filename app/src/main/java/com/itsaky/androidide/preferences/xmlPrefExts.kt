@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
 import androidx.preference.Preference
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
@@ -246,9 +245,9 @@ private class EmptyElementsBehavior(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    emptyElementsBehavior = (entry.data as EmptyElements).toString()
+    emptyElementsBehavior = (entry?.data as? EmptyElements?)?.toString() ?: "Collapse"
   }
 }

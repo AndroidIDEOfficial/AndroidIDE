@@ -42,6 +42,7 @@ import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
@@ -195,11 +196,11 @@ class GradleJDKVersionPreference(
 
   override fun onChoiceConfirmed(
     preference: Preference,
-    entry: PreferenceChoices.Entry,
+    entry: PreferenceChoices.Entry?,
     position: Int
   ) {
     super.onChoiceConfirmed(preference, entry, position)
-    javaHome = (entry.data as JdkDistribution).javaHome
+    javaHome = (entry?.data as? JdkDistribution?)?.javaHome ?: ""
     updatePreference(preference)
   }
 
