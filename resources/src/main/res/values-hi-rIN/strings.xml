@@ -481,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">इंटेंट को संभालने के लिए कोई एप्लिकेशन उपलब्ध नहीं है।</string>
   <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस</string>
   <string name="summary_open_source_licenses">ओपन सोर्स लाइसेंस देखें</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
