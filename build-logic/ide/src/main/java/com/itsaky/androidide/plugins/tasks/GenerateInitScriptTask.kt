@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.plugins.tasks
 
+import VersionUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
@@ -31,9 +32,6 @@ abstract class GenerateInitScriptTask : DefaultTask() {
 
   @get:Input
   abstract val downloadVersion: Property<String>
-
-  @get:Input
-  abstract val snapshotsRepository: Property<String>
 
   @get:Input
   abstract val mavenGroupId: Property<String>
@@ -59,7 +57,12 @@ abstract class GenerateInitScriptTask : DefaultTask() {
               // Always specify the snapshots repository first
               maven {
                   // Add snapshots repository for AndroidIDE CI builds
-                  url "${snapshotsRepository.get()}"
+                  url "${VersionUtils.SONATYPE_SNAPSHOTS_REPO}"
+              }
+              
+              maven {
+                  // Add public repository for AndroidIDE release builds
+                  url "${VersionUtils.SONATYPE_PUBLIC_REPO}"
               }
               
               mavenCentral()
