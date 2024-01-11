@@ -481,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">Bu çağrıyı işleyebilecek bir uygulama yok.</string>
   <string name="title_open_source_licenses">Açık kaynak lisanslar</string>
   <string name="summary_open_source_licenses">Açık kaynak lisanları görüntüleyin.</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
