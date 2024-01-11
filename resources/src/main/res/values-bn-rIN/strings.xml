@@ -482,4 +482,6 @@
   <string name="msg_app_unavailable_for_intent">Intent গ্রহন করার জন্য কোনো অ্যাপ্লিকেশন উপলব্ধ নেই৷</string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="summary_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি দেখুন।</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
