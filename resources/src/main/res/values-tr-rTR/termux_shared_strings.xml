@@ -81,5 +81,5 @@
   <string name="log_level_debug">Hata ayıklama</string>
   <string name="log_level_verbose">Ayrıntılı</string>
   <string name="log_level_unknown">*Bilinmeyen*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_value">Logcat seviyesi \"%1$s\" olarak ayarlandı</string>
 </resources>
