@@ -481,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">Tidak ada aplikasi yang tersedia untuk menangani maksud.</string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="summary_open_source_licenses">Lihat lisensi sumber terbuka.</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
