@@ -481,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
   <string name="title_open_source_licenses">Open source licenses</string>
   <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
