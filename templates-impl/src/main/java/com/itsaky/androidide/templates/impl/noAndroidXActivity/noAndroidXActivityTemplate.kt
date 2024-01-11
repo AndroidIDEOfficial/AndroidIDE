@@ -24,7 +24,6 @@ import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.Resourc
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
 import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.createRecipe
-import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
 import com.itsaky.androidide.templates.impl.base.emptyValuesFile
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.baseProjectImpl
@@ -36,17 +35,21 @@ fun noAndroidXActivityProject() = baseProjectImpl {
     uiMode = ResTableConfig.UI_MODE.NIGHT_YES
   }
   defaultAppModule(addAndroidX = false) {
+
+    // do not set a theme resource to the application
+    manifest.themeRes = ""
+
     recipe = createRecipe {
       res {
         // values
         writeXmlResource("colors", VALUES, source = emptyValuesFile())
-        writeXmlResource("themes", VALUES, source = noAndroidXTheme("Light"))
+        writeXmlResource("themes", VALUES, source = emptyValuesFile())
 
         // values-night
         writeXmlResource("colors", VALUES, config = configNight,
-        source = emptyValuesFile())
+          source = emptyValuesFile())
         writeXmlResource("themes", VALUES, config = configNight,
-        source = noAndroidXTheme("Dark"))
+          source = emptyValuesFile())
 
         writeXmlResource("activity_main", LAYOUT,
           source = noAndroidXActivityLayout())

@@ -179,7 +179,11 @@ class AndroidManifestBuilder {
       androidAttr("roundIcon", (roundIcon ?: icon).value())
       androidAttr("label", "@string/${appLabelRes}")
       androidAttr("supportsRtl", rtl.toString())
-      androidAttr("theme", "@style/${themeRes}")
+
+      if (themeRes.isNotBlank()) {
+        androidAttr("theme", "@style/${themeRes}")
+      }
+
       configurators[APPLICATION_ATTR]?.forEach { configurator -> configurator() }
       closeStartElement()
 
