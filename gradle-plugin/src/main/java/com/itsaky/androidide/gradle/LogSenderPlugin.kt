@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.gradle
 
+import com.android.build.api.component.analytics.AnalyticsEnabledApplicationVariant
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.impl.ApplicationVariantImpl
@@ -107,7 +108,10 @@ class LogSenderPlugin : Plugin<Project> {
   private fun ApplicationVariant.withRuntimeConfiguration(
     action: Configuration.() -> Unit
   ) {
-    this as ApplicationVariantImpl
-    variantDependencies.runtimeClasspath.action()
+    if (this is ApplicationVariantImpl) {
+      variantDependencies.runtimeClasspath.action()
+    } else if (this is AnalyticsEnabledApplicationVariant) {
+      delegate.withRuntimeConfiguration(action)
+    }
   }
 }

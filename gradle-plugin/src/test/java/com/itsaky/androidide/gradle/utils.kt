@@ -30,10 +30,11 @@ import kotlin.io.path.pathString
 internal fun buildProject(
   agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
   gradleVersion: String = "8.2",
+  useApplyPluginGroovySyntax: Boolean = false,
   configureArgs: (MutableList<String>) -> Unit = {},
   vararg plugins: String
 ): BuildResult {
-  val projectRoot = openProject(agpVersion, *plugins)
+  val projectRoot = openProject(agpVersion, useApplyPluginGroovySyntax, *plugins)
   val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
   val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local/repos.txt").toFile()
 
@@ -99,6 +100,7 @@ internal fun writeInitScript(file: File, deps: List<File>) {
 
 internal fun openProject(
   agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
+  useApplyPluginGroovySyntax: Boolean = false,
   vararg plugins: String
 ): Path {
   val projectRoot = FileProvider.projectRoot()
@@ -110,8 +112,20 @@ internal fun openProject(
   }
 
   run {
-    val pluginsText = plugins.joinToString(separator = "\n") { "id(\"$it\")" }
-    projectRoot.resolve("app/build.gradle.kts").toFile()
+    // remove existing build scripts
+    projectRoot.resolve("app")
+      .toFile()
+      .listFiles()!!
+      .filter { it.name.startsWith("build.gradle") && !it.name.endsWith(".in") }
+      .forEach { it.delete() }
+
+    val pluginsText = if (!useApplyPluginGroovySyntax) {
+      plugins.joinToString(separator = "\n") { "id(\"$it\")" }
+    } else {
+      plugins.joinToString(separator = "\n") { "apply plugin: \"$it\"" }
+    }
+
+    projectRoot.resolve("app/build.gradle" + if (useApplyPluginGroovySyntax) "" else ".kts").toFile()
       .replaceAllPlaceholders(mapOf("PLUGINS" to pluginsText))
   }
 

@@ -39,6 +39,16 @@ class AndroidIDEInitScriptPluginTest {
     assertBasics(result)
   }
 
+  @Test
+  fun `test behavior with apply plugin syntax`() {
+    val result = buildProject(
+      agpVersion = BuildInfo.AGP_VERSION_MININUM,
+      gradleVersion = "7.5.1",
+      useApplyPluginGroovySyntax = true
+    )
+    assertBasics(result)
+  }
+
   private fun assertBasics(result: BuildResult) {
     // These plugins must be applied to the
     for ((project, plugins) in mapOf(
