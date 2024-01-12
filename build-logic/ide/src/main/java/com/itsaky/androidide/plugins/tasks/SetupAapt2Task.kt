@@ -19,6 +19,7 @@ package com.itsaky.androidide.plugins.tasks
 
 import FDroidConfig
 import com.itsaky.androidide.plugins.util.DownloadUtils
+import com.itsaky.androidide.plugins.util.ELFUtils
 import isFDroidBuild
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
@@ -72,6 +73,7 @@ abstract class SetupAapt2Task : DefaultTask() {
 
       logger.info("Copying $aapt2 to $file")
       aapt2.copyTo(file, overwrite = true)
+      assertAapt2Arch(file, ELFUtils.ElfAbi.forName(arch)!!)
       return
     }
 
@@ -83,6 +85,15 @@ abstract class SetupAapt2Task : DefaultTask() {
 
       val remoteUrl = AAPT2_DOWNLOAD_URL.format(DEFAULT_VERSION, arch)
       DownloadUtils.doDownload(file, remoteUrl, checksum, logger)
+      logger.lifecycle("aapt2 arch: $arch")
+      assertAapt2Arch(file, ELFUtils.ElfAbi.forName(arch)!!)
+    }
+  }
+
+  private fun assertAapt2Arch(aapt2: File, elfAbi: ELFUtils.ElfAbi) {
+    val fileAbi = ELFUtils.getElfAbi(aapt2)
+    check(fileAbi == elfAbi) {
+      "Mismatched ABI for aapt2 binary. Required $elfAbi but found $fileAbi"
     }
   }
 }
