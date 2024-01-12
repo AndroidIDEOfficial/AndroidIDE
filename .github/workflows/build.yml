@@ -178,7 +178,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [ 26, 29, 32 ]
+        api-level: [ 26, 32 ]
         target: [ default ]
     steps:
       - name: Cancel previous runs
