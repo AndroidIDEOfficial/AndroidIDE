@@ -213,6 +213,12 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           script: ./gradlew connectedCheck
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-unit-tests
+          path: '**/build/reports/androidTests/'
 
   publish:
     name: Publish release
