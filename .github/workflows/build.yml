@@ -217,7 +217,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: test-results-unit-tests
+          name: test-results-android-tests-${{ matrix.api-level }}-${{ matrix.target }}
           path: '**/build/reports/androidTests/'
 
   publish:
