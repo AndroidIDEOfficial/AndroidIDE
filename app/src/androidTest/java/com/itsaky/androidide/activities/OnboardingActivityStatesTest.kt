@@ -18,14 +18,12 @@
 package com.itsaky.androidide.activities
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.FlakyTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 import com.adevinta.android.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.adevinta.android.barista.assertion.BaristaCheckedAssertions.assertUnchecked
 import com.adevinta.android.barista.assertion.BaristaEnabledAssertions.assertDisabled
 import com.adevinta.android.barista.assertion.BaristaEnabledAssertions.assertEnabled
-import com.adevinta.android.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
 import com.adevinta.android.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.adevinta.android.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.adevinta.android.barista.interaction.BaristaClickInteractions.clickBack
@@ -34,7 +32,6 @@ import com.adevinta.android.barista.rule.BaristaRule
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.statOptIn
-import com.itsaky.androidide.testing.android.launchAndroidIDE
 import com.itsaky.androidide.testing.android.stringRes
 import org.junit.FixMethodOrder
 import org.junit.Rule

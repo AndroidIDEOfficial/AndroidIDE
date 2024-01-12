@@ -22,13 +22,13 @@ import android.widget.Switch
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
-import androidx.test.uiautomator.UiSelector
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.testing.android.clickAndWaitForNewWindow
 import com.itsaky.androidide.testing.android.clickAndWaitForWindowUpdate
 import com.itsaky.androidide.testing.android.getObjectWithText
 import com.itsaky.androidide.testing.android.hasObjectWithText
+import com.itsaky.androidide.utils.isAtLeastR
 
 /**
  * @author Akash Yadav
@@ -52,8 +52,12 @@ fun UiDevice.grantAndroidIDEPermissions() {
         .findObject(By.clazz(Button::class.java))
 
       if (grantButton.text != null) {
-        grantButton.clickAndWaitForNewWindow()
-        handleAndroidRPermissions(allowPermission = true)
+        if (desc == R.string.permission_desc_install_packages || isAtLeastR()) {
+          grantButton.clickAndWaitForNewWindow()
+          handlePermissionInSettings(allowPermission = true)
+        } else {
+          getObjectWithText("ALLOW").clickAndWaitForWindowUpdate(this)
+        }
       }
     }
 
@@ -65,26 +69,26 @@ fun UiDevice.nextButton(): UiObject2 {
   return findObject(By.desc("NEXT"))!!
 }
 
-fun UiDevice.handleAndroidRPermissions(
+fun UiDevice.handlePermissionInSettings(
   allowPermission: Boolean = true,
 ) {
   assertThat(currentPackageName).isAnyOf("com.android.settings", "com.android.permissioncontroller")
   assertThat(hasObjectWithText(R.string.app_name)).isTrue()
 
-  val storageSwitch = findObject(UiSelector().className(Switch::class.java))
-  assertThat(storageSwitch).isNotNull()
+  val switch = findObject(By.clazz(Switch::class.java))
+  assertThat(switch).isNotNull()
 
   // verify initial state
-  assertThat(storageSwitch.isCheckable).isTrue()
-  assertThat(storageSwitch.isEnabled).isTrue()
-  assertThat(storageSwitch.isChecked).isFalse()
+  assertThat(switch.isCheckable).isTrue()
+  assertThat(switch.isEnabled).isTrue()
+  assertThat(switch.isChecked).isFalse()
 
   if (allowPermission) {
     // enable permission
-    storageSwitch.click()
+    switch.click()
 
     // verify changed state
-    assertThat(storageSwitch.isChecked).isTrue()
+    assertThat(switch.isChecked).isTrue()
   }
 
   // navigate back without enabling the permission

@@ -45,6 +45,7 @@ import com.itsaky.androidide.testing.android.hasObjectWithText
 import com.itsaky.androidide.testing.android.launchAndroidIDE
 import com.itsaky.androidide.testing.android.stringRes
 import com.itsaky.androidide.testing.android.uiAutomation
+import com.itsaky.androidide.utils.isAtLeastR
 import com.itsaky.androidide.utils.isAtLeastT
 import org.junit.FixMethodOrder
 import org.junit.Rule
@@ -200,7 +201,11 @@ class OnboardingActivityBehaviorTest {
     grantButton.clickAndWaitForNewWindow()
 
     // check permission denied behavior
-    device.handleAndroidRPermissions(false)
+    if (permissionDesc == R.string.permission_desc_install_packages || isAtLeastR()) {
+      device.handlePermissionInSettings(false)
+    } else {
+      device.getObjectWithText("DENY").clickAndWaitForWindowUpdate(device)
+    }
 
     // verify AndroidIDE is visible
     assertThat(device.currentPackageName).isEqualTo(BuildInfo.PACKAGE_NAME)
@@ -218,7 +223,11 @@ class OnboardingActivityBehaviorTest {
     grantButton.clickAndWaitForNewWindow()
 
     // check permission granted behavior
-    device.handleAndroidRPermissions(true)
+    if (permissionDesc == R.string.permission_desc_install_packages || isAtLeastR()) {
+      device.handlePermissionInSettings(true)
+    } else {
+      device.getObjectWithText("ALLOW").clickAndWaitForWindowUpdate(device)
+    }
 
     grantButton = device.getObjectWithText(permissionDesc)
       .parent!!

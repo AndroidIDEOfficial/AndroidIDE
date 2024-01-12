@@ -97,6 +97,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-51454562">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Pixel_4_XL_API_27" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="123996994">
           <value>
             <AndroidTestResultsTableState>
@@ -105,6 +118,19 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_4_XL_API_32" value="120" />
                   <entry key="Realme RMX1851" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="427304299">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Pixel_4_XL_API_27" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
