@@ -36,8 +36,17 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
     private val log = ILogger.newInstance("JdkDistributionProviderImpl")
   }
 
-  override val installedDistributions: List<JdkDistribution> by lazy {
-    JdkUtils.findJavaInstallations().also { distributions ->
+  private var _installedDistributions: List<JdkDistribution>? = null
+
+  override val installedDistributions: List<JdkDistribution>
+    get() = _installedDistributions ?: emptyList()
+
+  override fun loadDistributions() {
+    _installedDistributions = doLoadDistributions()
+  }
+
+  private fun doLoadDistributions(): List<JdkDistribution> {
+    return JdkUtils.findJavaInstallations().also { distributions ->
 
       // set the default value for the 'javaHome' preference
       if (javaHome.isBlank() && distributions.isNotEmpty()) {

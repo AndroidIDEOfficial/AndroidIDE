@@ -19,6 +19,8 @@ package com.itsaky.androidide.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.appintro.AppIntro2
@@ -32,18 +34,42 @@ import com.itsaky.androidide.fragments.onboarding.IdeSetupConfigurationFragment
 import com.itsaky.androidide.fragments.onboarding.OnboardingInfoFragment
 import com.itsaky.androidide.fragments.onboarding.PermissionsFragment
 import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
+import com.itsaky.androidide.models.JdkDistribution
 import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
+import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
 import com.termux.shared.android.PackageUtils
 import com.termux.shared.markdown.MarkdownUtils
 import com.termux.shared.termux.TermuxConstants
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 
 class OnboardingActivity : AppIntro2() {
 
+  private val terminalActivityCallback = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()) {
+    Log.d(TAG, "TerminalActivity: resultCode=${it.resultCode}")
+    if (!isFinishing) {
+      reloadJdkDistInfo {
+        tryNavigateToMainIfSetupIsCompleted()
+      }
+    }
+  }
+
+  private val activityScope =
+    CoroutineScope(Dispatchers.Main + CoroutineName("OnboardingActivity"))
+
+  private var listJdkInstallationsJob: Job? = null
+
   companion object {
 
+    private const val TAG = "OnboardingActivity"
     private const val KEY_ARCHCONFIG_WARNING_IS_SHOWN = "ide.archConfig.experimentalWarning.isShown"
   }
 
@@ -52,9 +78,8 @@ class OnboardingActivity : AppIntro2() {
 
     super.onCreate(savedInstanceState)
 
-    if (isSetupDone()) {
-      openActivity(MainActivity::class.java)
-      finish()
+    if (tryNavigateToMainIfSetupIsCompleted()) {
+      return
     }
 
     setSwipeLock(true)
@@ -110,10 +135,14 @@ class OnboardingActivity : AppIntro2() {
 
   override fun onResume() {
     super.onResume()
-    if (isSetupDone()) {
-      openActivity(MainActivity::class.java)
-      finish()
+    reloadJdkDistInfo {
+      tryNavigateToMainIfSetupIsCompleted()
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    activityScope.cancel("Activity is being destroyed")
   }
 
   override fun onNextPressed(currentFragment: Fragment?) {
@@ -129,21 +158,17 @@ class OnboardingActivity : AppIntro2() {
     }
 
     if (!checkToolsIsInstalled() && currentFragment is IdeSetupConfigurationFragment) {
-      val intenet = Intent(this, TerminalActivity::class.java)
+      val intent = Intent(this, TerminalActivity::class.java)
       if (currentFragment.isAutoInstall()) {
-        intenet.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP, true)
-        intenet.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP_ARGS,
+        intent.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP, true)
+        intent.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP_ARGS,
           currentFragment.buildIdeSetupArguments())
       }
-      startActivity(intenet)
+      terminalActivityCallback.launch(intent)
       return
     }
 
-    openActivity(MainActivity::class.java)
-  }
-
-  private fun openActivity(cls: Class<*>) {
-    startActivity(Intent(this, cls))
+    tryNavigateToMainIfSetupIsCompleted()
   }
 
   private fun checkToolsIsInstalled(): Boolean {
@@ -151,9 +176,40 @@ class OnboardingActivity : AppIntro2() {
         && Environment.ANDROID_HOME.exists()
   }
 
-  private fun isSetupDone() =
-    (checkToolsIsInstalled() && statConsentDialogShown && PermissionsFragment.areAllPermissionsGranted(
-      this))
+  private fun isSetupCompleted(): Boolean {
+    return checkToolsIsInstalled()
+        && statConsentDialogShown
+        && PermissionsFragment.areAllPermissionsGranted(this)
+  }
+
+  private fun tryNavigateToMainIfSetupIsCompleted(): Boolean {
+    if (isSetupCompleted()) {
+      startActivity(Intent(this, MainActivity::class.java))
+      finish()
+      return true
+    }
+
+    return false
+  }
+
+  private inline fun reloadJdkDistInfo(crossinline distConsumer: (List<JdkDistribution>) -> Unit) {
+    listJdkInstallationsJob?.cancel("Reloading JDK distributions")
+
+    listJdkInstallationsJob = activityScope.launchAsyncWithProgress(Dispatchers.Default,
+      configureFlashbar = { builder, _ ->
+        builder.message(string.please_wait)
+      }) { _, _ ->
+      val distributionProvider = IJdkDistributionProvider.getInstance()
+      distributionProvider.loadDistributions()
+      withContext(Dispatchers.Main) {
+        distConsumer(distributionProvider.installedDistributions)
+      }
+    }.also {
+      it?.invokeOnCompletion {
+        listJdkInstallationsJob = null
+      }
+    }
+  }
 
   private fun isInstalledOnSdCard(): Boolean {
     // noinspection SdCardPath

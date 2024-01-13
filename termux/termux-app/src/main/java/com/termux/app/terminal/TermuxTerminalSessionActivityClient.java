@@ -37,7 +37,7 @@ import java.util.Properties;
 /** The {@link TerminalSessionClient} implementation that may require an {@link Activity} for its interface methods. */
 public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionClientBase {
 
-    private final TermuxActivity mActivity;
+    protected final TermuxActivity mActivity;
 
     private static final int MAX_SESSIONS = 8;
 

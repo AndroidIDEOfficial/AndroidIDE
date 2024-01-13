@@ -2,14 +2,10 @@ package com.termux.app;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,35 +19,36 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.autofill.AutofillManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.ViewPager;
 import com.itsaky.androidide.app.BaseIDEActivity;
 import com.termux.R;
 import com.termux.app.activities.HelpActivity;
 import com.termux.app.api.file.FileReceiverActivity;
 import com.termux.app.terminal.TermuxActivityRootView;
+import com.termux.app.terminal.TermuxSessionsListViewController;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
+import com.termux.app.terminal.TermuxTerminalViewClient;
+import com.termux.app.terminal.io.TerminalToolbarViewPager;
 import com.termux.app.terminal.io.TermuxTerminalExtraKeys;
 import com.termux.shared.activities.ReportActivity;
 import com.termux.shared.activity.ActivityUtils;
 import com.termux.shared.activity.media.AppCompatActivityUtils;
-import com.termux.shared.data.IntentUtils;
 import com.termux.shared.android.PermissionUtils;
 import com.termux.shared.data.DataUtils;
-import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.data.IntentUtils;
+import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY;
+import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.crash.TermuxCrashUtils;
-import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
-import com.termux.app.terminal.TermuxSessionsListViewController;
-import com.termux.app.terminal.io.TerminalToolbarViewPager;
-import com.termux.app.terminal.TermuxTerminalViewClient;
 import com.termux.shared.termux.extrakeys.ExtraKeysView;
 import com.termux.shared.termux.interact.TextInputDialogUtils;
-import com.termux.shared.logger.Logger;
-import com.termux.shared.termux.TermuxUtils;
+import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
 import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
 import com.termux.shared.termux.theme.TermuxThemeUtils;
@@ -61,13 +58,6 @@ import com.termux.terminal.TerminalSession;
 import com.termux.terminal.TerminalSessionClient;
 import com.termux.view.TerminalView;
 import com.termux.view.TerminalViewClient;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -89,107 +79,107 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
      * {@link #bindService(Intent, ServiceConnection, int)}, and obtained and stored in
      * {@link #onServiceConnected(ComponentName, IBinder)}.
      */
-    TermuxService mTermuxService;
+    protected TermuxService mTermuxService;
 
     /**
      * The {@link TerminalView} shown in  {@link TermuxActivity} that displays the terminal.
      */
-    TerminalView mTerminalView;
+    protected TerminalView mTerminalView;
 
     /**
      *  The {@link TerminalViewClient} interface implementation to allow for communication between
      *  {@link TerminalView} and {@link TermuxActivity}.
      */
-    TermuxTerminalViewClient mTermuxTerminalViewClient;
+    protected TermuxTerminalViewClient mTermuxTerminalViewClient;
 
     /**
      *  The {@link TerminalSessionClient} interface implementation to allow for communication between
      *  {@link TerminalSession} and {@link TermuxActivity}.
      */
-    TermuxTerminalSessionActivityClient mTermuxTerminalSessionActivityClient;
+    protected TermuxTerminalSessionActivityClient mTermuxTerminalSessionActivityClient;
 
     /**
      * Termux app shared preferences manager.
      */
-    private TermuxAppSharedPreferences mPreferences;
+    protected TermuxAppSharedPreferences mPreferences;
 
     /**
      * Termux app SharedProperties loaded from termux.properties
      */
-    private TermuxAppSharedProperties mProperties;
+    protected TermuxAppSharedProperties mProperties;
 
     /**
      * The root view of the {@link TermuxActivity}.
      */
-    TermuxActivityRootView mTermuxActivityRootView;
+    protected TermuxActivityRootView mTermuxActivityRootView;
 
     /**
      * The space at the bottom of {@link @mTermuxActivityRootView} of the {@link TermuxActivity}.
      */
-    View mTermuxActivityBottomSpaceView;
+    protected View mTermuxActivityBottomSpaceView;
 
     /**
      * The terminal extra keys view.
      */
-    ExtraKeysView mExtraKeysView;
+    protected ExtraKeysView mExtraKeysView;
 
     /**
      * The client for the {@link #mExtraKeysView}.
      */
-    TermuxTerminalExtraKeys mTermuxTerminalExtraKeys;
+    protected TermuxTerminalExtraKeys mTermuxTerminalExtraKeys;
 
     /**
      * The termux sessions list controller.
      */
-    TermuxSessionsListViewController mTermuxSessionListViewController;
+    protected TermuxSessionsListViewController mTermuxSessionListViewController;
 
     /**
      * The last toast shown, used cancel current toast before showing new in {@link #showToast(String, boolean)}.
      */
-    Toast mLastToast;
+    protected Toast mLastToast;
 
     /**
      * If between onResume() and onStop(). Note that only one session is in the foreground of the terminal view at the
      * time, so if the session causing a change is not in the foreground it should probably be treated as background.
      */
-    private boolean mIsVisible;
+    protected boolean mIsVisible;
 
     /**
      * If onResume() was called after onCreate().
      */
-    private boolean mIsOnResumeAfterOnCreate = false;
+    protected boolean mIsOnResumeAfterOnCreate = false;
 
     /**
      * If activity was restarted like due to call to {@link #recreate()} after receiving
      * {@link TERMUX_ACTIVITY#ACTION_RELOAD_STYLE}, system dark night mode was changed or activity
      * was killed by android.
      */
-    private boolean mIsActivityRecreated = false;
+    protected boolean mIsActivityRecreated = false;
 
     /**
      * The {@link TermuxActivity} is in an invalid state and must not be run.
      */
-    private boolean mIsInvalidState;
+    protected boolean mIsInvalidState;
 
-    private int mNavBarHeight;
+    protected int mNavBarHeight;
 
-    private float mTerminalToolbarDefaultHeight;
+    protected float mTerminalToolbarDefaultHeight;
 
 
-    private static final int CONTEXT_MENU_SELECT_URL_ID = 0;
-    private static final int CONTEXT_MENU_SHARE_TRANSCRIPT_ID = 1;
-    private static final int CONTEXT_MENU_SHARE_SELECTED_TEXT = 10;
-    private static final int CONTEXT_MENU_AUTOFILL_ID = 2;
-    private static final int CONTEXT_MENU_RESET_TERMINAL_ID = 3;
-    private static final int CONTEXT_MENU_KILL_PROCESS_ID = 4;
-    private static final int CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON = 6;
-    private static final int CONTEXT_MENU_HELP_ID = 7;
-    private static final int CONTEXT_MENU_REPORT_ID = 9;
+    protected static final int CONTEXT_MENU_SELECT_URL_ID = 0;
+    protected static final int CONTEXT_MENU_SHARE_TRANSCRIPT_ID = 1;
+    protected static final int CONTEXT_MENU_SHARE_SELECTED_TEXT = 10;
+    protected static final int CONTEXT_MENU_AUTOFILL_ID = 2;
+    protected static final int CONTEXT_MENU_RESET_TERMINAL_ID = 3;
+    protected static final int CONTEXT_MENU_KILL_PROCESS_ID = 4;
+    protected static final int CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON = 6;
+    protected static final int CONTEXT_MENU_HELP_ID = 7;
+    protected static final int CONTEXT_MENU_REPORT_ID = 9;
 
-    private static final String ARG_TERMINAL_TOOLBAR_TEXT_INPUT = "terminal_toolbar_text_input";
-    private static final String ARG_ACTIVITY_RECREATED = "activity_recreated";
+    protected static final String ARG_TERMINAL_TOOLBAR_TEXT_INPUT = "terminal_toolbar_text_input";
+    protected static final String ARG_ACTIVITY_RECREATED = "activity_recreated";
 
-    private static final String LOG_TAG = "TermuxActivity";
+    protected static final String LOG_TAG = "TermuxActivity";
 
     @SuppressLint("InflateParams")
     @NonNull
@@ -540,7 +530,7 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
     private void setTermuxTerminalViewAndClients() {
         // Set termux terminal view and session clients
-        mTermuxTerminalSessionActivityClient = new TermuxTerminalSessionActivityClient(this);
+        mTermuxTerminalSessionActivityClient = onCreateTerminalSessionClient();
         mTermuxTerminalViewClient = new TermuxTerminalViewClient(this, mTermuxTerminalSessionActivityClient);
 
         // Set termux terminal view
@@ -552,6 +542,11 @@ public class TermuxActivity extends BaseIDEActivity implements ServiceConnection
 
         if (mTermuxTerminalSessionActivityClient != null)
             mTermuxTerminalSessionActivityClient.onCreate();
+    }
+
+    @NonNull
+    protected TermuxTerminalSessionActivityClient onCreateTerminalSessionClient() {
+        return new TermuxTerminalSessionActivityClient(this);
     }
 
     private void setTermuxSessionsListView() {

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.app.configuration
 
+import androidx.annotation.WorkerThread
 import com.itsaky.androidide.models.JdkDistribution
 import com.itsaky.androidide.utils.ServiceLoader
 
@@ -31,6 +32,13 @@ interface IJdkDistributionProvider {
    * The list of JDK distributions installed on the device.
    */
   val installedDistributions: List<JdkDistribution>
+
+  /**
+   * Reloads the installed JDK distributions. This function is synchronous and should not be called
+   * on the UI thread.
+   */
+  @WorkerThread
+  fun loadDistributions()
 
   /**
    * Get the [JdkDistribution] instance for the given java version.

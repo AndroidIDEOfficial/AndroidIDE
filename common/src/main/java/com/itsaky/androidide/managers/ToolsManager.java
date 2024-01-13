@@ -53,7 +53,7 @@ public class ToolsManager {
 
     CompletableFuture.runAsync(() -> {
       // Load installed JDK distributions
-      IJdkDistributionProvider.getInstance().getInstalledDistributions();
+      IJdkDistributionProvider.getInstance().loadDistributions();
 
       writeNoMediaFile();
       extractAapt2();
