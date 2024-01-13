@@ -20,6 +20,7 @@ package com.itsaky.androidide.plugins
 import com.itsaky.androidide.plugins.util.DownloadUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.internal.os.OperatingSystem
 import java.io.File
 
 /**
@@ -74,11 +75,11 @@ class TerminalBootstrapPackagesPlugin : Plugin<Project> {
              .section .rodata
          blob:
         #if defined __aarch64__
-             .incbin "${files["aarch64"]!!.absolutePath}"
+             .incbin "${escapePathOnWindows(files["aarch64"]!!.absolutePath)}"
          #elif defined __arm__
-             .incbin "${files["arm"]!!.absolutePath}"
+             .incbin "${escapePathOnWindows(files["arm"]!!.absolutePath)}"
          #elif defined __x86_64__
-             .incbin "${files["x86_64"]!!.absolutePath}"
+             .incbin "${escapePathOnWindows(files["x86_64"]!!.absolutePath)}"
          #else
          # error Unsupported arch
          #endif
@@ -89,5 +90,14 @@ class TerminalBootstrapPackagesPlugin : Plugin<Project> {
       """.trimIndent()
       )
     }
+  }
+
+  private fun escapePathOnWindows(path: String): String {
+    if (OperatingSystem.current().isWindows) {
+      // escape backslashes when building on Windows
+      return path.replace("\\", "\\\\")
+    }
+
+    return path
   }
 }
