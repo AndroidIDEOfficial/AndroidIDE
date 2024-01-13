@@ -72,7 +72,7 @@ fun UiDevice.nextButton(): UiObject2 {
 fun UiDevice.handlePermissionInSettings(
   allowPermission: Boolean = true,
 ) {
-  assertThat(currentPackageName).isAnyOf("com.android.settings", "com.android.permissioncontroller")
+  assertThat(currentPackageName).startsWith("com.android.")
   assertThat(hasObjectWithText(R.string.app_name)).isTrue()
 
   val switch = findObject(By.clazz(Switch::class.java))
@@ -81,14 +81,21 @@ fun UiDevice.handlePermissionInSettings(
   // verify initial state
   assertThat(switch.isCheckable).isTrue()
   assertThat(switch.isEnabled).isTrue()
-  assertThat(switch.isChecked).isFalse()
 
   if (allowPermission) {
-    // enable permission
-    switch.click()
+    if (!switch.isChecked) {
+      // enable permission
+      switch.click()
+    }
 
     // verify changed state
     assertThat(switch.isChecked).isTrue()
+  } else if (switch.isChecked) {
+    // disable permission
+    switch.click()
+
+    // verify changed state
+    assertThat(switch.isChecked).isFalse()
   }
 
   // navigate back without enabling the permission

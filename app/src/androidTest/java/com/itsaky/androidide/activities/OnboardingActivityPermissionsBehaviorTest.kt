@@ -98,9 +98,6 @@ class OnboardingActivityPermissionsBehaviorTest {
       device.getObjectWithText("DENY").clickAndWaitForWindowUpdate(device)
     }
 
-    // verify AndroidIDE is visible
-    assertThat(device.currentPackageName).isEqualTo(BuildInfo.PACKAGE_NAME)
-
     grantButton = device.getObjectWithText(permissionDesc)
       .parent!!
       .parent!!

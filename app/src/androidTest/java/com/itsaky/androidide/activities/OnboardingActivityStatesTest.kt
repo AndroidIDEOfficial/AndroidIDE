@@ -17,9 +17,17 @@
 
 package com.itsaky.androidide.activities
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
+import androidx.test.runner.permission.PermissionRequester
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import com.adevinta.android.barista.assertion.BaristaCheckedAssertions.assertChecked
 import com.adevinta.android.barista.assertion.BaristaCheckedAssertions.assertUnchecked
 import com.adevinta.android.barista.assertion.BaristaEnabledAssertions.assertDisabled
@@ -32,7 +40,10 @@ import com.adevinta.android.barista.rule.BaristaRule
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.statOptIn
+import com.itsaky.androidide.testing.android.LAUNCH_TIMEOUT
+import com.itsaky.androidide.testing.android.getApplicationContext
 import com.itsaky.androidide.testing.android.stringRes
+import com.itsaky.androidide.utils.isAtLeastT
 import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +63,10 @@ class OnboardingActivityStatesTest {
   @Rule
   val baristaActivityRule = BaristaRule.create(OnboardingActivity::class.java)
 
+  @JvmField
+  @Rule
+  val grantPermissionsRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
   @Test
   fun A_testOnboarding_welcomeScreen() {
     baristaActivityRule.launchActivity()
@@ -64,6 +79,8 @@ class OnboardingActivityStatesTest {
 
   @Test
   fun B_testOnboarding_statConsentScreen() {
+    tryGrantPermissions()
+
     baristaActivityRule.launchActivity()
 
     clickOn(R.id.next)
@@ -97,10 +114,12 @@ class OnboardingActivityStatesTest {
   @Test
   fun F_testOnboarding_toolsSetup() {
 
+    tryGrantPermissions()
+
     baristaActivityRule.launchActivity()
 
-    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    device.grantAndroidIDEPermissions()
+    clickOn(R.id.next)
+    clickOn(R.id.next)
 
     assertDisplayed(stringRes(R.string.title_install_tools))
     assertDisplayed(stringRes(R.string.subtitle_install_tools))
@@ -138,5 +157,26 @@ class OnboardingActivityStatesTest {
     assertEnabled(R.id.install_openssh)
     assertEnabled(R.id.sdk_version_layout)
     assertEnabled(R.id.jdk_version_layout)
+  }
+
+  private fun tryGrantPermissions() {
+    if (isAtLeastT()) {
+      PermissionRequester().apply {
+        addPermissions(Manifest.permission.POST_NOTIFICATIONS)
+        requestPermissions()
+      }
+    }
+
+    val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    val context = getApplicationContext<Context>()
+
+    device.performActionAndWait({
+      val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+        Uri.parse("package:${context.packageName}"))
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      context.startActivity(intent)
+    }, Until.newWindow(), LAUNCH_TIMEOUT)
+
+    device.handlePermissionInSettings(true)
   }
 }
