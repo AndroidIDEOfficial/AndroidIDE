@@ -46,6 +46,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
 import com.itsaky.androidide.tooling.impl.sync.ModelBuilderException
 import com.itsaky.androidide.tooling.impl.sync.RootModelBuilder
+import com.itsaky.androidide.tooling.impl.sync.RootProjectModelBuilderParams
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.BuildCancelledException
@@ -61,6 +62,8 @@ import org.gradle.tooling.internal.consumer.DefaultGradleConnector
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.system.exitProcess
 
 /**
@@ -75,8 +78,13 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   private var connector: GradleConnector? = null
   private var connection: ProjectConnection? = null
   private var lastInitParams: InitializeProjectParams? = null
-  private var buildCancellationToken: CancellationTokenSource? = null
+  private var _buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
+
+  private val cancellationTokenAccessLock = ReentrantLock(/* fair = */ true)
+  private var buildCancellationToken: CancellationTokenSource?
+    get() = cancellationTokenAccessLock.withLock { _buildCancellationToken }
+    set(value) = cancellationTokenAccessLock.withLock { _buildCancellationToken = value }
 
   /**
    * Whether the project has been initialized or not.
@@ -162,8 +170,14 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
         stopWatch.lapFromLast("Project connection established")
 
+        this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
+
         val project = try {
-          val impl = RootModelBuilder(params).build(connection) as? ProjectImpl?
+          val modelBuilderParams = RootProjectModelBuilderParams(
+            connection,
+            this.buildCancellationToken!!.token()
+          )
+          val impl = RootModelBuilder(params).build(modelBuilderParams) as? ProjectImpl?
             ?: throw ModelBuilderException("Failed to build project model")
           impl
         } catch (err: Throwable) {
@@ -309,6 +323,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
       try {
         this.buildCancellationToken!!.cancel()
+        this.buildCancellationToken = null
       } catch (e: Exception) {
         val failureReason = CANCELLATION_ERROR
         failureReason.message = "${failureReason.message}: ${e.message}"

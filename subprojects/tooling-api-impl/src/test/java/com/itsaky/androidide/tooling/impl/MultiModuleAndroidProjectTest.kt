@@ -141,6 +141,25 @@ class MultiModuleAndroidProjectTest {
     )
   }
 
+  @Test
+  fun `test project initialization cancellation`() {
+    // launch project initialization
+    val (server, _, initFuture) = ToolingApiTestLauncher().launchServerAsync()
+    Thread.sleep(1000L)
+
+    // cancel initialization request
+    val cancellationResult = server.cancelCurrentBuild().get()
+    println("Cancellation result: $cancellationResult")
+    assertThat(cancellationResult).isNotNull()
+    assertThat(cancellationResult.wasEnqueued).isTrue()
+    assertThat(cancellationResult.failureReason).isNull()
+
+    // verify that the initialization failed with reason BUILD_CANCELLED
+    val initResult = initFuture.get()
+    assertThat(initResult!!.isSuccessful).isFalse()
+    assertThat(initResult.failure).isEqualTo(TaskExecutionResult.Failure.BUILD_CANCELLED)
+  }
+
   private fun doAssertions(project: IProject, server: IToolingApiServer) {
     assertThat(project).isNotNull()
 

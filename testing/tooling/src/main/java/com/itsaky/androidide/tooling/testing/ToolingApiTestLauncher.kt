@@ -66,7 +66,7 @@ class ToolingApiTestLauncher {
       "jdk.compiler" to "com.sun.tools.javac.util")
 
   @JvmOverloads
-  fun launchServer(
+  fun launchServerAsync(
     projectDir: Path = FileProvider.testProjectRoot(),
     client: MultiVersionTestClient = MultiVersionTestClient(),
     initParams: InitializeProjectParams = InitializeProjectParams(
@@ -76,7 +76,7 @@ class ToolingApiTestLauncher {
     log: ILogger = ILogger.newInstance("BuildOutputLogger"),
     sysProps: Map<String, String> = emptyMap(),
     sysEnvs: Map<String, String> = emptyMap()
-  ): Triple<IToolingApiServer, IProject, InitializeResult?> {
+  ): Triple<IToolingApiServer, IProject, CompletableFuture<InitializeResult>> {
     val cmdLine = createProcessCmd(
       FileProvider.implModule()
         .resolve("build/libs/tooling-api-all.jar").pathString,
@@ -101,8 +101,25 @@ class ToolingApiTestLauncher {
 
     val server = launcher.remoteProxy as IToolingApiServer
     val project = launcher.remoteProxy as IProject
-    val result = server.initialize(initParams).get()
+    val result = server.initialize(initParams)
     return Triple(server, project, result)
+  }
+
+  @JvmOverloads
+  fun launchServer(
+    projectDir: Path = FileProvider.testProjectRoot(),
+    client: MultiVersionTestClient = MultiVersionTestClient(),
+    initParams: InitializeProjectParams = InitializeProjectParams(
+      projectDir.pathString,
+      client.gradleDistParams
+    ),
+    log: ILogger = ILogger.newInstance("BuildOutputLogger"),
+    sysProps: Map<String, String> = emptyMap(),
+    sysEnvs: Map<String, String> = emptyMap()
+  ): Triple<IToolingApiServer, IProject, InitializeResult?> {
+    return launchServerAsync(projectDir, client, initParams, log, sysProps, sysEnvs).let { result ->
+      Triple(result.first, result.second, result.third.get())
+    }
   }
 
   private fun createProcessCmd(

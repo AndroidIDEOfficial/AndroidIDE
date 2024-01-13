@@ -19,8 +19,21 @@ package com.itsaky.androidide.tooling.impl.sync
 
 import com.android.builder.model.v2.models.Versions
 import org.gradle.tooling.BuildController
+import org.gradle.tooling.CancellationToken
+import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.model.idea.IdeaModule
 import org.gradle.tooling.model.idea.IdeaProject
+
+/**
+ * Parameters for the root project model builder.
+ *
+ * @property projectConnection The project connection
+ * @property cancellationToken The cancellation token.
+ */
+data class RootProjectModelBuilderParams(
+  val projectConnection: ProjectConnection,
+  val cancellationToken: CancellationToken?
+)
 
 /**
  * Parameters for building model for an Android project.
