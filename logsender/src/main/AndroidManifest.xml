@@ -33,6 +33,7 @@
       android:exported="false" />
     <service
       android:name=".LogSenderService"
+      android:foregroundServiceType="dataSync"
       android:exported="false" />
   </application>
 </manifest>
