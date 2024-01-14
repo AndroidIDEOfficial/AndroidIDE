@@ -137,7 +137,7 @@ tests-barista = { module = "com.adevinta.android:barista", version = "4.2.0" }
 # Tooling
 tooling-builderModel = { module = "com.android.tools.build:builder-model", version.ref = "agp-tooling" }
 tooling-gradleApi = { module = "com.itsaky.androidide.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
-tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
+tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.11" }
 
 # Classpaths
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
