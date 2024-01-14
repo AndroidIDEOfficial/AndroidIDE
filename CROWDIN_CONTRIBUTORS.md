@@ -10,7 +10,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Akash Yadav (itsaky)</b></sub></a>
       <br />
-      <sub><b>71373 words</b></sub>
+      <sub><b>71389 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/esalessandrx"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15563911/medium/a2262fe354d51d9c991d06fcace20b7a.jpg" />
@@ -24,14 +24,14 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>zhiq liu (liziq)</b></sub></a>
       <br />
-      <sub><b>5219 words</b></sub>
+      <sub><b>6692 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/andihasan97"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png" />
         <br />
         <sub><b>Andi Hasan A (andihasan97)</b></sub></a>
       <br />
-      <sub><b>5215 words</b></sub>
+      <sub><b>5233 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/smith8h"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550455/medium/9c5a3d089c209487340abb35d74b5b7c.jpg" />
@@ -68,7 +68,14 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Smooth-E</b></sub></a>
       <br />
-      <sub><b>1791 words</b></sub>
+      <sub><b>1800 words</b></sub>
+    </td>
+    <td align="center" valign="top">
+      <a href="https://crowdin.com/profile/krc440002"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/12564628/medium/addb4132479fae98076ae2fa4ccb42a4_default.png" />
+        <br />
+        <sub><b>Furkan Karcıoğlu (krc440002)</b></sub></a>
+      <br />
+      <sub><b>1783 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/selyanlian17516"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15547677/medium/f9e760635fee6bdc359732233aea790d.jpeg" />
@@ -85,25 +92,18 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
       <sub><b>1673 words</b></sub>
     </td>
     <td align="center" valign="top">
-      <a href="https://crowdin.com/profile/krc440002"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/12564628/medium/addb4132479fae98076ae2fa4ccb42a4_default.png" />
-        <br />
-        <sub><b>Furkan Karcıoğlu (krc440002)</b></sub></a>
-      <br />
-      <sub><b>1447 words</b></sub>
-    </td>
-    <td align="center" valign="top">
       <a href="https://crowdin.com/profile/ranjitsingha"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16160248/medium/fc57448235af07fb7198e51157bd3d9b.jpeg" />
         <br />
         <sub><b>Ranjit (ranjitsingha)</b></sub></a>
       <br />
-      <sub><b>902 words</b></sub>
+      <sub><b>1088 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/deepkrg17"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png" />
         <br />
         <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
       <br />
-      <sub><b>881 words</b></sub>
+      <sub><b>1439 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/friostd"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg" />
