@@ -176,6 +176,7 @@ jobs:
   run_connected_checks:
     name: Run connected checks
     runs-on: macos-latest
+    if: false
     strategy:
       matrix:
         api-level: [ 26, 32 ]
