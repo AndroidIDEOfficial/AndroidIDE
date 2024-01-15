@@ -85,7 +85,6 @@ abstract class SetupAapt2Task : DefaultTask() {
 
       val remoteUrl = AAPT2_DOWNLOAD_URL.format(DEFAULT_VERSION, arch)
       DownloadUtils.doDownload(file, remoteUrl, checksum, logger)
-      logger.lifecycle("aapt2 arch: $arch")
       assertAapt2Arch(file, ELFUtils.ElfAbi.forName(arch)!!)
     }
   }
