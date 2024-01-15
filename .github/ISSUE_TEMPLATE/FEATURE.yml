@@ -16,11 +16,11 @@ body:
         **Please check and verify that you are using the latest version of AndroidIDE before
         submitting this bug report.**
         
-        **Note**
-        - Your feature request will be reviewed, and its implementation will be considered based on
-        project goals and priorities.
-        - All issues must be reported in English. Issues in other languages may be closed
-        without further consideration.
+        **Your feature request will be reviewed, and its implementation will be considered based on
+        project goals and priorities.**
+        
+        **All issues must be reported in English. Issues in other languages may be closed
+        without further consideration**
 
   - type: checkboxes
     id: checklist

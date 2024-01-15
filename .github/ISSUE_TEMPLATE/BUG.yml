@@ -18,11 +18,11 @@ body:
         **Please check and verify that you are using the latest version of AndroidIDE before
         submitting this bug report.**
         
-        **Note**
-        - Please ensure that you provide complete and accurate information to expedite the
-        bug resolution process. Incomplete reports may be closed without further investigation.
-        - All issues must be reported in English. Issues in other languages may be closed
-        without further consideration.
+        **Please ensure that you provide complete and accurate information to expedite the
+        bug resolution process. Incomplete reports may be closed without further investigation.**
+        
+        **All issues must be reported in English. Issues in other languages may be closed
+        without further consideration.**
         
         **Thank you for your understanding and cooperation.**
   - type: checkboxes
