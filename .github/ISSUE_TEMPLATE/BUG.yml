@@ -6,78 +6,69 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report! Please provide a proper title and description to the issue.
+        Thanks for taking the time to fill out this bug report! Please provide a proper title and
+        description to the issue.
         
-        A **GOOD** issue title describes the issue briefly. For example :
-        - [Bug]: Cannot use bluetooth keyboard in terminal
-        - [Feature]: Add support for previewing custom view in UI Designer
-        - [Feature]: Add preferences to configure Java code formatting
+        **Note: Before submitting a bug report, please make sure that the issue hasn't been reported
+        before. Check the existing issues and confirm that this is not a duplicate.**
+  
+        **By submitting this issue, you agree to follow the project's
+        [code of conduct](https://github.com/AndroidIDEOfficial/AndroidIDE/blob/dev/CODE_OF_CONDUCT.md).**
+      
+        **Please check and verify that you are using the latest version of AndroidIDE before
+        submitting this bug report.**
         
-        Examples of a **BAD** title :
-        - File editing issues
-        - Terminal emulator
-        - App crashed
-        - Error
-  - type: textarea
-    id: what-happened
+        **Note: Please ensure that you provide complete and accurate information to expedite the
+        bug resolution process. Incomplete reports may be closed without further investigation.
+        Thank you for your understanding and cooperation.**
+  - type: checkboxes
+    id: checklist
     attributes:
-      label: What happened?
-      description: Describe the issue properly.
-      placeholder: Describe the error
+      label: Issue Checklist
+      options:
+        - label: I confirm that this issue is not a duplicate and hasn't been reported before.
+          required: true
+        - label: I agree to follow the project's code of conduct.
+          required: true
+        - label: I have checked and verified that I am using the latest version of AndroidIDE from GitHub or F-Droid.
+          required: true
+  - type: checkboxes
+    id: additional-terms
+    attributes:
+      label: Additional terms
+      options:
+        - label: I understand that providing incomplete or inaccurate information may result in the issue being closed.
+          required: true
+        - label: I agree to provide all requested details promptly for a comprehensive bug report.
+          required: true
+  - type: textarea
+    id: issue-explanation
+    attributes:
+      label: Issue explanation
+      description: Please provide a detailed explanation of the issue you are facing.
+      placeholder: Describe the issue here. Logs or stacktraces must not be entered here.
     validations:
       required: true
   - type: textarea
     id: expected-behavior
     attributes:
-      label: What's the expected behavior?
-      description: Tell us what is the expected behavior.
-      placeholder: Describe the expected behavior.
+      label: Expected behavior
+      description: Explain what you expected to happen.
+      placeholder: Logs or stacktraces must not be entered here.
     validations:
       required: true
-  - type: dropdown
+  - type: textarea
     id: version
     attributes:
-      label: What version of AndroidIDE you're using?
-      multiple: false
-      options:
-        - v2.6.0 (debug builds)
-        - v2.6.0
-        - v2.5.3
-        - v2.5.2
-        - v2.5.1
-        - v2.5.0
-        - v2.4.1
-        - v2.4.0
-        - v2.3.0
-        - v2.2.0
-        - v2.1.4
-        - v2.1.3
-        - v2.1.2
-        - v2.1.1
-        - v2.1.0
-        - v2.0.1
-        - v2.0.0
+      label: Version name
+      description: Specify the version name of AndroidIDE you are using.
+        You can go to IDE Preferences -> About AndroidIDE and click on the version name to copy it.
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
-  - type: checkboxes
-    id: not-a-duplicate
-    attributes:
-      label: Duplicate issues
-      description: Please make sure that there are no similar issues opened. Duplicate issues will be closed directly. If there are any similar looking issues, leave a comment there.
-      options:
-        - label: This issue has not been reported yet.
-          required: true
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/AndroidIDEOfficial/AndroidIDE/blob/main/CODE_OF_CONDUCT.md)
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+      description: Include relevant log output if reporting a crash or build error. This can be
+        optional, but it is mandatory if reporting a crash or build error.
+      render: bash
