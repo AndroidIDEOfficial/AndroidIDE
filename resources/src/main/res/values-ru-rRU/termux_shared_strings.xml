@@ -20,7 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">Приложение %1$s (%2$s) не установлено или отключено.</string>
   <string name="error_get_package_context_failed_title">Не удалось получить контекст пакета</string>
-  <string name="error_get_package_context_failed_message">Не удалось получить контекст для пакета \"%1$s\". Приложение не установлено или подпись его APK отличается от подписи текущего приложения.</string>
+  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
   <string name="error_get_package_context_failed_help_url_message">Посетите %1$s для получения более подробной информации.</string>
   <string name="error_get_component_state_failed">Не удалось получить состояние компонента %1$s/%2$s</string>
   <string name="error_enable_component_failed">Не удалось включить компонент %1$s/%2$s</string>
@@ -32,10 +32,10 @@
   <string name="msg_requires_dump_and_package_usage_stats_permissions">Требуются разрешения `DUMP` и `PACKAGE_USAGE_STATS`</string>
   <string name="error_display_over_other_apps_permission_not_granted">Разрешение \"Отображение поверх других приложений\" требуется для запуска процессов в фоновом режиме на Android 10 и новее. Выдайте его из настроек устройства (Приложения -&gt; %1$s -&gt; Дополнительно -&gt; Отображение поверх других приложений). Имя разрешения может отличаться, например, на устройствах Xiaomi оно называется \"Показывать всплывающие окна\". Посетите https://dontkillmyapp.com для более точной информации для вашего устройства.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s необходима опция `allow-external-apps` как `true` в файле %2$s.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
   <!-- ReportActivity -->
   <string name="title_report_text">Текст отчета</string>
-  <string name="msg_report_truncated">**Текст отчета сокращен**\n\nТекст отчета слишком большой, чтобы просмотреть его здесь. Используйте опцию \"Сохранить в файл\" в меню дополнительных опций (3 точки в правом верхнем углу), а затем откройте сохраненный текст отчета во внешнем текстовом редакторе.\n\n##\n\n</string>
+  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">Поделиться с помощью</string>
   <string name="title_open_url_with">Открыть URL с помощью</string>
