@@ -18,9 +18,13 @@ body:
         **Please check and verify that you are using the latest version of AndroidIDE before
         submitting this bug report.**
         
-        **Note: Please ensure that you provide complete and accurate information to expedite the
+        **Note**
+        - Please ensure that you provide complete and accurate information to expedite the
         bug resolution process. Incomplete reports may be closed without further investigation.
-        Thank you for your understanding and cooperation.**
+        - All issues must be reported in English. Issues in other languages may be closed
+        without further consideration.
+        
+        **Thank you for your understanding and cooperation.**
   - type: checkboxes
     id: checklist
     attributes:
@@ -62,7 +66,7 @@ body:
     attributes:
       label: Version name
       description: Specify the version name of AndroidIDE you are using.
-        You can go to IDE Preferences -> About AndroidIDE and click on the version name to copy it.
+      placeholder: Go to IDE Preferences -> About AndroidIDE and click on the version name to copy it.
     validations:
       required: true
   - type: textarea
@@ -71,4 +75,5 @@ body:
       label: Relevant log output
       description: Include relevant log output if reporting a crash or build error. This can be
         optional, but it is mandatory if reporting a crash or build error.
+      placeholder: Enter relevant log output or stacktraces here.
       render: bash

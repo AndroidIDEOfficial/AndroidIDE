@@ -1,6 +1,5 @@
 name: Feature request
-description: Request a new feature
-title: "[Feature]: "
+description: Request a new feature.
 labels: ["feature"]
 body:
   - type: markdown
@@ -8,60 +7,59 @@ body:
       value: |
         Please provide a proper title and description to the issue.
         
-        A **GOOD** issue title describes the issue briefly. For example :
-        - [Bug]: Cannot use bluetooth keyboard in terminal
-        - [Feature]: Add support for previewing custom view in UI Designer
-        - [Feature]: Add preferences to configure Java code formatting
+        **Note: Before submitting a feature request, please check the existing issues to ensure that
+        your request has not been previously suggested.**
         
-        Examples of a **BAD** title :
-        - File editing issues
-        - Terminal emulator
-        - App crashed
-        - Error
+        **By submitting this issue, you agree to follow the project's
+        [code of conduct](https://github.com/AndroidIDEOfficial/AndroidIDE/blob/dev/CODE_OF_CONDUCT.md).**
+        
+        **Please check and verify that you are using the latest version of AndroidIDE before
+        submitting this bug report.**
+        
+        **Note**
+        - Your feature request will be reviewed, and its implementation will be considered based on
+        project goals and priorities.
+        - All issues must be reported in English. Issues in other languages may be closed
+        without further consideration.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I confirm that this feature request has not been previously suggested.
+          required: true
+        - label: I agree to follow the project's code of conduct.
+          required: true
+        - label: I have checked and verified that I am using the latest version of AndroidIDE from GitHub or F-Droid.
+          required: true
+  - type: checkboxes
+    id: additional-terms
+    attributes:
+      label: Additional terms
+      options:
+        - label: I understand that feature requests are subject to evaluation and may not be implemented immediately.
+          required: true
+        - label: I agree to provide additional details if needed for a clearer understanding of the requested feature.
+          required: true
   - type: textarea
     id: feature-description
     attributes:
       label: Feature description
-      description: Describe the feature properly.
-      placeholder: Describe the feature
+      placeholder: Please provide a detailed description of the feature you are requesting.
     validations:
       required: true
-  - type: dropdown
-    id: version
+  - type: textarea
+    id: use-case
     attributes:
-      label: What version of AndroidIDE you're using?
-      multiple: false
-      options:
-        - v2.6.0 (debug builds)
-        - v2.6.0
-        - v2.5.3
-        - v2.5.2
-        - v2.5.1
-        - v2.5.0
-        - v2.4.1
-        - v2.4.0
-        - v2.3.0
-        - v2.2.0
-        - v2.1.4
-        - v2.1.3
-        - v2.1.2
-        - v2.1.1
-        - v2.1.0
+      label: Use Case
+      placeholder: Explain the use case or scenario where this feature would be beneficial.
     validations:
       required: true
-  - type: checkboxes
-    id: not-a-duplicate
+  - type: textarea
+    id: benefits
     attributes:
-      label: Duplicate issues
-      description: Please make sure that there are no similar issues opened. Duplicate issues will be closed directly. If there are any similar looking issues, leave a comment there.
-      options:
-        - label: This issue has not been reported yet.
-          required: true
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/AndroidIDEOfficial/AndroidIDE/blob/main/CODE_OF_CONDUCT.md)
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+      label: Benefits
+      placeholder: Describe the benefits or improvements this feature would bring to AndroidIDE.
+    validations:
+      required: true
