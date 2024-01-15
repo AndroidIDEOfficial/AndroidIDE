@@ -20,8 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) অ্যাপটি ইনস্টল করা নেই বা অক্ষম করা আছে।.</string>
   <string name="error_get_package_context_failed_title">প্যাকেজ প্রসঙ্গ পেতে ব্যর্থ</string>
-  <string name="error_get_package_context_failed_message">\"%1$s\" প্যাকেজের জন্য প্যাকেজ প্রসঙ্গ পেতে ব্যর্থ হয়েছে৷
-        এটি হতে পারে কারণ অ্যাপ প্যাকেজটি ইনস্টল করা নেই বা এতে বর্তমান অ্যাপ থেকে আলাদা APK স্বাক্ষর রয়েছে।.</string>
+  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
   <string name="error_get_package_context_failed_help_url_message">আরও বিশদ বিবরণের জন্য %1$s চেক করুন।.</string>
   <string name="error_get_component_state_failed">%1$s/%2$s উপাদান অবস্থা পেতে ব্যর্থ হয়েছে</string>
   <string name="error_enable_component_failed">%1$s/%2$s উপাদান সক্ষম করতে ব্যর্থ হয়েছে৷</string>
@@ -38,12 +37,10 @@
         \"ব্যাকগ্রাউন্ডে চলার সময় পপ-আপ উইন্ডোগুলি প্রদর্শন করুন\", https://dontkillmyapp.com চেক করুন৷
         ডিভাইস নির্দিষ্ট সমস্যার জন্য।.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s এর জন্য `অ্যালো-এক্সটার্নাল-অ্যাপস` প্রয়োজন
-        `%2$s` ফাইলে `সত্য` তে সেট করা সম্পত্তি।.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
   <!-- ReportActivity -->
   <string name="title_report_text">রিপোর্ট বার্তা</string>
-  <string name="msg_report_truncated">**প্রতিবেদন ছেঁটেছে**\n\nএখানে দেখার জন্য প্রতিবেদনটি খুবই বড়।
-        বিকল্প মেনু থেকে `ফাইল সংরক্ষণ করুন` বিকল্পটি ব্যবহার করুন (উপরে ডানদিকে 3-বিন্দু) এবং এটি একটি বহিরাগত পাঠ্য সম্পাদক অ্যাপে দেখুন।\n\n##\n\n</string>
+  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">সঙ্গে ভাগ</string>
   <string name="title_open_url_with">এর সাথে URL খুলুন</string>
