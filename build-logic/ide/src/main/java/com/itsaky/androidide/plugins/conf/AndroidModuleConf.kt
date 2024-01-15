@@ -79,6 +79,7 @@ fun Project.configureAndroidModule(
             "META-INF/LICENSE.md",
             "META-INF/AL2.0",
             "META-INF/LGPL2.1",
+            "META-INF/INDEX.LIST",
             "about_files/LICENSE-2.0.txt",
             "plugin.xml",
             "plugin.properties",
