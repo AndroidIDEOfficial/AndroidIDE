@@ -22,10 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE не удалось установить базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE может быть запущено только от лица основного пользователя.
-        \nВ заранее собранные файлы базовых пакетов AndroidIDE включен путь $PREFIX, поэтому они могут быть установлены только по следующему пути:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AnddroidIDE не может быть установлено на внешний носитель или SD карту.
-        \nВ заранее собранные файлы базовых пакетов AndroidIDE включен путь $PREFIX, поэтому они могут быть установлены только по следующему пути:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Новая сессия</string>
   <string name="action_new_session_failsafe">Безопасный режим</string>
@@ -64,9 +62,7 @@
   <string name="notification_action_wake_lock">Установить wakelock</string>
   <string name="notification_action_wake_unlock">Снять wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires
-        \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
-        Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10. Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Сохранить файл в ~/downloads/</string>
   <string name="action_file_received_edit">Редактировать</string>
@@ -86,7 +82,7 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">Логи виртуальных клавиш</string>
   <string name="termux_terminal_view_key_logging_enabled_off">В логи не будет добавляться информация о виртуальных клавишах терминала. (По умолчанию)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">В логи logcat будет включена информация о виртуальных клавишах терминала. Этот тип сообщений довольно подробный, что может вызвать проблемы с производительностью.</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys. These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">Уведомления об отчетах</string>
   <string name="termux_crash_report_notifications_enabled_off">Отключить уведомления об отчетах об ошибках.</string>
@@ -102,8 +98,8 @@
   <string name="termux_soft_keyboard_enabled_on">Экранная клавиатура будет показана. (По умолчанию)</string>
   <!-- Soft Keyboard Only If No Hardware-->
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Экранная клавиатура, если нет физической</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Экранная клавиатура будет показана, даже при подключенной физической клавиатуре. (По умолчанию)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Экранная клавиатура не будет показана, если подключена физическая клавиатура.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if hardware keyboard is connected. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if no hardware keyboard is connected.</string>
   <!-- Terminal View Preferences -->
   <string name="termux_terminal_view_preferences_title">Отображение</string>
   <string name="termux_terminal_view_preferences_summary">Настройки отображения терминала</string>
@@ -112,5 +108,5 @@
   <!-- Terminal View Margin Adjustment -->
   <string name="termux_terminal_view_terminal_margin_adjustment_title">Отступы</string>
   <string name="termux_terminal_view_terminal_margin_adjustment_off">Изменение отступов терминала будет отключено.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">Изменение отступов терминала будет включено. Это может помочь исправить проблему, когда экранная клавиатура закрывает часть терминала или виртуальные кнопки. Если эта опция вызывает мерцание экрана - отключите ее. (По умолчанию)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled. It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view. If it causes screen flickering on your devices, then disable it. (Default)</string>
 </resources>
