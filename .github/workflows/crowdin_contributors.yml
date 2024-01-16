@@ -45,7 +45,7 @@ jobs:
         rm ${{ env.CONTRIBUTORS_JSON_FILENAME }}_staging.json
 
     - name: Upload JSON report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: crowdin-contributors-json
         path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}.json
