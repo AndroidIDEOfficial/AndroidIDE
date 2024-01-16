@@ -16,7 +16,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("com.mooltiverse.oss.nyx:gradle:2.5.1")
+    classpath("com.mooltiverse.oss.nyx:gradle:2.5.2")
   }
 }
 
