@@ -68,6 +68,16 @@ body:
       placeholder: Go to IDE Preferences -> About AndroidIDE and click on the version name to copy it.
     validations:
       required: true
+  - type: dropdown
+    id: download-source
+    attributes:
+      label: Download source
+      description: Select the download source.
+      options:
+        - GitHub
+        - F-Droid
+    validations:
+      required: true
   - type: textarea
     id: logs
     attributes:
