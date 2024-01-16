@@ -20,7 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) ऐप इंस्टॉल नहीं है या अक्षम है।</string>
   <string name="error_get_package_context_failed_title">पैकेज संदर्भ प्राप्त करने में विफल</string>
-  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
+  <string name="error_get_package_context_failed_message">\"%1$s\" पैकेज के लिए पैकेज संदर्भ प्राप्त करने में विफल। ऐसा इसलिए हो सकता है क्योंकि ऐप पैकेज इंस्टॉल नहीं है या इसमें मौजूदा ऐप से अलग एपीके हस्ताक्षर हैं।</string>
   <string name="error_get_package_context_failed_help_url_message">अधिक विवरण के लिए %1$s जांचें।</string>
   <string name="error_get_component_state_failed">%1$s/%2$s घटक स्थिति प्राप्त करने में विफल</string>
   <string name="error_enable_component_failed">%1$s/%2$s घटक को सक्षम करने में विफल</string>
@@ -32,10 +32,10 @@
   <string name="msg_requires_dump_and_package_usage_stats_permissions">`DUMP` और `PACKAGE_USAGE_STATS` अनुमति की आवश्यकता है</string>
   <string name="error_display_over_other_apps_permission_not_granted">%1$s Android &gt;=10 पर बैकग्राउंड से टर्मिनल सेशन शुरू करने के लिए \"अन्य ऐप्स पर प्रदर्शन\" अनुमति की आवश्यकता है। कृपया सेटिंग्स -&gt; ऐप्स -&gt; %1$s -&gt; एडवांस्ड में जाकर अनुमति दें। अनुमति का नाम अलग-अलग डिवाइस पर अलग-अलग हो सकता है. डिवाइस विशिष्ट समस्याओं के लिए https://dontkillmyapp.com देखें.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s को `%2$s` फ़ाइल में `allow-extern-apps` प्रॉपर्टी को `true` पर सेट करने की आवश्यकता है।</string>
   <!-- ReportActivity -->
   <string name="title_report_text">रिपोर्ट पाठ</string>
-  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
+  <string name="msg_report_truncated">**रिपोर्ट काट दी गई**\n\nरिपोर्ट यहां देखने के लिए बहुत बड़ी है। विकल्प मेनू (ऊपर दाईं ओर 3-बिंदु) से \'फ़ाइल में सहेजें\' विकल्प का उपयोग करें और इसे बाहरी टेक्स्ट संपादक ऐप में देखें।\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">साँझा करें</string>
   <string name="title_open_url_with">यूआरएल खोलें</string>
