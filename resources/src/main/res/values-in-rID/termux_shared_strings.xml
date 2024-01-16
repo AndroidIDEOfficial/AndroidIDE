@@ -20,8 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">Aplikasi %1$s (%2$s) tidak dipasang atau dinonaktifkan.</string>
   <string name="error_get_package_context_failed_title">Gagal Mendapatkan Konteks Paket</string>
-  <string name="error_get_package_context_failed_message">Gagal mendapatkan konteks paket untuk paket \"%1$s\".
-         Hal ini mungkin terjadi karena paket aplikasi tidak diinstal atau memiliki tanda tangan APK yang berbeda dari aplikasi saat ini.</string>
+  <string name="error_get_package_context_failed_message">Gagal mendapatkan konteks paket untuk paket \"%1$s\". Hal ini mungkin terjadi karena paket aplikasi tidak diinstal atau memiliki tanda tangan APK yang berbeda dari aplikasi saat ini.</string>
   <string name="error_get_package_context_failed_help_url_message">Periksa %1$s untuk detail lebih lanjut.</string>
   <string name="error_get_component_state_failed">Gagal mendapatkan status komponen %1$s/%2$s</string>
   <string name="error_enable_component_failed">Gagal mengaktifkan komponen %1$s/%2$s</string>
@@ -38,12 +37,10 @@
          \"Tampilkan jendela pop-up saat berjalan di latar belakang\", periksa https://dontkillmyapp.com
          untuk masalah khusus perangkat.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s memerlukan `izinkan-aplikasi-eksternal`
-         properti yang akan disetel ke `true` dalam file `%2$s`.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s mengharuskan properti `allow-external-apps` disetel ke `true` di file `%2$s`.</string>
   <!-- ReportActivity -->
   <string name="title_report_text">Teks Laporan</string>
-  <string name="msg_report_truncated">**Laporan Terpotong**\n\nLaporan terlalu besar untuk dilihat di sini.
-         Gunakan opsi `Simpan Ke File` dari menu opsi (3 titik di kanan atas) dan lihat di aplikasi editor teks eksternal.\n\n##\n\n</string>
+  <string name="msg_report_truncated">**Laporan Terpotong**\n\nLaporan terlalu besar untuk dilihat di sini. Gunakan opsi `Simpan Ke File` dari menu opsi (3 titik di kanan atas) dan lihat di aplikasi editor teks eksternal.\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">Berbagi dengan</string>
   <string name="title_open_url_with">Buka URL dengan</string>

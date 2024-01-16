@@ -16,21 +16,20 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-  <string name="msg_directory_absolute_path">%1$s Directory Absolute Path: \"%2$s\"</string>
+  <string name="msg_directory_absolute_path">%1$s Dizini Tam Yolu: \"%2$s\"</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">The %1$s (%2$s) app is not installed or is disabled.</string>
+  <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) uygulaması kurulmadı ya da devre dışı.</string>
   <string name="error_get_package_context_failed_title">Failed To Get Package Context</string>
-  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package.
-        This may be because the app package is not installed or it has different APK signature from the current app.</string>
-  <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
+  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
+  <string name="error_get_package_context_failed_help_url_message">Daha fazla için %1$s kısmına gözatın.</string>
   <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
-  <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
+  <string name="error_enable_component_failed">%1$s/%2$s bileşeni etkinleştirilemedi</string>
+  <string name="error_disable_component_failed">%1$s/%2$s bileşeni devre dışı bırakılamadı</string>
   <!-- PermissionUtils -->
   <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
   <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
-  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
+  <string name="msg_requires_dump_and_package_usage_stats_permissions">`DUMP` ve `PACKAGE_USAGE_STATS` izinlerini gerektirir</string>
   <string name="error_display_over_other_apps_permission_not_granted">%1$s requires
         \"Display over other apps\" permission to start activities and services from background on Android &gt;= 10.
         Grants it from Android Settings -&gt; Apps -&gt; %1$s -&gt; Advanced -&gt; Draw over other apps.
@@ -38,17 +37,15 @@
         \"Display pop-up windows while running in the background\", check https://dontkillmyapp.com
         for device specific issues.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps`
-        property to be set to `true` in `%2$s` file.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
   <!-- ReportActivity -->
-  <string name="title_report_text">Report Text</string>
-  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here.
-        Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
+  <string name="title_report_text">Rapor Metni</string>
+  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
-  <string name="title_share_with">Share With</string>
-  <string name="title_open_url_with">Open URL With</string>
-  <string name="msg_storage_permission_not_granted">The storage permission not granted.</string>
-  <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
+  <string name="title_share_with">Şununla Paylaş</string>
+  <string name="title_open_url_with">URL\'yi Şununla Aç</string>
+  <string name="msg_storage_permission_not_granted">Depolama izni verilmedi.</string>
+  <string name="msg_file_saved_successfully">%1$s dosyası \"%2$s\" yoluna başarıyla kaydedildi</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
   <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
@@ -70,16 +67,16 @@
         It may also be because AndroidIDE $PREFIX directory \"/data/data/com.itsaky.androidide/files/usr\" does not exist or does not have read,
         write and execute permissions.</string>
   <!-- Miscellaneous -->
-  <string name="action_share">Share</string>
-  <string name="action_save_to_file">Save To File</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="action_share">Paylaş</string>
+  <string name="action_save_to_file">Dosyaya Kaydet</string>
+  <string name="msg_storage_permission_granted_on_request">İstek üzerine depolama izni kullanıcı tarafından verildi</string>
+  <string name="msg_storage_permission_not_granted_on_request">İstek üzerine depolama izni kullanıcı tarafından verilmedi</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
+  <string name="log_level_title">Günlük Düzeyi</string>
+  <string name="log_level_off">Kapalı</string>
   <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_debug">Hata ayıklama</string>
+  <string name="log_level_verbose">Ayrıntılı</string>
+  <string name="log_level_unknown">*Bilinmeyen*</string>
+  <string name="log_level_value">Logcat seviyesi \"%1$s\" olarak ayarlandı</string>
 </resources>

@@ -465,7 +465,6 @@
   <string name="action_manual_install">Manuelle Installation</string>
   <string name="hint_android_sdk_version">Android SDK Version</string>
   <string name="hin_jdk_version">JDK Version</string>
-  <string name="msg_with_command_line_tools">Mit Kommandozeilen-Tools</string>
   <string name="action_install_git">Git installieren</string>
   <string name="action_install_openssh">OpenSSH installieren</string>
   <string name="msg_terminal_new_sessions_disabled">Sitzung kann nicht erstellt werden. Neue Sitzungen sind deaktiviert!</string>
@@ -482,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
   <string name="title_open_source_licenses">Open source licenses</string>
   <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>

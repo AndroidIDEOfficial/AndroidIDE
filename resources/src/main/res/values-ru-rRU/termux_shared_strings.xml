@@ -20,7 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">Приложение %1$s (%2$s) не установлено или отключено.</string>
   <string name="error_get_package_context_failed_title">Не удалось получить контекст пакета</string>
-  <string name="error_get_package_context_failed_message">Не удалось получить контекст для пакета \"%1$s\". Приложение не установлено или подпись его APK отличается от подписи текущего приложения.</string>
+  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
   <string name="error_get_package_context_failed_help_url_message">Посетите %1$s для получения более подробной информации.</string>
   <string name="error_get_component_state_failed">Не удалось получить состояние компонента %1$s/%2$s</string>
   <string name="error_enable_component_failed">Не удалось включить компонент %1$s/%2$s</string>
@@ -32,10 +32,10 @@
   <string name="msg_requires_dump_and_package_usage_stats_permissions">Требуются разрешения `DUMP` и `PACKAGE_USAGE_STATS`</string>
   <string name="error_display_over_other_apps_permission_not_granted">Разрешение \"Отображение поверх других приложений\" требуется для запуска процессов в фоновом режиме на Android 10 и новее. Выдайте его из настроек устройства (Приложения -&gt; %1$s -&gt; Дополнительно -&gt; Отображение поверх других приложений). Имя разрешения может отличаться, например, на устройствах Xiaomi оно называется \"Показывать всплывающие окна\". Посетите https://dontkillmyapp.com для более точной информации для вашего устройства.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s необходима опция `allow-external-apps` как `true` в файле %2$s.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
   <!-- ReportActivity -->
   <string name="title_report_text">Текст отчета</string>
-  <string name="msg_report_truncated">**Текст отчета сокращен**\n\nТекст отчета слишком большой, чтобы просмотреть его здесь. Используйте опцию \"Сохранить в файл\" в меню дополнительных опций (3 точки в правом верхнем углу), а затем откройте сохраненный текст отчета во внешнем текстовом редакторе.\n\n##\n\n</string>
+  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">Поделиться с помощью</string>
   <string name="title_open_url_with">Открыть URL с помощью</string>
@@ -47,8 +47,8 @@
         \n\nЕсли вы выкладываете отчет об ошибке Termux, расскажите, что привело к ошибке и как мы можем её воссоздать (повторить), если это возможно.
         \n\nЕсли вы создаете Issue на GitHub, то его создавайте его в соответствующем репозитории. Issue или электронные письма, содержащие только **(частичные) скриншоты** вместо скопированного текста или файла с этим отчетом, скорее всего **будут оавтоматически отклонены**. Вы можетее вручную удалить информацию о девайсе или любую другую информацию, которую считатете приватной или не релевантной, из данного отчета.
         \n\nМы не предоставляем поддержку касательно любых инструментов (скриптов) для хакинга (взлома). Подобные вопросы, заданные посредствам GitHub, по электронной почте или на официальных форумах Termux, скорее всего **будут автоматически отклонены**, а также могут повлечь за собой **временную или перманентную блокировку (бан)**. Посетите %1$s/wiki/Hacking, чтобы узнать больше.</string>
-  <string name="msg_termux_app_required_by_app">The AndroidIDE is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The AndroidIDE app (package context) is not accessible.</string>
+  <string name="msg_termux_app_required_by_app">AndroidIDE требуется приложению %1$s для запуска команд Termux.</string>
+  <string name="error_termux_app_package_context_not_accessible">Приложение AndroidIDE недоступно.</string>
   <string name="error_termux_prefix_dir_path_not_accessible">The AndroidIDE app $PREFIX directory is not accessible by the %1$s app.
         This may be because you have not installed or setup AndroidIDE app or
     AndroidIDE app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.

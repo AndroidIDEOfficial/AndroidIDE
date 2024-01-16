@@ -19,16 +19,11 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">正在安装引导程序包…</string>
   <string name="bootstrap_error_title">无法安装引导程序</string>
-  <string name="bootstrap_error_body">AndroidIDE was unable to install the bootstrap packages.</string>
+  <string name="bootstrap_error_body">AndroidIDE 无法安装引导程序包。</string>
   <string name="bootstrap_error_abort">取消</string>
   <string name="bootstrap_error_try_again">重试</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.
-        \nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed
-        under any path other than:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on
-        portable/external/removable sd card on your device.
-        \nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed
-        under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE 只能以主用户身份运行。\n为 AndroidIDE 编译的引导程序二进制文件，具有硬编码的 $PREFIX 路径，并且不能安装在除以下路径之外的任何路径：\n%1$s。</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE 无法安装在您设备上的便携式、外部或可移动 SD 卡上。\n为 AndroidIDE 编译的引导程序二进制文件，具有硬编码的 $PREFIX 路径，并且不能安装在除以下路径之外的任何路径：\n%1$s。</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">新会话</string>
   <string name="action_new_session_failsafe">安全模式</string>
@@ -56,7 +51,7 @@
   <string name="action_reset_terminal">重置</string>
   <string name="msg_terminal_reset">重置终端</string>
   <string name="action_kill_process">终止进程（%d）</string>
-  <string name="title_confirm_kill_process">真的要结束这个会话吗？</string>
+  <string name="title_confirm_kill_process">确定结束此会话？</string>
   <string name="action_toggle_keep_screen_on">保持屏幕开启</string>
   <string name="action_open_help">帮助</string>
   <string name="action_open_settings">设置</string>
@@ -67,9 +62,7 @@
   <string name="notification_action_wake_lock">获取唤醒锁</string>
   <string name="notification_action_wake_unlock">释放唤醒锁</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires
-        \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10.
-        Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动终端会话。从“设置 -&gt; 应用 -&gt;  AndroidIDE -&gt; 高级”中授予它</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">将文件保存在 ~/downloads/</string>
   <string name="action_file_received_edit">编辑</string>
@@ -89,8 +82,7 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">终端视图按键记录</string>
   <string name="termux_terminal_view_key_logging_enabled_off">日志条目不会包含终端视图按键。（默认）</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat 日志将包含终端视图按键的条目。
-                     非常冗长，在正常情况下应该禁用，否则会导致性能问题。</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Logcat 日志将包含终端视图按键的条目。                     非常冗长，在正常情况下应该禁用，否则会导致性能问题。</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">崩溃报告通知</string>
   <string name="termux_crash_report_notifications_enabled_off">禁用崩溃报告通知。</string>
@@ -116,7 +108,5 @@
   <!-- Terminal View Margin Adjustment -->
   <string name="termux_terminal_view_terminal_margin_adjustment_title">终端边距调整</string>
   <string name="termux_terminal_view_terminal_margin_adjustment_off">将禁用终端边距调整。</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">将启用终端边距调整。
-                     应该启用它来尝试解决软键盘覆盖部分额外按键/终端视图的问题。
-                     如果它导致您的设备屏幕闪烁，请将其禁用。（默认）</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">将启用终端边距调整。应该启用它来尝试解决软键盘覆盖部分额外按键或终端视图的问题。如果它导致您的设备屏幕闪烁，请将其禁用。（默认）</string>
 </resources>

@@ -466,7 +466,6 @@ Dernier projet ouvert : \n%s</string>
   <string name="action_manual_install">Manual installation</string>
   <string name="hint_android_sdk_version">Android SDK version</string>
   <string name="hin_jdk_version">JDK version</string>
-  <string name="msg_with_command_line_tools">With command line tools</string>
   <string name="action_install_git">Install Git</string>
   <string name="action_install_openssh">Install OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Cannot create session. New sessions are disabled!</string>
@@ -483,4 +482,6 @@ Dernier projet ouvert : \n%s</string>
   <string name="msg_app_unavailable_for_intent">No application available to handle intent.</string>
   <string name="title_open_source_licenses">Open source licenses</string>
   <string name="summary_open_source_licenses">View open source licenses.</string>
+  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>

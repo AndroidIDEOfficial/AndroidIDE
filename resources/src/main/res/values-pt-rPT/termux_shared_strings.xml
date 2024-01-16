@@ -20,8 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">O aplicativo %1$s (%2$s) não está instalado ou está desativado.</string>
   <string name="error_get_package_context_failed_title">Falha ao obter o contexto do pacote</string>
-  <string name="error_get_package_context_failed_message">Falha ao obter o contexto do pacote \"%1$s\".
-        Isso pode ser porque o pacote do app não está instalado ou tem uma assinatura APK diferente do aplicativo atual.</string>
+  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
   <string name="error_get_package_context_failed_help_url_message">Verifique %1$s para mais detalhes.</string>
   <string name="error_get_component_state_failed">Falha ao obter o estado do componente %1$s/%2$s</string>
   <string name="error_enable_component_failed">Falha ao habilitar o componente %1$s/%2$s</string>
@@ -38,12 +37,10 @@
         \"Exibir janelas pop-up enquanto executa em segundo plano\", consulte https://dontkillmyapp. 
         para problemas específicos do dispositivo.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requer que a propriedade `allow-external-apps`
-        seja definida como `true` no arquivo `%2$s.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
   <!-- ReportActivity -->
   <string name="title_report_text">Texto do relatório</string>
-  <string name="msg_report_truncated">**Relatório Truncado**\n\nO relatório é muito grande para ver aqui.
-        Use a opção `Salvar em Arquivo` a partir do menu de opções (3 pontos no canto superior direito) e visualizá-lo em um aplicativo externo de editor de texto.\n\n##\n\n</string>
+  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">Compartilhar com</string>
   <string name="title_open_url_with">Abrir URL com</string>

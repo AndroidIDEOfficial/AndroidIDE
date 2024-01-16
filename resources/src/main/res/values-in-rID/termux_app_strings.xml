@@ -22,13 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE tidak dapat menginstal paket bootstrap.</string>
   <string name="bootstrap_error_abort">Menggugurkan</string>
   <string name="bootstrap_error_try_again">Coba lagi</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE hanya dapat dijalankan sebagai pengguna utama.
-         \nBiner bootstrap yang dikompilasi untuk AndroidIDE memiliki jalur $PREFIX yang di-hardcode dan tidak dapat dipasang
-         di bawah jalur apa pun selain:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE tidak dapat diinstal di
-         portabel/eksternal/kartu sd yang dapat dilepas di perangkat Anda.
-         \nBiner bootstrap yang dikompilasi untuk AndroidIDE memiliki jalur $PREFIX yang di-hardcode dan tidak dapat dipasang
-         di bawah jalur apa pun selain:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE hanya dapat dijalankan sebagai pengguna utama.\nBinari bootstrap yang dikompilasi untuk AndroidIDE memiliki jalur $PREFIX yang di-hardcode dan tidak dapat dipasang di jalur mana pun selain:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE tidak dapat diinstal pada portabel/eksternal/ kartu sd yang dapat dilepas di perangkat Anda.\nBiner bootstrap yang dikompilasi untuk AndroidIDE memiliki jalur $PREFIX yang di-hardcode dan tidak dapat diinstal pada jalur apa pun selain:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Sesi baru</string>
   <string name="action_new_session_failsafe">Aman dari kegagalan</string>
@@ -67,9 +62,7 @@
   <string name="notification_action_wake_lock">Dapatkan wakelock</string>
   <string name="notification_action_wake_unlock">Rilis wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE membutuhkan
-         Izin \"Tampilkan di atas aplikasi lain\" untuk memulai sesi terminal dari latar belakang di Android &gt;= 10.
-         Memberikannya dari Pengaturan -&gt; Aplikasi -&gt; AndroidIDE -&gt; Lanjutan</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE memerlukan izin \"Tampilkan di atas aplikasi lain\" untuk memulai sesi terminal dari latar belakang di Android &gt;= 10. Memberikannya dari Pengaturan -&gt; Aplikasi -&gt; AndroidIDE -&gt; Lanjutan</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">Simpan file di ~/downloads/</string>
   <string name="action_file_received_edit">Edit</string>
@@ -89,8 +82,7 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">Pencatatan Kunci Tampilan Terminal</string>
   <string name="termux_terminal_view_key_logging_enabled_off">Log tidak akan memiliki entri untuk kunci tampilan terminal. (Default)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Log Logcat akan memiliki entri untuk kunci tampilan terminal.
-                     Ini sangat bertele-tele dan harus dinonaktifkan dalam keadaan normal atau akan menyebabkan masalah kinerja.</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Log Logcat akan memiliki entri untuk kunci tampilan terminal. Ini sangat bertele-tele dan harus dinonaktifkan dalam keadaan normal atau akan menyebabkan masalah kinerja.</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">Pemberitahuan Laporan Kerusakan</string>
   <string name="termux_crash_report_notifications_enabled_off">Nonaktifkan pemberitahuan untuk laporan kerusakan.</string>
@@ -106,10 +98,8 @@
   <string name="termux_soft_keyboard_enabled_on">Papan ketik lembut akan diaktifkan. (Default)</string>
   <!-- Soft Keyboard Only If No Hardware-->
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Papan ketik Lembut Hanya Jika Tidak Ada Perangkat Keras</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Papan ketik lembut akan diaktifkan meskipun
-                     keyboard perangkat keras terhubung.  (Default)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Papan ketik lembut hanya akan diaktifkan jika
-                     tidak ada keyboard perangkat keras yang terhubung.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Keyboard lunak akan diaktifkan meskipun keyboard perangkat keras tersambung. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Keyboard lunak hanya akan diaktifkan jika tidak ada keyboard perangkat keras yang tersambung.</string>
   <!-- Terminal View Preferences -->
   <string name="termux_terminal_view_preferences_title">Tampilan Terminal</string>
   <string name="termux_terminal_view_preferences_summary">Preferensi untuk tampilan terminal</string>
@@ -118,7 +108,5 @@
   <!-- Terminal View Margin Adjustment -->
   <string name="termux_terminal_view_terminal_margin_adjustment_title">Penyesuaian Margin Terminal</string>
   <string name="termux_terminal_view_terminal_margin_adjustment_off">Penyesuaian margin terminal akan dinonaktifkan.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">Penyesuaian margin terminal akan diaktifkan.
-                     Ini harus diaktifkan untuk mencoba memperbaiki masalah ketika keyboard lunak menutupi bagian tombol tambahan/tampilan terminal.
-                     Jika itu menyebabkan layar berkedip pada perangkat Anda, nonaktifkan.  (Default)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">Penyesuaian margin terminal akan diaktifkan. Ini harus diaktifkan untuk mencoba memperbaiki masalah ketika keyboard lunak menutupi bagian tombol tambahan/tampilan terminal. Jika itu menyebabkan layar berkedip pada perangkat Anda, nonaktifkan. (Default)</string>
 </resources>

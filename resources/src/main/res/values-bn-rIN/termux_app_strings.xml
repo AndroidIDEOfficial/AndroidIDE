@@ -22,13 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE বুটস্ট্র্যাপ প্যাকেজগুলি ইনস্টল করতে অক্ষম ছিল৷.</string>
   <string name="bootstrap_error_abort">গর্ভপাত</string>
   <string name="bootstrap_error_try_again">আবার চেষ্টা কর</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE শুধুমাত্র প্রাথমিক ব্যবহারকারী হিসাবে চালানো যেতে পারে।
-        \nAndroidIDE-এর জন্য কম্পাইল করা বুটস্ট্র্যাপ বাইনারিগুলিতে $PREFIX পাথ হার্ডকোড আছে এবং ইনস্টল করা যাবে না
-        ছাড়া অন্য কোনো পথের অধীনে:\n%1$s।.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE-এ ইনস্টল করা যাবে না
-        আপনার ডিভাইসে বহনযোগ্য/বাহ্যিক/অপসারণযোগ্য এসডি কার্ড।
-        \nAndroidIDE-এর জন্য কম্পাইল করা বুটস্ট্র্যাপ বাইনারিগুলিতে $PREFIX পাথ হার্ডকোড আছে এবং ইনস্টল করা যাবে না
-        ছাড়া অন্য কোনো পথের অধীনে:\n%1$s।.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">নতুন অধিবেশন</string>
   <string name="action_new_session_failsafe">ব্যর্থতার নিরাপত্তা</string>
@@ -67,9 +62,7 @@
   <string name="notification_action_wake_lock">Wakelock অর্জন</string>
   <string name="notification_action_wake_unlock">Wakelock মুক্তি</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE প্রয়োজন
-       অ্যান্ড্রয়েড &gt;= 10-এ ব্যাকগ্রাউন্ড থেকে টার্মিনাল সেশন শুরু করার জন্য \"অন্যান্য অ্যাপের উপরে প্রদর্শন করুন\" অনুমতি৷
-        সেটিংস থেকে এটি মঞ্জুর করে -&gt; অ্যাপস -&gt; AndroidIDE -&gt; উন্নত</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10. Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">~/downloads/ এ ফাইল সংরক্ষণ করুন</string>
   <string name="action_file_received_edit">সম্পাদনা করুন</string>
@@ -89,8 +82,7 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">টার্মিনাল ভিউ কী লগিং</string>
   <string name="termux_terminal_view_key_logging_enabled_off">লগগুলিতে টার্মিনাল ভিউ কীগুলির জন্য এন্ট্রি থাকবে না। (ডিফল্ট)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat লগে টার্মিনাল ভিউ কীগুলির জন্য এন্ট্রি থাকবে।
-                    এগুলি খুব শব্দযুক্ত এবং সাধারণ পরিস্থিতিতে অক্ষম করা উচিত বা কার্যক্ষমতার সমস্যা সৃষ্টি করবে৷.</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys. These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">ক্র্যাশ রিপোর্ট বিজ্ঞপ্তি</string>
   <string name="termux_crash_report_notifications_enabled_off">ক্র্যাশ রিপোর্টের জন্য বিজ্ঞপ্তি অক্ষম করুন।.</string>
@@ -106,10 +98,8 @@
   <string name="termux_soft_keyboard_enabled_on">নরম কীবোর্ড সক্রিয় করা হবে। (ডিফল্ট)</string>
   <!-- Soft Keyboard Only If No Hardware-->
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">সফট কীবোর্ড শুধুমাত্র হার্ডওয়্যার না থাকলে</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">সফ্ট কিবোর্ড চালু থাকলেও হবে
-                    হার্ডওয়্যার কীবোর্ড সংযুক্ত। (ডিফল্ট)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">সফট কীবোর্ড চালু হলেই হবে
-                    কোন হার্ডওয়্যার কীবোর্ড সংযুক্ত নেই।.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if hardware keyboard is connected. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if no hardware keyboard is connected.</string>
   <!-- Terminal View Preferences -->
   <string name="termux_terminal_view_preferences_title">টার্মিনাল ভিউ</string>
   <string name="termux_terminal_view_preferences_summary">টার্মিনাল ভিউ জন্য পছন্দ</string>
@@ -118,8 +108,5 @@
   <!-- Terminal View Margin Adjustment -->
   <string name="termux_terminal_view_terminal_margin_adjustment_title">টার্মিনাল মার্জিন অ্যাডজাস্টমেন্ট</string>
   <string name="termux_terminal_view_terminal_margin_adjustment_off">টার্মিনাল মার্জিন সমন্বয় নিষ্ক্রিয় করা হবে.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">টার্মিনাল মার্জিন সমন্বয় সক্ষম করা হবে।
-                    সফ্ট কীবোর্ড অতিরিক্ত কী/টার্মিনাল ভিউয়ের অংশ কভার করে এমন সমস্যাটি সমাধান করার চেষ্টা করার জন্য এটি সক্রিয় করা উচিত।
-                    
-                    যদি এটি আপনার ডিভাইসে স্ক্রিন ফ্লিকারের কারণ হয়, তাহলে এটি অক্ষম করুন। (ডিফল্ট)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled. It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view. If it causes screen flickering on your devices, then disable it. (Default)</string>
 </resources>

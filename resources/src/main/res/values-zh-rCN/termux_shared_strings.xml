@@ -20,8 +20,7 @@
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) 应用程序未安装或被禁用。</string>
   <string name="error_get_package_context_failed_title">无法获取软件包上下文</string>
-  <string name="error_get_package_context_failed_message">无法获取“%1$s”软件包上下文。
-         这可能是因为应用软件包未安装，或者其 APK 签名与当前应用不同。</string>
+  <string name="error_get_package_context_failed_message">无法获取“%1$s”软件包上下文。这可能是因为应用软件包未安装，或者其 APK 签名与当前应用不同。</string>
   <string name="error_get_package_context_failed_help_url_message">查看 %1$s 了解更多详情。</string>
   <string name="error_get_component_state_failed">无法获取 %1$s/%2$s 组件状态</string>
   <string name="error_enable_component_failed">无法启用 %1$s/%2$s 组件</string>
@@ -31,15 +30,12 @@
   <string name="error_attempted_to_ask_for_permissions_not_requested">尝试请求应用清单中未要求的权限：%1$s</string>
   <string name="error_has_not_requested_legacy_external_storage">“%1$s”软件包的目标 targetSdkVersion 为 %2$d，并且运行在 android sdk %3$d 上，但尚未在应用清单中将 requestLegacyExternalStorage 设置为 true</string>
   <string name="msg_requires_dump_and_package_usage_stats_permissions">需要“DUMP”和“PACKAGE_USAGE_STATS”权限</string>
-  <string name="error_display_over_other_apps_permission_not_granted">%1$s 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动活动和服务。
-         从 Android 设置 -&gt; 应用 -&gt;  %1$s -&gt; 高级 -&gt; 显示在其他应用的上层。
-         不同设备上的权限名称可能会有所不同，例如在小米上，其称为“在后台运行时显示弹出窗口”，请检查 https://dontkillmyapp.com 以了解设备特定问题。</string>
+  <string name="error_display_over_other_apps_permission_not_granted">%1$s 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动活动和服务。从“Android 设置 -&gt; 应用 -&gt; %1$s -&gt; 高级”中授予它。不同设备上的权限名称可能会有所不同，例如在小米上，其称为“后台弹出界面”，查看 https://dontkillmyapp.com 以了解设备特定问题。</string>
   <!-- TermuxPluginUtils -->
   <string name="error_allow_external_apps_ungranted">%1$s 要求将“%2$s”文件中的“allow-external-apps”属性设置为“true”。</string>
   <!-- ReportActivity -->
   <string name="title_report_text">报告正文</string>
-  <string name="msg_report_truncated">**报告被截断**\n\n报告太大，无法在此处查看。
-         使用选项菜单中的“保存到文件”选项（右上角的 3 个点）并在外部文本编辑器应用中查看它。\n\n##\n\n</string>
+  <string name="msg_report_truncated">**报告被截断**\n\n报告太大，无法在此处查看。使用选项菜单（右上角的 3 点）中的“保存到文件”选项，并在外部文本编辑器应用中查看它。\n\n##\n\n</string>
   <!-- ShareUtils -->
   <string name="title_share_with">分享到</string>
   <string name="title_open_url_with">打开网址</string>
@@ -47,29 +43,17 @@
   <string name="msg_file_saved_successfully">%1$s 文件已成功保存在 “%2$s”</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
-  <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
-        an issue on one of the following links.
-        \n\nIf you are posting a Termux app crash report, then please provide details on what you were doing that
-        caused the crash and how to reproduce it, if possible.
-        \n\nIf you are posting an issue on GitHub, then post it in the repository at which the report belongs at.
-        Issues opened or emails sent with **(partial) screenshots** instead of copied text or a file of this report
-        **will likely be automatically closed/deleted**. You may optionally remove any device specific info that
-        you consider private or don\'t want to share or that is not relevant to the issue.
-        \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
-        on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
-        even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The AndroidIDE is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The AndroidIDE app (package context) is not accessible.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">The AndroidIDE app $PREFIX directory is not accessible by the %1$s app.
-        This may be because you have not installed or setup AndroidIDE app or
-    AndroidIDE app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
-        It may also be because AndroidIDE $PREFIX directory \"/data/data/com.itsaky.androidide/files/usr\" does not exist or does not have read,
-        write and execute permissions.</string>
+  <string name="msg_report_issue">如果要报告此问题，请从选项菜单（右上角的 3 点）复制其文本，并在以下链接之一上发布问题。\n\n如果您要发布 Termux 应用崩溃报告，请提供有关导致崩溃的原因，以及如何重现的详细信息，如果可能的话。\n\n如果您要在 GitHub 上发布问题，请将其发布到报告所属的存储库中。使用**（部分）屏幕截图**而不是复制的文本或此报告的文件打开的问题或发送的电子邮件**可能会被自动关闭或删除**。您可以选择删除您认为私密或不想共享或与问题无关的任何设备特定信息。\n\n我们不提供任何与黑客相关的工具或脚本的支持。通过电子邮件、GitHub 或其他官方 Termux 社区论坛提出的这类问题，都可能会被自动关闭或删除，甚至可能导致**临时或永久**的封禁。查看 %1$s/wiki/Hacking 以了解详细信息。</string>
+  <string name="msg_termux_app_required_by_app">%1$s 应用需要 AndroidIDE 来运行 termux 命令。</string>
+  <string name="error_termux_app_package_context_not_accessible">AndroidIDE 应用程序（包上下文）无法访问。</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">%1$s 应用无法访问 AndroidIDE 应用的 $PREFIX 目录。
+         这可能是因为您尚未安装或设置 AndroidIDE 应用，或者 AndroidIDE 应用和 %1$s 应用具有不同的 APK 签名，因为您已设法从不同来源安装这两个应用程序。
+         也可能是因为 AndroidIDE 的 $PREFIX 目录“/data/data/com.itsaky.androidide/files/usr”不存在或者没有读、写、执行权限。</string>
   <!-- Miscellaneous -->
   <string name="action_share">分享</string>
   <string name="action_save_to_file">保存到文件</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="msg_storage_permission_granted_on_request">用户根据请求授予存储权限</string>
+  <string name="msg_storage_permission_not_granted_on_request">用户未根据请求授予存储权限</string>
   <!-- Log Level -->
   <string name="log_level_title">日志级别</string>
   <string name="log_level_off">关闭</string>

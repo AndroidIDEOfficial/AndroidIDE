@@ -465,7 +465,6 @@
   <string name="action_manual_install">Установка вручную</string>
   <string name="hint_android_sdk_version">Версия Android SDK</string>
   <string name="hin_jdk_version">Версия JDK</string>
-  <string name="msg_with_command_line_tools">Добавить инструменты командной строки</string>
   <string name="action_install_git">Установить Git</string>
   <string name="action_install_openssh">Установить OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Невозможно создать сессию. Новые сессии отключены!</string>
@@ -482,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">Приложений для этого действия не найдено.</string>
   <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="summary_open_source_licenses">Просмотр лицензий открытого ПО.</string>
+  <string name="idepref_jdkVersion_title">Версия JDK</string>
+  <string name="idepref_jdkVersion_summary">Выбрано: %1$s (перезапустите приложение после изменения)</string>
 </resources>

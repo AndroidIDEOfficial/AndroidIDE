@@ -465,7 +465,6 @@
   <string name="action_manual_install">Instalasi manual</string>
   <string name="hint_android_sdk_version">Versi SDK Android</string>
   <string name="hin_jdk_version">Versi JDK</string>
-  <string name="msg_with_command_line_tools">Dengan alat baris perintah</string>
   <string name="action_install_git">Instal Git</string>
   <string name="action_install_openssh">Instal OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Tidak dapat membuat sesi. Sesi baru dinonaktifkan!</string>
@@ -482,4 +481,6 @@
   <string name="msg_app_unavailable_for_intent">Tidak ada aplikasi yang tersedia untuk menangani maksud.</string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="summary_open_source_licenses">Lihat lisensi sumber terbuka.</string>
+  <string name="idepref_jdkVersion_title">Versi JDK</string>
+  <string name="idepref_jdkVersion_summary">Saat ini dipilih: %1$s (perlu dimulai ulang jika diubah)</string>
 </resources>
