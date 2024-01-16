@@ -84,7 +84,7 @@ androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version = "1.0.0" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version = "1.0.0"}
 #noinspection GradleDependency
-androidx-window-v1alpha9 = { module = "androidx.window:window", version="1.0.0-alpha09" }
+androidx-window-v1alpha9 = { module = "androidx.window:window", version="1.2.0" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
