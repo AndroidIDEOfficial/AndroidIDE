@@ -72,7 +72,7 @@ body:
     id: download-source
     attributes:
       label: Download source
-      description: Select the download source.
+      description: Did you download AndroidIDE from GitHub or F-Droid?
       options:
         - GitHub
         - F-Droid
