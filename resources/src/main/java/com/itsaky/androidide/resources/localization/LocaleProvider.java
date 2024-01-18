@@ -46,7 +46,7 @@ public class LocaleProvider {
     putLocale(locales, keys, "fr", "FR"); // French
     putLocale(locales, keys, "hi", "IN"); // Hindi
     putLocale(locales, keys, "in", "ID"); // Indonesian
-    putLocale(locales, keys, "pt", "PT"); // Portuguese
+    putLocale(locales, keys, "pt", "BR"); // Portuguese, Brazilian
     putLocale(locales, keys, "ro", "RO"); // Romanian
     putLocale(locales, keys, "ru", "RU"); // Russian
     putLocale(locales, keys, "tr", "TR"); // Turkish
@@ -57,7 +57,7 @@ public class LocaleProvider {
   }
 
   @Nullable
-  public static Locale getLocale(String key) {
+  public static Locale getLocale(@Nullable String key) {
     if (key == null || StringsKt.isBlank(key)) {
       return null;
     }

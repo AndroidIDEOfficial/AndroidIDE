@@ -18,6 +18,7 @@
 package com.itsaky.androidide.preferences.internal
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.itsaky.androidide.resources.localization.LocaleProvider
 
 const val IS_FIRST_PROJECT_BUILD = "project_isFirstBuild"
 const val UI_MODE = "idepref_general_uiMode"
@@ -43,7 +44,16 @@ var selectedTheme: String?
   }
 
 var selectedLocale: String?
-  get() = prefManager.getString(SELECTED_LOCALE, null)
+  get() = prefManager.getString(SELECTED_LOCALE, null).let { locale ->
+
+    // if the locale is set to a locale key that is not supported,
+    // fall back to 'System default'
+    if (LocaleProvider.getLocale(locale) == null) {
+      null
+    } else {
+      locale
+    }
+  }
   set(value) {
     prefManager.putString(SELECTED_LOCALE, value)
   }

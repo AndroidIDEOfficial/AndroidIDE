@@ -58,7 +58,6 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
-import com.itsaky.androidide.ui.themes.ThemeManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
@@ -70,7 +69,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
-import java.util.Locale
 import kotlin.system.exitProcess
 
 class IDEApplication : TermuxApplication() {
