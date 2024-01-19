@@ -3,8 +3,8 @@
     "id": "15548591",
     "username": "itsaky",
     "name": "Akash Yadav (itsaky)",
-    "translated": 40205,
-    "approved": 31184,
+    "translated": 43232,
+    "approved": 31434,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15548591/medium/3c5f3139891eb92915fcf4c1e7ca120e.jpeg",
     "languages": [
       {
@@ -38,6 +38,10 @@
       {
         "id": "pt-PT",
         "name": "Portuguese"
+      },
+      {
+        "id": "pt-BR",
+        "name": "Portuguese, Brazilian"
       },
       {
         "id": "ro",
@@ -75,7 +79,7 @@
     "id": "15757161",
     "username": "liziq",
     "name": "zhiq liu (liziq)",
-    "translated": 3829,
+    "translated": 4088,
     "approved": 2863,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15757161/medium/f3903c160404f095de68760f81609430.jpeg",
     "languages": [
@@ -89,8 +93,8 @@
     "id": "15550047",
     "username": "andihasan97",
     "name": "Andi Hasan A (andihasan97)",
-    "translated": 3347,
-    "approved": 1886,
+    "translated": 3597,
+    "approved": 2136,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png",
     "languages": [
       {
@@ -160,7 +164,7 @@
     "username": "Smooth-E",
     "name": "Smooth-E",
     "translated": 1800,
-    "approved": 0,
+    "approved": 86,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15555625/medium/1fc098969551e0430a579242afe26c5f.png",
     "languages": [
       {
