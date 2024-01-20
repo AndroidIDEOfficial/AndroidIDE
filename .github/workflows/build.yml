@@ -266,7 +266,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Generate checksums
-        run:
+        run: |
           md5sum *.apk > CHECKSUMS-md5.txt
           sha256sum *.apk > CHECKSUMS-sha256.txt
           sha512sum *.apk > CHECKSUMS-sha512.txt
