@@ -32,17 +32,17 @@ releaseAssets:
   checksums_md5:
     fileName: "AndroidIDE-{{version}}-md5-CHECKSUMS.txt"
     description: "MD5 Checksums"
-    path: CHECKSUMS-md5.txt
+    path: build/CHECKSUMS-md5.txt
     type: text/plain
   checksums_sha256:
     fileName: "AndroidIDE-{{version}}-sha256-CHECKSUMS.txt"
     description: "SHA-256 Checksums"
-    path: CHECKSUMS-sha256.txt
+    path: build/CHECKSUMS-sha256.txt
     type: text/plain
   checksums_sha512:
     fileName: "AndroidIDE-{{version}}-sha512-CHECKSUMS.txt"
     description: "SHA-512 Checksums"
-    path: CHECKSUMS-sha512.txt
+    path: build/CHECKSUMS-sha512.txt
     type: text/plain
 
 releaseTypes:
