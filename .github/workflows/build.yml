@@ -267,9 +267,13 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Generate checksums
         run: |
-          md5sum *.apk > CHECKSUMS-md5.txt
-          sha256sum *.apk > CHECKSUMS-sha256.txt
-          sha512sum *.apk > CHECKSUMS-sha512.txt
+          mkdir -p build
+          
+          md5sum *.apk > build/CHECKSUMS-md5.txt
+          sha256sum *.apk > build/CHECKSUMS-sha256.txt
+          sha512sum *.apk > build/CHECKSUMS-sha512.txt
+          
+          find build -type f -name "CHECKSUMS*.txt" -exec echo {} \; -exec cat {} \; -exec echo "" \;
       - name: Publish release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
       - name: Archive Nyx state file
