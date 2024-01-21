@@ -26,14 +26,11 @@ import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IAndroidProject
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
-import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.nio.file.Files
-import kotlin.io.path.pathString
 import kotlin.io.path.writeText
 import org.junit.Test
 import org.junit.runner.RunWith

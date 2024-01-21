@@ -15,24 +15,17 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.testing
+package com.itsaky.androidide.testing.common
 
-fun findAndroidHome(): String {
-  var androidHome = System.getenv("ANDROID_HOME")
-  if (androidHome != null && androidHome.isNotBlank()) {
-    return androidHome
-  }
+import org.junit.runners.model.Statement
 
-  androidHome = System.getenv("ANDROID_SDK_ROOT")
-  if (androidHome != null && androidHome.isNotBlank()) {
-    return androidHome
-  }
+/**
+ * A no-op statement.
+ *
+ * @author Akash Yadav
+ */
+class NoOpStatement : Statement() {
 
-  val os = System.getProperty("os.name")
-  val home = System.getProperty("user.home")
-  return if (os.contains("Linux")) {
-    "$home/Android/Sdk"
-  } else {
-    "$home\\AppData\\Local\\Android\\Sdk"
+  override fun evaluate() {
   }
 }

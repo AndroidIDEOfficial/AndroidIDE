@@ -15,26 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.testing.tooling
 
-dependencies {
-    api(libs.common.jkotlin)
-    api(libs.tests.robolectric)
-    api(libs.tests.junit)
-    api(libs.tests.google.truth)
-    api(libs.tests.mockk)
+fun findAndroidHome(): String {
+  var androidHome = System.getenv("ANDROID_HOME")
+  if (androidHome != null && androidHome.isNotBlank()) {
+    return androidHome
+  }
 
-    api(projects.buildInfo)
-    api(projects.logger)
-    api(projects.shared)
-    api(projects.subprojects.toolingApi)
+  androidHome = System.getenv("ANDROID_SDK_ROOT")
+  if (androidHome != null && androidHome.isNotBlank()) {
+    return androidHome
+  }
 
-    api(projects.testing.common)
-
-    // build tooling API before tests
-    compileOnly(projects.subprojects.toolingApiImpl)
+  val os = System.getProperty("os.name")
+  val home = System.getProperty("user.home")
+  return if (os.contains("Linux")) {
+    "$home/Android/Sdk"
+  } else {
+    "$home\\AppData\\Local\\Android\\Sdk"
+  }
 }

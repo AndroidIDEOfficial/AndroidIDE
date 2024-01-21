@@ -39,6 +39,8 @@ dependencies {
     exclude("org.jetbrains.kotlin")
   }
 
+  api(projects.testing.common)
+
   api(projects.buildInfo)
   api(projects.common)
   api(projects.shared)

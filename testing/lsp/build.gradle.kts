@@ -33,6 +33,7 @@ dependencies {
     api(projects.eventbusAndroid)
 
     api(libs.common.editor)
+    api(projects.testing.common)
     api(projects.testing.tooling)
     api(projects.testing.unit)
 }

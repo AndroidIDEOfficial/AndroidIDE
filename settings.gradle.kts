@@ -112,6 +112,7 @@ include(
   ":termux:termux-shared",
   ":termux:termux-view",
   ":testing:android",
+  ":testing:common",
   ":testing:lsp",
   ":testing:tooling",
   ":testing:unit",

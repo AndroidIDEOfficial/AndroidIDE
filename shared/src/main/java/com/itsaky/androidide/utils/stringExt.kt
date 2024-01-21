@@ -15,26 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.utils
 
-dependencies {
-    api(libs.common.jkotlin)
-    api(libs.tests.robolectric)
-    api(libs.tests.junit)
-    api(libs.tests.google.truth)
-    api(libs.tests.mockk)
+import java.util.Locale
 
-    api(projects.buildInfo)
-    api(projects.logger)
-    api(projects.shared)
-    api(projects.subprojects.toolingApi)
-
-    api(projects.testing.common)
-
-    // build tooling API before tests
-    compileOnly(projects.subprojects.toolingApiImpl)
+/**
+ * Capitalizes the string.
+ */
+@JvmOverloads
+fun String.capitalizeString(locale: Locale = Locale.getDefault()): String {
+  return replaceFirstChar { char ->
+    if (char.isLowerCase()) char.titlecase(locale) else char.toString()
+  }
 }
