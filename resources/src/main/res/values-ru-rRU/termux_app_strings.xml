@@ -22,8 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE не удалось установить базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">$PREFIX</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device. \nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Новая сессия</string>
   <string name="action_new_session_failsafe">Безопасный режим</string>
