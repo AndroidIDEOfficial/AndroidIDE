@@ -27,6 +27,7 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.openApplicationModuleChooser
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
 
@@ -38,12 +39,15 @@ import com.itsaky.androidide.utils.flashError
 class LaunchAppAction(context: Context, override val order: Int) : EditorActivityAction() {
 
   override val id: String = "ide.editor.launchInstalledApp"
-
   override var requiresUIThread: Boolean = true
 
   init {
     label = context.getString(R.string.title_launch_app)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_open_external)
+  }
+
+  companion object {
+    private val log = ILogger.newInstance("LaunchAppAction")
   }
 
   override fun prepare(data: ActionData) {
@@ -61,14 +65,26 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
 
   override suspend fun execAction(data: ActionData) {
     openApplicationModuleChooser(data) { app ->
-      val packageName = app.packageName
-      if (packageName == UNKNOWN_PACKAGE) {
+      val variant = app.getSelectedVariant()
+
+      log.debug("Selected variant: ${variant?.name}")
+
+      if (variant == null) {
+        flashError(R.string.err_selected_variant_not_found)
+        return@openApplicationModuleChooser
+      }
+
+      val applicationId = variant.mainArtifact.applicationId
+      if (applicationId == null) {
+        log.error("Unable to launch application. variant.mainArtifact.applicationId is null")
         flashError(R.string.err_cannot_determine_package)
         return@openApplicationModuleChooser
       }
 
+      log.info("Launching application: $applicationId")
+
       val activity = data.requireActivity()
-      IntentUtils.launchApp(activity, packageName, logError = false)
+      IntentUtils.launchApp(activity, applicationId, logError = false)
     }
   }
 

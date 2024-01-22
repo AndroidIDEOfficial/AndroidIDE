@@ -66,16 +66,6 @@ internal class AndroidProjectImpl(
 
   private val serialVersionUID = 1L
 
-  private var shouldLookupPackage = true
-  var packageName: String = UNKNOWN_PACKAGE
-    get() {
-      if (field == UNKNOWN_PACKAGE && shouldLookupPackage) {
-        findPackageName()
-      }
-
-      return field
-    }
-
   override fun getConfiguredVariant(): CompletableFuture<String> {
     return CompletableFuture.completedFuture(this.configuredVariant)
   }
@@ -190,37 +180,12 @@ internal class AndroidProjectImpl(
       val viewBindingOptions = androidProject.viewBindingOptions?.let(
         AndroidModulePropertyCopier::copy) ?: DefaultViewBindingOptions()
 
-      return@supplyAsync AndroidProjectMetadata(gradleMetadata, packageName,
+      return@supplyAsync AndroidProjectMetadata(gradleMetadata,
         basicAndroidProject.projectType, copy(androidProject.flags),
         copy(androidProject.javaCompileOptions), viewBindingOptions, androidProject.resourcePrefix,
         androidProject.namespace, androidProject.androidTestNamespace,
         androidProject.testFixturesNamespace, getClassesJar())
     }
-  }
-
-  private fun findPackageName() {
-
-    val namespace = androidProject.namespace
-    if (namespace.isNotBlank()) {
-      this.packageName = namespace
-      this.shouldLookupPackage = false
-      return
-    }
-
-    val mainSourceSet = basicAndroidProject.mainSourceSet
-    if (mainSourceSet == null) {
-      shouldLookupPackage = false
-      return
-    }
-
-    val manifestFile = mainSourceSet.sourceProvider.manifestFile
-    if (manifestFile == DefaultSourceProvider.NoFile) {
-      shouldLookupPackage = false
-      return
-    }
-
-    this.packageName = extractPackageName(manifestFile) ?: UNKNOWN_PACKAGE
-    this.shouldLookupPackage = false
   }
 
   private fun AndroidArtifact.computeApplicationId(variantName: String): String? {

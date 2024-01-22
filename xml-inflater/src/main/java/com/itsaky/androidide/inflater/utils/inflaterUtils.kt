@@ -101,7 +101,7 @@ fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcesso
       ?: throw InflateException("Cannot find module for given file. Is the project initialized?")
   val resFile =
     ResourceFile(
-      ResourceName(module.packageName, pathData.type!!, pathData.name),
+      ResourceName(module.namespace, pathData.type!!, pathData.name),
       pathData.config,
       pathData.source,
       ProtoXml

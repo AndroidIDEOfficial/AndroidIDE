@@ -19,6 +19,7 @@ package com.itsaky.androidide.testing.android
 
 import android.app.Activity
 import android.app.UiAutomation
+import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
@@ -29,7 +30,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiDeviceAccessor
 import androidx.test.uiautomator.Until
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.utils.uncheckedCast
 
@@ -60,7 +60,7 @@ fun launchAndroidIDE(
   }
 
   // Launch the app
-  val context = ApplicationProvider.getApplicationContext<BaseApplication>()
+  val context = ApplicationProvider.getApplicationContext<Context>()
   val intent = context.packageManager.getLaunchIntentForPackage(BuildInfo.PACKAGE_NAME)
   assertThat(intent).isNotNull()
 

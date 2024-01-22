@@ -36,7 +36,6 @@ class AndroidProjectMetadata(
   description: String?,
   buildScript: File,
   type: ProjectType,
-  val packageName: String,
   val androidType: AndroidProjectType,
   val flags: DefaultAndroidGradlePluginProjectFlags,
   val javaCompileOptions: DefaultJavaCompileOptions,
@@ -51,7 +50,6 @@ class AndroidProjectMetadata(
 
   constructor(
     base: ProjectMetadata,
-    packageName: String,
     androidType: AndroidProjectType,
     flags: DefaultAndroidGradlePluginProjectFlags,
     javaCompileOptiosn: DefaultJavaCompileOptions,
@@ -70,7 +68,6 @@ class AndroidProjectMetadata(
         base.description,
         base.buildScript,
         base.type,
-        packageName,
         androidType,
         flags,
         javaCompileOptiosn,

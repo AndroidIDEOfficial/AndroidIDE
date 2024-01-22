@@ -73,7 +73,7 @@ internal fun performBasicProjectAssertions(project: IProject, server: IToolingAp
   assertThat(metadata.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
   assertThat(metadata.androidType)
     .isEqualTo(com.android.builder.model.v2.ide.ProjectType.APPLICATION)
-  assertThat(metadata.packageName).isEqualTo("com.itsaky.test.app")
+  assertThat(metadata.namespace).isEqualTo("com.itsaky.test.app")
   assertThat(metadata.viewBindingOptions).isNotNull()
   assertThat(metadata.viewBindingOptions.isEnabled).isTrue()
 
