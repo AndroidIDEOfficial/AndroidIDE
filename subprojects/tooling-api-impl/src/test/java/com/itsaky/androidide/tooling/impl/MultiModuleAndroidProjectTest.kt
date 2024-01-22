@@ -25,10 +25,11 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
 import com.itsaky.androidide.utils.FileProvider
-import com.itsaky.androidide.utils.ILogger
+import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.junit.runners.MethodSorters
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import kotlin.io.path.createDirectory
@@ -38,6 +39,7 @@ import kotlin.io.path.exists
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
+@FixMethodOrder(MethodSorters.JVM)
 class MultiModuleAndroidProjectTest {
 
   @Test
@@ -62,8 +64,7 @@ class MultiModuleAndroidProjectTest {
     path.deleteIfExists()
     path.createFile()
 
-    val (_, _, result) = ToolingApiTestLauncher().launchServer(
-      projectDir = path)
+    val (_, _, result) = ToolingApiTestLauncher().launchServer(projectDir = path)
     assertThat(result?.isSuccessful).isFalse()
     assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_DIRECTORY)
   }
@@ -79,8 +80,8 @@ class MultiModuleAndroidProjectTest {
     val client = object : MultiVersionTestClient(excludeUnresolvedDependency = true) {
 
       override fun getBuildArguments(): CompletableFuture<List<String>> {
-        return CompletableFuture.completedFuture(super.getBuildArguments().get().toMutableList()
-          .also { it.add("--configuration-cache") })
+        return CompletableFuture.completedFuture(
+          super.getBuildArguments().get().toMutableList().also { it.add("--configuration-cache") })
       }
 
       override fun onProgressEvent(event: ProgressEvent) {
@@ -99,9 +100,8 @@ class MultiModuleAndroidProjectTest {
       separator = System.lineSeparator()))
     taskPaths.clear()
 
-    val (isSuccessful, failure) = server.executeTasks(TaskExecutionMessage(
-      tasks = listOf("assembleDebug")
-    )).get()
+    val (isSuccessful, failure) = server.executeTasks(
+      TaskExecutionMessage(tasks = listOf("assembleDebug"))).get()
 
     if (failure != null) {
       println("Failure: $failure")
@@ -113,16 +113,10 @@ class MultiModuleAndroidProjectTest {
     assertThat(taskPaths).isNotNull()
     assertThat(taskPaths.size).isGreaterThan(10)
     assertThat(taskPaths).containsAtLeastElementsIn(
-      arrayOf(
-        "preBuild",
-        "generateDebugResources",
-        "compileDebugJavaWithJavac",
-        "assembleDebug"
-      ).map { ":android-library:$it" }
-    )
+      arrayOf("preBuild", "generateDebugResources", "compileDebugJavaWithJavac",
+        "assembleDebug").map { ":android-library:$it" })
     println(
-      "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator())
-    )
+      "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator()))
   }
 
   @Test
