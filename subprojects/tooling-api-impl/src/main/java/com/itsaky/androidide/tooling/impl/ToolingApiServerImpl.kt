@@ -335,38 +335,33 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun shutdown(): CompletableFuture<Void> {
-    log.info("Shutting down Tooling API Server...")
+    return CompletableFuture.supplyAsync {
+      log.info("Shutting down Tooling API Server...")
 
-    connection?.close()
-    connector?.disconnect()
-    connection = null
-    connector = null
+      connection?.close()
+      connector?.disconnect()
+      connection = null
+      connector = null
 
-    // Stop all daemons
-    log.info("Stopping all Gradle Daemons...")
-    DefaultGradleConnector.close()
+      // Stop all daemons
+      log.info("Stopping all Gradle Daemons...")
+      DefaultGradleConnector.close()
 
-    try {
-      // wait for the daemon to be stopped properly
-      Thread.sleep(DELAY_BEFORE_EXIT_MS)
-    } catch (e: Exception) {
-      // ignored
+      // update the initialization flag before cancelling future
+      this.isInitialized = false
+
+      // cancelling this future will finish the Tooling API server process
+      // see com.itsaky.androidide.tooling.impl.Main.main(String[])
+      Main.future?.cancel(true)
+
+      this.client = null
+      this.buildCancellationToken = null // connector.disconnect() cancels any running builds
+      this.lastInitParams = null
+      Main.future = null
+      Main.client = null
+
+      null
     }
-
-    // update the initialization flag before cancelling future
-    this.isInitialized = false
-
-    Main.future?.cancel(true)
-
-    this.client = null
-    this.buildCancellationToken = null // connector.disconnect() cancels any running builds
-    this.lastInitParams = null
-    Main.future = null
-    Main.client = null
-
-    // no need to return anything
-    // tooling server should be restarted once it has been shutdown
-    exitProcess(0)
   }
 
   private fun getTaskFailureType(error: Throwable): Failure =

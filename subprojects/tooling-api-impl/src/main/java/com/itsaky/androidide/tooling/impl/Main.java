@@ -67,6 +67,11 @@ public class Main {
       // ignored
     } catch (InterruptedException | ExecutionException e) {
       LOG.error("An error occurred while waiting for shutdown message", e);
+      if (e instanceof InterruptedException) {
+        // set the interrupt flag
+        Thread.currentThread().interrupt();
+      }
+
     } finally {
 
       // Cleanup should be performed in ToolingApiServerImpl.shutdown()
@@ -82,6 +87,8 @@ public class Main {
         future = null;
         client = null;
         JvmLogger.interceptor = null;
+
+        LOG.info("Tooling API server shutdown complete");
       }
     }
   }
