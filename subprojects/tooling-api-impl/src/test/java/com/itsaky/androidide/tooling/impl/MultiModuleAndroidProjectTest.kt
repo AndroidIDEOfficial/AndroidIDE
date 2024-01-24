@@ -93,7 +93,10 @@ class MultiModuleAndroidProjectTest {
       }
     }
 
-    ToolingApiTestLauncher.launchServer(client = client) {
+    ToolingApiTestLauncher.launchServer(
+      projectDir = FileProvider.sampleProjectRoot(),
+      client = client
+    ) {
       assertThat(server).isNotNull()
       assertThat(project).isNotNull()
       assertThat(result?.isSuccessful).isTrue()
@@ -103,7 +106,8 @@ class MultiModuleAndroidProjectTest {
       taskPaths.clear()
 
       val (isSuccessful, failure) = server.executeTasks(
-        TaskExecutionMessage(tasks = listOf("assembleDebug"))).get()
+        TaskExecutionMessage(tasks = listOf("assembleDebug"))
+      ).get()
 
       if (failure != null) {
         println("Failure: $failure")

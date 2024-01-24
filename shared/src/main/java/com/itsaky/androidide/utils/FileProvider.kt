@@ -65,13 +65,16 @@ class FileProvider {
     private fun testingDir() = projectRoot().resolve("testing")
 
     @JvmStatic
-    private fun testReourcessDir(): Path = testingDir().resolve("resources")
+    private fun testResourcesDir(): Path = testingDir().resolve("resources")
 
     @JvmStatic
-    fun testHomeDir(): Path = testReourcessDir().resolve("test-home")
+    fun testHomeDir(): Path = testResourcesDir().resolve("test-home")
 
     @JvmStatic
-    fun testProjectRoot(): Path = testReourcessDir().resolve("test-project")
+    fun testProjectRoot(): Path = testResourcesDir().resolve("test-project")
+
+    @JvmStatic
+    fun sampleProjectRoot(): Path = testResourcesDir().resolve("sample-project")
 
     /**
      * Get the path to the 'resources' directory.

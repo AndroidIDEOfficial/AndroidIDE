@@ -64,7 +64,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import kotlin.system.exitProcess
 
 /**
  * Implementation for the Gradle Tooling API server.
