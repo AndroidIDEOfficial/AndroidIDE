@@ -79,7 +79,7 @@ class MultiModuleAndroidProjectTest {
     val taskPaths = mutableListOf<String>()
 
     // do not add unresolved dependency so that the configuration cache is properly created
-    val client = object : MultiVersionTestClient(excludeUnresolvedDependency = true) {
+    val client = object : MultiVersionTestClient(excludeUnresolvedDependency = true, gradleVersion = "8.5") {
 
       override fun getBuildArguments(): CompletableFuture<List<String>> {
         return CompletableFuture.completedFuture(
@@ -120,7 +120,7 @@ class MultiModuleAndroidProjectTest {
       assertThat(taskPaths.size).isGreaterThan(10)
       assertThat(taskPaths).containsAtLeastElementsIn(
         arrayOf("preBuild", "generateDebugResources", "compileDebugJavaWithJavac",
-          "assembleDebug").map { ":android-library:$it" })
+          "assembleDebug").map { ":app:$it" })
       println(
         "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator()))
     }
