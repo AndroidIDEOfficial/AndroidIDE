@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.testing.tooling
 
+import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
+import com.itsaky.androidide.testing.tooling.models.ToolingApiTestScope
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
@@ -52,7 +54,7 @@ import kotlin.io.path.pathString
  *
  * @author Akash Yadav
  */
-class ToolingApiTestLauncher {
+object ToolingApiTestLauncher {
 
   private val opens =
     mutableMapOf("java.base" to "java.lang", "java.base" to "java.util",
@@ -66,46 +68,7 @@ class ToolingApiTestLauncher {
       "jdk.compiler" to "com.sun.tools.javac.util")
 
   @JvmOverloads
-  fun launchServerAsync(
-    projectDir: Path = FileProvider.testProjectRoot(),
-    client: MultiVersionTestClient = MultiVersionTestClient(),
-    initParams: InitializeProjectParams = InitializeProjectParams(
-      projectDir.pathString,
-      client.gradleDistParams
-    ),
-    log: ILogger = ILogger.newInstance("BuildOutputLogger"),
-    sysProps: Map<String, String> = emptyMap(),
-    sysEnvs: Map<String, String> = emptyMap()
-  ): Triple<IToolingApiServer, IProject, CompletableFuture<InitializeResult>> {
-    val cmdLine = createProcessCmd(
-      FileProvider.implModule()
-        .resolve("build/libs/tooling-api-all.jar").pathString,
-      sysProps
-    )
-
-    val builder = ProcessBuilder(cmdLine)
-    val androidHome = findAndroidHome()
-
-    builder.environment()["ANDROID_SDK_ROOT"] = androidHome
-    builder.environment()["ANDROID_HOME"] = androidHome
-    builder.environment().putAll(sysEnvs)
-
-    val proc = builder.start()
-
-    Thread(Reader(proc.errorStream, log)).start()
-    val launcher =
-      ToolingApiLauncher.newClientLauncher(client, proc.inputStream,
-        proc.outputStream)
-
-    launcher.startListening()
-
-    val server = launcher.remoteProxy as IToolingApiServer
-    val project = launcher.remoteProxy as IProject
-    val result = server.initialize(initParams)
-    return Triple(server, project, result)
-  }
-
-  @JvmOverloads
+  @JvmStatic
   fun launchServer(
     projectDir: Path = FileProvider.testProjectRoot(),
     client: MultiVersionTestClient = MultiVersionTestClient(),
@@ -115,10 +78,73 @@ class ToolingApiTestLauncher {
     ),
     log: ILogger = ILogger.newInstance("BuildOutputLogger"),
     sysProps: Map<String, String> = emptyMap(),
-    sysEnvs: Map<String, String> = emptyMap()
-  ): Triple<IToolingApiServer, IProject, InitializeResult?> {
-    return launchServerAsync(projectDir, client, initParams, log, sysProps, sysEnvs).let { result ->
-      Triple(result.first, result.second, result.third.get())
+    sysEnvs: Map<String, String> = emptyMap(),
+    action: ToolingApiTestScope.() -> Unit
+  ) = launchServer(ToolingApiTestLauncherParams(projectDir, client, initParams, log, sysProps, sysEnvs), action)
+
+  @JvmOverloads
+  @JvmStatic
+  @JvmName("launchServerWithParams")
+  fun launchServer(
+    params: ToolingApiTestLauncherParams = ToolingApiTestLauncherParams(),
+    action: ToolingApiTestScope.() -> Unit
+  ) {
+    return launchServerAsync(params) {
+      // wait for project initialization
+      initializeResult.get()
+
+      action()
+    }
+  }
+
+  @JvmOverloads
+  @JvmStatic
+  fun launchServerAsync(
+    params: ToolingApiTestLauncherParams = ToolingApiTestLauncherParams(),
+    action: ToolingApiTestScope.() -> Unit
+  ) {
+    val cmdLine = createProcessCmd(
+      FileProvider.implModule()
+        .resolve("build/libs/tooling-api-all.jar").pathString,
+      params.sysProps
+    )
+
+    val builder = ProcessBuilder(cmdLine)
+    val androidHome = findAndroidHome()
+
+    builder.environment()["ANDROID_SDK_ROOT"] = androidHome
+    builder.environment()["ANDROID_HOME"] = androidHome
+    builder.environment().putAll(params.sysEnvs)
+
+    val proc = builder.start()
+
+    proc.onExit().whenComplete { process, error ->
+      if (process != null) {
+        println("[ToolingApiTestLauncher] Tooling API server process finished with exit code: ${process.exitValue()}")
+      }
+      if (error != null) {
+        println("[ToolingApiTestLauncher] Tooling API server process error")
+        error.printStackTrace()
+      }
+    }
+
+    Thread(Reader(proc.errorStream, params.log)).start()
+    val launcher =
+      ToolingApiLauncher.newClientLauncher(params.client, proc.inputStream,
+        proc.outputStream)
+
+    launcher.startListening()
+
+    val server = launcher.remoteProxy as IToolingApiServer
+    val project = launcher.remoteProxy as IProject
+    val result = server.initialize(params.initParams)
+
+    try {
+      // perform the action
+      ToolingApiTestScope(server, project, result).action()
+    } finally {
+      server.cancelCurrentBuild().get()
+      server.shutdown().get()
     }
   }
 

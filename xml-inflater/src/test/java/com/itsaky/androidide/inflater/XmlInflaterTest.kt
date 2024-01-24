@@ -43,13 +43,13 @@ object XmlInflaterTest {
       return
     }
 
-    val (_, project, result) =
-      ToolingApiTestLauncher().launchServer()
-    assertThat(result?.isSuccessful).isTrue()
+    ToolingApiTestLauncher.launchServer {
+      assertThat(result?.isSuccessful).isTrue()
 
-    Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
-    runBlocking { IProjectManager.getInstance().setupProject(project) }
-    init.set(true)
+      Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
+      runBlocking { IProjectManager.getInstance().setupProject(project) }
+      init.set(true)
+    }
   }
 }
 

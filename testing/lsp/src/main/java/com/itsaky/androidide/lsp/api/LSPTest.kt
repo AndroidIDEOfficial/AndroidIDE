@@ -85,32 +85,31 @@ abstract class LSPTest {
     mockkStatic(::tabSize)
     every { tabSize } returns 4
 
-    val (server, project, result) =
-      ToolingApiTestLauncher()
-        .launchServer()
+    ToolingApiTestLauncher.launchServer {
 
-    assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.isSuccessful).isTrue()
 
-    this.toolingProject = project
-    this.toolingServer = server
+      this@LSPTest.toolingProject = project
+      this@LSPTest.toolingServer = server
 
-    Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
+      Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
 
-    Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
-    Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
-    registerServer()
+      Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
+      Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
+      registerServer()
 
-    val projectManager = ProjectManagerImpl.getInstance()
-    projectManager.register()
-    runBlocking { projectManager.setupProject(project) }
+      val projectManager = ProjectManagerImpl.getInstance()
+      projectManager.register()
+      runBlocking { projectManager.setupProject(project) }
 
-    // We need to manually setup the language server with the project here
-    // ProjectManager.notifyProjectUpdate()
-    ILanguageServerRegistry.getDefault()
-      .getServer(getServerId())!!
-      .setupWithProject(projectManager.rootProject!!)
+      // We need to manually setup the language server with the project here
+      // ProjectManager.notifyProjectUpdate()
+      ILanguageServerRegistry.getDefault()
+        .getServer(getServerId())!!
+        .setupWithProject(projectManager.rootProject!!)
 
-    isInitialized = true
+      isInitialized = true
+    }
   }
 
   protected abstract fun registerServer()

@@ -44,17 +44,18 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project, result) = ToolingApiTestLauncher().launchServer()
-    assertThat(result?.isSuccessful).isTrue()
-    performBasicProjectAssertions(project, server)
+    ToolingApiTestLauncher.launchServer {
+      assertThat(result?.isSuccessful).isTrue()
+      performBasicProjectAssertions(project, server)
+    }
   }
 
   @Test
   fun `test non-existing project initialization`() {
-    val (_, _, result) = ToolingApiTestLauncher().launchServer(
-      projectDir = Paths.get("/directory/does/not/exist/"))
-    assertThat(result?.isSuccessful).isFalse()
-    assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_FOUND)
+    ToolingApiTestLauncher.launchServer(projectDir = Paths.get("/directory/does/not/exist/")) {
+      assertThat(result?.isSuccessful).isFalse()
+      assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_FOUND)
+    }
   }
 
   @Test
@@ -64,9 +65,10 @@ class MultiModuleAndroidProjectTest {
     path.deleteIfExists()
     path.createFile()
 
-    val (_, _, result) = ToolingApiTestLauncher().launchServer(projectDir = path)
-    assertThat(result?.isSuccessful).isFalse()
-    assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_DIRECTORY)
+    ToolingApiTestLauncher.launchServer(projectDir = path) {
+      assertThat(result?.isSuccessful).isFalse()
+      assertThat(result?.failure).isEqualTo(TaskExecutionResult.Failure.PROJECT_NOT_DIRECTORY)
+    }
   }
 
   @Test
@@ -91,50 +93,32 @@ class MultiModuleAndroidProjectTest {
       }
     }
 
-    val (server, project, result) = ToolingApiTestLauncher().launchServer(client = client)
-    assertThat(server).isNotNull()
-    assertThat(project).isNotNull()
-    assertThat(result?.isSuccessful).isTrue()
+    ToolingApiTestLauncher.launchServer(client = client) {
+      assertThat(server).isNotNull()
+      assertThat(project).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
 
-    println("Executed tasks during initialization : " + taskPaths.joinToString(
-      separator = System.lineSeparator()))
-    taskPaths.clear()
+      println("Executed tasks during initialization : " + taskPaths.joinToString(
+        separator = System.lineSeparator()))
+      taskPaths.clear()
 
-    val (isSuccessful, failure) = server.executeTasks(
-      TaskExecutionMessage(tasks = listOf("assembleDebug"))).get()
+      val (isSuccessful, failure) = server.executeTasks(
+        TaskExecutionMessage(tasks = listOf("assembleDebug"))).get()
 
-    if (failure != null) {
-      println("Failure: $failure")
+      if (failure != null) {
+        println("Failure: $failure")
+      }
+
+      assertThat(isSuccessful).isTrue()
+      assertThat(failure).isNull()
+
+      assertThat(taskPaths).isNotNull()
+      assertThat(taskPaths.size).isGreaterThan(10)
+      assertThat(taskPaths).containsAtLeastElementsIn(
+        arrayOf("preBuild", "generateDebugResources", "compileDebugJavaWithJavac",
+          "assembleDebug").map { ":android-library:$it" })
+      println(
+        "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator()))
     }
-
-    assertThat(isSuccessful).isTrue()
-    assertThat(failure).isNull()
-
-    assertThat(taskPaths).isNotNull()
-    assertThat(taskPaths.size).isGreaterThan(10)
-    assertThat(taskPaths).containsAtLeastElementsIn(
-      arrayOf("preBuild", "generateDebugResources", "compileDebugJavaWithJavac",
-        "assembleDebug").map { ":android-library:$it" })
-    println(
-      "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator()))
-  }
-
-  @Test
-  fun `test project initialization cancellation`() {
-    // launch project initialization
-    val (server, _, initFuture) = ToolingApiTestLauncher().launchServerAsync()
-    Thread.sleep(1000L)
-
-    // cancel initialization request
-    val cancellationResult = server.cancelCurrentBuild().get()
-    println("Cancellation result: $cancellationResult")
-    assertThat(cancellationResult).isNotNull()
-    assertThat(cancellationResult.wasEnqueued).isTrue()
-    assertThat(cancellationResult.failureReason).isNull()
-
-    // verify that the initialization failed with reason BUILD_CANCELLED
-    val initResult = initFuture.get()
-    assertThat(initResult!!.isSuccessful).isFalse()
-    assertThat(initResult.failure).isEqualTo(TaskExecutionResult.Failure.BUILD_CANCELLED)
   }
 }

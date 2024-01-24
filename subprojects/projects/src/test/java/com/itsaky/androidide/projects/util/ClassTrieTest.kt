@@ -31,7 +31,7 @@ class ClassTrieTest {
 
   @Test
   fun testAppend() {
-    val trie = com.itsaky.androidide.utils.ClassTrie()
+    val trie = ClassTrie()
     trie.append("java.lang.String")
     trie.append("java.lang.String.Inner")
     trie.append("java.lang.Object")
@@ -48,7 +48,7 @@ class ClassTrieTest {
 
   @Test
   fun testRemoval() {
-    val trie = com.itsaky.androidide.utils.ClassTrie()
+    val trie = ClassTrie()
     trie.append("java.lang.String")
     trie.append("java.lang.Object")
     trie.append("java.util.List")

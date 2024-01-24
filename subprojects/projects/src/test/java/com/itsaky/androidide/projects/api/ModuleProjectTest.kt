@@ -44,101 +44,59 @@ class ModuleProjectTest {
 
   @Test
   fun test() {
-    val (_, project, result) = ToolingApiTestLauncher().launchServer()
-    assertThat(result?.isSuccessful).isTrue()
+    ToolingApiTestLauncher.launchServer() {
 
-    Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
+      assertThat(result?.isSuccessful).isTrue()
 
-    verifyProjectManagerAPIs()
+      Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
 
-    assertThat(project).isNotNull()
+      verifyProjectManagerAPIs()
 
-    val rootProject = IProjectManager.getInstance().rootProject
-    assertThat(rootProject).isNotNull()
+      assertThat(project).isNotNull()
 
-    val root = rootProject!!.rootProject
-    assertThat(root).isNotNull()
-    assertThat(root.name).isEqualTo("TestApp")
+      val rootProject = IProjectManager.getInstance().rootProject
+      assertThat(rootProject).isNotNull()
 
-    val rootDir = root.projectDir
-    assertThat(rootDir).isNotNull()
-    assertThat(Files.isSameFile(rootDir.toPath(), FileProvider.testProjectRoot())).isTrue()
+      val root = rootProject!!.rootProject
+      assertThat(root).isNotNull()
+      assertThat(root.name).isEqualTo("TestApp")
 
-    val app = rootProject.findByPath(":app")
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(AndroidModule::class.java)
+      val rootDir = root.projectDir
+      assertThat(rootDir).isNotNull()
+      assertThat(Files.isSameFile(rootDir.toPath(), FileProvider.testProjectRoot())).isTrue()
 
-    val appSourceDirs = (app as AndroidModule).getSourceDirectories()
-    assertThat(appSourceDirs).isNotEmpty()
-    assertThat(appSourceDirs)
-      .containsAtLeast(File(rootDir, "app/src/main/java"), File(rootDir, "app/src/main/kotlin"))
-    assertThat(appSourceDirs).doesNotContain(File(rootDir, "other-java-library/src/main/java"))
-    assertThat(app.compilerSettings.javaSourceVersion).isEqualTo("11")
-    assertThat(app.compilerSettings.javaBytecodeVersion).isEqualTo("11")
-    assertThat(app.compilerSettings.javaSourceVersion)
-      .isEqualTo(app.compilerSettings.sourceCompatibility)
-    assertThat(app.compilerSettings.javaBytecodeVersion)
-      .isEqualTo(app.compilerSettings.targetCompatibility)
+      val app = rootProject.findByPath(":app")
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(AndroidModule::class.java)
 
-    val anotherAndroidLib = rootProject.findByPath(":another-android-library")
-    assertThat(anotherAndroidLib).isNotNull()
-    assertThat(anotherAndroidLib).isInstanceOf(AndroidModule::class.java)
+      val appSourceDirs = (app as AndroidModule).getSourceDirectories()
+      assertThat(appSourceDirs).isNotEmpty()
+      assertThat(appSourceDirs)
+        .containsAtLeast(File(rootDir, "app/src/main/java"), File(rootDir, "app/src/main/kotlin"))
+      assertThat(appSourceDirs).doesNotContain(File(rootDir, "other-java-library/src/main/java"))
+      assertThat(app.compilerSettings.javaSourceVersion).isEqualTo("11")
+      assertThat(app.compilerSettings.javaBytecodeVersion).isEqualTo("11")
+      assertThat(app.compilerSettings.javaSourceVersion)
+        .isEqualTo(app.compilerSettings.sourceCompatibility)
+      assertThat(app.compilerSettings.javaBytecodeVersion)
+        .isEqualTo(app.compilerSettings.targetCompatibility)
 
-    val anotherAndroidLibDir = anotherAndroidLib!!.projectDir
+      val anotherAndroidLib = rootProject.findByPath(":another-android-library")
+      assertThat(anotherAndroidLib).isNotNull()
+      assertThat(anotherAndroidLib).isInstanceOf(AndroidModule::class.java)
 
-    val androidLibSourceDirs = (anotherAndroidLib as AndroidModule).getSourceDirectories()
-    assertThat(androidLibSourceDirs).isNotEmpty()
-    assertThat(androidLibSourceDirs)
-      .contains(File(rootDir, "another-android-library/src/main/java"))
+      val anotherAndroidLibDir = anotherAndroidLib!!.projectDir
 
-    assertThat(anotherAndroidLib.getCompileClasspaths())
-      .containsAtLeast(
-        File(
-          anotherAndroidLibDir,
-          "build/${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
-        ),
-        File(
-          anotherAndroidLibDir,
-          "build/${IAndroidProject.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
-        )
-      )
-    assertThat(
-      anotherAndroidLib.getCompileClasspaths().firstOrNull {
-        it.name == "nb-javac-android-17.0.0.0.jar"
-      }
-    )
-      .isNotNull()
+      val androidLibSourceDirs = (anotherAndroidLib as AndroidModule).getSourceDirectories()
+      assertThat(androidLibSourceDirs).isNotEmpty()
+      assertThat(androidLibSourceDirs)
+        .contains(File(rootDir, "another-android-library/src/main/java"))
 
-    assertThat(anotherAndroidLib.getCompileSourceDirectories())
-      .containsAtLeast(
-        File(anotherAndroidLibDir, "src/main/java"),
-        File(anotherAndroidLibDir, "src/main/kotlin"),
-        File(rootDir, "other-java-library/src/main/java")
-      )
-
-    assertThat(anotherAndroidLib.compilerSettings.javaSourceVersion).isEqualTo("11")
-    assertThat(anotherAndroidLib.compilerSettings.javaBytecodeVersion).isEqualTo("11")
-
-    val appCompileSourceDirs = app.getCompileSourceDirectories()
-    assertThat(appCompileSourceDirs).isNotEmpty()
-    assertThat(appCompileSourceDirs)
-      .containsAtLeast(
-        File(rootDir, "app/src/main/java"),
-        File(rootDir, "app/src/main/kotlin"),
-        File(anotherAndroidLibDir, "src/main/java")
-      )
-
-    app.getCompileClasspaths().apply {
-      assertThat(this).isNotEmpty()
-      assertThat(this)
+      assertThat(anotherAndroidLib.getCompileClasspaths())
         .containsAtLeast(
           File(
             anotherAndroidLibDir,
             "build/${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
-          ),
-          File(
-            app.projectDir,
-            "build/${IAndroidProject.FD_INTERMEDIATES}/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar"
           ),
           File(
             anotherAndroidLibDir,
@@ -146,46 +104,90 @@ class ModuleProjectTest {
           )
         )
       assertThat(
-        filter {
-          it.absolutePath.endsWith("appcompat-1.5.1/jars/classes.jar") ||
-              it.absolutePath.endsWith("material-1.8.0-alpha01/jars/classes.jar") ||
-              it.absolutePath.endsWith("coordinatorlayout-1.2.0/jars/classes.jar")
+        anotherAndroidLib.getCompileClasspaths().firstOrNull {
+          it.name == "nb-javac-android-17.0.0.0.jar"
         }
       )
-        .hasSize(3)
-    }
+        .isNotNull()
 
-    val javaLibrary = rootProject.findByPath(":java-library")
-    assertThat(javaLibrary).isNotNull()
-    assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
+      assertThat(anotherAndroidLib.getCompileSourceDirectories())
+        .containsAtLeast(
+          File(anotherAndroidLibDir, "src/main/java"),
+          File(anotherAndroidLibDir, "src/main/kotlin"),
+          File(rootDir, "other-java-library/src/main/java")
+        )
 
-    val javaLibSourceDirs = (javaLibrary as JavaModule).getSourceDirectories()
-    assertThat(javaLibSourceDirs).isNotEmpty()
-    assertThat(javaLibSourceDirs).contains(File(rootDir, "java-library/src/main/java"))
+      assertThat(anotherAndroidLib.compilerSettings.javaSourceVersion).isEqualTo("11")
+      assertThat(anotherAndroidLib.compilerSettings.javaBytecodeVersion).isEqualTo("11")
 
-    app.indexSourcesAndClasspaths()
+      val appCompileSourceDirs = app.getCompileSourceDirectories()
+      assertThat(appCompileSourceDirs).isNotEmpty()
+      assertThat(appCompileSourceDirs)
+        .containsAtLeast(
+          File(rootDir, "app/src/main/java"),
+          File(rootDir, "app/src/main/kotlin"),
+          File(anotherAndroidLibDir, "src/main/java")
+        )
 
-    val classes = app.compileJavaSourceClasses.findInPackage("com.itsaky")
-    assertThat(classes).isNotNull()
-    assertThat(classes).isNotEmpty()
-
-    for (klass in arrayOf(
-          "com.itsaky.androidide.tooling.test.Main",
-          "com.itsaky.test.app.MainActivity")
-    ) {
-
-      classes.find { it.qualifiedName == klass }.let {
-        assertThat(it).isNotNull()
-        assertThat(it!!.isClass).isTrue()
-        assertThat(it::class.java)
+      app.getCompileClasspaths().apply {
+        assertThat(this).isNotEmpty()
+        assertThat(this)
+          .containsAtLeast(
+            File(
+              anotherAndroidLibDir,
+              "build/${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
+            ),
+            File(
+              app.projectDir,
+              "build/${IAndroidProject.FD_INTERMEDIATES}/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar"
+            ),
+            File(
+              anotherAndroidLibDir,
+              "build/${IAndroidProject.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
+            )
+          )
+        assertThat(
+          filter {
+            it.absolutePath.endsWith("appcompat-1.5.1/jars/classes.jar") ||
+                it.absolutePath.endsWith("material-1.8.0-alpha01/jars/classes.jar") ||
+                it.absolutePath.endsWith("coordinatorlayout-1.2.0/jars/classes.jar")
+          }
+        )
+          .hasSize(3)
       }
-    }
 
-    rootProject.findByPath(":another-java-library").run {
-      assertThat(this).isInstanceOf(JavaModule::class.java)
-      assertThat((this as JavaModule).compilerSettings).isNotNull()
-      assertThat(compilerSettings.javaSourceVersion).isEqualTo("1.8")
-      assertThat(compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
+      val javaLibrary = rootProject.findByPath(":java-library")
+      assertThat(javaLibrary).isNotNull()
+      assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
+
+      val javaLibSourceDirs = (javaLibrary as JavaModule).getSourceDirectories()
+      assertThat(javaLibSourceDirs).isNotEmpty()
+      assertThat(javaLibSourceDirs).contains(File(rootDir, "java-library/src/main/java"))
+
+      app.indexSourcesAndClasspaths()
+
+      val classes = app.compileJavaSourceClasses.findInPackage("com.itsaky")
+      assertThat(classes).isNotNull()
+      assertThat(classes).isNotEmpty()
+
+      for (klass in arrayOf(
+        "com.itsaky.androidide.tooling.test.Main",
+        "com.itsaky.test.app.MainActivity")
+      ) {
+
+        classes.find { it.qualifiedName == klass }.let {
+          assertThat(it).isNotNull()
+          assertThat(it!!.isClass).isTrue()
+          assertThat(it::class.java)
+        }
+      }
+
+      rootProject.findByPath(":another-java-library").run {
+        assertThat(this).isInstanceOf(JavaModule::class.java)
+        assertThat((this as JavaModule).compilerSettings).isNotNull()
+        assertThat(compilerSettings.javaSourceVersion).isEqualTo("1.8")
+        assertThat(compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
+      }
     }
   }
 

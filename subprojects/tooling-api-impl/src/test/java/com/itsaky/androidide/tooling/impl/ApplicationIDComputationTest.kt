@@ -34,35 +34,36 @@ class ApplicationIDComputationTest {
   @Test
   fun `test variant-specific application ID computation for default applicationId`() {
     // no custom applicationIdSuffix or applicationId is set
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer()
+    ToolingApiTestLauncher.launchServer {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(2)
-    assertThat(variants.map { it.name }).containsExactly("debug", "release")
+      assertThat(variants).hasSize(2)
+      assertThat(variants.map { it.name }).containsExactly("debug", "release")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
-      assertThat(applicationId).isEqualTo("com.itsaky.test.app")
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
+        assertThat(applicationId).isEqualTo("com.itsaky.test.app")
+      }
     }
   }
 
@@ -86,36 +87,37 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(4)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
+      assertThat(variants).hasSize(4)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
         "demoRelease")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
-      assertThat(applicationId).isAnyOf("com.itsaky.test.app.full", "com.itsaky.test.app.demo")
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
+        assertThat(applicationId).isAnyOf("com.itsaky.test.app.full", "com.itsaky.test.app.demo")
+      }
     }
   }
 
@@ -144,39 +146,41 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(8)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "fullStaging",
+      assertThat(variants).hasSize(8)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease",
+        "fullStaging",
         "fullExperimental", "demoDebug", "demoRelease", "demoStaging", "demoExperimental")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
 
-      // the build types don't have any applicationIdSuffix set
-      // so only suffix from the flavors should be applied here
-      assertThat(applicationId).isAnyOf("com.itsaky.test.app.full", "com.itsaky.test.app.demo")
+        // the build types don't have any applicationIdSuffix set
+        // so only suffix from the flavors should be applied here
+        assertThat(applicationId).isAnyOf("com.itsaky.test.app.full", "com.itsaky.test.app.demo")
+      }
     }
   }
 
@@ -196,37 +200,38 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(4)
-    assertThat(variants.map { it.name }).containsExactly("debug", "release", "staging",
-      "experimental")
+      assertThat(variants).hasSize(4)
+      assertThat(variants.map { it.name }).containsExactly("debug", "release", "staging",
+        "experimental")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
-      assertThat(applicationId).isAnyOf("com.itsaky.test.app", "com.itsaky.test.app.staging",
-        "com.itsaky.test.app.experimental")
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
+        assertThat(applicationId).isAnyOf("com.itsaky.test.app", "com.itsaky.test.app.staging",
+          "com.itsaky.test.app.experimental")
+      }
     }
   }
 
@@ -257,40 +262,42 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(8)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "fullStaging",
+      assertThat(variants).hasSize(8)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease",
+        "fullStaging",
         "fullExperimental", "demoDebug", "demoRelease", "demoStaging", "demoExperimental")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
 
-      // the flavors don't have any applicationIdSuffix set
-      // so only suffix from the build types should be applied here
-      assertThat(applicationId).isAnyOf("com.itsaky.test.app", "com.itsaky.test.app.staging",
-        "com.itsaky.test.app.experimental")
+        // the flavors don't have any applicationIdSuffix set
+        // so only suffix from the build types should be applied here
+        assertThat(applicationId).isAnyOf("com.itsaky.test.app", "com.itsaky.test.app.staging",
+          "com.itsaky.test.app.experimental")
+      }
     }
   }
 
@@ -323,45 +330,47 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(8)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "fullStaging",
+      assertThat(variants).hasSize(8)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease",
+        "fullStaging",
         "fullExperimental", "demoDebug", "demoRelease", "demoStaging", "demoExperimental")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
 
-      // the flavors don't have any applicationIdSuffix set
-      // so only suffix from the build types should be applied here
-      assertThat(applicationId).isAnyOf(
-        // 'debug' and 'release' build types
-        "com.itsaky.test.app.full", "com.itsaky.test.app.demo",
+        // the flavors don't have any applicationIdSuffix set
+        // so only suffix from the build types should be applied here
+        assertThat(applicationId).isAnyOf(
+          // 'debug' and 'release' build types
+          "com.itsaky.test.app.full", "com.itsaky.test.app.demo",
 
-        // custom build types with applicationIdSuffix
-        "com.itsaky.test.app.full.staging", "com.itsaky.test.app.demo.staging",
-        "com.itsaky.test.app.full.experimental", "com.itsaky.test.app.demo.experimental")
+          // custom build types with applicationIdSuffix
+          "com.itsaky.test.app.full.staging", "com.itsaky.test.app.demo.staging",
+          "com.itsaky.test.app.full.experimental", "com.itsaky.test.app.demo.experimental")
+      }
     }
   }
 
@@ -385,36 +394,37 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(4)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
+      assertThat(variants).hasSize(4)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
         "demoRelease")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
-      assertThat(applicationId).isAnyOf("com.androidide.app.full", "com.androidide.app.demo")
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
+        assertThat(applicationId).isAnyOf("com.androidide.app.full", "com.androidide.app.demo")
+      }
     }
   }
 
@@ -438,36 +448,37 @@ class ApplicationIDComputationTest {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       androidBlockConfig = androidBlockConfig)
-    val (_, project, initializeResult) = ToolingApiTestLauncher().launchServer(client = client)
+    ToolingApiTestLauncher.launchServer(client = client) {
 
-    assertThat(initializeResult).isNotNull()
-    assertThat(initializeResult?.isSuccessful).isTrue()
-    assertThat(initializeResult?.failure).isNull()
+      assertThat(result).isNotNull()
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(result?.failure).isNull()
 
-    assertThat(project).isNotNull()
+      assertThat(project).isNotNull()
 
-    val selectionResult = project.selectProject(StringParameter(":app")).get()
-    assertThat(selectionResult).isNotNull()
-    assertThat(selectionResult.isSuccessful).isTrue()
+      val selectionResult = project.selectProject(StringParameter(":app")).get()
+      assertThat(selectionResult).isNotNull()
+      assertThat(selectionResult.isSuccessful).isTrue()
 
-    val app = project.asAndroidProject()
-    assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IAndroidProject::class.java)
+      val app = project.asAndroidProject()
+      assertThat(app).isNotNull()
+      assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
-    val variants = app.getVariants().get()
-    assertThat(variants).isNotNull()
-    assertThat(variants).isNotEmpty()
+      val variants = app.getVariants().get()
+      assertThat(variants).isNotNull()
+      assertThat(variants).isNotEmpty()
 
 
-    assertThat(variants).hasSize(4)
-    assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
+      assertThat(variants).hasSize(4)
+      assertThat(variants.map { it.name }).containsExactly("fullDebug", "fullRelease", "demoDebug",
         "demoRelease")
 
-    variants.forEach { variant ->
-      val applicationId = variant.mainArtifact.applicationId
-      assertThat(applicationId).isNotNull()
-      assertThat(applicationId?.trim()).isNotEmpty()
-      assertThat(applicationId).isAnyOf("com.androidide.app.full", "com.itsaky.test.app.demo")
+      variants.forEach { variant ->
+        val applicationId = variant.mainArtifact.applicationId
+        assertThat(applicationId).isNotNull()
+        assertThat(applicationId?.trim()).isNotEmpty()
+        assertThat(applicationId).isAnyOf("com.androidide.app.full", "com.itsaky.test.app.demo")
+      }
     }
   }
 }
