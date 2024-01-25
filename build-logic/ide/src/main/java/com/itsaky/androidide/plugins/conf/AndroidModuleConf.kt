@@ -29,6 +29,7 @@ import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import isFDroidBuild
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.kotlin.dsl.register
 import projectVersionCode
 
 /**
@@ -168,6 +169,16 @@ fun Project.configureAndroidModule(
     buildTypes.getByName("release") {
       isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+
+    // development build type
+    // similar to 'release', but disables proguard/r8
+    // this build type can be used to gain release-like performance at runtime
+    // the build are faster for this build type as compared to 'release'
+    buildTypes.register("dev") {
+      initWith(buildTypes.getByName("release"))
+
+      isMinifyEnabled = false
     }
 
     testOptions { unitTests.isIncludeAndroidResources = true }
