@@ -62,7 +62,7 @@
   <string name="notification_action_wake_lock">获取唤醒锁</string>
   <string name="notification_action_wake_unlock">释放唤醒锁</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动终端会话。从“设置 -&gt; 应用 -&gt;  AndroidIDE -&gt; 高级”中授予它</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE 需要“显示在其他应用的上层”权限才能在 Android &gt;= 10 上从后台启动终端会话，从“设置 -&gt; 应用 -&gt;  AndroidIDE -&gt; 高级”中授予它</string>
   <!-- Termux File Receiver -->
   <string name="title_file_received">将文件保存在 ~/downloads/</string>
   <string name="action_file_received_edit">编辑</string>
