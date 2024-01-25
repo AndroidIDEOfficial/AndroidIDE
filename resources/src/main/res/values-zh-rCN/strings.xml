@@ -56,7 +56,7 @@
   <string name="project_app_name">应用名称</string>
   <string name="msg_create_new_project_greeting">开始创建你的惊人项目！</string>
   <string name="title_confirm_open_project">打开上一次的项目？</string>
-  <string name="msg_confirm_open_project">您要打开上次打开的项目吗？打开的项目是：\n%s</string>
+  <string name="msg_confirm_open_project">您想要打开上次打开的项目吗？已打开的项目是：\n%s</string>
   <string name="title_close_project">关闭当前项目</string>
   <string name="msg_opened_project_does_not_exist">上次打开的项目不存在！</string>
   <string name="msg_create_new_project">创建新项目</string>
@@ -132,7 +132,7 @@
   <string name="classtype_enum">枚举</string>
   <string name="msg_failed_list_files">无法列出项目文件！</string>
   <!-- Code Editor -->
-  <string name="open_with">打开为…</string>
+  <string name="open_with">打开方式...</string>
   <string name="undo">撤销</string>
   <string name="redo">重做</string>
   <!-- Preferences -->
@@ -151,8 +151,8 @@
   <string name="idepref_editor_use_magnifier_title">启用放大镜</string>
   <string name="idepref_editor_use_magnifier_summary">在编辑器中选择文本时放大光标处的文本</string>
   <string name="idepref_editor_title">编辑器</string>
-  <string name="idepref_build_title">构建 &amp; 运行</string>
-  <string name="title_open_projects">打开上一次的项目</string>
+  <string name="idepref_build_title">构建与运行</string>
+  <string name="title_open_projects">打开上次项目</string>
   <string name="msg_open_projects">如果选中，IDE 将记住上次打开的项目，并在下次启动时重新打开。</string>
   <string name="title_confirm_project_open">打开项目前确认</string>
   <string name="msg_confirm_project_open">打开上次打开的项目前确认。</string>
