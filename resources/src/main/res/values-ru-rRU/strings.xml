@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Вы ещё не добавили элементов. Нажмите, чтобы добавить.</string>
   <string name="msg_generate_xml_failed">Не удалось сгенерировать код XML</string>
   <string name="title_generating_xml">Генерация кода XML</string>
-  <string name="msg_swipe_up">Провведите вверх, для просмотра сообщений сборки, логов и прочего.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE приостановила работу из-за непридвиденной ошибки</string>
   <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
   <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Использовать библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Проведите влево для просмотра @@файлов@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
