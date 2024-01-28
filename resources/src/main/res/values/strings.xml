@@ -145,7 +145,7 @@
   <string name="msg_failed_list_files">Failed to list project files!</string>
 
   <!-- Code Editor -->
-  <string name="open_with">Open with...</string>
+  <string name="open_with">Open with…</string>
 
   <string name="undo">Undo</string>
   <string name="redo">Redo</string>
@@ -559,4 +559,7 @@
   <string name="summary_open_source_licenses">View open source licenses.</string>
   <string name="idepref_jdkVersion_title">JDK version</string>
   <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
+
+  <string name="idepref_editor_fullscreenOnLandscape_title">Fullscreen on landscape</string>
+  <string name="idepref_editor_fullscreenOnLandscape_summary">Whether the editor should be fullscreen on landscape when keyboard is being shown. (It will hide the action bar)</string>
 </resources>

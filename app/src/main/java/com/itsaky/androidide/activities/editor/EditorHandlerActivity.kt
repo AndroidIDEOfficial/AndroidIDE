@@ -424,7 +424,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   private suspend fun saveResultInternal(
     index: Int,
     result: SaveResult
-  ) : Boolean {
+  ): Boolean {
     if (index < 0 || index >= editorViewModel.getOpenedFileCount()) {
       return false
     }
@@ -471,7 +471,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     getEditorForFile(file)?.isModified == true
   }
 
-  private suspend inline fun <T : Any?> performFileSave(crossinline action: suspend () -> T) : T {
+  private suspend inline fun <T : Any?> performFileSave(crossinline action: suspend () -> T): T {
     setFilesSaving(true)
     try {
       return action()

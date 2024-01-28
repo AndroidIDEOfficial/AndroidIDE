@@ -39,6 +39,7 @@ const val DELETE_EMPTY_LINES = "idepref_editor_deleteEmptyLines"
 const val DELETE_TABS_ON_BACKSPACE = "idepref_editor_deleteTab"
 const val STICKY_SCROLL_ENABLED = "idepref_editor_stickyScrollEnabled"
 const val PIN_LINE_NUMBERS = "idepref_editor_pinLineNumbers"
+const val FULLSCREEN_ON_LANDSCAPE = "idepref_editor_fullscreenOnLandscape"
 
 const val COLOR_SCHEME = "idepref_editor_colorScheme"
 const val DEFAULT_COLOR_SCHEME = "default"
@@ -166,3 +167,7 @@ var stickyScrollEnabled: Boolean
 var pinLineNumbers: Boolean
   get() = prefManager.getBoolean(PIN_LINE_NUMBERS, true)
   set(value) = prefManager.putBoolean(PIN_LINE_NUMBERS, value)
+
+var fullscreenOnLandscape: Boolean
+  get() = prefManager.getBoolean(FULLSCREEN_ON_LANDSCAPE, false)
+  set(value) = prefManager.putBoolean(FULLSCREEN_ON_LANDSCAPE, value)

@@ -33,6 +33,7 @@ import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
+import com.itsaky.androidide.preferences.internal.FULLSCREEN_ON_LANDSCAPE
 import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
@@ -54,6 +55,7 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
+import com.itsaky.androidide.preferences.internal.fullscreenOnLandscape
 import com.itsaky.androidide.preferences.internal.pinLineNumbers
 import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
 import com.itsaky.androidide.preferences.internal.tabSize
@@ -109,6 +111,7 @@ private class CommonConfigurations(
     addPreference(StickyScrollEnabled())
     addPreference(PinLineNumbersEnabled())
     addPreference(CompletionsMatchLower())
+    addPreference(FullscreenOnLandscape())
   }
 }
 
@@ -343,3 +346,11 @@ private class PinLineNumbersEnabled(
   override val summary: Int? = R.string.idepref_editor_pinLineNumbers_summary,
   override val icon: Int? = drawable.ic_pin
 ) : SwitchPreference(setValue = ::pinLineNumbers::set, getValue = ::pinLineNumbers::get)
+
+@Parcelize
+private class FullscreenOnLandscape(
+  override val key: String = FULLSCREEN_ON_LANDSCAPE,
+  override val title: Int = R.string.idepref_editor_fullscreenOnLandscape_title,
+  override val summary: Int? = R.string.idepref_editor_fullscreenOnLandscape_summary,
+  override val icon: Int? = drawable.ic_fullscreen
+) : SwitchPreference(setValue = ::fullscreenOnLandscape::set, getValue = ::fullscreenOnLandscape::get)
