@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -17,35 +15,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@Suppress("")
 plugins {
-    `kotlin-dsl`
-}
-
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
+  id("java-library")
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "17"
-}
-
-dependencies {
-  implementation(gradleApi())
-
-  implementation("com.android.tools.build:gradle:${libs.versions.agp.asProvider().get()}")
-  implementation(libs.maven.publish)
-
-  implementation(libs.common.jkotlin)
-  implementation(libs.common.antlr4)
-  implementation(libs.google.gson)
-  implementation(libs.google.java.format)
-
-  implementation(libs.misc.jackpot30)
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }

@@ -42,7 +42,7 @@ object DownloadUtils {
     logger: Logger
   ) {
 
-    logger.info("Download $remoteUrl to $file having checksum ${expectedChecksum}...")
+    logger.lifecycle("Download $remoteUrl to $file having checksum ${expectedChecksum}...")
 
     val digest = MessageDigest.getInstance("SHA-256")
 

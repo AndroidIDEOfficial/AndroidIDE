@@ -57,6 +57,8 @@ import java.util.stream.Stream;
 
 public class ClassGenerator {
 
+  private final File baseDir;
+
   private static final String TEMPLATE_PROPS = "#\n" +
       "# Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.\n" +
       "# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.\n" +
@@ -86,10 +88,10 @@ public class ClassGenerator {
       "    package {0};\\n\\\n" +
       "    \\n\\\n" +
       "    {1}\\n\\\n" +
-      "    import openjdk.tools.javac.util.JCDiagnostic.Error;\\n\\\n" +
-      "    import openjdk.tools.javac.util.JCDiagnostic.Warning;\\n\\\n" +
-      "    import openjdk.tools.javac.util.JCDiagnostic.Note;\\n\\\n" +
-      "    import openjdk.tools.javac.util.JCDiagnostic.Fragment;\\n\\\n" +
+      "    import com.itsaky.androidide.com.sun.tools.javac.util.JCDiagnostic.Error;\\n\\\n" +
+      "    import com.itsaky.androidide.com.sun.tools.javac.util.JCDiagnostic.Warning;\\n\\\n" +
+      "    import com.itsaky.androidide.com.sun.tools.javac.util.JCDiagnostic.Note;\\n\\\n" +
+      "    import com.itsaky.androidide.com.sun.tools.javac.util.JCDiagnostic.Fragment;\\n\\\n" +
       "    \\n\\\n" +
       "    public class {2} '{'\\n\\\n" +
       "    {3}\\n\\\n" +
@@ -234,6 +236,10 @@ public class ClassGenerator {
     }
   };
 
+  public ClassGenerator(File baseDir) {
+    this.baseDir = baseDir;
+  }
+
   /**
    * Form the name of the toplevel factory class.
    */
@@ -337,9 +343,7 @@ public class ClassGenerator {
    */
   String packageName(File file) {
     String path = file.getAbsolutePath();
-    int begin = path.indexOf("src/main/resources".replace('/', File.separatorChar))
-        + "src/main/resources".length();
-    String packagePath = path.substring(begin + 1, path.lastIndexOf(File.separatorChar));
+    String packagePath = path.substring(baseDir.getAbsolutePath().length() + 1, path.lastIndexOf(File.separatorChar));
     return packagePath.replace(File.separatorChar, '.');
   }
 

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -17,14 +15,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.itsaky.androidide.plugins.JavacJackpotPlugin
+
+@Suppress("JavaPluginLanguageLevel")
 plugins {
-    `kotlin-dsl`
+  id("java-library")
 }
 
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
+apply {
+  plugin(JavacJackpotPlugin::class.java)
 }
 
 java {
@@ -32,20 +31,6 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "17"
-}
-
 dependencies {
-  implementation(gradleApi())
-
-  implementation("com.android.tools.build:gradle:${libs.versions.agp.asProvider().get()}")
-  implementation(libs.maven.publish)
-
-  implementation(libs.common.jkotlin)
-  implementation(libs.common.antlr4)
-  implementation(libs.google.gson)
-  implementation(libs.google.java.format)
-
-  implementation(libs.misc.jackpot30)
+  api(projects.subprojects.javacDeps)
 }

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -17,35 +15,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    `kotlin-dsl`
-}
+package com.itsaky.androidide.plugins.tasks.javac
 
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
-}
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
-}
+/**
+ * No-op, marker task.
+ *
+ * @author Akash Yadav
+ */
+abstract class JavacFinalizeTask : DefaultTask() {
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "17"
-}
-
-dependencies {
-  implementation(gradleApi())
-
-  implementation("com.android.tools.build:gradle:${libs.versions.agp.asProvider().get()}")
-  implementation(libs.maven.publish)
-
-  implementation(libs.common.jkotlin)
-  implementation(libs.common.antlr4)
-  implementation(libs.google.gson)
-  implementation(libs.google.java.format)
-
-  implementation(libs.misc.jackpot30)
+  @TaskAction
+  fun noOp() {
+  }
 }

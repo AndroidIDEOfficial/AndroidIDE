@@ -72,6 +72,7 @@ fun Project.configureAndroidModule(
           arrayOf(
             "META-INF/CHANGES",
             "META-INF/README.md",
+            "nbjavac.hint"
           )
         )
         pickFirsts.addAll(

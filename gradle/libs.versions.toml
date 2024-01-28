@@ -22,7 +22,6 @@ maven-publish-plugin = "0.25.3"
 [libraries]
 
 # AndroidIDE
-androidide-javac = { module = "io.github.itsaky:nb-javac-android", version = "17.0.0.4-SNAPSHOT" }
 androidide-ts = { module = "com.itsaky.androidide.treesitter:android-tree-sitter", version.ref = "tree-sitter" }
 androidide-ts-java = { module = "com.itsaky.androidide.treesitter:tree-sitter-java", version.ref = "tree-sitter" }
 androidide-ts-json = { module = "com.itsaky.androidide.treesitter:tree-sitter-json", version.ref = "tree-sitter" }
@@ -143,6 +142,9 @@ tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.9" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 nav-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation" }
 maven-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish-plugin" }
+
+# Misc
+misc-jackpot30 = { module = "org.apache.netbeans.modules.jackpot30:tool", version = "13.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

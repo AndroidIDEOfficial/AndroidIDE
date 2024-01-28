@@ -1,5 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":subprojects:javac-deps")
+
+
+include(":subprojects:javac-jackpot")
+
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

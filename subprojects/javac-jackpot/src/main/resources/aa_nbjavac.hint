@@ -1,0 +1,363 @@
+/*
+ * Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
+ * or visit www.oracle.com if you need additional information or have any
+ * questions.
+ */
+
+java.util.Set.of($args$) => java.util.Collections.unmodifiableSet(new java.util.HashSet<>(java.util.Arrays.asList($args$)));;
+java.util.List.of($args$) => java.util.Collections.unmodifiableList(java.util.Arrays.asList($args$));;
+java.util.List.copyOf($list) => java.util.Collections.unmodifiableList(new java.util.ArrayList<>($list));;
+java.util.Map.of($k, $v) => java.util.Collections.unmodifiableMap(java.util.Collections.singletonMap($k, $v));;
+
+//XXX: incorrect!
+java.lang.Runtime.version().feature() =>
+"1.8".equals(System.getProperty("java.specification.version")) ? 8 : Integer.parseInt(System.getProperty("java.specification.version"))
+;;
+
+
+@java.io.Serial => ;;
+@java.lang.Deprecated($arg1, $args$) => @java.lang.Deprecated;;
+
+
+$1.flip() :: $1 instanceof java.nio.ByteBuffer
+=>
+((ByteBuffer) $1.flip())
+;;
+
+$1.clear() :: $1 instanceof java.nio.ByteBuffer
+=>
+((ByteBuffer) $1.clear())
+;;
+
+$1.flip() :: $1 instanceof java.nio.CharBuffer && !parentMatches("$1.flip();")
+=>
+((CharBuffer) $1.flip())
+;;
+
+java.nio.file.Path.of($uri) :: $uri instanceof java.net.URI
+=>
+com.itsaky.androidide.javac.wrappers.PathWrapper.of($uri)
+;;
+
+java.lang.module.ModuleDescriptor
+=>
+com.itsaky.androidide.javac.wrappers.ModuleWrapper.ModuleDescriptor
+;;
+
+$class.getModule() :: $class instanceof java.lang.Class
+=>
+com.itsaky.androidide.javac.wrappers.ModuleWrapper.getModule($class)
+;;
+
+$cl.getUnnamedModule() :: $cl instanceof java.lang.ClassLoader
+=>
+com.itsaky.androidide.javac.wrappers.ModuleWrapper.getUnnamedModule($cl)
+;;
+
+java.lang.Runtime.Version => com.itsaky.androidide.javac.wrappers.RuntimeWR.Version;;
+
+java.lang.Module => com.itsaky.androidide.javac.wrappers.ModuleWrapper;;
+
+java.lang.module.ModuleFinder => com.itsaky.androidide.javac.wrappers.ModuleWrapper.ModuleFinder;;
+java.lang.ModuleLayer => com.itsaky.androidide.javac.wrappers.ModuleWrapper.ModuleLayer;;
+java.lang.module.Configuration => com.itsaky.androidide.javac.wrappers.ModuleWrapper.Configuration;;
+
+java.util.ServiceLoader.load($layer, $class) :: $layer instanceof java.lang.ModuleLayer && $class instanceof java.lang.Class
+=>
+com.itsaky.androidide.javac.wrappers.ServiceLoaderWrapper.load($layer, $class)
+;;
+
+java.util.ServiceLoader.load($class, $loader) :: $loader instanceof java.lang.ClassLoader && $class instanceof java.lang.Class && !inClass("com.itsaky.androidide.com.sun.tools.doclint.DocLint") && !inClass("com.itsaky.androidide.javax.tools.ToolProvider");
+=>
+com.itsaky.androidide.javac.wrappers.ServiceLoaderWrapper.loadWithClassLoader($class, $loader)
+;;
+
+java.util.ServiceLoader.load($class, $loader) :: $loader instanceof java.lang.ClassLoader && $class instanceof java.lang.Class && inClass("com.itsaky.androidide.javax.tools.ToolProvider");
+=>
+com.itsaky.androidide.javac.wrappers.ServiceLoaderWrapper.loadTool($class)
+;;
+
+jdk.internal.jmod.JmodFile => com.itsaky.androidide.javac.wrappers.JmodFileWrapper;;
+
+$1.isEmpty() :: $1 instanceof java.util.Optional
+=>
+!$1.isPresent()
+;;
+
+java.util.Objects.requireNonNullElse($obj, $def)
+=>
+com.itsaky.androidide.javac.wrappers.ObjectsWrapper.requireNonNullElse($obj, $def)
+;;
+
+java.util.Objects.checkFromIndexSize($from, $size, $len)
+=>
+com.itsaky.androidide.javac.wrappers.ObjectsWrapper.checkFromIndexSize($from, $size, $len)
+;;
+
+java.util.ServiceLoader :: inClass("com.itsaky.androidide.com.sun.tools.doclint.DocLint")
+=>
+com.itsaky.androidide.javac.wrappers.ServiceLoaderWrapper
+;;
+
+$1.stripTrailing() :: $1 instanceof java.lang.String
+=>
+$1.replaceAll("\\p{javaWhitespace}+$", "")
+;;
+
+$1.stripLeading() :: $1 instanceof java.lang.String
+=>
+$1.replaceAll("^\\p{javaWhitespace}+", "")
+;;
+
+$1.strip() :: $1 instanceof java.lang.String
+=>
+$1.replaceAll("^\\p{javaWhitespace}+", "").replaceAll("\\p{javaWhitespace}+$", "")
+;;
+
+$1.stripIndent() :: $1 instanceof java.lang.String
+=>
+com.itsaky.androidide.javac.wrappers.StringWrapper.stripIndent($1)
+;;
+
+$1.stripTrailing() //:: $1 instanceof java.lang.String
+=>
+com.itsaky.androidide.javac.wrappers.StringWrapper.stripTrailing($1)
+;;
+
+$1.translateEscapes() :: $1 instanceof java.lang.String
+=>
+com.itsaky.androidide.javac.wrappers.StringWrapper.translateEscapes($1)
+;;
+
+$1.isBlank() :: $1 instanceof java.lang.String
+=>
+com.itsaky.androidide.javac.wrappers.StringWrapper.isBlank($1)
+;;
+
+$1.formatted($args$) :: $1 instanceof java.lang.String
+=>
+String.format($1, $args$)
+;;
+
+jdk.internal.misc.VM => com.itsaky.androidide.javac.wrappers.VMWrapper;;
+
+java.lang.ClassLoader.getSystemClassLoader() :: !inClass("com.itsaky.androidide.javax.tools.ToolProvider")
+=> com.itsaky.androidide.javax.tools.ToolProvider.class.getClassLoader();;
+
+//TODO: workaround for the NetBeans' approach to javac loading using two different ClassLoaders:
+public static com.itsaky.androidide.com.sun.source.util.JavacTask instance(com.itsaky.androidide.javax.annotation.processing.ProcessingEnvironment processingEnvironment) {$whatever$;}
+=>
+public static com.itsaky.androidide.com.sun.source.util.JavacTask instance(com.itsaky.androidide.javax.annotation.processing.ProcessingEnvironment processingEnvironment) {
+    if (!processingEnvironment.getClass().getName().equals(
+            "com.itsaky.androidide.com.sun.tools.javac.processing.JavacProcessingEnvironment"))
+        throw new IllegalArgumentException();
+
+    try {
+        //Cannot refer to the implementation directly, needs to use reflection:
+        java.lang.reflect.Method m = processingEnvironment.getClass().getMethod("getJavacTask");
+
+        return (JavacTask) m.invoke(processingEnvironment);
+    } catch (NoSuchMethodException ex) {
+        throw new UnsupportedOperationException(ex);
+    } catch (SecurityException ex) {
+        throw new UnsupportedOperationException(ex);
+    } catch (IllegalAccessException ex) {
+        throw new UnsupportedOperationException(ex);
+    } catch (IllegalArgumentException ex) {
+        throw new UnsupportedOperationException(ex);
+    } catch (java.lang.reflect.InvocationTargetException ex) {
+        throw new UnsupportedOperationException(ex);
+    }
+}
+;;
+
+$1.resolve("jrt-fs.jar").toUri().toURL() :: $1 instanceof java.nio.file.Path
+=>
+$1.resolve("lib").resolve("jrt-fs.jar").toUri().toURL()
+;;
+
+
+com.itsaky.androidide.javax.tools.ToolProvider.getSystemTool($class, $module, $name)
+=>
+$class.cast(((java.util.function.Supplier<Object>) () -> {
+    try {
+       Object v;
+       try {
+            v = com.itsaky.androidide.javax.tools.ToolProvider.getSystemTool($class, $module, $name);
+        } catch (Error err) {
+            v = null;
+        }
+       if (v == null) {
+           v = Class.forName($name).newInstance();
+       }
+       return $class.cast(v);
+    } catch (Throwable t) {
+        throw new Error(t);
+    }
+}).get())
+;;
+
+static java.nio.file.Path findCtSym() {
+    $code$
+}
+=>
+static java.nio.file.Path findCtSym() {
+    return com.itsaky.androidide.javac.wrappers.VMWrapper.findCtSym()
+}
+;;
+
+java.nio.file.FileSystems.newFileSystem($path, $a2)
+:: inClass("com.itsaky.androidide.com.sun.tools.javac.platform.JDKPlatformProvider")
+=>
+com.itsaky.androidide.javac.wrappers.VMWrapper.pathFs($path)
+;;
+
+/*
+String $v = Character.toString($ch); :: $ch instanceof char
+=>
+if (!Character.isJavaIdentifierPart($ch)) {
+    continue;
+}
+String $v = "" + $ch;
+;;
+*/
+
+java.nio.file.Files.newDirectoryStream($a1)
+:: inClass("com.itsaky.androidide.com.sun.tools.javac.platform.JDKPlatformProvider")
+=>
+com.itsaky.androidide.javac.wrappers.VMWrapper.newDirectoryStream($a1)
+;;
+
+$1.toList() :: $1 instanceof java.util.stream.Stream
+=>
+$1.collect(java.util.stream.Collectors.toList())
+;;
+
+//to eliminate imports:
+com.itsaky.androidide.jdk.internal.javac.PreviewFeature
+=>
+java.lang.VirtualMachineError
+;;
+
+//to eliminate imports:
+jdk.internal.javac.NoPreview
+=>
+java.lang.VirtualMachineError
+;;
+
+//to eliminate imports:
+java.io.Serial
+=>
+java.lang.VirtualMachineError
+;;
+
+// fallback to highest available ct.sym
+com.itsaky.androidide.com.sun.tools.javac.platform.PlatformUtils.lookupPlatformDescription($s)
+=>
+((java.util.function.Supplier<com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription>) () -> {
+    final String version = $s;
+    com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription pd = com.itsaky.androidide.com.sun.tools.javac.platform.PlatformUtils.lookupPlatformDescription(version);
+    if (pd != null) {
+        return pd;
+    }
+
+    com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription fallback = null;
+    for (int numVersion = Integer.valueOf(version); fallback == null; numVersion--) {
+        fallback = PlatformUtils.lookupPlatformDescription("" + numVersion);
+    }
+    if (fallback == null) {
+        throw new NullPointerException("No platform found for " + version);
+    }
+    final com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription delegate = fallback;
+
+    return new com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription() {
+        @Override
+        public com.itsaky.androidide.javax.tools.JavaFileManager getFileManager() {
+            return delegate.getFileManager();
+        }
+
+        @Override
+        public String getSourceVersion() {
+            return version;
+        }
+
+        @Override
+        public String getTargetVersion() {
+            return version;
+        }
+
+        @Override
+        public java.util.List<PlatformDescription.PluginInfo<com.itsaky.androidide.javax.annotation.processing.Processor>> getAnnotationProcessors() {
+            return delegate.getAnnotationProcessors();
+        }
+
+        @Override
+        public java.util.List<com.itsaky.androidide.com.sun.tools.javac.platform.PlatformDescription.PluginInfo<com.itsaky.androidide.com.sun.source.util.Plugin>> getPlugins() {
+            return delegate.getPlugins();
+        }
+
+        @Override
+        public java.util.List<String> getAdditionalOptions() {
+            return delegate.getAdditionalOptions();
+        }
+
+        @Override
+        public void close() throws IOException {
+            delegate.close();
+        }
+    };
+}).get();
+;;
+
+$cs.isEmpty() :: $cs instanceof java.lang.CharSequence
+=>
+($cs.length() == 0)
+;;
+
+$coll.toArray($type[]::new) :: inClass("com.itsaky.androidide.com.sun.tools.javac.comp.Flow")
+=>
+$coll.toArray(new $type[0])
+;;
+
+$coll.toArray($expr) :: inClass("com.itsaky.androidide.com.sun.tools.javac.comp.Flow") && containsAny($expr, "new com.itsaky.androidide.com.sun.tools.javac.code.Type[$s]")
+=>
+$coll.toArray(new com.itsaky.androidide.com.sun.tools.javac.code.Type[0])
+;;
+
+
+Iterable<String> $it;
+try {
+    $any$;
+} catch $catches$ :: inClass("com.itsaky.androidide.com.sun.tools.javac.main.Main")
+=>
+Iterable<String> $it = java.util.Arrays.asList(argv);
+;;
+
+jdk.internal.opt.CommandLine
+=>
+java.lang.VirtualMachineError
+;;
+
+jdk.internal.opt.CommandLine.UnmatchedQuote
+=>
+java.lang.VirtualMachineError
+;;

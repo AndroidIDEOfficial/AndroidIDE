@@ -46,20 +46,11 @@ public class PropertiesParser {
 
   public Logger logger;
 
-  public PropertiesParser(Logger logger) {
+  private final File baseDir;
+
+  public PropertiesParser(Logger logger, File baseDir) {
     this.logger = logger;
-  }
-
-  public static void main(String[] args) {
-    boolean ok = run(args, System.out);
-    if (!ok) {
-      System.exit(1);
-    }
-  }
-
-  public static boolean run(String[] args, PrintStream out) {
-    PropertiesParser pp = new PropertiesParser(out::println);
-    return pp.run(args);
+    this.baseDir = baseDir;
   }
 
   public void info(String msg) {
@@ -86,7 +77,7 @@ public class PropertiesParser {
       File propertyFile = new File(propertyPath);
       String prefix = propertyFile.getName().split("\\.")[0];
       MessageFile messageFile = new MessageFile(propertyFile, prefix);
-      new ClassGenerator().generateFactory(messageFile, new File(outPath));
+      new ClassGenerator(this.baseDir).generateFactory(messageFile, new File(outPath));
     } catch (Throwable ex) {
       throw new RuntimeException(ex);
     }

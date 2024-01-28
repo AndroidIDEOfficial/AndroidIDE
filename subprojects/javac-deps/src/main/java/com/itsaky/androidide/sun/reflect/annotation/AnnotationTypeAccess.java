@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -17,35 +15,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    `kotlin-dsl`
-}
+package com.itsaky.androidide.sun.reflect.annotation;
 
-repositories {
-  google()
-  gradlePluginPortal()
-  mavenCentral()
-}
+import sun.reflect.annotation.AnnotationType;
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
-}
+/**
+ * @author Akash Yadav
+ */
+public class AnnotationTypeAccess {
+  private AnnotationTypeAccess() {
+    throw new UnsupportedOperationException();
+  }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "17"
-}
-
-dependencies {
-  implementation(gradleApi())
-
-  implementation("com.android.tools.build:gradle:${libs.versions.agp.asProvider().get()}")
-  implementation(libs.maven.publish)
-
-  implementation(libs.common.jkotlin)
-  implementation(libs.common.antlr4)
-  implementation(libs.google.gson)
-  implementation(libs.google.java.format)
-
-  implementation(libs.misc.jackpot30)
+  public static Class<?> invocationHandlerReturnType(Class<?> cls) {
+    return AnnotationType.invocationHandlerReturnType(cls);
+  }
 }

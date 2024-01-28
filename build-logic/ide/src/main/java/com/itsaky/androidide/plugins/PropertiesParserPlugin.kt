@@ -41,32 +41,32 @@ class PropertiesParserPlugin : Plugin<Project> {
       sourceSets.getByName("main").java { srcDir(target.propsDir) }
     }
 
-    target.tasks.register("compileProperties") {
-      doLast {
-        val options = target.createParserOptions()
-        if (options.isEmpty()) {
-          return@doLast
-        }
-
-        val parser = PropertiesParser { target.logger.lifecycle(it) }
-
-        logger.info(
-          "Running PropertiesParser with arguments: ${options.joinToString(separator = " ")}"
-        )
-
-        val ok = parser.run(options.toTypedArray())
-        if (!ok) {
-          throw GradleException("Failed to parse property files")
-        }
-      }
-
-      outputs.dir(target.propsDir)
-    }
-
-    target.tasks.register("cleanCompiledProperties", Delete::class.java) { delete(target.propsDir) }
-
-    target.tasks.withType(JavaCompile::class.java) { dependsOn("compileProperties") }
-    target.tasks.getByName("clean").dependsOn("cleanCompiledProperties")
+//    target.tasks.register("compileProperties") {
+//      doLast {
+//        val options = target.createParserOptions()
+//        if (options.isEmpty()) {
+//          return@doLast
+//        }
+//
+//        val parser = PropertiesParser { target.logger.lifecycle(it) }
+//
+//        logger.info(
+//          "Running PropertiesParser with arguments: ${options.joinToString(separator = " ")}"
+//        )
+//
+//        val ok = parser.run(options.toTypedArray())
+//        if (!ok) {
+//          throw GradleException("Failed to parse property files")
+//        }
+//      }
+//
+//      outputs.dir(target.propsDir)
+//    }
+//
+//    target.tasks.register("cleanCompiledProperties", Delete::class.java) { delete(target.propsDir) }
+//
+//    target.tasks.withType(JavaCompile::class.java) { dependsOn("compileProperties") }
+//    target.tasks.getByName("clean").dependsOn("cleanCompiledProperties")
   }
 }
 
