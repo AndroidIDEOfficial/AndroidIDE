@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">कोई व्यू नहीं जोड़ा गया है। जोड़ने के लिए क्लिक करें।</string>
   <string name="msg_generate_xml_failed">XML कोड जनरेट करने में विफल</string>
   <string name="title_generating_xml"> XML कोड जनरेट किया जा रहा है</string>
-  <string name="msg_swipe_up">बिल्ड आउटपुट, लॉग आदि के लिए ऊपर की ओर स्वाइप करें।</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE क्रैश हो गया</string>
   <string name="msg_report_crash">कृपया निम्नलिखित स्टैकट्रेस के साथ गिटहब पर एक मुद्दा खोलें :</string>
   <string name="msg_crash_report_hint">लॉग कॉपी करने के लिए नीचे दिए गए बटन पर क्लिक करें और मुद्दों का पेज खोलें।</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">डबल-टैप और लंबे समय तक शब्द चयन के लिए शब्द किनारों को पुनः प्राप्त करने के लिए ICU लाइब्रेरी का उपयोग करें।</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">\@@फाइल्स@@ के लिए बाएं स्वाइप करें।</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">\@@बिल्ड आउटपुट@@ के लिए ऊपर स्वाइप करें।</string>
   <string name="idepref_editor_useSoftTabs_title">सॉफ्ट टैब का उपयोग करें</string>
   <string name="idepref_editor_useSoftTabs_summary">चुनें कि टैब वर्ण (\\t) के बजाय रिक्त स्थान का उपयोग करना है या नहीं।</string>
