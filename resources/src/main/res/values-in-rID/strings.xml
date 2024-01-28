@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Tidak ada View yang ditambahkan. Klik untuk menambahkan.</string>
   <string name="msg_generate_xml_failed">Gagal untuk menghasilkan kode XML</string>
   <string name="title_generating_xml">Hasilkan kode XML</string>
-  <string name="msg_swipe_up">Geser ke atas untuk hasil build, log dan lainnya.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE crash</string>
   <string name="msg_report_crash">Mohon buka isu di github dengan menyertakan stacktrace :</string>
   <string name="msg_crash_report_hint">Klik tombol dibawah untuk menyalin log dan membuka halaman isu.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Gunakan perpustakaan ICU untuk menggunakan ambil tepi kata untuk pemilihan kata ketuk dua kali dan tekan lama.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Geser ke kiri untuk @@file@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Pilih apakah akan menggunakan spasi alih-alih karakter tab (\\t).</string>
