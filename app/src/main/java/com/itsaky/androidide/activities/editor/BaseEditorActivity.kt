@@ -44,9 +44,6 @@ import androidx.annotation.GravityInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
-import androidx.core.view.WindowInsetsCompat.Type.systemBars
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import androidx.core.view.updateLayoutParams
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.KeyboardUtils
@@ -612,9 +609,6 @@ abstract class BaseEditorActivity :
   private fun onSoftInputChanged() {
     invalidateOptionsMenu()
     if (fullscreenOnLandscape) {
-      val windowInsetsController = WindowInsetsControllerCompat(window, binding.root).also {
-        it.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-      }
       if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         if (KeyboardUtils.isSoftInputVisible(this)) {
           binding.apply {
@@ -626,7 +620,6 @@ abstract class BaseEditorActivity :
               height = SizeUtils.dp2px(35f)
             }
           }
-          windowInsetsController.hide(systemBars())
           supportActionBar?.hide()
         } else {
           binding.apply {
@@ -638,7 +631,6 @@ abstract class BaseEditorActivity :
               height = WRAP_CONTENT
             }
           }
-          windowInsetsController.show(systemBars())
           supportActionBar?.show()
         }
       }
