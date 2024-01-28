@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Nu au fost adăugate View-uri. Faceți clic pentru a adăuga.</string>
   <string name="msg_generate_xml_failed">Nu s-a reușit să se genereze codul XML</string>
   <string name="title_generating_xml">Generarea codului XML</string>
-  <string name="msg_swipe_up">Trageți cu degetul în sus pentru jurnale și multe altele.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE s-a oprit</string>
   <string name="msg_report_crash">Vă rugăm să deschideți o problemă pe github cu următorul stacktrace :</string>
   <string name="msg_crash_report_hint">Faceți clic pe butonul de mai jos pentru a copia jurnalul și a deschide pagina de probleme.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
