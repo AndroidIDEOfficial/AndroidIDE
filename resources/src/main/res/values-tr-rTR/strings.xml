@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Herhangi bir View eklenmedi. Eklemek için tıklayın.</string>
   <string name="msg_generate_xml_failed">XML kodu oluşturulamadı</string>
   <string name="title_generating_xml">XML kodu oluşturuluyor</string>
-  <string name="msg_swipe_up">İnşa çıktısı, günlükler ve daha fazlası için yukarı kaydırın.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE çöktü</string>
   <string name="msg_report_crash">Lütfen aşağıdaki talimatları izleyerek Github\'da bir konu açın:</string>
   <string name="msg_crash_report_hint">Günlüğü kopyalamak ve sorunlar sayfasını açmak için aşağıdaki düğmeyi tıklayın.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Çift dokunma ve uzun basma eylemlerinde sözcükleri almak için ICU kütüphanesini kullan.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">\@@Dosyalar@@ için sola kaydırın.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">\@@İnşa çıktısı@@ için yukarı kaydırın.</string>
   <string name="idepref_editor_useSoftTabs_title">Yumuşak tab kullan</string>
   <string name="idepref_editor_useSoftTabs_summary">Tab karakteri (\\t) yerine boşluklar kullanmak isteyip istemediğinizi seçin.</string>
