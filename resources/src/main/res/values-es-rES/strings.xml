@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">No se han añadido vistas. Haga clic para añadir.</string>
   <string name="msg_generate_xml_failed">Error al generar código XML</string>
   <string name="title_generating_xml">Generando código XML</string>
-  <string name="msg_swipe_up">Desliza hacia arriba para construir salida, registros y más.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE falló</string>
   <string name="msg_report_crash">Por favor, abra un problema en github con el siguiente seguimiento:</string>
   <string name="msg_crash_report_hint">Haga clic en el botón de abajo para copiar registro y abrir la página de incidencias.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Utilice la librería ICU para recuperar los bordes de palabras para doble toque y selección de palabras con pulsación larga.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Deslice a la izquierda para ver @@Archivos@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Desliza hacia arriba para ver el @@Registro@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar pestaña flexible</string>
   <string name="idepref_editor_useSoftTabs_summary">Elija si desea utilizar espacios en lugar del carácter de pestaña (\\t).</string>
