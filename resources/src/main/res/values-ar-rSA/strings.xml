@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">لم يتم إضافة أي عرض. انقر للإضافة.</string>
   <string name="msg_generate_xml_failed">فشل في إنشاء كود XML</string>
   <string name="title_generating_xml">إنشاء كود XML</string>
-  <string name="msg_swipe_up">مرر لأعلى للإخراج والسجلات والمزيد.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">تحطم AndroidIDE</string>
   <string name="msg_report_crash">الرجاء فتح مشكلة على github مع المكونات التالية:</string>
   <string name="msg_crash_report_hint">انقر على الزر أدناه لنسخ السجل وفتح صفحة المشكلات.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">استخدم مكتبة ICU لاستخدام استعادة حواف الكلمات للنقر المزدوج والضغط المطول على اختيار الكلمات.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">اسحب لليسار لعرض @@الملفات@@</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">مرر لأعلى لعرض @@مخرجات البناء@@</string>
   <string name="idepref_editor_useSoftTabs_title">استخدام علامة التبويب الناعمة</string>
   <string name="idepref_editor_useSoftTabs_summary">اختر ما إذا كان سيتم استخدام المسافات بدلاً من حرف التبويب (\\t).</string>
