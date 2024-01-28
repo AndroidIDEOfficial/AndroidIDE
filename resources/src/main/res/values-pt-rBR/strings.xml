@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Nenhuma visualização foi adicionada. Clique para adicionar.</string>
   <string name="msg_generate_xml_failed">Falha ao gerar código XML</string>
   <string name="title_generating_xml">Gerando código XML</string>
-  <string name="msg_swipe_up">Deslize para cima para ver a saída de compilação, logs e mais.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE parou</string>
   <string name="msg_report_crash">Abra um problema no github com o seguinte stacktrace:</string>
   <string name="msg_crash_report_hint">Clique no botão abaixo para copiar o registro e abrir a página de issues.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Usa a biblioteca ICU para usar bordas de palavras de recuperação para seleção de palavras de toque duplo e pressionamento longo.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Deslize à esquerda para @@arquivos@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Deslize à cima para @@saída de compilação@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar tabulação suave</string>
   <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\\t).</string>
