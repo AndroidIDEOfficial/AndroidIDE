@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Es wurden keine View hinzugef&#xFC;gt. Zum Hinzuf&#xFC;gen klicken.</string>
   <string name="msg_generate_xml_failed">XML-Code konnte nicht generiert werden</string>
   <string name="title_generating_xml">Generieren von XML-Code</string>
-  <string name="msg_swipe_up">Wischen Sie nach oben, um Build Ausgaben, Logs und mehr anzuzeigen.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE ist abgest&#xFC;rzt</string>
   <string name="msg_report_crash">Bitte &#xF6;ffnen Sie ein Issue auf GitHub mit dem folgenden Stacktrace:</string>
   <string name="msg_crash_report_hint">Klicken Sie auf die Schaltfl&#xE4;che unten, um den Log zu kopieren und die Problemseite zu &#xF6;ffnen.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Nach Links swipen für @@files@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe nach oben für @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Soft tab benutzen</string>
   <string name="idepref_editor_useSoftTabs_summary">Wählen Sie, ob Leerzeichen anstelle von Tab verwendet werden sollen (\\t).</string>
