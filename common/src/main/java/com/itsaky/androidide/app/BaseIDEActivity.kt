@@ -93,12 +93,12 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   }
 
   private fun hideSystemBarsIfPossible(configuration: Configuration) {
-    if (configuration.orientation == ORIENTATION_LANDSCAPE) {
-      WindowInsetsControllerCompat(window, bindLayout()).apply {
-        systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        hide(systemBars())
-      }
+    val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView).also {
+      it.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
+    if (configuration.orientation == ORIENTATION_LANDSCAPE) {
+      windowInsetsController.hide(systemBars())
+    } else windowInsetsController.show(systemBars())
   }
 
   protected open fun preSetContentLayout() {}
