@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">尚未添加任何视图，单击以添加。</string>
   <string name="msg_generate_xml_failed">XML 代码生成失败</string>
   <string name="title_generating_xml">生成 XML 代码</string>
-  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
+  <string name="msg_swipe_up">向上滑动或点击以查看构建输出、日志等。</string>
   <string name="msg_ide_crashed">AndroidIDE 崩溃了</string>
   <string name="msg_report_crash">请使用以下堆栈跟踪在 Github 上打开一个 issue：</string>
   <string name="msg_crash_report_hint">单击下面的按钮以复制日志和打开 issues 页面。</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">使用 ICU 库以检索字词边缘进行双击和长按字词的选择</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
+  <string name="msg_swipe_for_files">从左侧滑动查看@@文件@@。</string>
   <string name="msg_swipe_for_output">上滑查看 @@构建输出@@</string>
   <string name="idepref_editor_useSoftTabs_title">使用空格代替制表符</string>
   <string name="idepref_editor_useSoftTabs_summary">设置是否使用多个空格代替制表符 (\\t)</string>
