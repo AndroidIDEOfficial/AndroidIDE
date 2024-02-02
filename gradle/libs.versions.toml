@@ -55,7 +55,7 @@ common-markwon-core = { module = "io.noties.markwon:core", version.ref = "markwo
 common-markwon-extStrikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }
 common-markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
 common-markwon-recycler = { module = "io.noties.markwon:recycler", version.ref = "markwon" }
-common-hiddenApiBypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "2.0" }
+common-hiddenApiBypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
 common-termuxAmLib = { module = "com.termux:termux-am-library", version = "v2.0.0" }
 
 # AndroidX
