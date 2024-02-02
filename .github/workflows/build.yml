@@ -81,23 +81,23 @@ jobs:
         run: |
           cp app/build/outputs/apk/${{ matrix.build_type }}/app-*.apk ./
       - name: Upload arm64-v8a ${{ matrix.build_type }} APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: apk-arm64-v8a-${{ matrix.build_type }}
           path: app-arm64-v8a-${{ matrix.build_type }}.apk
       - name: Upload armeabi-v7a ${{ matrix.build_type }} APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: apk-armeabi-v7a-${{ matrix.build_type }}
           path: app-armeabi-v7a-${{ matrix.build_type }}.apk
       - name: Upload x86_64 ${{ matrix.build_type }} APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: apk-x86_64-${{ matrix.build_type }}
           path: app-x86_64-${{ matrix.build_type }}.apk
       - name: Upload ${{ matrix.build_type }} mappings
         if: ${{ matrix.build_type == 'release' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-mappings
           path: '**/build/outputs/mapping'
@@ -132,7 +132,7 @@ jobs:
           ANDROIDIDE_TEST: true
       - name: Upload test reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-unit-tests
           path: '**/build/reports/tests/'
@@ -168,7 +168,7 @@ jobs:
           TEST_TOOLING_API_IMPL: true
       - name: Upload test reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-tooling-api-tests
           path: '**/build/reports/tests/'
@@ -216,7 +216,7 @@ jobs:
           script: ./gradlew connectedCheck
       - name: Upload test reports
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-android-tests-${{ matrix.api-level }}-${{ matrix.target }}
           path: '**/build/reports/androidTests/'
@@ -277,7 +277,7 @@ jobs:
       - name: Publish release
         run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
       - name: Archive Nyx state file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: .nyx-state-${{ github.job }}.json
