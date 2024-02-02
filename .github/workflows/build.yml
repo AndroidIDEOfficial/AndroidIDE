@@ -243,15 +243,15 @@ jobs:
           java-version: ${{ env.BUILD_JAVA_VERSION }}
           distribution: ${{ env.BUILD_JAVA_DIST }}
       - name: Download arm64-v8a APK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: apk-arm64-v8a-release
       - name: Download x86_64 APK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: apk-x86_64-release
       - name: Download armeabi-v7a APK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: apk-armeabi-v7a-release
       - name: Change Gradle wrapper permissions
