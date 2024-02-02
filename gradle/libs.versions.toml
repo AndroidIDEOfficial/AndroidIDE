@@ -56,7 +56,7 @@ common-markwon-extStrikethrough = { module = "io.noties.markwon:ext-strikethroug
 common-markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
 common-markwon-recycler = { module = "io.noties.markwon:recycler", version.ref = "markwon" }
 common-hiddenApiBypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
-common-termuxAmLib = { module = "com.termux:termux-am-library", version = "v2.0.0" }
+common-termuxAmLib = { module = "com.termux:termux-am-library", version = "2.0.0" }
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.7.0" }
