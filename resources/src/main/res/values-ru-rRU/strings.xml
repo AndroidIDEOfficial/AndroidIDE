@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Вы ещё не добавили элементов. Нажмите, чтобы добавить.</string>
   <string name="msg_generate_xml_failed">Не удалось сгенерировать код XML</string>
   <string name="title_generating_xml">Генерация кода XML</string>
-  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
+  <string name="msg_swipe_up">Нажмите здесь или проведите вверх, чтобы увидеть сообщения сборки, логи и прочее.</string>
   <string name="msg_ide_crashed">AndroidIDE приостановила работу из-за непридвиденной ошибки</string>
   <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
   <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
@@ -230,8 +230,8 @@
   <string name="idepref_useIcu_summary">Использовать библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
-  <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
+  <string name="msg_swipe_for_files">Проведите вправо, чтобы открыть @@дерево файлов@@.</string>
+  <string name="msg_swipe_for_output">Проведите вверх для просмотра @@сообщений сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
   <string name="btn_donate">Поддержать</string>
@@ -350,10 +350,10 @@
   <string name="action_show_hierarchy">Показать иерархию разметки</string>
   <string name="idepref_editor_colorScheme">Цветовая схема</string>
   <string name="idepref_editor_colorScheme_summary">Выберите цветовую схему редактора</string>
-  <string name="idepref_general_uiMode">Тема</string>
-  <string name="idepref_general_uiMode_summary">Выберите тему интерфейса IDE</string>
-  <string name="uiMode_light">Светлая</string>
-  <string name="uiMode_dark">Тёмная</string>
+  <string name="idepref_general_uiMode">Режим интерфейса</string>
+  <string name="idepref_general_uiMode_summary">Выберите режим интерфейса IDE</string>
+  <string name="uiMode_light">Светлый</string>
+  <string name="uiMode_dark">Тёмный</string>
   <string name="uiMode_system">Как в системе</string>
   <string name="idepref_general_themeSelector_title">Тема</string>
   <string name="idepref_general_themeSelector_summary">Выберите тему оформления для AndroidIDE (требуется перезапуск).</string>
@@ -373,7 +373,7 @@
   <string name="title_fix_imports">Исправить директивы import</string>
   <string name="msg_no_unresolved_classes">Неразрешенные имена классов не найдены</string>
   <string name="title_class_chooser">Который %1$s?</string>
-  <string name="permlab_bind_logger_service">привязать к службе логирования</string>
+  <string name="permlab_bind_logger_service">Привязка к службе отправки отладочных сообщений (логирования)</string>
   <string name="permdesc_bind_logger_service">Позволяет этому приложению подключиться к службе логирования AndroidIDE. Это разрешение требуется AndroidIDE, чтобы читать логи этого приложения.</string>
   <string name="wizard_module_name">Имя модуля</string>
   <string name="wizard_module_type">Тип модуля</string>
@@ -406,13 +406,13 @@
   <string name="idepref_devOptions_dumpLogs_title">Сохранение логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Сохранять логи AndroidIDE в $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">Запустите отладочный (debug) вариант вашего приложения, чтобы увидеть его логи здесь.</string>
-  <string name="msg_logsender_disabled">LogSender отключен. Вы можете включить его в настройках.</string>
+  <string name="msg_logsender_disabled">LogSender отключен. Вы можете включить его в настройках разработчика AndroidIDE.</string>
   <string name="msg_emptyview_idelogs">Здесь отображаются логи IDE.</string>
   <string name="msg_emptyview_diagnostics">Откройте файл, чтобы увидеть результаты его диагностики</string>
   <string name="msg_emptyview_buildoutput">"Соберите приложение или запустите задачу, чтобы увидеть результаты сборки здесь. "</string>
   <string name="msg_codeaction_failed">Не удалось выполнить действие с кодом</string>
   <string name="idepref_devOptions_enableLogsender_title">Включить LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">Если отключено, журналы из приложений не будут отображаться в AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_summary">Если отключено, отладочные сообщения из приложений не будут отображаться в AndroidIDE</string>
   <string name="title_build_variants">Варианты сборки</string>
   <string name="title_apply">Применить</string>
   <string name="title_discard">Отменить</string>
@@ -421,15 +421,15 @@
   <string name="err_selected_variant_not_found">Выбранный вариант сборки не найден</string>
   <string name="title_disconnect_log_senders">Отключить модули отправки логов</string>
   <string name="title_begin_long_select">Начать длинное выделение</string>
-  <string name="idepref_editor_stickScroll_title">Липкая прокрутка</string>
-  <string name="idepref_editor_stickyScroll_summary">Показывать текущую область видимости вверху при прокрутке редактора.</string>
-  <string name="idepref_launchAppAfterInstall_title">Запустить приложение после установки</string>
-  <string name="idepref_launchAppAfterInstall_summary">Если включено, IDE запустит приложение (без подтверждения) сразу после его установки.</string>
+  <string name="idepref_editor_stickScroll_title">Информативный скроллинг</string>
+  <string name="idepref_editor_stickyScroll_summary">Показывать имена классов и функций вверху редактора при скроллинге.</string>
+  <string name="idepref_launchAppAfterInstall_title">Запускать приложение после установки</string>
+  <string name="idepref_launchAppAfterInstall_summary">Если включено, IDE запустит собранное приложение сразу после его установки (без подтверждения).</string>
   <string name="title_run_options">Опции запуска</string>
   <string name="err_cannot_determine_package">Невозможно запустить приложение. Не удалось определить имя пакета.</string>
-  <string name="msg_launch_failure_no_app_module">Невозможно запустить приложение. В проекте не найдены модули приложения.</string>
+  <string name="msg_launch_failure_no_app_module">Невозможно запустить приложение. В проекте не найдено модулей приложений.</string>
   <string name="title_launch_app">Запустить приложение</string>
-  <string name="title_experiment_flavor">Экспериментальная функция</string>
+  <string name="title_experiment_flavor">Экспериментальный режим</string>
   <string name="msg_experimental_flavor">Вы используете сборку AndroidIDE для архитектуры %1$s на устройстве с %2$s. AndroidIDE скорее всего сможет функционировать в такой конфигурации, но это приведет к ухудшению производительности и сделает ваше устройство потенциально уязвимым. Пожалуйста, не используйте AndroidIDE в такой конфигурации, если это возможно.</string>
   <string name="idepref_editor_pinLineNumbers_title">Закрепить номера строк</string>
   <string name="idepref_editor_pinLineNumbers_summary">Оставлять панель с номерами строк видимой при горизонтальной прокрутке редактора.</string>
