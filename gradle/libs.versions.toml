@@ -17,7 +17,7 @@ androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 appintro = "6.3.1"
 markwon = "4.6.2"
-maven-publish-plugin = "0.25.3"
+maven-publish-plugin = "0.27.0"
 
 [libraries]
 
