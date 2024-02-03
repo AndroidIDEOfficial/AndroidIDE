@@ -22,8 +22,8 @@
   <string name="bootstrap_error_body">AndroidIDE не удалось установить базовые пакеты.</string>
   <string name="bootstrap_error_abort">Отмена</string>
   <string name="bootstrap_error_try_again">Попробовать снова</string>
-  <string name="bootstrap_error_not_primary_user_message">$PREFIX</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device. \nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE может быть запущена только от лица основного пользователя.\nЗаранее собранные базовые пакеты для AndroidIDE включают в себя путь $PREFIX и могут быть установлены только по следующему пути:\n%1$s</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE не может быть установлена на карту памяти или внешний носитель.\nЗаранее собранные базовые пакеты для AndroidIDE включают в себя путь $PREFIX и могут быть установлены только по следующему пути:\n%1$s</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Новая сессия</string>
   <string name="action_new_session_failsafe">Безопасный режим</string>
@@ -41,9 +41,9 @@
   <string name="title_select_url_dialog">Нажмите на URL, чтобы перейти, или зажмите, чтобы скопировать</string>
   <string name="title_select_url_none_found">В терминале не найдено ни одной URL-ссылки.</string>
   <string name="msg_select_url_copied_to_clipboard">URL скопирована в буфер обмена</string>
-  <string name="action_share_transcript">Поделиться содержанием</string>
+  <string name="action_share_transcript">Поделиться терминалом</string>
   <string name="title_share_transcript">Содержание терминала</string>
-  <string name="title_share_transcript_with">Получатель содержаня:</string>
+  <string name="title_share_transcript_with">Получатель содержания:</string>
   <string name="action_share_selected_text">Поделиться выделением</string>
   <string name="title_share_selected_text">Текст терминала</string>
   <string name="title_share_selected_text_with">Получатель выделения:</string>
@@ -56,7 +56,7 @@
   <string name="action_open_help">Помощь</string>
   <string name="action_open_settings">Настройки</string>
   <string name="action_report_issue">Сообщить о проблеме</string>
-  <string name="msg_generating_report">Генерация отчета</string>
+  <string name="msg_generating_report">Создание отчета</string>
   <string name="msg_add_termux_debug_info">Добавить отладочную информацию Termux в отчет?</string>
   <!-- Termux Notifications -->
   <string name="notification_action_wake_lock">Установить wakelock</string>
@@ -82,7 +82,7 @@
   <!-- Terminal View Key Logging -->
   <string name="termux_terminal_view_key_logging_enabled_title">Логи виртуальных клавиш</string>
   <string name="termux_terminal_view_key_logging_enabled_off">В логи не будет добавляться информация о виртуальных клавишах терминала. (По умолчанию)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys. These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Сообщения LogCat будут содержать записи о кнопках терминала. Эти сообщения очень подробны, поэтому в нормальных условиях отключены, чтобы избежать проблем с производительностью.</string>
   <!-- Crash Report Notifications -->
   <string name="termux_crash_report_notifications_enabled_title">Уведомления об отчетах</string>
   <string name="termux_crash_report_notifications_enabled_off">Отключить уведомления об отчетах об ошибках.</string>
@@ -98,8 +98,8 @@
   <string name="termux_soft_keyboard_enabled_on">Экранная клавиатура будет показана. (По умолчанию)</string>
   <!-- Soft Keyboard Only If No Hardware-->
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Экранная клавиатура, если нет физической</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if hardware keyboard is connected. (Default)</string>
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if no hardware keyboard is connected.</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Экранная клавиатура будет активна, даже если подключена физическая клавиатура. (По умолчанию)</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Экранная клавиатура будет активна, только если не подключена физическая клавиатура.</string>
   <!-- Terminal View Preferences -->
   <string name="termux_terminal_view_preferences_title">Отображение</string>
   <string name="termux_terminal_view_preferences_summary">Настройки отображения терминала</string>
@@ -108,5 +108,5 @@
   <!-- Terminal View Margin Adjustment -->
   <string name="termux_terminal_view_terminal_margin_adjustment_title">Отступы</string>
   <string name="termux_terminal_view_terminal_margin_adjustment_off">Изменение отступов терминала будет отключено.</string>
-  <string name="termux_terminal_view_terminal_margin_adjustment_on">Terminal margin adjustment will be enabled. It should be enabled to try to fix the issue where soft keyboard covers part of extra keys/terminal view. If it causes screen flickering on your devices, then disable it. (Default)</string>
+  <string name="termux_terminal_view_terminal_margin_adjustment_on">Будет включена настройка отступов в терминале. Эта настройка может помочь, если экранная клавиатура закрывает часть кнопок терминала. Если эта настройка вызывает мигание экрана - отключите её. (По умолчанию)</string>
 </resources>
