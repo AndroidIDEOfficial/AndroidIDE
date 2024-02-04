@@ -18,7 +18,7 @@ jobs:
 
     - name: Generate Crowdin Contributors table
       id: generate_table
-      uses: andrii-bodnar/action-crowdin-contributors@v1.0.3
+      uses: andrii-bodnar/action-crowdin-contributors@v2.0.0
       continue-on-error: false
       with:
         contributors_per_line: 8
