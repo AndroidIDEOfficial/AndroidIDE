@@ -8,7 +8,7 @@ java {
 }
 
 dependencies {
-    api 'io.github.itsaky:nb-javac-android:17.0.0.0'
+    api 'io.github.itsaky:nb-javac-android:17.0.0.3'
     api project(path: ':another-java-library')
 }
 
