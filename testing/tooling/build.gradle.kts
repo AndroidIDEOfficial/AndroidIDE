@@ -33,6 +33,8 @@ dependencies {
     api(projects.shared)
     api(projects.subprojects.toolingApi)
 
+    api(projects.testing.common)
+
     // build tooling API before tests
     compileOnly(projects.subprojects.toolingApiImpl)
 }

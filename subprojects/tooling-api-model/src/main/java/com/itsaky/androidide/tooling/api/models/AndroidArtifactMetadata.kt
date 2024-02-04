@@ -27,6 +27,7 @@ import java.io.Serializable
  */
 data class AndroidArtifactMetadata(
   val name: String,
+  val applicationId: String?,
   val resGenTaskName: String?,
   val assembleTaskOutputListingFile: File?,
   val generatedResourceFolders: Collection<File>,

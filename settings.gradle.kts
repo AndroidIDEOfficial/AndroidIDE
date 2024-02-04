@@ -16,7 +16,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("com.mooltiverse.oss.nyx:gradle:2.5.1")
+    classpath("com.mooltiverse.oss.nyx:gradle:2.5.2")
   }
 }
 
@@ -112,6 +112,7 @@ include(
   ":termux:termux-shared",
   ":termux:termux-view",
   ":testing:android",
+  ":testing:common",
   ":testing:lsp",
   ":testing:tooling",
   ":testing:unit",

@@ -53,6 +53,17 @@ class EditorFeatures(
     }
   }
 
+  override fun setSelectionAround(line: Int, column: Int) {
+    withEditor {
+      if (line < lineCount) {
+        val columnCount = text.getColumnCount(line)
+        setSelection(line, if (column > columnCount) columnCount else column)
+      } else {
+        setSelection(lineCount - 1, text.getColumnCount(lineCount - 1))
+      }
+    }
+  }
+
   override fun getCursorLSPRange(): Range = withEditor {
     val end = cursor.right().let {
       Position(line = it.line, column = it.column, index = it.index)

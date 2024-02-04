@@ -18,7 +18,7 @@ jobs:
 
     - name: Generate Crowdin Contributors table
       id: generate_table
-      uses: andrii-bodnar/action-crowdin-contributors@v1.0.1
+      uses: andrii-bodnar/action-crowdin-contributors@v2.0.0
       continue-on-error: false
       with:
         contributors_per_line: 8
@@ -45,13 +45,13 @@ jobs:
         rm ${{ env.CONTRIBUTORS_JSON_FILENAME }}_staging.json
 
     - name: Upload JSON report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: crowdin-contributors-json
         path: ${{ env.CONTRIBUTORS_JSON_FILENAME }}.json
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v6
       with:
         title: Update Crowdin Contributors table
         body: By [action-crowdin-contributors](https://github.com/andrii-bodnar/action-crowdin-contributors) GitHub action

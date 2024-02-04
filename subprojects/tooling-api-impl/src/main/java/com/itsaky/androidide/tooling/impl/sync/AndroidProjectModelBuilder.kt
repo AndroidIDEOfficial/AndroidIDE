@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.tooling.impl.sync
 
+import com.android.builder.model.v2.models.AndroidDsl
 import com.android.builder.model.v2.models.AndroidProject
 import com.android.builder.model.v2.models.BasicAndroidProject
 import com.android.builder.model.v2.models.ModelBuilderParameter
@@ -40,6 +41,7 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
     val projectPath = module.gradleProject.path
     val basicModel = controller.getModelAndLog(module, BasicAndroidProject::class.java)
     val androidModel = controller.getModelAndLog(module, AndroidProject::class.java)
+    val androidDsl = controller.getModelAndLog(module, AndroidDsl::class.java)
 
     val variantNames = basicModel.variants.map { it.name }
     log(
@@ -80,7 +82,8 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       basicModel,
       androidModel,
       variantDependencies,
-      versions
+      versions,
+      androidDsl
     )
   }
 }

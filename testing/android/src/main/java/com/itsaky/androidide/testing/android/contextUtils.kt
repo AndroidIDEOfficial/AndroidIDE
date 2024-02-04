@@ -20,18 +20,12 @@ package com.itsaky.androidide.testing.android
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.test.core.app.ApplicationProvider
-import com.itsaky.androidide.app.BaseApplication
 
 /**
  * Get the application context.
  */
 fun <AppContext : Context> getApplicationContext(): AppContext =
   ApplicationProvider.getApplicationContext()
-
-/**
- * Get the [BaseApplication] instance.
- */
-fun getBaseApplication() = getApplicationContext<BaseApplication>()
 
 /**
  * Get the value of the string resource.

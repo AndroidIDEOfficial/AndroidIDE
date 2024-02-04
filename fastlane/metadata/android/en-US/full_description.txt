@@ -1,7 +1,7 @@
 AndroidIDE, an open-source Integrated Development Environment (IDE) designed for developing real Android applications directly on Android devices.
 The main goal is to bring support for building Gradle-based Android projects on Android devices itself.
 
-With AndroidIDE, you can :
+Features :
 
 - ☑️ Gradle Support
 - ☑️ JDK 17 & 21 support.

@@ -99,7 +99,6 @@ class ProjectTransformer {
       buildDir = metadata.buildDir,
       buildScript = metadata.buildScript,
       tasks = project.getTasks().get(),
-      packageName = metadata.packageName,
       resourcePrefix = metadata.resourcePrefix,
       namespace = metadata.namespace,
       androidTestNamespace = metadata.androidTestNamespace,

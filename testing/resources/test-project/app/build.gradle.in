@@ -34,6 +34,8 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    @@ANDROID_BLOCK_CONFIG@@
 }
 
 task thisIsATestTask () {

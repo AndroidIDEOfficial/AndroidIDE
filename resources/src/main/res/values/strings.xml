@@ -191,7 +191,7 @@
   <string name="msg_empty_ui_layout">No views have been added. Click to add.</string>
   <string name="msg_generate_xml_failed">Failed to generate XML code</string>
   <string name="title_generating_xml">Generating XML code</string>
-  <string name="msg_swipe_up">Swipe up for build output, logs and more.</string>
+  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
   <string name="msg_ide_crashed">AndroidIDE crashed</string>
   <string name="msg_report_crash">Please open an issue on github with the following stacktrace :</string>
   <string name="msg_crash_report_hint">Click on the button below to copy log and open issues page.</string>
@@ -251,7 +251,7 @@
 
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
+  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>

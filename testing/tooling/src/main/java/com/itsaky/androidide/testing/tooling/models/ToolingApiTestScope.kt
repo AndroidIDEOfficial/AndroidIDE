@@ -15,24 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.testing
+package com.itsaky.androidide.testing.tooling.models
 
-fun findAndroidHome(): String {
-  var androidHome = System.getenv("ANDROID_HOME")
-  if (androidHome != null && androidHome.isNotBlank()) {
-    return androidHome
-  }
+import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.IToolingApiServer
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import java.util.concurrent.CompletableFuture
 
-  androidHome = System.getenv("ANDROID_SDK_ROOT")
-  if (androidHome != null && androidHome.isNotBlank()) {
-    return androidHome
-  }
+/**
+ * Scope for Tooling API tests. Provides access to the [IToolingApiServer], [IProject] and the [InitializeResult].
+ *
+ * @author Akash Yadav
+ */
+class ToolingApiTestScope(
+  val server: IToolingApiServer,
+  val project: IProject,
+  val initializeResult: CompletableFuture<InitializeResult>
+) {
 
-  val os = System.getProperty("os.name")
-  val home = System.getProperty("user.home")
-  return if (os.contains("Linux")) {
-    "$home/Android/Sdk"
-  } else {
-    "$home\\AppData\\Local\\Android\\Sdk"
-  }
+  val result: InitializeResult?
+    get() = initializeResult.get()
 }

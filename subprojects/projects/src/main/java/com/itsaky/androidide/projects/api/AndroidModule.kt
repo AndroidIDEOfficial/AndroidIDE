@@ -66,7 +66,6 @@ import java.util.concurrent.CompletableFuture
  * @param buildDir The build directory of the project.
  * @param buildScript The Gradle buildscript file of the project.
  * @param tasks The tasks of the project.
- * @param packageName The package name of this module extracted from `AndroidManifest.xml`.
  * @param resourcePrefix The resource prefix.
  * @param namespace The namespace of this project. As defined in the buildscript.
  * @param androidTestNamespace The androidTestNamespace of this project. As defined in the
@@ -95,7 +94,6 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
-  open val packageName: String, // Property must be open because BaseXMLTest mocks this...
   val resourcePrefix: String?,
   val namespace: String?,
   val androidTestNamespace: String?,
@@ -306,24 +304,23 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   /** Get the resource table for this module i.e. without resource tables for dependent modules. */
   fun getResourceTable(): ResourceTable? {
-    if (this.packageName == UNKNOWN_PACKAGE) {
-      return null
-    }
+    val namespace = this.namespace ?: return null
+
     val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
-    return ResourceTableRegistry.getInstance().forPackage(this.packageName, *resDirs.toTypedArray())
+    return ResourceTableRegistry.getInstance().forPackage(namespace, *resDirs.toTypedArray())
   }
 
   /** Updates the resource table for this module. */
   fun updateResourceTable() {
-    if (this.packageName == UNKNOWN_PACKAGE) {
+    if (this.namespace == null) {
       return
     }
 
     CompletableFuture.runAsync {
       val tableRegistry = ResourceTableRegistry.getInstance()
       val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return@runAsync
-      tableRegistry.removeTable(this.packageName)
-      tableRegistry.forPackage(this.packageName, *resDirs.toTypedArray())
+      tableRegistry.removeTable(this.namespace)
+      tableRegistry.forPackage(this.namespace, *resDirs.toTypedArray())
     }
   }
 

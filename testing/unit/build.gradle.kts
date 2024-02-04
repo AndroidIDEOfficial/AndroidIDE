@@ -34,4 +34,6 @@ dependencies {
   api(projects.buildInfo)
   api(projects.common)
   api(projects.shared)
+
+  api(projects.testing.common)
 }
