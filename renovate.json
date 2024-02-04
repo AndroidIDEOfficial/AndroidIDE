@@ -19,5 +19,9 @@
         "androidx.navigation.*"
       ]
     }
+  ],
+  "ignorePaths": [
+    "testing/resources/**",
+    "gradle-plugin/src/test/resources/**"
   ]
 }
