@@ -1,5 +1,5 @@
 [versions]
-agp = "8.2.0"
+agp = "8.2.2"
 agp-tooling = "8.2.0"
 gradle-tooling = "8.5-r4"
 junit-jupiter = "5.10.1"
