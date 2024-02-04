@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Checkout
@@ -183,7 +183,7 @@ jobs:
         target: [ default ]
     steps:
       - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Checkout
