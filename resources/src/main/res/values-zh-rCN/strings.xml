@@ -54,16 +54,16 @@
   <string name="new_project">新项目</string>
   <string name="package_name">软件包名称</string>
   <string name="project_app_name">应用名称</string>
-  <string name="msg_create_new_project_greeting">开始创建你的惊人项目！</string>
+  <string name="msg_create_new_project_greeting">开始创建您的惊人项目！</string>
   <string name="title_confirm_open_project">打开上一次的项目？</string>
-  <string name="msg_confirm_open_project">您要打开上次打开的项目吗？打开的项目是：\n%s</string>
+  <string name="msg_confirm_open_project">您想要打开上次打开的项目吗？已打开的项目是：\n%s</string>
   <string name="title_close_project">关闭当前项目</string>
   <string name="msg_opened_project_does_not_exist">上次打开的项目不存在！</string>
   <string name="msg_create_new_project">创建新项目</string>
   <string name="msg_open_existing_project">打开现有项目</string>
   <string name="title_confirm_project_close">关闭项目</string>
   <!-- Templates -->
-  <string name="msg_confirm_project_close">您确定要关闭该项目吗？该项目关闭后，所有已启动的 Gradle 守护进程都将停止。</string>
+  <string name="msg_confirm_project_close">您确定要关闭此项目吗？此项目关闭后，所有已启动的 Gradle 守护进程将被停止。</string>
   <string name="template_basic">基本项目</string>
   <string name="template_empty">空项目</string>
   <string name="template_navigation_drawer">抽屉式导航栏项目</string>
@@ -132,7 +132,7 @@
   <string name="classtype_enum">枚举</string>
   <string name="msg_failed_list_files">无法列出项目文件！</string>
   <!-- Code Editor -->
-  <string name="open_with">打开为…</string>
+  <string name="open_with">打开方式...</string>
   <string name="undo">撤销</string>
   <string name="redo">重做</string>
   <!-- Preferences -->
@@ -151,11 +151,11 @@
   <string name="idepref_editor_use_magnifier_title">启用放大镜</string>
   <string name="idepref_editor_use_magnifier_summary">在编辑器中选择文本时放大光标处的文本</string>
   <string name="idepref_editor_title">编辑器</string>
-  <string name="idepref_build_title">构建 &amp; 运行</string>
-  <string name="title_open_projects">打开上一次的项目</string>
+  <string name="idepref_build_title">构建与运行</string>
+  <string name="title_open_projects">打开上次项目</string>
   <string name="msg_open_projects">如果选中，IDE 将记住上次打开的项目，并在下次启动时重新打开。</string>
   <string name="title_confirm_project_open">打开项目前确认</string>
-  <string name="msg_confirm_project_open">打开上次打开的项目前确认。</string>
+  <string name="msg_confirm_project_open">在打开上次打开的项目前先询问。</string>
   <string name="title_default_shell">在终端中使用系统 Shell</string>
   <string name="msg_default_shell">如果选中，将在终端中使用“/system/bin/sh”。</string>
   <string name="title_general">常规</string>
@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">尚未添加任何视图，单击以添加。</string>
   <string name="msg_generate_xml_failed">XML 代码生成失败</string>
   <string name="title_generating_xml">生成 XML 代码</string>
-  <string name="msg_swipe_up">上滑可查看构建输出、日志等。</string>
+  <string name="msg_swipe_up">向上滑动或点击以查看构建输出、日志等。</string>
   <string name="msg_ide_crashed">AndroidIDE 崩溃了</string>
   <string name="msg_report_crash">请使用以下堆栈跟踪在 Github 上打开一个 issue：</string>
   <string name="msg_crash_report_hint">单击下面的按钮以复制日志和打开 issues 页面。</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">使用 ICU 库以检索字词边缘进行双击和长按字词的选择</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">左滑打开 @@文件列表@@</string>
+  <string name="msg_swipe_for_files">从左侧滑动查看@@文件@@。</string>
   <string name="msg_swipe_for_output">上滑查看 @@构建输出@@</string>
   <string name="idepref_editor_useSoftTabs_title">使用空格代替制表符</string>
   <string name="idepref_editor_useSoftTabs_summary">设置是否使用多个空格代替制表符 (\\t)</string>
