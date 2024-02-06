@@ -231,7 +231,6 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipez de droite à gauche pour accéder aux @@fichiers@@.</string>
   <string name="msg_swipe_for_output">Tirez du bas vers le haut pour accéder aux @@consoles (application, ide et compilation)@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>

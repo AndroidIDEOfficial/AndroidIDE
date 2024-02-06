@@ -510,7 +510,7 @@ abstract class BaseEditorActivity :
         }
       }
     val sb = SpannableStringBuilder()
-    appendClickableSpan(sb, string.msg_swipe_for_files, filesSpan)
+    appendClickableSpan(sb, string.msg_drawer_for_files, filesSpan)
     appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan)
     binding.noEditorSummary.text = sb
   }

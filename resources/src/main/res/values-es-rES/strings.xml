@@ -230,7 +230,6 @@
   <string name="idepref_useIcu_summary">Utilice la librería ICU para recuperar los bordes de palabras para doble toque y selección de palabras con pulsación larga.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Deslice a la izquierda para ver @@Archivos@@.</string>
   <string name="msg_swipe_for_output">Desliza hacia arriba para ver el @@Registro@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar pestaña flexible</string>
   <string name="idepref_editor_useSoftTabs_summary">Elija si desea utilizar espacios en lugar del carácter de pestaña (\\t).</string>
