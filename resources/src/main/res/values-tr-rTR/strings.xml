@@ -230,7 +230,6 @@
   <string name="idepref_useIcu_summary">Çift dokunma ve uzun basma eylemlerinde sözcükleri almak için ICU kütüphanesini kullan.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">\@@Dosyalar@@ için sola kaydırın.</string>
   <string name="msg_swipe_for_output">\@@İnşa çıktısı@@ için yukarı kaydırın.</string>
   <string name="idepref_editor_useSoftTabs_title">Yumuşak tab kullan</string>
   <string name="idepref_editor_useSoftTabs_summary">Tab karakteri (\\t) yerine boşluklar kullanmak isteyip istemediğinizi seçin.</string>

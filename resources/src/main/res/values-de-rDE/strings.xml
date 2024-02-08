@@ -230,7 +230,6 @@
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Nach Links swipen für @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe nach oben für @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Soft tab benutzen</string>
   <string name="idepref_editor_useSoftTabs_summary">Wählen Sie, ob Leerzeichen anstelle von Tab verwendet werden sollen (\\t).</string>
