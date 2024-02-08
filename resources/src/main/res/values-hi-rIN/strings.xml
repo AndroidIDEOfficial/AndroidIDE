@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">डबल-टैप और लंबे समय तक शब्द चयन के लिए शब्द किनारों को पुनः प्राप्त करने के लिए ICU लाइब्रेरी का उपयोग करें।</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
+  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
   <string name="msg_swipe_for_output">\@@बिल्ड आउटपुट@@ के लिए ऊपर स्वाइप करें।</string>
   <string name="idepref_editor_useSoftTabs_title">सॉफ्ट टैब का उपयोग करें</string>
   <string name="idepref_editor_useSoftTabs_summary">चुनें कि टैब वर्ण (\\t) के बजाय रिक्त स्थान का उपयोग करना है या नहीं।</string>
@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">इंस्टालेशन के बाद ऐप लॉन्च करें</string>
   <string name="idepref_launchAppAfterInstall_summary">यदि सक्षम किया गया है, तो आईडीई (बिना पुष्टि के) इंस्टॉल होने के ठीक बाद एप्लिकेशन लॉन्च करेगा।</string>
   <string name="title_run_options">रन विकल्प</string>
-  <string name="err_cannot_determine_package">ऐप नहीं चला सकते. पैकेज का नाम निर्धारित करने में असमर्थ.</string>
+  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
   <string name="msg_launch_failure_no_app_module">एप्लिकेशन नहीं चला सकते. प्रोजेक्ट में कोई एप्लिकेशन मॉड्यूल नहीं मिला.</string>
   <string name="title_launch_app">ऐप को लांच करें</string>
   <string name="title_experiment_flavor">प्रयोगात्मक</string>
