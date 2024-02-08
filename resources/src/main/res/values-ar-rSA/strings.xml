@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">استخدم مكتبة ICU لاستخدام استعادة حواف الكلمات للنقر المزدوج والضغط المطول على اختيار الكلمات.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
+  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
   <string name="msg_swipe_for_output">مرر لأعلى لعرض @@مخرجات البناء@@</string>
   <string name="idepref_editor_useSoftTabs_title">استخدام علامة التبويب الناعمة</string>
   <string name="idepref_editor_useSoftTabs_summary">اختر ما إذا كان سيتم استخدام المسافات بدلاً من حرف التبويب (\\t).</string>
@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">فتح التطبيق بعد التثبيت</string>
   <string name="idepref_launchAppAfterInstall_summary">إذا تم التشغيل، المحرر سيقوم (دون موافقتك) فتح التطبيق بعد تثبيته مباشرةً.</string>
   <string name="title_run_options">خيارات التشغيل</string>
-  <string name="err_cannot_determine_package">لا يمكن فتح التطبيق. غير قادر على تحديد اسم الحُزْمَة.</string>
+  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
   <string name="msg_launch_failure_no_app_module">غير قادر على فتح التطبيق. لم يتم أيجاد الوحدات في المشروع.</string>
   <string name="title_launch_app">تشغيل تطبيق</string>
   <string name="title_experiment_flavor">إصدار تجريبي</string>
