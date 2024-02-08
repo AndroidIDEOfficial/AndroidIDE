@@ -231,7 +231,7 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe from the left for @@files@@.</string>
+  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
   <string name="msg_swipe_for_output">Tirez du bas vers le haut pour accéder aux @@consoles (application, ide et compilation)@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
@@ -427,7 +427,7 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_launchAppAfterInstall_title">Launch app after installation</string>
   <string name="idepref_launchAppAfterInstall_summary">If enabled, the IDE will (without confirmation) launch the application right after it is installed.</string>
   <string name="title_run_options">Run options</string>
-  <string name="err_cannot_determine_package">Cannot run app. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
   <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
   <string name="title_launch_app">Launch app</string>
   <string name="title_experiment_flavor">Experimental</string>
