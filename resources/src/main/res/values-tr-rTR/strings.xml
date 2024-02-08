@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Çift dokunma ve uzun basma eylemlerinde sözcükleri almak için ICU kütüphanesini kullan.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">\@@Dosyalar@@ için soldan sağa kaydırın.</string>
+  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
   <string name="msg_swipe_for_output">\@@İnşa çıktısı@@ için yukarı kaydırın.</string>
   <string name="idepref_editor_useSoftTabs_title">Yumuşak tab kullan</string>
   <string name="idepref_editor_useSoftTabs_summary">Tab karakteri (\\t) yerine boşluklar kullanmak isteyip istemediğinizi seçin.</string>
@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">Yükledikten sonra uygulamayı aç</string>
   <string name="idepref_launchAppAfterInstall_summary">Eğer etkinse, IDE uygulama yüklendikten sonra uygulamayı açacaktır (izin istemeden).</string>
   <string name="title_run_options">Çalıştırma seçenekleri</string>
-  <string name="err_cannot_determine_package">Uygulama çalıştırılamıyor. Paket adı tanınamadı.</string>
+  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
   <string name="msg_launch_failure_no_app_module">Uygulama çalıştırılamıyor. Projede hiçbir uygulama modülü bulunamadı.</string>
   <string name="title_launch_app">Uygulamayı aç</string>
   <string name="title_experiment_flavor">Deneysel</string>
