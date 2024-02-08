@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">使用 ICU 库以检索字词边缘进行双击和长按字词的选择</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
+  <string name="msg_drawer_for_files">打开左侧抽屉式导航栏以@@浏览文件@@。</string>
   <string name="msg_swipe_for_output">上滑查看 @@构建输出@@</string>
   <string name="idepref_editor_useSoftTabs_title">使用空格代替制表符</string>
   <string name="idepref_editor_useSoftTabs_summary">设置是否使用多个空格代替制表符 (\\t)</string>
@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">安装后启动应用</string>
   <string name="idepref_launchAppAfterInstall_summary">如果启用，IDE 安装应用程序后，将（不经确认）立即启动该应用程序。</string>
   <string name="title_run_options">运行选项</string>
-  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">无法运行应用。无法确定软件包名称。</string>
   <string name="msg_launch_failure_no_app_module">项目中未找到应用模块，无法运行应用。</string>
   <string name="title_launch_app">启动应用</string>
   <string name="title_experiment_flavor">实验性功能</string>
