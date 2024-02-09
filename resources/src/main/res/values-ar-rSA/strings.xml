@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">لم يتم إضافة أي عرض. انقر للإضافة.</string>
   <string name="msg_generate_xml_failed">فشل في إنشاء كود XML</string>
   <string name="title_generating_xml">إنشاء كود XML</string>
-  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
+  <string name="msg_swipe_up">مرر لأعلى للإخراج والسجلات والمزيد.</string>
   <string name="msg_ide_crashed">تحطم AndroidIDE</string>
   <string name="msg_report_crash">الرجاء فتح مشكلة على github مع المكونات التالية:</string>
   <string name="msg_crash_report_hint">انقر على الزر أدناه لنسخ السجل وفتح صفحة المشكلات.</string>
