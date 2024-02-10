@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">فتح التطبيق بعد التثبيت</string>
   <string name="idepref_launchAppAfterInstall_summary">إذا تم التشغيل، المحرر سيقوم (دون موافقتك) فتح التطبيق بعد تثبيته مباشرةً.</string>
   <string name="title_run_options">خيارات التشغيل</string>
-  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">.</string>
   <string name="msg_launch_failure_no_app_module">غير قادر على فتح التطبيق. لم يتم أيجاد الوحدات في المشروع.</string>
   <string name="title_launch_app">تشغيل تطبيق</string>
   <string name="title_experiment_flavor">إصدار تجريبي</string>
