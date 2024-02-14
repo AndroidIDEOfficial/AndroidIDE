@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">Запускать приложение после установки</string>
   <string name="idepref_launchAppAfterInstall_summary">Если включено, IDE запустит собранное приложение сразу после его установки (без подтверждения).</string>
   <string name="title_run_options">Опции запуска</string>
-  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">Невозможно запустить приложение. Не удалось определить имя пакета.</string>
   <string name="msg_launch_failure_no_app_module">Невозможно запустить приложение. В проекте не найдено модулей приложений.</string>
   <string name="title_launch_app">Запустить приложение</string>
   <string name="title_experiment_flavor">Экспериментальный режим</string>
