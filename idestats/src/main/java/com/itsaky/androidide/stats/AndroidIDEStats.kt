@@ -55,7 +55,8 @@ object AndroidIDEStats {
   val country by lazy {
     val manager = BaseApplication.getBaseInstance()
       .getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    manager.simCountryIso?.uppercase(Locale.getDefault()) ?: ""
+    manager.simCountryIso?.uppercase(Locale.getDefault())
+      .let { country -> if (country.isNullOrBlank()) "<unknown>" else country }
   }
 
   val cpuArch by lazy {
