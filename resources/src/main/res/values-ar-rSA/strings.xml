@@ -464,8 +464,8 @@
   <string name="action_auto_install">تثبيت تلقائي</string>
   <string name="action_manual_install">تثبيت يدوي</string>
   <string name="hint_android_sdk_version">إصدار أندرويد SDK</string>
-  <string name="hin_jdk_version">JDK version</string>
-  <string name="action_install_git">Install Git</string>
+  <string name="hin_jdk_version">إصدار JDK</string>
+  <string name="action_install_git">JDK ভার্সন</string>
   <string name="action_install_openssh">Install OpenSSH</string>
   <string name="msg_terminal_new_sessions_disabled">Cannot create session. New sessions are disabled!</string>
   <string name="title_install_location_error">Install location error</string>
