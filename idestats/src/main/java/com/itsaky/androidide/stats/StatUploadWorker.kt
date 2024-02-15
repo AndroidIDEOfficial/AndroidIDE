@@ -20,7 +20,6 @@ package com.itsaky.androidide.stats
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.utils.ILogger
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,6 +33,8 @@ class StatUploadWorker(context: Context, workerParams: WorkerParameters) : Worke
   workerParams) {
 
   companion object {
+
+    const val STAT_UPLOAD_BASE_URL = "https://androidide.com"
 
     const val WORKER_WORK_NAME = "ide.stats.uploadWorker"
     const val KEY_DEVICE_ID = "device_hash"
@@ -50,7 +51,7 @@ class StatUploadWorker(context: Context, workerParams: WorkerParameters) : Worke
     val data = StatData.fromInputData(inputData = inputData)
     log.debug("Uploading stats: $data")
 
-    val retrofit = Retrofit.Builder().baseUrl(BuildInfo.PROJECT_SITE)
+    val retrofit = Retrofit.Builder().baseUrl(STAT_UPLOAD_BASE_URL)
       .addConverterFactory(GsonConverterFactory.create()).build()
     val service = retrofit.create(StatUploadService::class.java)
 
