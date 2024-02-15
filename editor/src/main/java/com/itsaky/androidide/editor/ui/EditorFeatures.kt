@@ -21,6 +21,7 @@ import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.ui.IDEEditor.Companion.log
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
+import io.github.rosemoe.sora.widget.SelectionMovement
 import java.io.File
 
 /**
@@ -145,8 +146,7 @@ class EditorFeatures(
 
   override fun goToEnd() {
     withEditor {
-      val line = text.lineCount - 1
-      setSelection(line, 0)
+      moveSelection(SelectionMovement.TEXT_END)
     }
   }
 

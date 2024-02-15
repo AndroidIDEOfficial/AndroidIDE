@@ -24,6 +24,7 @@ import com.itsaky.androidide.lexers.groovy.GroovyLexer
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.Span
+import io.github.rosemoe.sora.lang.styling.SpanFactory
 import io.github.rosemoe.sora.lang.styling.TextStyle
 
 /** @author Akash Yadav */
@@ -43,10 +44,11 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
       when (type) {
         GroovyLexer.WS -> {
           if (first) {
-            spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
+            spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
             first = false
           }
         }
+
         GroovyLexer.ABSTRACT,
         GroovyLexer.ASSERT,
         GroovyLexer.BREAK,
@@ -87,7 +89,8 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.TRY,
         GroovyLexer.VOID,
         GroovyLexer.VOLATILE,
-        GroovyLexer.WHILE -> spans.add(Span.obtain(offset, SchemeAndroidIDE.forKeyword()))
+        GroovyLexer.WHILE -> spans.add(SpanFactory.obtain(offset, SchemeAndroidIDE.forKeyword()))
+
         GroovyLexer.DECIMAL_LITERAL,
         GroovyLexer.HEX_LITERAL,
         GroovyLexer.OCT_LITERAL,
@@ -96,10 +99,14 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.HEX_FLOAT_LITERAL,
         GroovyLexer.BOOL_LITERAL,
         GroovyLexer.CHAR_LITERAL,
-        GroovyLexer.NULL_LITERAL, ->
-          spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.LITERAL)))
+        GroovyLexer.NULL_LITERAL,
+        ->
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.LITERAL)))
+
         GroovyLexer.SINGLE_QUOTE_STRING,
-        GroovyLexer.STRING_LITERAL -> spans.add(Span.obtain(offset, SchemeAndroidIDE.forString()))
+        GroovyLexer.STRING_LITERAL -> spans.add(
+          SpanFactory.obtain(offset, SchemeAndroidIDE.forString()))
+
         GroovyLexer.LPAREN,
         GroovyLexer.RPAREN,
         GroovyLexer.LBRACK,
@@ -145,8 +152,10 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.ELLIPSIS,
         GroovyLexer.LBRACE,
         GroovyLexer.RBRACE,
-        GroovyLexer.DOT, ->
-          spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.OPERATOR)))
+        GroovyLexer.DOT,
+        ->
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.OPERATOR)))
+
         GroovyLexer.BOOLEAN,
         GroovyLexer.BYTE,
         GroovyLexer.CHAR,
@@ -155,20 +164,25 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.FLOAT,
         GroovyLexer.INT,
         GroovyLexer.LONG,
-        GroovyLexer.SHORT, ->
-          spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TYPE_NAME)))
-        GroovyLexer.COMMENT -> spans.add(Span.obtain(offset, SchemeAndroidIDE.forComment()))
+        GroovyLexer.SHORT,
+        ->
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TYPE_NAME)))
+
+        GroovyLexer.COMMENT -> spans.add(SpanFactory.obtain(offset, SchemeAndroidIDE.forComment()))
         GroovyLexer.LINE_COMMENT -> handleLineCommentSpan(token, spans, offset)
         GroovyLexer.AT ->
-          spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.ANNOTATION)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.ANNOTATION)))
+
         GroovyLexer.IDENTIFIER -> {
           var colorId = SchemeAndroidIDE.TEXT_NORMAL
           if (previous == GroovyLexer.AT) {
             colorId = SchemeAndroidIDE.ANNOTATION
           }
-          spans.add(Span.obtain(offset, TextStyle.makeStyle(colorId)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(colorId)))
         }
-        else -> spans.add(Span.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
+
+        else -> spans.add(
+          SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
       }
       previous = type
     }

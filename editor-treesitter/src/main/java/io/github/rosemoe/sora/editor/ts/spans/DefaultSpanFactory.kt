@@ -26,6 +26,7 @@ package io.github.rosemoe.sora.editor.ts.spans
 
 import com.itsaky.androidide.treesitter.TSQueryCapture
 import io.github.rosemoe.sora.lang.styling.Span
+import io.github.rosemoe.sora.lang.styling.SpanFactory
 
 /**
  * Default implementation of the [TsSpanFactory].
@@ -35,7 +36,7 @@ import io.github.rosemoe.sora.lang.styling.Span
 open class DefaultSpanFactory : TsSpanFactory {
 
   override fun createSpans(capture: TSQueryCapture, column: Int, spanStyle: Long): List<Span> {
-    return listOf(Span.obtain(column, spanStyle))
+    return listOf(SpanFactory.obtain(column, spanStyle))
   }
 
   override fun close() {

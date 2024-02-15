@@ -27,8 +27,12 @@ import com.itsaky.androidide.utils.parseHexColor
 import io.github.rosemoe.sora.editor.ts.spans.DefaultSpanFactory
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.styling.Span
-import io.github.rosemoe.sora.lang.styling.StaticColorSpan
+import io.github.rosemoe.sora.lang.styling.SpanFactory
 import io.github.rosemoe.sora.lang.styling.Styles
+import io.github.rosemoe.sora.lang.styling.span.SpanColorResolver
+import io.github.rosemoe.sora.lang.styling.span.SpanConstColorResolver
+import io.github.rosemoe.sora.lang.styling.span.SpanExt
+import io.github.rosemoe.sora.lang.styling.span.SpanExtAttrs
 import io.github.rosemoe.sora.text.ContentReference
 
 /**
@@ -110,12 +114,12 @@ class TreeSitterSpanFactory(
       }
 
       val col = column + result.range.first
-      val span = StaticColorSpan.obtain(
-        color,
-        textColor,
+      val span = SpanFactory.obtain(
         col,
         styleDef.makeStaticStyle()
       )
+
+      span.setSpanExt(SpanExtAttrs.EXT_COLOR_RESOLVER, SpanConstColorResolver(textColor, color))
 
       spans.add(span)
     }
@@ -126,11 +130,11 @@ class TreeSitterSpanFactory(
 
     // make sure that the default style is used for unmatched regions
     if (s != 0) {
-      spans.add(0, Span.obtain(column, spanStyle))
+      spans.add(0, SpanFactory.obtain(column, spanStyle))
     }
 
     if (e != text.lastIndex) {
-      spans.add(Span.obtain(column + e + 1, spanStyle))
+      spans.add(SpanFactory.obtain(column + e + 1, spanStyle))
     }
 
     return spans

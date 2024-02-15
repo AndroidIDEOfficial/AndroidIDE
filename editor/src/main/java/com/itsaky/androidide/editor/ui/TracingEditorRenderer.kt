@@ -23,6 +23,7 @@ import android.graphics.RectF
 import android.graphics.RenderNode
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.collection.MutableIntList
 import com.itsaky.androidide.editor.BuildConfig
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Spans
@@ -125,7 +126,7 @@ class TracingEditorRenderer(
   }
 
   override fun drawRows(canvas: Canvas?, offset: Float, postDrawLineNumbers: LongArrayList?,
-    postDrawCursor: MutableList<DrawCursorTask>?, postDrawCurrentLines: LongArrayList?,
+    postDrawCursor: MutableList<DrawCursorTask>?, postDrawCurrentLines: MutableIntList?,
     requiredFirstLn: MutableInt?) = trace("drawRows") {
     super.drawRows(canvas, offset, postDrawLineNumbers, postDrawCursor, postDrawCurrentLines,
       requiredFirstLn)

@@ -71,12 +71,12 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
       return@setOnMenuItemClickListener if (it.isCheckable) {
         it.isChecked = !it.isChecked
 
-        val ignoreCase = searchOptions.ignoreCase
+        val caseInsensitive = searchOptions.caseInsensitive
         val regex = searchOptions.type == SearchOptions.TYPE_REGULAR_EXPRESSION
         searchOptions =
           when (it.itemId) {
             0 -> SearchOptions(it.isChecked, regex)
-            1 -> SearchOptions(ignoreCase, it.isChecked)
+            1 -> SearchOptions(caseInsensitive, it.isChecked)
             else -> searchOptions
           }
         editor.searcher.updateSearchOptions(searchOptions)

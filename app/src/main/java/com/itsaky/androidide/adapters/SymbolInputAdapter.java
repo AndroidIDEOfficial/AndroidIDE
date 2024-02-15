@@ -30,6 +30,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
 import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.models.Symbol;
+import io.github.rosemoe.sora.widget.SelectionMovement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -135,7 +136,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
         && text.length() == 1
         && text.charAt(0) == editor.getText().charAt(cur.getLeftLine(), cur.getLeftColumn())
         && pairs.contains(text.charAt(0))) {
-      editor.moveSelectionRight();
+      editor.moveSelection(SelectionMovement.RIGHT);
     } else {
       editor.commitText(text);
       if (selectionOffset != text.length()) {
