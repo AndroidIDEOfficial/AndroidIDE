@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Tidak ada View yang ditambahkan. Klik untuk menambahkan.</string>
   <string name="msg_generate_xml_failed">Gagal untuk menghasilkan kode XML</string>
   <string name="title_generating_xml">Hasilkan kode XML</string>
-  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
+  <string name="msg_swipe_up">Geser ke atas atau klik untuk keluaran build, log, dan lainnya.</string>
   <string name="msg_ide_crashed">AndroidIDE crash</string>
   <string name="msg_report_crash">Mohon buka isu di github dengan menyertakan stacktrace :</string>
   <string name="msg_crash_report_hint">Klik tombol dibawah untuk menyalin log dan membuka halaman isu.</string>
@@ -230,7 +230,7 @@
   <string name="idepref_useIcu_summary">Gunakan perpustakaan ICU untuk menggunakan ambil tepi kata untuk pemilihan kata ketuk dua kali dan tekan lama.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
+  <string name="msg_drawer_for_files">Buka laci kiri untuk @@files@@.</string>
   <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Pilih apakah akan menggunakan spasi alih-alih karakter tab (\\t).</string>
@@ -426,7 +426,7 @@
   <string name="idepref_launchAppAfterInstall_title">Luncurkan aplikasi setelah instalasi</string>
   <string name="idepref_launchAppAfterInstall_summary">Jika diaktifkan, IDE akan (tanpa konfirmasi) meluncurkan aplikasi segera setelah diinstal.</string>
   <string name="title_run_options">Jalankan opsi</string>
-  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
   <string name="msg_launch_failure_no_app_module">Tidak dapat menjalankan aplikasi. Tidak ada modul aplikasi yang ditemukan di proyek.</string>
   <string name="title_launch_app">Luncurkan aplikasi</string>
   <string name="title_experiment_flavor">Eksperimental</string>
