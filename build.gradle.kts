@@ -17,6 +17,9 @@
 
 @file:Suppress("UnstableApiUsage")
 
+import com.itsaky.androidide.build.config.BuildConfig
+import com.itsaky.androidide.build.config.FDroidConfig
+import com.itsaky.androidide.build.config.publishingVersion
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
 import com.itsaky.androidide.plugins.conf.configureAndroidModule
 import com.itsaky.androidide.plugins.conf.configureJavaModule

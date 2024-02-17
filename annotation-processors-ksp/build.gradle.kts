@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -16,6 +14,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
   kotlin("jvm")

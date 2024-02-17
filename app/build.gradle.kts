@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
+import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
   id("com.android.application")

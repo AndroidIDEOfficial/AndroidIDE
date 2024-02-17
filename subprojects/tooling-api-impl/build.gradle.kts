@@ -15,6 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.itsaky.androidide.build.config.BuildConfig
+
 @Suppress("JavaPluginLanguageLevel")
 plugins {
   id("com.github.johnrengelman.shadow") version "8.1.1"

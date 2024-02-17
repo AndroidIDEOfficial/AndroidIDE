@@ -14,6 +14,9 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+import com.itsaky.androidide.build.config.BuildConfig
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")

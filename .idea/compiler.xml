@@ -151,6 +151,9 @@
       <module name="build-logic.ats" target="17" />
       <module name="build-logic.ats.main" target="17" />
       <module name="build-logic.ats.test" target="17" />
+      <module name="build-logic.ide" target="17" />
+      <module name="build-logic.ide.main" target="17" />
+      <module name="build-logic.ide.test" target="17" />
       <module name="composite-builds.plugins" target="17" />
       <module name="composite-builds.plugins.main" target="17" />
       <module name="composite-builds.plugins.test" target="17" />
