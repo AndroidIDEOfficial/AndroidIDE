@@ -22,6 +22,7 @@ import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_IS_TEST_ENV
 import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_MAVEN_LOCAL_REPOSITORY
 import org.gradle.StartParameter
 import org.gradle.api.Plugin
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
@@ -50,7 +51,13 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     target.rootProject { rootProject ->
       rootProject.buildscript.apply {
         dependencies.apply {
-          add("classpath", rootProject.ideDependency("gradle-plugin"))
+          val gradlePluginDep = rootProject.ideDependency("gradle-plugin")
+          if (gradlePluginDep is ExternalModuleDependency) {
+            // SNAPSHOT versions of gradle-plugin do not change
+            gradlePluginDep.isChanging = false
+          }
+
+          add("classpath", gradlePluginDep)
         }
 
         repositories.addDependencyRepositories(rootProject.gradle.startParameter)

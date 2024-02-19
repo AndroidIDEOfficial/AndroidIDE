@@ -70,7 +70,9 @@ abstract class GenerateInitScriptTask : DefaultTask() {
           }
 
           dependencies {
-              classpath '${mavenGroupId.get()}:gradle-plugin:${downloadVersion.get()}'
+              classpath('${mavenGroupId.get()}:gradle-plugin:${downloadVersion.get()}') {
+                  setChanging(false)
+              }
           }
       }
       
