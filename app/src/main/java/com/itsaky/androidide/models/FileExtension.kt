@@ -18,6 +18,7 @@
 package com.itsaky.androidide.models
 
 import androidx.annotation.DrawableRes
+import com.blankj.utilcode.util.ImageUtils
 import com.itsaky.androidide.resources.R
 import java.io.File
 
@@ -40,6 +41,10 @@ enum class FileExtension(val extension: String, @DrawableRes val icon: Int) {
   LOG("log", R.drawable.ic_file_txt),
   CPP("cpp", R.drawable.ic_language_cpp),
   H("h", R.drawable.ic_language_cpp),
+  BAT("bat", R.drawable.ic_terminal),
+  DIRECTORY("", R.drawable.ic_folder),
+  IMAGE("", R.drawable.ic_file_image),
+  GRADLEW("", R.drawable.ic_terminal),
   UNKNOWN("", R.drawable.ic_file_unknown);
 
   /** Factory class for getting [FileExtension] instances. */
@@ -49,17 +54,22 @@ enum class FileExtension(val extension: String, @DrawableRes val icon: Int) {
       /** Get [FileExtension] for the given file. */
       @JvmStatic
       fun forFile(file: File?): FileExtension {
-        return forExtension(file?.extension)
+        return if (file?.isDirectory == true) DIRECTORY
+          else if (ImageUtils.isImage(file)) IMAGE
+          else if ("gradlew" == file?.name) GRADLEW
+          else forExtension(file?.extension)
       }
 
       /** Get [FileExtension] for the given extension. */
       @JvmStatic
       fun forExtension(extension: String?): FileExtension {
-        if (extension == null) {
+        // To not assign IMAGE, GRADLEW and DIRECTORY in case of an empty extension,
+        // we check if an extension is empty here
+        if (extension.isNullOrEmpty()) {
           return UNKNOWN
         }
         
-        for (value in values()) {
+        for (value in entries) {
           if (value.extension == extension) {
             return value
           }

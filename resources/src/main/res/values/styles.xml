@@ -80,6 +80,10 @@
     <item name="tabIndicatorGravity">bottom</item>
     <item name="tabIndicatorHeight">3dp</item>
     <item name="tabMode">scrollable</item>
+    <!-- Increase tab's width according to its title -->
+    <item name="tabMaxWidth">0px</item>
+    <!-- Make icons appear inline with tab's title -->
+    <item name="tabInlineLabel">true</item>
   </style>
 
   <style name="AppTheme.ShapeOverlay.Large" parent="">

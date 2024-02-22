@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.models.FileExtension;
@@ -91,19 +90,6 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
   }
 
   protected int getIconForFile(final File file) {
-
-    if (file.isDirectory()) {
-      return R.drawable.ic_folder;
-    }
-
-    if (ImageUtils.isImage(file)) {
-      return R.drawable.ic_file_image;
-    }
-
-    if ("gradlew".equals(file.getName()) || "gradlew.bat".equals(file.getName())) {
-      return R.drawable.ic_terminal;
-    }
-
     return FileExtension.Factory.forFile(file).getIcon();
   }
 

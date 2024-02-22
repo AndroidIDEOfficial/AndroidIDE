@@ -24,8 +24,10 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams
+import androidx.annotation.DrawableRes
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.collection.MutableIntObjectMap
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ImageUtils
 import com.itsaky.androidide.R.string
@@ -44,6 +46,7 @@ import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.interfaces.IEditorHandler
+import com.itsaky.androidide.models.FileExtension
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
@@ -669,7 +672,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     editorActivityScope.launch {
       val files = editorViewModel.getOpenedFiles()
       val dupliCount = mutableMapOf<String, Int>()
-      val names = MutableIntObjectMap<String>()
+      val names = MutableIntObjectMap<Pair<String, @DrawableRes Int>>()
       val nameBuilder = UniqueNameBuilder<File>("", File.separator)
 
       files.forEach {
@@ -681,18 +684,21 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       for (index in 0 until binding.tabs.tabCount) {
         val file = files.getOrNull(index) ?: continue
         val count = dupliCount[file.name] ?: 0
+
         val isModified = getEditorAtIndex(index)?.isModified ?: false
         var name = if (count > 1) nameBuilder.getShortPath(file) else file.name
         if (isModified) {
           name = "*${name}"
         }
 
-        names[index] = name
+        names[index] = name to FileExtension.Factory.forFile(file).icon
       }
 
       withContext(Dispatchers.Main) {
-        names.forEach { index, name ->
-          binding.tabs.getTabAt(index)?.text = name
+        names.forEach { index, (name, iconId) ->
+          val tab = binding.tabs.getTabAt(index) ?: return@forEach
+          tab.icon = ResourcesCompat.getDrawable(resources, iconId, theme)
+          tab.text = name
         }
       }
     }
