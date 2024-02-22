@@ -21,13 +21,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.collection.MutableIntObjectMap
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.children
 import com.blankj.utilcode.util.ImageUtils
+import com.google.android.material.tabs.TabLayout
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
@@ -44,6 +50,7 @@ import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.interfaces.IEditorHandler
+import com.itsaky.androidide.models.FileExtension
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
@@ -672,6 +679,10 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       val names = MutableIntObjectMap<String>()
       val nameBuilder = UniqueNameBuilder<File>("", File.separator)
 
+      val icons = MutableIntObjectMap<Int>()
+      val theme = theme
+      val resources = resources
+
       files.forEach {
         var count = dupliCount[it.name] ?: 0
         dupliCount[it.name] = ++count
@@ -681,6 +692,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       for (index in 0 until binding.tabs.tabCount) {
         val file = files.getOrNull(index) ?: continue
         val count = dupliCount[file.name] ?: 0
+
         val isModified = getEditorAtIndex(index)?.isModified ?: false
         var name = if (count > 1) nameBuilder.getShortPath(file) else file.name
         if (isModified) {
@@ -688,11 +700,16 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         }
 
         names[index] = name
+        icons[index] = FileExtension.Factory.forFile(file).icon
       }
 
       withContext(Dispatchers.Main) {
         names.forEach { index, name ->
-          binding.tabs.getTabAt(index)?.text = name
+          val tab = binding.tabs.getTabAt(index) ?: return@forEach
+          val iconId = icons[index] ?: return@forEach
+
+          tab.icon = ResourcesCompat.getDrawable(resources, iconId, theme)
+          tab.text = name
         }
       }
     }
