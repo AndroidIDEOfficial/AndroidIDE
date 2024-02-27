@@ -1,3 +1,20 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 @file:Suppress("UnstableApiUsage")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -8,6 +25,37 @@ pluginManagement {
     gradlePluginPortal()
     google()
     mavenCentral()
+  }
+}
+
+dependencyResolutionManagement {
+  includeBuild("build-deps") {
+    dependencySubstitution {
+      for (module in arrayOf(
+        "appintro",
+        "fuzzysearch",
+        "google-java-format",
+        "java-compiler",
+        "javac",
+        "javapoet",
+        "jaxp",
+        "jdk-compiler",
+        "jdk-jdeps",
+        "jdt",
+        "layoutlib-api"
+      )) {
+        substitute(module("com.itsaky.androidide.build:$module")).using(project(":$module"))
+      }
+    }
+  }
+
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositories {
+    google()
+    mavenCentral()
+    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
+    maven { url = uri("https://s01.oss.sonatype.org/content/groups/public/") }
+    maven { url = uri("https://jitpack.io") }
   }
 }
 
@@ -34,17 +82,6 @@ if (FDroidConfig.hasRead && FDroidConfig.isFDroidBuild) {
 } else {
   apply {
     plugin("com.mooltiverse.oss.nyx")
-  }
-}
-
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
-    maven { url = uri("https://s01.oss.sonatype.org/content/groups/public/") }
-    maven { url = uri("https://jitpack.io") }
   }
 }
 
@@ -85,21 +122,10 @@ include(
   ":lsp:java",
   ":lsp:xml",
   ":subprojects:aaptcompiler",
-  ":subprojects:appintro",
   ":subprojects:builder-model-impl",
   ":subprojects:flashbar",
   ":subprojects:framework-stubs",
-  ":subprojects:fuzzysearch",
-  ":subprojects:google-java-format",
-  ":subprojects:java-compiler",
-  ":subprojects:javac",
   ":subprojects:javac-services",
-  ":subprojects:javapoet",
-  ":subprojects:jaxp",
-  ":subprojects:jdk-compiler",
-  ":subprojects:jdk-jdeps",
-  ":subprojects:jdt",
-  ":subprojects:layoutlib-api",
   ":subprojects:projects",
   ":subprojects:tooling-api",
   ":subprojects:tooling-api-events",

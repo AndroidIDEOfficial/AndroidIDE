@@ -34,7 +34,7 @@ dependencies {
     implementation(libs.google.auto.service.annotations)
     implementation(projects.common)
     implementation(projects.logger)
-    implementation(projects.subprojects.jdt)
+    implementation(libs.composite.jdt)
     
     api(projects.lookup)
     api(projects.subprojects.aaptcompiler)

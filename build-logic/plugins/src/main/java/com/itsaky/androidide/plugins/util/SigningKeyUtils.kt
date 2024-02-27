@@ -23,6 +23,7 @@ import com.itsaky.androidide.build.config.KEY_BIN
 import com.itsaky.androidide.build.config.KEY_URL
 import org.gradle.api.Project
 import com.itsaky.androidide.build.config.signingKey
+import org.gradle.api.invocation.Gradle
 import java.util.Base64
 
 /**
@@ -59,7 +60,12 @@ object SigningKeyUtils {
 
     logger.info("Downloading signing key...")
     val result = exec {
-      workingDir(rootProject.projectDir)
+      var rootGradle: Gradle? = gradle
+      while (rootGradle?.parent != null) {
+        rootGradle = rootGradle.parent
+      }
+
+      workingDir(rootGradle!!.rootProject.projectDir)
       commandLine("bash", "./scripts/download_key.sh", signingKey.absolutePath, url, user, pass)
     }
 

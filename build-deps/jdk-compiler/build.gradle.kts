@@ -15,31 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.itsaky.androidide.build.config.BuildConfig
-
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+  id("java-library")
+  id("com.itsaky.androidide.build.propsparser")
 }
 
-android {
-    namespace = "${BuildConfig.packageName}.layoutlib"
-    
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
-    implementation(libs.common.jkotlin)
-    
-    implementation(libs.aapt2.annotations)
-    implementation(libs.aapt2.jb.annotations)
-    
-    implementation(libs.google.guava)
-    
-    testImplementation(libs.tests.junit)
-    testImplementation(libs.tests.google.truth)
+  api(projects.buildDeps.javaCompiler)
 }

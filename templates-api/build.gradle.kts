@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-  api(projects.subprojects.javapoet)
+  api(libs.composite.javapoet)
 
   api(projects.common)
   api(projects.logger)

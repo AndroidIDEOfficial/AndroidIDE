@@ -16,7 +16,7 @@
 
 package com.itsaky.androidide.layoutlib.resources;
 
-import com.android.annotations.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * An enum representing visibility of an android resource.

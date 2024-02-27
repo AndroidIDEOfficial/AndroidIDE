@@ -15,17 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.itsaky.androidide.plugins.PropertiesParserPlugin
-
+@Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("java-library")
-}
-
-apply {
-  plugin(PropertiesParserPlugin::class)
+    id("java-library")
+    id("org.jetbrains.kotlin.jvm")
 }
 
 dependencies {
-  api(projects.subprojects.javaCompiler)
-  api(projects.subprojects.jdkCompiler)
+    implementation(libs.androidx.annotation)
+    implementation(libs.aapt2.annotations)
+    implementation(libs.aapt2.jb.annotations)
+    implementation(libs.google.guava)
+    
+    testImplementation(libs.tests.junit)
+    testImplementation(libs.tests.google.truth)
 }

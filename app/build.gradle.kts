@@ -89,6 +89,10 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.common.kotlin)
 
+  // Dependencies in composite build
+  implementation(libs.composite.appintro)
+  implementation(libs.composite.javapoet)
+
   // Local projects here
   implementation(projects.actions)
   implementation(projects.buildInfo)
@@ -104,9 +108,7 @@ dependencies {
   implementation(projects.gradlePluginConfig)
   implementation(projects.idestats)
   implementation(projects.subprojects.aaptcompiler)
-  implementation(projects.subprojects.appintro)
   implementation(projects.subprojects.javacServices)
-  implementation(projects.subprojects.javapoet)
   implementation(projects.subprojects.xmlUtils)
   implementation(projects.subprojects.projects)
   implementation(projects.subprojects.toolingApi)

@@ -112,12 +112,30 @@
       <module name="AndroidIDE.ksp-processor.test" target="11" />
       <module name="AndroidIDE.lsp.testing" target="17" />
       <module name="AndroidIDE.sdk-info" target="11" />
+      <module name="AndroidIDE.subprojects.appintro" target="17" />
       <module name="AndroidIDE.subprojects.classfile" target="11" />
       <module name="AndroidIDE.subprojects.classfile.main" target="11" />
       <module name="AndroidIDE.subprojects.classfile.test" target="11" />
+      <module name="AndroidIDE.subprojects.fuzzysearch" target="11" />
+      <module name="AndroidIDE.subprojects.fuzzysearch.main" target="11" />
+      <module name="AndroidIDE.subprojects.fuzzysearch.test" target="11" />
+      <module name="AndroidIDE.subprojects.google-java-format" target="17" />
       <module name="AndroidIDE.subprojects.google-java-format.test" target="11" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
+      <module name="AndroidIDE.subprojects.javac" target="11" />
+      <module name="AndroidIDE.subprojects.javac.main" target="11" />
+      <module name="AndroidIDE.subprojects.javac.test" target="11" />
+      <module name="AndroidIDE.subprojects.javapoet" target="17" />
+      <module name="AndroidIDE.subprojects.javapoet.main" target="17" />
+      <module name="AndroidIDE.subprojects.javapoet.test" target="17" />
+      <module name="AndroidIDE.subprojects.jdk-jdeps" target="11" />
+      <module name="AndroidIDE.subprojects.jdk-jdeps.main" target="11" />
+      <module name="AndroidIDE.subprojects.jdk-jdeps.test" target="11" />
+      <module name="AndroidIDE.subprojects.jdt" target="11" />
+      <module name="AndroidIDE.subprojects.jdt.main" target="11" />
+      <module name="AndroidIDE.subprojects.jdt.test" target="11" />
+      <module name="AndroidIDE.subprojects.layoutlib-api" target="17" />
       <module name="AndroidIDE.subprojects.tooling-api-config" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-config.main" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-config.test" target="11" />

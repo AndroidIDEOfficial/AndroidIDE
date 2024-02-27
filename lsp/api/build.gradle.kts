@@ -36,9 +36,10 @@ kapt {
 dependencies {
     
     kapt(projects.annotationProcessors)
-    
+
+    implementation(libs.composite.fuzzysearch)
+
     implementation(libs.common.editor)
-    implementation(projects.subprojects.fuzzysearch)
     implementation(projects.eventbusEvents)
     
     implementation(libs.androidx.appcompat)

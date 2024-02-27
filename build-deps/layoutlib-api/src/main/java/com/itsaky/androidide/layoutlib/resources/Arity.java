@@ -15,7 +15,7 @@
  */
 package com.itsaky.androidide.layoutlib.resources;
 
-import com.android.annotations.NonNull;
+import androidx.annotation.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 /**

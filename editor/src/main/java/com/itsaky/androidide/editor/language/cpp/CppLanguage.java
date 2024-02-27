@@ -17,21 +17,12 @@
 package com.itsaky.androidide.editor.language.cpp;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
+import com.itsaky.androidide.editor.language.IDELanguage;
 import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
-import com.itsaky.androidide.editor.language.IDELanguage;
-import com.itsaky.androidide.editor.language.newline.CStyleBracketsHandler;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
-
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -39,6 +30,9 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
+import java.io.StringReader;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 
 public class CppLanguage extends IDELanguage {
 

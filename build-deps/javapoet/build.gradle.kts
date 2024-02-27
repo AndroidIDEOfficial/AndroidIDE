@@ -15,19 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
 plugins {
-    id("java-library")
+  kotlin("jvm")
 }
-
-configurations.all {
-    resolutionStrategy {
-        cacheChangingModulesFor(0, "seconds")
-    }
-}
-
 
 dependencies {
-    api(projects.subprojects.javaCompiler)
-    api(projects.subprojects.jdkCompiler)
+  api(projects.buildDeps.javaCompiler)
 }

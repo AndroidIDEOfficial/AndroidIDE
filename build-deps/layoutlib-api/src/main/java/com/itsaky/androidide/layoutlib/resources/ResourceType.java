@@ -17,8 +17,8 @@ package com.itsaky.androidide.layoutlib.resources;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
-import com.android.annotations.NonNull;
-import com.android.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;

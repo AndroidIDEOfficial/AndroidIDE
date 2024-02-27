@@ -16,19 +16,11 @@
  */
 
 plugins {
-    id("com.android.library")
-}
-
-android {
-    namespace = "com.google.googlejavaformat"
+  id("java-library")
+  id("com.itsaky.androidide.build.propsparser")
 }
 
 dependencies {
-    implementation(libs.google.guava)
-    implementation(libs.google.auto.value.annotations)
-    implementation(libs.google.auto.service.annotations)
-    implementation(projects.subprojects.javac)
-
-    annotationProcessor(libs.google.auto.value.ap)
-    annotationProcessor(libs.google.auto.service)
+  api(projects.buildDeps.javaCompiler)
+  api(projects.buildDeps.jdkCompiler)
 }

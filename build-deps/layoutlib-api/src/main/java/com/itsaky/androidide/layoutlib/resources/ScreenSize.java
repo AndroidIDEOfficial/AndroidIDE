@@ -16,8 +16,8 @@
 
 package com.itsaky.androidide.layoutlib.resources;
 
-import com.android.annotations.NonNull;
-import com.android.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Screen size enum.

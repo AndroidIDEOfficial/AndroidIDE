@@ -23,7 +23,7 @@ plugins {
 
 dependencies {
     implementation(projects.shared)
-    implementation(projects.subprojects.jaxp)
+    implementation(libs.composite.jaxp)
     
     implementation(libs.common.jsoup)
     implementation(libs.common.jsonrpc)

@@ -10,10 +10,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.common.editor)
+    implementation(libs.composite.fuzzysearch)
+
     implementation(projects.common)
-    implementation(projects.subprojects.fuzzysearch)
-    
+
+    implementation(libs.common.editor)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.common.kotlin)

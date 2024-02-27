@@ -15,21 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.itsaky.androidide.plugins.PropertiesParserPlugin
-
+@Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("java-library")
+    id("java-library")
 }
 
-apply {
-  plugin(PropertiesParserPlugin::class)
+configurations.all {
+    resolutionStrategy {
+        cacheChangingModulesFor(0, "seconds")
+    }
 }
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
-}
 
 dependencies {
-  api(projects.subprojects.javaCompiler)
+    api(projects.buildDeps.javaCompiler)
+    api(projects.buildDeps.jdkCompiler)
 }

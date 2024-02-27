@@ -15,11 +15,23 @@ antlr4 = "4.13.1"
 androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
-appintro = "6.3.1"
 markwon = "4.6.2"
 maven-publish-plugin = "0.27.0"
 
 [libraries]
+
+# Dependencies in composite build
+composite-appintro = { module = "com.itsaky.androidide.build:appintro" }
+composite-fuzzysearch = { module ="com.itsaky.androidide.build:fuzzysearch" }
+composite-googleJavaFormat = { module ="com.itsaky.androidide.build:google-java-format" }
+composite-javaCompiler = { module ="com.itsaky.androidide.build:java-compiler" }
+composite-javac = { module ="com.itsaky.androidide.build:javac" }
+composite-jdkCompiler = { module ="com.itsaky.androidide.build:jdk-compiler" }
+composite-jdkJdeps = { module ="com.itsaky.androidide.build:jdk-jdeps" }
+composite-javapoet = { module ="com.itsaky.androidide.build:javapoet" }
+composite-jaxp = { module ="com.itsaky.androidide.build:jaxp" }
+composite-jdt = { module ="com.itsaky.androidide.build:jdt" }
+composite-layoutlibApi = { module ="com.itsaky.androidide.build:layoutlib-api" }
 
 # AndroidIDE
 androidide-ts = { module = "com.itsaky.androidide.treesitter:android-tree-sitter", version.ref = "tree-sitter" }

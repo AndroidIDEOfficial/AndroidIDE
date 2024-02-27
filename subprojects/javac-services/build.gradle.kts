@@ -22,7 +22,7 @@ dependencies {
     implementation(projects.common)
     implementation(projects.logger)
     
-    api(projects.subprojects.javac)
+    api(libs.composite.javac)
     
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)
