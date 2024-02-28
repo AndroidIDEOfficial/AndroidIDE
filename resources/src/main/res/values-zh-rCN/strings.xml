@@ -4,10 +4,10 @@
   <string name="copy" tools:override="true">复制</string>
   <string name="terminal_more">更多…</string>
   <string name="text_to_search">要搜索的文本</string>
-  <string name="about_option_email">发电子邮件</string>
+  <string name="about_option_email">电子邮件</string>
   <string name="about_option_website">网站</string>
   <string name="about_footer">AndroidIDE %1$s (%2$s)</string>
-  <string name="about_subtitle">简而言之，一个适用于 Android 的 IDE</string>
+  <string name="about_subtitle">简而言之，一款适用于 Android 的 IDE</string>
   <string name="msg_get_package_failed">获取软件包名称失败！</string>
   <string name="msg_need_help">如果您在使用 AndroidIDE 或构建 Android 应用时遇到问题，您可以加入 Telegram 群组寻求帮助。\n\n您也可以发送建议到我们的电子邮件地址。</string>
   <string name="need_help">需要帮助？</string>
