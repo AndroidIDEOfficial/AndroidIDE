@@ -130,7 +130,7 @@ tests-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core"
 tests-androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx-espresso" }
 tests-androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.2.0" }
 tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.2.1" }
-tests-mockk = { module = "io.mockk:mockk", version = "1.13.9" }
+tests-mockk = { module = "io.mockk:mockk", version = "1.13.10" }
 tests-barista = { module = "com.adevinta.android:barista", version = "4.3.0" }
 
 # Tooling
