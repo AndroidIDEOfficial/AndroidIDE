@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.models.FileExtension;

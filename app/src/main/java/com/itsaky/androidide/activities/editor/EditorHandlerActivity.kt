@@ -21,19 +21,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.collection.MutableIntObjectMap
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.children
 import com.blankj.utilcode.util.ImageUtils
-import com.google.android.material.tabs.TabLayout
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
@@ -680,8 +675,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       val nameBuilder = UniqueNameBuilder<File>("", File.separator)
 
       val icons = MutableIntObjectMap<Int>()
-      val theme = theme
-      val resources = resources
 
       files.forEach {
         var count = dupliCount[it.name] ?: 0

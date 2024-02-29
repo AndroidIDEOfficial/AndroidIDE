@@ -69,7 +69,7 @@ enum class FileExtension(val extension: String, @DrawableRes val icon: Int) {
           return UNKNOWN
         }
         
-        for (value in values()) {
+        for (value in entries) {
           if (value.extension == extension) {
             return value
           }
