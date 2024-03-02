@@ -20,7 +20,10 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
-  includeBuild("build-logic")
+  includeBuild("composite-builds/build-logic") {
+    name = "build-logic"
+  }
+
   repositories {
     gradlePluginPortal()
     google()
@@ -29,22 +32,34 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-  includeBuild("build-deps") {
-    dependencySubstitution {
-      for (module in arrayOf(
-        "appintro",
-        "fuzzysearch",
-        "google-java-format",
-        "java-compiler",
-        "javac",
-        "javapoet",
-        "jaxp",
-        "jdk-compiler",
-        "jdk-jdeps",
-        "jdt",
-        "layoutlib-api"
-      )) {
-        substitute(module("com.itsaky.androidide.build:$module")).using(project(":$module"))
+  val dependencySubstitutions = mapOf(
+    "build-deps" to arrayOf(
+      "appintro",
+      "fuzzysearch",
+      "google-java-format",
+      "java-compiler",
+      "javac",
+      "javapoet",
+      "jaxp",
+      "jdk-compiler",
+      "jdk-jdeps",
+      "jdt",
+      "layoutlib-api"
+    ),
+
+    "build-deps-common" to arrayOf(
+      "desugaring-core"
+    )
+  )
+
+  for ((build, modules) in dependencySubstitutions) {
+    includeBuild("composite-builds/${build}") {
+      this.name = "build"
+      dependencySubstitution {
+        for (module in modules) {
+          substitute(module("com.itsaky.androidide.build:${module}"))
+            .using(project(":${module}"))
+        }
       }
     }
   }

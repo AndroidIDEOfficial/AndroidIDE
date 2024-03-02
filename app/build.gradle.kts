@@ -1,7 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
-import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
 import com.itsaky.androidide.build.config.BuildConfig
+import com.itsaky.androidide.desugaring.utils.JavaIOReplacements.applyJavaIOReplacements
+import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
 
 plugins {
   id("com.android.application")
@@ -9,6 +10,7 @@ plugins {
   id("kotlin-kapt")
   id("kotlin-parcelize")
   id("androidx.navigation.safeargs.kotlin")
+  id("com.itsaky.androidide.desugaring")
 }
 
 apply {
@@ -40,6 +42,14 @@ android {
 }
 
 kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex") } }
+
+desugaring {
+  replacements {
+    includePackage("org.eclipse.jgit")
+
+    applyJavaIOReplacements()
+  }
+}
 
 dependencies {
   debugImplementation(libs.common.leakcanary)
@@ -91,6 +101,7 @@ dependencies {
 
   // Dependencies in composite build
   implementation(libs.composite.appintro)
+  implementation(libs.composite.desugaringCore)
   implementation(libs.composite.javapoet)
 
   // Local projects here

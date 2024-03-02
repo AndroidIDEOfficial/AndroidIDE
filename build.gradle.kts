@@ -31,6 +31,7 @@ plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.android.library) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.maven.publish) apply false
   alias(libs.plugins.gradle.publish) apply false
 }
@@ -54,10 +55,10 @@ subprojects {
   project.version = rootProject.version
 
   plugins.withId("com.android.application") {
-    configureAndroidModule(libs.androidx.lib.desugaring.get())
+    configureAndroidModule(libs.androidx.libDesugaring)
   }
   plugins.withId("com.android.library") {
-    configureAndroidModule(libs.androidx.lib.desugaring.get())
+    configureAndroidModule(libs.androidx.libDesugaring)
   }
   plugins.withId("java-library") { configureJavaModule() }
   plugins.withId("com.vanniktech.maven.publish.base") { configureMavenPublish() }
