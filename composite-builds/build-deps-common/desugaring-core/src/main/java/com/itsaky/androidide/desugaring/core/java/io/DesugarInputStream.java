@@ -19,6 +19,7 @@ package com.itsaky.androidide.desugaring.core.java.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,10 +120,23 @@ public class DesugarInputStream {
     int n = 0;
     while (n < len) {
       int count = input.read(b, off + n, len - n);
-      if (count < 0)
+      if (count < 0) {
         break;
+      }
       n += count;
     }
     return n;
+  }
+
+  public static long transferTo(InputStream in, OutputStream out) throws IOException {
+    Objects.requireNonNull(out, "out");
+    long transferred = 0;
+    byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+    int read;
+    while ((read = in.read(buffer, 0, DEFAULT_BUFFER_SIZE)) >= 0) {
+      out.write(buffer, 0, read);
+      transferred += read;
+    }
+    return transferred;
   }
 }

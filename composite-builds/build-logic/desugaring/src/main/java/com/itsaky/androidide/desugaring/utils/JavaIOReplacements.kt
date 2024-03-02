@@ -59,5 +59,10 @@ object JavaIOReplacements {
       InputStream::readAllBytes.javaMethod!!,
       DesugarInputStream::readAllBytes.javaMethod!!
     )
+
+    replaceMethod(
+      InputStream::transferTo.javaMethod!!,
+      DesugarInputStream::transferTo.javaMethod!!
+    )
   }
 }

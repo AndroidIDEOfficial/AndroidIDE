@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.desugaring.dsl
 
+import java.io.Serializable
+
 /**
  * Key for storing [ReplaceMethodInsnKey] instances in a map.
  *
@@ -26,4 +28,7 @@ data class ReplaceMethodInsnKey(
   val className: String,
   val methodName: String,
   val methodDescriptor: String
-)
+) : Serializable {
+  @JvmField
+  val serialVersionUID = 1L
+}
