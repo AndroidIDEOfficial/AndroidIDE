@@ -28,6 +28,7 @@ public class BuildInfo {
   // ---------- Tooling version info --------------
   public static final String AGP_VERSION_MININUM = "@@AGP_VERSION_MININUM@@";
   public static final String AGP_VERSION_LATEST = "@@AGP_VERSION_LATEST@@";
+  public static final String AGP_VERSION_GRADLE_LATEST = "@@AGP_VERSION_GRADLE_LATEST@@";
 
   // ---------- Maven version info ----------------
 

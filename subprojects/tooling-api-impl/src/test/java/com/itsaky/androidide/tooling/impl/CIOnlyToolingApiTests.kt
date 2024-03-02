@@ -48,7 +48,9 @@ class CIOnlyToolingApiTests {
     // Test the minimum supported and the latest AGP version
     val versions = listOf(
       // AGP to Gradle
-      BuildInfo.AGP_VERSION_MININUM to "7.3.3", BuildInfo.AGP_VERSION_LATEST to "8.2")
+      BuildInfo.AGP_VERSION_MININUM to "7.3.3",
+      BuildInfo.AGP_VERSION_LATEST to BuildInfo.AGP_VERSION_GRADLE_LATEST
+    )
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient()
     for ((agpVersion, gradleVersion) in versions) {
@@ -69,9 +71,21 @@ class CIOnlyToolingApiTests {
 
     val client = ToolingApiTestLauncher.MultiVersionTestClient(
       agpVersion = agpVersion.toStringSimple(),
-      gradleVersion = "${agpVersion.major}.${agpVersion.minor}", log = log)
-    ToolingApiTestLauncher.launchServer(client = client, log = log, sysProps = mapOf(
-      ToolingProps.TESTING_LATEST_AGP_VERSION to ToolingApiTestLauncher.MultiVersionTestClient.DEFAULT_AGP_VERSION)) {
+      gradleVersion = BuildInfo.AGP_VERSION_GRADLE_LATEST,
+      log = log
+    )
+
+    ToolingApiTestLauncher.launchServer(
+      client = client,
+      log = log,
+
+      // Version of Android Gradle Plugin that the tooling API should recognize
+      // as the latest one
+      sysProps = mapOf(
+        ToolingProps.TESTING_LATEST_AGP_VERSION
+            to ToolingApiTestLauncher.MultiVersionTestClient.DEFAULT_AGP_VERSION
+      )
+    ) {
       val output = log.toString()
 
       if (result?.isSuccessful != true) {
