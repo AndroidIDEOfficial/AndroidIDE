@@ -29,7 +29,7 @@ import kotlin.io.path.pathString
 
 internal fun buildProject(
   agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
-  gradleVersion: String = "8.2",
+  gradleVersion: String = BuildInfo.AGP_VERSION_GRADLE_LATEST,
   useApplyPluginGroovySyntax: Boolean = false,
   configureArgs: (MutableList<String>) -> Unit = {},
   vararg plugins: String
