@@ -17,6 +17,7 @@
 package com.itsaky.androidide.builder.model
 
 import com.android.builder.model.v2.ide.AndroidArtifact
+import com.android.builder.model.v2.ide.BytecodeTransformation
 import com.android.builder.model.v2.ide.CodeShrinker
 import com.android.builder.model.v2.ide.PrivacySandboxSdkInfo
 import java.io.File
@@ -45,8 +46,9 @@ class DefaultAndroidArtifact : AndroidArtifact, Serializable {
   override var generatedSourceFolders: Collection<File> = emptyList()
   override var ideSetupTaskNames: Set<String> = emptySet()
   override var targetSdkVersionOverride: DefaultApiVersion? = null
-  override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+  override var modelSyncFiles: Collection<Void> = emptyList()
   override var privacySandboxSdkInfo: PrivacySandboxSdkInfo? = null
   override var desugaredMethodsFiles: Collection<File> = emptyList()
   override val generatedClassPaths: Map<String, File> = emptyMap()
+  override val bytecodeTransformations: Collection<BytecodeTransformation> = emptyList()
 }

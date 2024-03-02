@@ -29,11 +29,8 @@ import com.android.builder.model.v2.models.BasicAndroidProject
 import com.android.builder.model.v2.models.VariantDependencies
 import com.android.builder.model.v2.models.Versions
 import com.itsaky.androidide.builder.model.DefaultLibrary
-import com.itsaky.androidide.builder.model.DefaultModelSyncFile
-import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
-import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.models.AndroidArtifactMetadata
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
@@ -43,7 +40,6 @@ import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier.copy
-import com.itsaky.androidide.tooling.api.util.extractPackageName
 import com.itsaky.androidide.utils.AndroidPluginVersion
 import com.itsaky.androidide.utils.capitalizeString
 import org.gradle.tooling.model.GradleProject
@@ -144,17 +140,6 @@ internal class AndroidProjectImpl(
 
   override fun getLintCheckJars(): CompletableFuture<List<File>> {
     return CompletableFuture.supplyAsync { androidProject.lintChecksJars }
-  }
-
-  override fun getModelSyncFiles(): CompletableFuture<List<DefaultModelSyncFile>> {
-    return CompletableFuture.supplyAsync {
-
-      // model sync files available only in v7.3.0 and later
-      return@supplyAsync if (AndroidPluginVersion.parse(versions.agp) >= AndroidPluginVersion(7, 3,
-          0)
-      ) copy(androidProject.modelSyncFiles)
-      else emptyList()
-    }
   }
 
   private fun getClassesJar(): File {

@@ -18,16 +18,12 @@
 package com.itsaky.androidide.tooling.api.util
 
 import com.android.builder.model.v2.CustomSourceDirectory
-import com.android.builder.model.v2.ModelSyncFile
-import com.android.builder.model.v2.ide.AndroidArtifact
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
 import com.android.builder.model.v2.ide.AndroidLibraryData
 import com.android.builder.model.v2.ide.ApiVersion
 import com.android.builder.model.v2.ide.ArtifactDependencies
-import com.android.builder.model.v2.ide.BundleInfo
 import com.android.builder.model.v2.ide.GraphItem
-import com.android.builder.model.v2.ide.JavaArtifact
 import com.android.builder.model.v2.ide.JavaCompileOptions
 import com.android.builder.model.v2.ide.Library
 import com.android.builder.model.v2.ide.LibraryInfo
@@ -35,36 +31,24 @@ import com.android.builder.model.v2.ide.ProjectInfo
 import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
 import com.android.builder.model.v2.ide.SyncIssue
-import com.android.builder.model.v2.ide.TestInfo
-import com.android.builder.model.v2.ide.TestedTargetVariant
 import com.android.builder.model.v2.ide.UnresolvedDependency
-import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.android.builder.model.v2.models.ProjectSyncIssues
-import com.android.builder.model.v2.models.VariantDependencies
-import com.itsaky.androidide.builder.model.DefaultAndroidArtifact
 import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.builder.model.DefaultAndroidLibraryData
 import com.itsaky.androidide.builder.model.DefaultApiVersion
 import com.itsaky.androidide.builder.model.DefaultArtifactDependencies
-import com.itsaky.androidide.builder.model.DefaultBundleInfo
 import com.itsaky.androidide.builder.model.DefaultCustomSourceDirectory
 import com.itsaky.androidide.builder.model.DefaultGraphItem
-import com.itsaky.androidide.builder.model.DefaultJavaArtifact
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.builder.model.DefaultLibraryInfo
-import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultProjectInfo
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultSyncIssue
-import com.itsaky.androidide.builder.model.DefaultTestInfo
-import com.itsaky.androidide.builder.model.DefaultTestedTargetVariant
 import com.itsaky.androidide.builder.model.DefaultUnresolvedDependency
-import com.itsaky.androidide.builder.model.DefaultVariant
-import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.utils.ILogger
 
@@ -87,23 +71,6 @@ object AndroidModulePropertyCopier {
       else -> DefaultViewBindingOptions().apply { isEnabled = viewBindingOptions.isEnabled }
     }
   }
-
-  @JvmName("copyModelSyncFiles")
-  fun copy(modelSyncFiles: Collection<ModelSyncFile>): List<DefaultModelSyncFile> {
-    val new = mutableListOf<DefaultModelSyncFile>()
-    for (file in modelSyncFiles) {
-      new.add(copy(file))
-    }
-
-    return new
-  }
-
-  fun copy(file: ModelSyncFile): DefaultModelSyncFile =
-    DefaultModelSyncFile().apply {
-      modelSyncType = file.modelSyncType
-      syncFile = file.syncFile
-      taskName = file.taskName
-    }
 
   fun copy(version: ApiVersion?): DefaultApiVersion? =
     if (version == null) null
@@ -306,5 +273,6 @@ object AndroidModulePropertyCopier {
   }
 
   fun copy(issue: SyncIssue) =
-    DefaultSyncIssue(issue.data, issue.message, issue.multiLineMessage?.toTypedArray()?.let { listOf(*it) }, issue.severity, issue.type)
+    DefaultSyncIssue(issue.data, issue.message,
+      issue.multiLineMessage?.toTypedArray()?.let { listOf(*it) }, issue.severity, issue.type)
 }

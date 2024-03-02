@@ -112,7 +112,6 @@ class ProjectTransformer {
       libraries = libraryMap.keys,
       libraryMap = libraryMap,
       lintCheckJars = project.getLintCheckJars().get(),
-      modelSyncFiles = project.getModelSyncFiles().get(),
       variants = variants,
       configuredVariant = variants.find { it.name == configuredVariant },
       classesJar = metadata.classesJar

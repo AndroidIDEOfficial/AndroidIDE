@@ -18,7 +18,6 @@
 package com.itsaky.androidide.tooling.impl.internal.forwarding
 
 import com.itsaky.androidide.builder.model.DefaultLibrary
-import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IGradleProject
@@ -90,11 +89,6 @@ internal class ForwardingProject(var project: IGradleProject? = null) : IGradleP
 
   override fun getLintCheckJars(): CompletableFuture<List<File>> {
     return this.androidProject?.getLintCheckJars() ?: CompletableFuture.failedFuture(
-      UnsupportedOperationException())
-  }
-
-  override fun getModelSyncFiles(): CompletableFuture<List<DefaultModelSyncFile>> {
-    return this.androidProject?.getModelSyncFiles() ?: CompletableFuture.failedFuture(
       UnsupportedOperationException())
   }
 

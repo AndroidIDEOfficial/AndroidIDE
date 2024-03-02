@@ -32,4 +32,5 @@ class DefaultVariant : Variant, Serializable {
   override var testFixturesArtifact: DefaultAndroidArtifact? = null
   override var testedTargetVariant: DefaultTestedTargetVariant? = null
   override var unitTestArtifact: DefaultJavaArtifact? = null
+  override val runTestInSeparateProcess: Boolean = false
 }

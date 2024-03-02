@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.builder.model
 
+import com.android.builder.model.v2.ide.BytecodeTransformation
 import com.android.builder.model.v2.ide.JavaArtifact
 import java.io.File
 import java.io.Serializable
@@ -24,7 +25,7 @@ import java.io.Serializable
 class DefaultJavaArtifact : JavaArtifact, Serializable {
 
   private val serialVersionUID = 1L
-  override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+  override var modelSyncFiles: Collection<Void> = emptyList()
 
   override var assembleTaskName: String = ""
   override var classesFolders: Set<File> = emptySet()
@@ -34,4 +35,5 @@ class DefaultJavaArtifact : JavaArtifact, Serializable {
   override var mockablePlatformJar: File? = null
   override var runtimeResourceFolder: File? = null
   override val generatedClassPaths: Map<String, File> = emptyMap()
+  override val bytecodeTransformations: Collection<BytecodeTransformation> = emptyList()
 }

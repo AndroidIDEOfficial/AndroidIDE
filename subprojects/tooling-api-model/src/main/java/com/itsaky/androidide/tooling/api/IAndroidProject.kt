@@ -18,7 +18,6 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.builder.model.DefaultLibrary
-import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.models.AndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
@@ -82,13 +81,6 @@ interface IAndroidProject : IModuleProject {
    */
   @JsonRequest
   fun getLintCheckJars(): CompletableFuture<List<File>>
-
-  /**
-   * Get the list of [DefaultModelSyncFile]s for this project.
-   * See [ModelSyncFile][com.android.builder.model.v2.ModelSyncFile] for more details.
-   */
-  @JsonRequest
-  fun getModelSyncFiles(): CompletableFuture<List<DefaultModelSyncFile>>
 
   @Suppress("unused")
   companion object {

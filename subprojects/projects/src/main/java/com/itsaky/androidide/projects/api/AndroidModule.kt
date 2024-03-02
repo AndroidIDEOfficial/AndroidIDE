@@ -27,7 +27,6 @@ import com.android.builder.model.v2.ide.ProjectType
 import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultLibrary
-import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
@@ -107,7 +106,6 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val libraries: Set<String>,
   val libraryMap: Map<String, DefaultLibrary>,
   val lintCheckJars: List<File>,
-  val modelSyncFiles: List<DefaultModelSyncFile>,
   val variants: List<BasicAndroidVariantMetadata> = listOf(),
   val configuredVariant: BasicAndroidVariantMetadata?,
   val classesJar: File?
