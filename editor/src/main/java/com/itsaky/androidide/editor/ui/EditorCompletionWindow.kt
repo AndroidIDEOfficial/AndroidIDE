@@ -27,7 +27,6 @@ import com.itsaky.androidide.utils.KeyboardUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
-import io.github.rosemoe.sora.widget.getComponent
 import java.lang.ref.WeakReference
 import kotlin.math.min
 
@@ -103,7 +102,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
   }
 
   override fun requireCompletion() {
-    if (cancelShowUp || !isEnabled) {
+    if (cancelShowUp || !isEnabled || !editor.isAttachedToWindow) {
       return
     }
 
