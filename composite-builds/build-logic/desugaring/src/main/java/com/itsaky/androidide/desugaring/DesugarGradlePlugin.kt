@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.desugaring
 
+import com.android.build.api.instrumentation.FramesComputationMode
 import com.android.build.api.instrumentation.InstrumentationScope.ALL
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.itsaky.androidide.desugaring.DesugarParams.Companion.setFrom
@@ -41,14 +42,14 @@ class DesugarGradlePlugin : Plugin<Project> {
       androidComponents.onVariants { variant ->
         logger.debug("Applying desugaring to ${variant.name}")
 
-        variant.instrumentation.transformClassesWith(
-          DesugarClassVisitorFactory::class.java, ALL) { params ->
-          params.setFrom(extension)
-        }
+        variant.instrumentation.apply {
+          transformClassesWith(
+            DesugarClassVisitorFactory::class.java, ALL) { params ->
+            params.setFrom(extension)
+          }
 
-//        variant.runtimeConfiguration.dependencies.add(
-//          project.dependencies.create("")
-//        )
+          setAsmFramesComputationMode(FramesComputationMode.COPY_FRAMES)
+        }
       }
     }
   }
