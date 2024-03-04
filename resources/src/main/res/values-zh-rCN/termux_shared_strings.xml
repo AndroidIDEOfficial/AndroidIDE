@@ -18,7 +18,7 @@
 <resources>
   <string name="msg_directory_absolute_path">%1$s 目录绝对路径：“%2$s”</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) 应用程序未安装或被禁用。</string>
+  <string name="error_app_not_installed_or_disabled_warning">%1$s (%2$s) 应用未安装或已禁用。</string>
   <string name="error_get_package_context_failed_title">无法获取软件包上下文</string>
   <string name="error_get_package_context_failed_message">无法获取“%1$s”软件包上下文，这可能是因为应用软件包未安装或其 APK 签名与当前应用不同。</string>
   <string name="error_get_package_context_failed_help_url_message">查看 %1$s 了解更多详情。</string>
@@ -45,10 +45,12 @@
   <!-- TermuxUtils -->
   <string name="msg_report_issue">如果您想报告此问题，请从选项菜单（右上角的 3 点）复制其文本，并在以下链接之一发布问题。\n\n如果您要发布 Termux 应用崩溃报告，请提供有关导致崩溃的操作的详细信息，以及如果可能的话，请提供如何重现崩溃的方法。\n\n如果您要在 GitHub 上发布问题，请在相应报告所属的存储库中发布。使用**（部分）截屏**而不是复制的文本或此报告的文件打开的问题将**可能被自动关闭或删除**，您可以选择删除任何您认为私密或不想分享的设备特定信息，或者与问题无关的信息。\n\n我们不提供任何与黑客相关的工具或脚本的支持。通过电子邮件、GitHub 或其他官方 Termux 社区论坛提出的任何与此类工具有关的问题，都**可能会被自动关闭或删除**，甚至可能导致**临时或永久**的封禁，请查看 %1$s/wiki/Hacking 了解详情。</string>
   <string name="msg_termux_app_required_by_app">%1$s 应用需要 AndroidIDE 来运行 termux 命令。</string>
-  <string name="error_termux_app_package_context_not_accessible">AndroidIDE 应用程序（包上下文）无法访问。</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">%1$s 应用无法访问 AndroidIDE 应用的 $PREFIX 目录。
-         这可能是因为您尚未安装或设置 AndroidIDE 应用，或者 AndroidIDE 应用和 %1$s 应用具有不同的 APK 签名，因为您已设法从不同来源安装这两个应用程序。
-         也可能是因为 AndroidIDE 的 $PREFIX 目录“/data/data/com.itsaky.androidide/files/usr”不存在或者没有读、写、执行权限。</string>
+  <string name="error_termux_app_package_context_not_accessible">无法访问 AndroidIDE 应用（软件包上下文）。</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">%1$s 应用无法访问 AndroidIDE 应用的 $PREFIX 目录，原因可能如下：
+
+        您尚未安装或设置 AndroidIDE 应用。
+        %1$s 应用和 AndroidIDE 应用是通过不同的途径安装的，导致 APK 签名不一致。
+        AndroidIDE 的 $PREFIX 目录（/data/data/com.itsaky.androidide/files/usr）不存在或没有读、写、执行权限。</string>
   <!-- Miscellaneous -->
   <string name="action_share">分享</string>
   <string name="action_save_to_file">保存到文件</string>
