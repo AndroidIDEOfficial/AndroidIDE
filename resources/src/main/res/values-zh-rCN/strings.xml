@@ -9,7 +9,7 @@
   <string name="about_footer">AndroidIDE %1$s (%2$s)</string>
   <string name="about_subtitle">简而言之，一款适用于 Android 的 IDE</string>
   <string name="msg_get_package_failed">获取软件包名称失败！</string>
-  <string name="msg_need_help">如果您在使用 AndroidIDE 或构建 Android 应用时遇到问题，您可以加入 Telegram 群组寻求帮助。\n\n您也可以发送建议到我们的电子邮件地址。</string>
+  <string name="msg_need_help">如果您在使用 AndroidIDE 或构建 Android 应用时遇到问题，可以加入 Telegram 群组寻求帮助。\n\n您也可以在我们的电子邮件中发送建议。</string>
   <string name="need_help">需要帮助？</string>
   <string name="ide_preferences">IDE 首选项</string>
   <string name="discussions_on_telegram">在 Telegram 上讨论</string>
@@ -31,14 +31,14 @@
   <string name="msg_no_definition">没有找到定义</string>
   <!-- Build Tools Installation -->
   <string name="msg_no_references">没有找到引用</string>
-  <string name="view_diags">诊断信息</string>
+  <string name="view_diags">诊断</string>
   <string name="title_installation_failed">安装失败</string>
-  <string name="msg_picked_isnt_dir">所选文件不是目录！</string>
-  <string name="please_wait">请稍等片刻…</string>
+  <string name="msg_picked_isnt_dir">选取的文件不是目录！</string>
+  <string name="please_wait">请稍候片刻…</string>
   <!-- Project Builder -->
-  <string name="title_unsupported_device">不兼容的设备</string>
-  <string name="msg_unsupported_device">您正在仅 %2$s 的设备上使用 AndroidIDE 的 %1$s 变体。此配置不兼容，请安装 AndroidIDE 的 %2$s 变体。</string>
-  <string name="title_clear_output">清空输出</string>
+  <string name="title_unsupported_device">设备不受支持</string>
+  <string name="msg_unsupported_device">您在仅支持 %2$s 的设备上使用了 AndroidIDE 的 %1$s 版本。此配置不受支持，请安装 AndroidIDE 的 %2$s 版本。</string>
+  <string name="title_clear_output">清除输出</string>
   <string name="build_output">构建输出</string>
   <string name="quick_run_debug">快速运行</string>
   <string name="msg_sync_needed">Gradle 文件已更改，请重构您的项目以同步依赖项和配置。</string>
@@ -296,7 +296,7 @@
   <string name="msg_package_is_to_long">软件包名称过长</string>
   <string name="msg_package_not_valid_char_1">符号“_”不能是软件包名称中的首字符</string>
   <string name="msg_package_not_use_digit_first">数字不能是软件包名称中的首字符</string>
-  <string name="msg_package_not_valid_char_2">Android 应用的软件包名称中不允许使用字符“%1$s”</string>
+  <string name="msg_package_not_valid_char_2">Android 应用软件包名称中不允许包含字符“%1$s”</string>
   <string name="msg_package_mus_have_dot">软件包名称中必须至少有一个“.”分隔</string>
   <string name="action_import_classes">导入类</string>
   <string name="action_generate_setters_getters">生成 setter/getter</string>
@@ -451,7 +451,7 @@
   <string name="title_grant">授权</string>
   <string name="permission_title_storage">存储</string>
   <string name="permission_desc_storage">需要访问项目文件。</string>
-  <string name="permission_desc_install_packages">允许 AndroidIDE 安装其构建的应用程序。</string>
+  <string name="permission_desc_install_packages">允许 AndroidIDE 安装其构建的 APK。</string>
   <string name="permission_title_install_packages">安装软件包</string>
   <string name="onboarding_title_permissions">权限</string>
   <string name="onboarding_subtitle_permissions">AndroidIDE 需要以下权限</string>
