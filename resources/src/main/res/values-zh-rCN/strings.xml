@@ -44,17 +44,17 @@
   <string name="msg_sync_needed">Gradle 文件已更改，请重构您的项目以同步依赖项和配置。</string>
   <string name="preparing">准备中</string>
   <string name="preparing_first">准备中，首次构建可能需要 10-15 分钟！</string>
-  <string name="msg_installing_gradlew">Gradle Wrapper 不可用！\n正在安装默认的包装器。如有需要，将下载 Gradle v7.4。</string>
+  <string name="msg_installing_gradlew">Gradle Wrapper 不可用！\n正在安装默认的 Gradle Wrapper。如有必要，将下载 Gradle v7.4。</string>
   <string name="run">运行</string>
   <!-- Project -->
   <string name="title_first_build">首次构建</string>
-  <string name="msg_first_build">这是安装 AndroidIDE 后的首次构建。首次构建通常需要一些时间，因为 Gradle 要下载所有依赖项和插件。此过程可能需要 10-15 分钟，不过这完全取决于您的网络。\n\n请耐心等待…</string>
+  <string name="msg_first_build">这是安装 AndroidIDE 后的首次构建。第一次构建通常需要一些时间，因为 Gradle 要下载所有依赖项和插件。此过程可能需要大约 10-15 分钟，但这完全取决于您的网络连接。\n\n请耐心等待…</string>
   <string name="create_project">创建项目</string>
   <string name="minimum_sdk">最低 SDK 版本</string>
   <string name="new_project">新项目</string>
   <string name="package_name">软件包名称</string>
   <string name="project_app_name">应用名称</string>
-  <string name="msg_create_new_project_greeting">开始创建您的惊人项目！</string>
+  <string name="msg_create_new_project_greeting">开始您的精彩新项目吧！</string>
   <string name="title_confirm_open_project">打开上一次的项目？</string>
   <string name="msg_confirm_open_project">您想要打开上次打开的项目吗？已打开的项目是：\n%s</string>
   <string name="title_close_project">关闭当前项目</string>
