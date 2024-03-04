@@ -16,7 +16,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-  <string name="msg_directory_absolute_path">%1$s абсолютный путь: %2$s</string>
+  <string name="msg_directory_absolute_path">%1$s абсолютный путь директории: %2$s</string>
   <!-- PackageUtils -->
   <string name="error_app_not_installed_or_disabled_warning">Приложение %1$s (%2$s) не установлено или отключено.</string>
   <string name="error_get_package_context_failed_title">Не удалось получить контекст пакета</string>
@@ -48,7 +48,7 @@
         \n\nЕсли вы создаете Issue на GitHub, то создавайте его в соответствующем репозитории. Issue или электронные письма, содержащие только **(частичные) скриншоты** вместо скопированного текста или файла с этим отчетом, скорее всего **будут оавтоматически отклонены**. Вы можете вручную удалить информацию о девайсе или любую другую информацию, которую считатете приватной или не релевантной, из данного отчета.
         \n\nМы не предоставляем поддержку касательно любых инструментов (скриптов) для хакинга (взлома). Подобные вопросы, заданные посредствам GitHub, по электронной почте или на официальных форумах Termux, скорее всего **будут автоматически отклонены**, а также могут повлечь за собой **временную или перманентную блокировку (бан)**. Посетите %1$s/wiki/Hacking, чтобы узнать больше.</string>
   <string name="msg_termux_app_required_by_app">AndroidIDE требуется приложению %1$s для запуска команд Termux.</string>
-  <string name="error_termux_app_package_context_not_accessible">Приложение AndroidIDE недоступно.</string>
+  <string name="error_termux_app_package_context_not_accessible">Приложение AndroidIDE (контекст пакета) недоступно.</string>
   <string name="error_termux_prefix_dir_path_not_accessible">Директория $PREFIX AndroidIDE недоступна приложению %1$s.
         Возможно, вы не установили или не настроили AndroidIDE, либо вы установили %1$s и AndroidIDE из разных источников из-за чего их подписи различны.
         Возможно, $PREFIX директория AndroidIDE \"/data/data/com.itsaky.androidide/files/usr\" не существует или не имеет разрешения на запись, чтение и запуск файлов, что так же может быть причиной данной ошибки.</string>
@@ -64,5 +64,5 @@
   <string name="log_level_debug">Отладка</string>
   <string name="log_level_verbose">Подробно</string>
   <string name="log_level_unknown">*Неизвестно*</string>
-  <string name="log_level_value">Уровень логирования logcat выставлен в \"%1$s\"</string>
+  <string name="log_level_value">Уровень логирования Logcat выставлен в \"%1$s\"</string>
 </resources>
