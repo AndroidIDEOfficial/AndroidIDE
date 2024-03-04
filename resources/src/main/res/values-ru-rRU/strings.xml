@@ -174,7 +174,7 @@
   <string name="msg_empty_ui_layout">Вы ещё не добавили элементов. Нажмите, чтобы добавить.</string>
   <string name="msg_generate_xml_failed">Не удалось сгенерировать код XML</string>
   <string name="title_generating_xml">Генерация кода XML</string>
-  <string name="msg_swipe_up">Нажмите здесь или проведите вверх, чтобы увидеть сообщения сборки, логи и прочее.</string>
+  <string name="msg_swipe_up">Нажмите здесь или проведите вверх, чтобы увидеть отладочную информацию.</string>
   <string name="msg_ide_crashed">AndroidIDE приостановила работу из-за непридвиденной ошибки</string>
   <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
   <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
