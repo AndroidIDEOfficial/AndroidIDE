@@ -69,7 +69,7 @@ import kotlin.math.min
  * @author Akash Yadav
  */
 @SuppressLint("RestrictedApi")
-open class EditorActionsMenu constructor(val editor: IDEEditor) :
+open class EditorActionsMenu(val editor: IDEEditor) :
   AbstractPopupWindow(editor, FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED),
   ActionsRegistry.ActionExecListener,
   MenuBuilder.Callback {

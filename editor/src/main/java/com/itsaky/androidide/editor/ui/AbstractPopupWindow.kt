@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.editor.ui
 
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow
 
@@ -28,8 +29,17 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow
 abstract class AbstractPopupWindow(editor: CodeEditor, features: Int) :
   EditorPopupWindow(editor, features) {
 
+  companion object {
+    private val log = ILogger.newInstance("AbstractPopupWindow")
+  }
+
   override fun show() {
     (editor as? IDEEditor)?.ensureWindowsDismissed()
+    if (!editor.isAttachedToWindow) {
+      log.error("Trying to show popup window '${javaClass.name}' when editor is not attached to window")
+      return
+    }
+
     super.show()
   }
 
