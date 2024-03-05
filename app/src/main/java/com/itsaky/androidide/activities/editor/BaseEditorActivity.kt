@@ -17,8 +17,12 @@
 
 package com.itsaky.androidide.activities.editor
 
+import android.animation.LayoutTransition
+import android.animation.LayoutTransition.CHANGE_APPEARING
+import android.animation.LayoutTransition.CHANGE_DISAPPEARING
 import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -28,7 +32,9 @@ import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -38,9 +44,12 @@ import androidx.annotation.GravityInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.core.view.updateLayoutParams
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.KeyboardUtils
+import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.snackbar.Snackbar
@@ -65,6 +74,7 @@ import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
+import com.itsaky.androidide.preferences.internal.fullscreenOnLandscape
 import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
@@ -219,6 +229,8 @@ abstract class BaseEditorActivity :
 
     this.optionsMenuInvalidator = Runnable { super.invalidateOptionsMenu() }
 
+    supportActionBar?.setShowHideAnimationEnabled(true)
+
     registerLanguageServers()
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
@@ -242,6 +254,12 @@ abstract class BaseEditorActivity :
 
     uiDesignerResultLauncher =
       registerForActivityResult(StartActivityForResult(), this::handleUiDesignerResult)
+
+    binding.bottomSheet.layoutTransition = LayoutTransition().apply {
+      enableTransitionType(CHANGE_APPEARING)
+      disableTransitionType(CHANGE_DISAPPEARING)
+      setDuration(300)
+    }
   }
 
   override fun onPause() {
@@ -590,6 +608,33 @@ abstract class BaseEditorActivity :
 
   private fun onSoftInputChanged() {
     invalidateOptionsMenu()
+    if (fullscreenOnLandscape) {
+      if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (KeyboardUtils.isSoftInputVisible(this)) {
+          binding.apply {
+            bottomSheet.visibility = View.GONE
+            editorContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+              bottomMargin = 0
+            }
+            tabs.updateLayoutParams<AppBarLayout.LayoutParams> {
+              height = SizeUtils.dp2px(35f)
+            }
+          }
+          supportActionBar?.hide()
+        } else {
+          binding.apply {
+            bottomSheet.visibility = View.VISIBLE
+            editorContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+              bottomMargin = SizeUtils.dp2px(40f)
+            }
+            tabs.updateLayoutParams<AppBarLayout.LayoutParams> {
+              height = WRAP_CONTENT
+            }
+          }
+          supportActionBar?.show()
+        }
+      }
+    }
     binding.bottomSheet.onSoftInputChanged()
   }
 

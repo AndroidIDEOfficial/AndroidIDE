@@ -16,12 +16,16 @@
  */
 package com.itsaky.androidide.app
 
+import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat.Type.systemBars
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
-
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.ILogger
@@ -54,6 +58,8 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
+
+    hideSystemBarsIfPossible(resources.configuration)
   }
 
   override fun onDestroy() {
@@ -79,6 +85,20 @@ abstract class BaseIDEActivity : AppCompatActivity() {
     val transaction = supportFragmentManager.beginTransaction()
     transaction.replace(id, fragment)
     transaction.commit()
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    hideSystemBarsIfPossible(newConfig)
+  }
+
+  private fun hideSystemBarsIfPossible(configuration: Configuration) {
+    val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView).also {
+      it.systemBarsBehavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+    if (configuration.orientation == ORIENTATION_LANDSCAPE) {
+      windowInsetsController.hide(systemBars())
+    } else windowInsetsController.show(systemBars())
   }
 
   protected open fun preSetContentLayout() {}
