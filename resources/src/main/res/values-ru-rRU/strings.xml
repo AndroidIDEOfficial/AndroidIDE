@@ -380,9 +380,9 @@
   <string name="msg_invalid_module_name">Неверное имя модуля Gradle</string>
   <string name="msg_value_empty">Пустое значение</string>
   <string name="msg_file_not_exist">Файл не существует</string>
-  <string name="msg_path_must_be_file">Должен быть путь к файлу</string>
+  <string name="msg_path_must_be_file" comment="Error message shown to the user to indicate that the path provided by the user must be path to an existing file on the filesystem.">Должен быть путь к файлу</string>
   <string name="msg_classname_with_keywords">Имя класса содержит зарезервированные слова</string>
-  <string name="msg_path_must_be_dir">Должен быть путь к директории</string>
+  <string name="msg_path_must_be_dir" comment="Error message shown to the user to indicate that the path provided by the user must be path to an existing directory on the filesystem.">Должно быть путём к директории</string>
   <string name="msg_invalid_layout_name">Недопустимое имя файла разметки</string>
   <string name="msg_invalid_project_details">Неверные сведения о проекте</string>
   <string name="msg_use_kts">Использовать Kotlin Script (.kts) для файлов сборки Gradle</string>
