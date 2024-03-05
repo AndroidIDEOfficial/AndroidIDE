@@ -26,6 +26,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import java.lang.ref.WeakReference
@@ -36,77 +37,109 @@ import java.lang.ref.WeakReference
  */
 class EditorBuildEventListener : GradleBuildService.EventListener {
 
+  private var enabled = true
   private var activityReference: WeakReference<EditorHandlerActivity> = WeakReference(null)
+
+  companion object {
+
+    private val log = ILogger.newInstance("EditorBuildEventListener")
+  }
+
+  private val _activity: EditorHandlerActivity?
+    get() = activityReference.get()
+  private val activity: EditorHandlerActivity
+    get() = checkNotNull(activityReference.get()) { "Activity reference has been destroyed!" }
 
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
+    this.enabled = true
+  }
+
+  fun release() {
+    activityReference.clear()
+    this.enabled = false
   }
 
   override fun prepareBuild(buildInfo: BuildInfo) {
+    checkActivity("prepareBuild") ?: return
+
     val isFirstBuild = isFirstBuild
-    activity()
+    activity
       .setStatus(
-        activity().getString(if (isFirstBuild) string.preparing_first else string.preparing)
+        activity.getString(if (isFirstBuild) string.preparing_first else string.preparing)
       )
 
     if (isFirstBuild) {
-      activity().showFirstBuildNotice()
+      activity.showFirstBuildNotice()
     }
 
-    activity().editorViewModel.isBuildInProgress = true
-    activity().binding.bottomSheet.clearBuildOutput()
+    activity.editorViewModel.isBuildInProgress = true
+    activity.binding.bottomSheet.clearBuildOutput()
 
     if (buildInfo.tasks.isNotEmpty()) {
-      activity().binding.bottomSheet.appendBuildOut(
-        activity().getString(R.string.title_run_tasks) + " : " + buildInfo.tasks)
+      activity.binding.bottomSheet.appendBuildOut(
+        activity.getString(R.string.title_run_tasks) + " : " + buildInfo.tasks)
     }
   }
 
   override fun onBuildSuccessful(tasks: List<String?>) {
+    checkActivity("onBuildSuccessful") ?: return
+
     analyzeCurrentFile()
 
     isFirstBuild = false
-    activity().editorViewModel.isBuildInProgress = false
+    activity.editorViewModel.isBuildInProgress = false
 
-    activity().flashSuccess(R.string.build_status_sucess)
+    activity.flashSuccess(R.string.build_status_sucess)
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
+    checkActivity("onProgressEvent") ?: return
+
     if (event is ProjectConfigurationStartEvent || event is TaskStartEvent) {
-      activity().setStatus(event.descriptor.displayName)
+      activity.setStatus(event.descriptor.displayName)
     }
   }
 
   override fun onBuildFailed(tasks: List<String?>) {
+    checkActivity("onBuildFailed") ?: return
 
     analyzeCurrentFile()
 
     isFirstBuild = false
-    activity().editorViewModel.isBuildInProgress = false
+    activity.editorViewModel.isBuildInProgress = false
 
-    activity().flashError(R.string.build_status_failed)
+    activity.flashError(R.string.build_status_failed)
   }
 
   override fun onOutput(line: String?) {
+    checkActivity("onOutput") ?: return
 
-    line?.let { activity().appendBuildOutput(it) }
+    line?.let { activity.appendBuildOutput(it) }
     // TODO This can be handled better when ProgressEvents are received from Tooling API server
     if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
-      activity().setStatus(line)
+      activity.setStatus(line)
     }
   }
 
   private fun analyzeCurrentFile() {
+    checkActivity("analyzeCurrentFile") ?: return
 
-    val editorView = activity().getCurrentEditor()
+    val editorView = _activity?.getCurrentEditor()
     if (editorView != null) {
       val editor = editorView.editor
       editor?.analyze()
     }
   }
 
-  fun activity(): EditorHandlerActivity {
-    return activityReference.get()
-      ?: throw IllegalStateException("Activity reference has been destroyed!")
+  private fun checkActivity(action: String): EditorHandlerActivity? {
+    if (!enabled) return null
+
+    return _activity.also {
+      if (it == null) {
+        log.warn("[$action] Activity reference has been destroyed!")
+        enabled = false
+      }
+    }
   }
 }

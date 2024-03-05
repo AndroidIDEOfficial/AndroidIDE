@@ -204,9 +204,15 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       } catch (err: Throwable) {
         log.error("Unable to unbind service")
       } finally {
-        (Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
-          ?.setEventListener(null)
-        Lookup.getDefault().unregister(BuildService.KEY_BUILD_SERVICE)
+        Lookup.getDefault().apply {
+
+          (lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
+            ?.setEventListener(null)
+
+          unregister(BuildService.KEY_BUILD_SERVICE)
+        }
+
+        mBuildEventListener.release()
         editorViewModel.isBoundToBuildSerice = false
       }
     }
