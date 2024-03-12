@@ -589,8 +589,10 @@ abstract class BaseEditorActivity :
   }
 
   private fun onSoftInputChanged() {
-    invalidateOptionsMenu()
-    binding.bottomSheet.onSoftInputChanged()
+    if (!isDestroying) {
+      invalidateOptionsMenu()
+      binding.bottomSheet.onSoftInputChanged()
+    }
   }
 
   private fun showNeedHelpDialog() {
