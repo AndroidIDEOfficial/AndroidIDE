@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
 import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.utils.ILogger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -121,7 +122,7 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
       return;
     }
 
-    LOG.debug("Dispatching ProjectInitializedEvent to language servers...");
+    ILogger.ROOT.debug("Dispatching ProjectInitializedEvent to language servers...");
     for (final var server : mRegister.values()) {
       server.setupWithProject(project);
     }

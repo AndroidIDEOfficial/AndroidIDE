@@ -17,7 +17,13 @@
 package com.itsaky.androidide.lsp.java.visitors
 
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.itsaky.androidide.utils.ILogger
+import jdkx.lang.model.element.Element
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.DeclaredType
+import jdkx.lang.model.type.TypeKind
+import jdkx.lang.model.type.TypeMirror
 import openjdk.source.tree.BlockTree
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -39,18 +45,11 @@ import openjdk.source.util.TreePath
 import openjdk.source.util.TreeScanner
 import openjdk.source.util.Trees
 import openjdk.tools.javac.api.JavacTaskImpl
-import java.util.*
-import jdkx.lang.model.element.Element
-import jdkx.lang.model.element.ExecutableElement
-import jdkx.lang.model.element.Modifier
-import jdkx.lang.model.element.TypeElement
-import jdkx.lang.model.type.DeclaredType
-import jdkx.lang.model.type.TypeKind
-import jdkx.lang.model.type.TypeMirror
+import java.util.Objects
 
 class DiagnosticVisitor(task: JavacTaskImpl?) :
   TreeScanner<Void?, MutableMap<TreePath?, String>>() {
-  private val log = ILogger.newInstance(javaClass.simpleName)
+
   private val trees = Trees.instance(task)
   private val privateDeclarations = mutableMapOf<Element, TreePath>()
   private val localVariables = mutableMapOf<Element, TreePath>()
@@ -170,9 +169,9 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
         return true
       }
     }
-    
+
     abortIfCancelled()
-    
+
     // Check if t has been referenced by a reachable element
     val el = trees.getElement(path)
     return used.contains(el)
@@ -224,6 +223,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
         foundLocalVariable()
         super.visitVariable(t, notThrown)
       }
+
       isReachable(path!!) -> super.visitVariable(t, notThrown)
       else -> foundPrivateDeclaration()
     }
@@ -241,12 +241,12 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
     val pushObserved = observedExceptions
     declaredExceptions = declared(t)
     observedExceptions = HashSet()
-    
+
     abortIfCancelled()
     // Recursively scan for 'throw' and method calls
     super.visitMethod(t, notThrown)
     abortIfCancelled()
-    
+
     // Check for exceptions that were never thrown
     for (exception in declaredExceptions.keys) {
       if (!observedExceptions.contains(exception)) {

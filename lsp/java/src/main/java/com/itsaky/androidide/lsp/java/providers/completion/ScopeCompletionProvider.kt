@@ -100,7 +100,7 @@ class ScopeCompletionProvider(
       }
     }
 
-    log.info("...found " + list.size + " scope members")
+    log.info("...found  {} scope members", list.size)
 
     return CompletionResult(list)
   }
@@ -133,19 +133,19 @@ class ScopeCompletionProvider(
     val parentElement =
       Trees.instance(task.task).getElement(parentPath)
         ?: // Can't get further information for overriding this method
-      return method(task, listOf(method), !endsWithParen, matchLevel, partial)
+        return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     val type = parentElement.asType() as DeclaredType
     val enclosing = method.enclosingElement
     val isFinalClass = enclosing.modifiers.contains(FINAL)
     val isNotOverridable =
       (method.modifiers.contains(STATIC) ||
-        method.modifiers.contains(FINAL) ||
-        method.modifiers.contains(PRIVATE))
+          method.modifiers.contains(FINAL) ||
+          method.modifiers.contains(PRIVATE))
     if (
       isFinalClass ||
-        isNotOverridable ||
-        !types.isAssignable(type, enclosing.asType()) ||
-        parentPath.leaf !is ClassTree
+      isNotOverridable ||
+      !types.isAssignable(type, enclosing.asType()) ||
+      parentPath.leaf !is ClassTree
     ) {
       // Override is not possible
       return method(task, listOf(method), !endsWithParen, matchLevel, partial)
@@ -157,7 +157,7 @@ class ScopeCompletionProvider(
     try {
       builder = buildMethod(method, types, type)
     } catch (error: Throwable) {
-      log.error("Cannot override method:", method.simpleName, error.message)
+      log.error("Cannot override method:{} err={}", method.simpleName, error.message)
       return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     }
 

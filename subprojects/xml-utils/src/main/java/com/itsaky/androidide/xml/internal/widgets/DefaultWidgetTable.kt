@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.xml.internal.widgets
 
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.widgets.Widget
-import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.internal.widgets.util.DefaultWidget
 import com.itsaky.androidide.xml.internal.widgets.util.WidgetParser
+import com.itsaky.androidide.xml.widgets.Widget
+import com.itsaky.androidide.xml.widgets.WidgetTable
+import org.slf4j.LoggerFactory
 
 /**
  * Default implementation of [WidgetTable].
@@ -30,8 +30,12 @@ import com.itsaky.androidide.xml.internal.widgets.util.WidgetParser
  */
 class DefaultWidgetTable : WidgetTable {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   private val root: WidgetNode = WidgetNode(name = "", isWidget = false)
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(DefaultWidgetTable::class.java)
+  }
 
   override fun getWidget(name: String): Widget? {
     val node = getNode(name)!!
@@ -86,7 +90,7 @@ class DefaultWidgetTable : WidgetTable {
     val widget =
       WidgetParser.parse(line)
         ?: run {
-          log.debug("Cannot parse widget from line: $line")
+          log.debug("Cannot parse widget from line: {}", line)
           return
         }
 

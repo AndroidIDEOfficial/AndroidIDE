@@ -334,7 +334,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       newSelections.putAll(buildVariantsViewModel.updatedBuildVariants)
       initializeProject {
         newSelections.mapToSelectedVariants().also {
-          log.debug("Initializing project with new build variant selections: $it")
+          log.debug("Initializing project with new build variant selections: {}", it)
         }
       }
       return
@@ -363,7 +363,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     }
 
     val initialized = manager.projectInitialized && manager.cachedInitResult != null
-    log.debug("Is project initialized: $initialized")
+    log.debug("Is project initialized: {}", initialized)
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
     if (isFromSavedInstance && initialized && !shouldInitialize) {

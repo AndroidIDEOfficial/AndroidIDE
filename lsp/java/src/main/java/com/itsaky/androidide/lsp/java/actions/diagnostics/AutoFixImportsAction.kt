@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireContext
-import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
@@ -32,8 +31,8 @@ import com.itsaky.androidide.lsp.models.DocumentChange
 import com.itsaky.androidide.lsp.models.TextEdit
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.utils.DialogUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashInfo
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 /**
@@ -43,10 +42,14 @@ import java.nio.file.Path
  */
 class AutoFixImportsAction : BaseJavaCodeAction() {
 
-  private val log = ILogger.newInstance("AutoFixImportsAction")
   override val titleTextRes: Int = R.string.title_fix_imports
   override val id: String = "ide.editor.lsp.java.diagnostics.autoFixImports"
   override var label: String = ""
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(AutoFixImportsAction::class.java)
+  }
 
   override suspend fun execAction(data: ActionData): Result {
     val path = data.requirePath()
@@ -78,7 +81,7 @@ class AutoFixImportsAction : BaseJavaCodeAction() {
 
   override fun postExec(data: ActionData, result: Any) {
     if (result !is Result) {
-      log.error("Invalid result returned from execAction", result)
+      log.error("Invalid result returned from execAction: {}", result)
       return
     }
 
@@ -182,7 +185,7 @@ class AutoFixImportsAction : BaseJavaCodeAction() {
         try {
           docContents ?: diagnostic.source.getCharContent(true).also { docContents = it }
         } catch (e: Exception) {
-          log.error("Failed to get contents of file $file", e)
+          log.error("Failed to get contents of file {}", file, e)
           continue
         }
 

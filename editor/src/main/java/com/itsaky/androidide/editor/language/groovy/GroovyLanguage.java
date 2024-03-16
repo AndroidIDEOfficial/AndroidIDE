@@ -23,7 +23,6 @@ import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.ILogger;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -34,10 +33,12 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GroovyLanguage extends IDELanguage {
 
-  private static final ILogger LOG = ILogger.newInstance("GroovyLanguage");
+  private static final Logger LOG = LoggerFactory.getLogger(GroovyLanguage.class);
   private final GroovyAnalyzer analyzer;
   private final GroovyAutoComplete completer;
   private final NewlineHandler[] newlineHandlers =

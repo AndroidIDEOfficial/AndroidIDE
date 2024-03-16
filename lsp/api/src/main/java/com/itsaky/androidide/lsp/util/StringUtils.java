@@ -17,19 +17,13 @@
 
 package com.itsaky.androidide.lsp.util;
 
-import static com.itsaky.androidide.utils.ILogger.newInstance;
-
 import com.itsaky.androidide.fuzzysearch.FuzzySearch;
-import com.itsaky.androidide.utils.ILogger;
-
 import java.util.Locale;
 
 /**
  * @author Akash Yadav
  */
 public class StringUtils {
-
-  private static final ILogger LOG = newInstance("StringUtils");
 
   public static boolean matchesFuzzy(CharSequence candidate, CharSequence partialName) {
     return matchesFuzzy(candidate, partialName, false);

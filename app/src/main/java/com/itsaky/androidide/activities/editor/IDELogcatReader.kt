@@ -18,13 +18,13 @@ package com.itsaky.androidide.activities.editor
 
 import android.os.Process
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.transferToStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,9 +37,13 @@ import java.util.Locale
  */
 class IDELogcatReader {
 
-  private val log = ILogger.newInstance("IDELogcatReader")
   private var job: Job? = null
   private var shouldRun = false
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(IDELogcatReader::class.java)
+  }
 
   /**
    * Start reading the logs.
@@ -71,7 +75,7 @@ class IDELogcatReader {
     val outputFile = File(Environment.ANDROIDIDE_HOME,
       "logs/AndroidIDE-LOG-${dateFormat.format(date)}.txt")
 
-    log.debug("Creating output file: $outputFile")
+    log.debug("Creating output file: {}", outputFile)
 
     outputFile.parentFile!!.mkdirs()
     try {
@@ -96,7 +100,7 @@ class IDELogcatReader {
         process.inputStream.transferToStream(writer)
         writer.flush()
 
-        log.info("Process ended with exit code :", process.waitFor())
+        log.info("Process ended with exit code: {}", process.waitFor())
       } catch (err: Throwable) {
         log.error("Failed to read logs", err)
       }

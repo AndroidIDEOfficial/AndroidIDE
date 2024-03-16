@@ -24,8 +24,8 @@ import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.projects.models.ActiveDocument
-import com.itsaky.androidide.utils.ILogger
 import org.apache.commons.io.FileUtils
+import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStream
 import java.net.URI
@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object FileManager {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = LoggerFactory.getLogger(FileManager::class.java)
   private val activeDocuments = ConcurrentHashMap<Path, ActiveDocument>()
 
   fun isActive(uri: URI): Boolean {
@@ -110,7 +110,7 @@ object FileManager {
       // create document if not already created
       // this should not happen under normal circumstances
       activeDocuments[event.changedFile.normalize()] = createDocument(event)
-      log.warn("Document change event received before open event for file ${event.changedFile}")
+      log.warn("Document change event received before open event for file {}", event.changedFile)
       return
     }
 

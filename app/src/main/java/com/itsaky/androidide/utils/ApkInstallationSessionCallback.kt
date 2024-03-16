@@ -20,17 +20,21 @@ package com.itsaky.androidide.utils
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.activities.editor.BaseEditorActivity
 import com.itsaky.androidide.ui.EditorBottomSheet
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) :
   SingleSessionCallback() {
 
-  private val log = ILogger.newInstance("InstallationSessionCallback")
   private var sessionId = -1
+
+  companion object {
+    private val log = LoggerFactory.getLogger(ApkInstallationSessionCallback::class.java)
+  }
 
   override fun onCreated(sessionId: Int) {
     this.sessionId = sessionId
-    log.debug("Created package installation session:", sessionId)
+    log.debug("Created package installation session: {}", sessionId)
     activity?._binding?.apply {
       bottomSheet.setActionText(activity!!.getString(string.msg_installing_apk))
       bottomSheet.setActionProgress(0)
@@ -65,7 +69,7 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
             try {
               packageInstaller.abandonSession(info.sessionId)
             } catch (ex: Exception) {
-              log.error("Failed to abandon session ${info.sessionId} : ${ex.cause?.message ?: ex.message}")
+              log.error("Failed to abandon session {} : {}", info.sessionId, ex.cause?.message ?: ex.message)
             }
           }
       }

@@ -27,7 +27,6 @@ import com.google.android.material.button.MaterialButton
 import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.LayoutOnboardingPermissionItemBinding
 import com.itsaky.androidide.models.OnboardingPermissionItem
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * @author Akash Yadav
@@ -71,8 +70,6 @@ class OnboardingPermissionsAdapter(private val permissions: List<OnboardingPermi
       }
     }
   }
-
-  private val log = ILogger.newInstance("OnboardingPermissionsAdapter")
 
   override fun getItemCount(): Int {
     return permissions.size

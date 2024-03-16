@@ -26,7 +26,6 @@ import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.actions.OnActionClickListener
 import com.itsaky.androidide.actions.locations.CodeActionsMenu
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.withStopWatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +34,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -45,12 +45,15 @@ import java.util.concurrent.ConcurrentHashMap
 @AutoService(ActionsRegistry::class)
 class DefaultActionsRegistry : ActionsRegistry() {
 
-  private val log = ILogger.newInstance("DefaultActionsRegistry")
   private val actions = ConcurrentHashMap<String, ConcurrentHashMap<String, ActionItem>>()
   private val listeners = HashSet<ActionExecListener>()
 
   private val actionsCoroutineScope = CoroutineScope(Dispatchers.Default) +
       CoroutineName("DefaultActionsRegistry")
+
+  companion object {
+    private val log = LoggerFactory.getLogger(DefaultActionsRegistry::class.java)
+  }
 
   init {
     registerAction(CodeActionsMenu)
@@ -217,7 +220,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     }.also { job ->
       job.invokeOnCompletion { error ->
         if (error != null) {
-          log.error("An error occurred when performing action '${action.id}'", error)
+          log.error("An error occurred when performing action '{}'", action.id, error)
         }
       }
     }

@@ -19,7 +19,7 @@ package com.itsaky.androidide.projects.classpath
 
 import com.google.common.collect.ImmutableSet
 import java.io.File
-import java.util.zip.*
+import java.util.zip.ZipFile
 
 /**
  * Lists all classes from classpath(s).

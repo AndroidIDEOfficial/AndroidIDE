@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.providers;
 import static com.google.common.collect.Range.closedOpen;
 
 import androidx.annotation.NonNull;
-
 import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
@@ -31,10 +30,10 @@ import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
 import com.itsaky.androidide.lsp.models.IndexedTextEdit;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Formats Java code using Google Java Format.
@@ -43,7 +42,7 @@ import java.util.Collection;
  */
 public class CodeFormatProvider {
 
-  private static final ILogger LOG = ILogger.newInstance("JavaCodeFormatProvider");
+  private static final Logger LOG = LoggerFactory.getLogger(CodeFormatProvider.class);
 
   private final JavaServerSettings settings;
 

@@ -29,7 +29,7 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-
+import java.util.List;
 import org.eclipse.lemminx.dom.DOMDocumentType;
 import org.eclipse.lemminx.dom.DOMNode;
 import org.eclipse.lemminx.dom.DTDAttlistDecl;
@@ -37,8 +37,6 @@ import org.eclipse.lemminx.dom.DTDDeclNode;
 import org.eclipse.lemminx.dom.DTDDeclParameter;
 import org.eclipse.lemminx.utils.StringUtils;
 import org.w3c.dom.Node;
-
-import java.util.List;
 
 /**
  * DOM docType formatter.

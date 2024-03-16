@@ -45,7 +45,7 @@ import com.itsaky.androidide.uidesigner.utils.UiLayoutInflater
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -55,7 +55,6 @@ import java.io.File
  */
 class DesignerWorkspaceFragment : BaseFragment() {
 
-  private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
@@ -93,6 +92,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private val attrHandler by lazy { WorkspaceViewAttrHandler() }
 
   companion object {
+
+    private val log = LoggerFactory.getLogger(DesignerWorkspaceFragment::class.java)
 
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
     const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
@@ -132,7 +133,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
           viewModel.layoutHasError = false
         }
       } catch (e: Throwable) {
-        log.error(e)
+        log.error("Failed to inflate layout", e)
         viewModel.errText = "${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"
         viewModel.layoutHasError = true
         emptyList()
@@ -175,7 +176,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     when (val fg = view.view.foreground) {
       null -> view.view.foreground = bgDesignerView(requireContext())
       is UiViewLayeredForeground ->
-        log.warn("Attempt to reset UiViewLayeredForeground on view", view.name, fg::class.java)
+        log.warn("Attempt to reset UiViewLayeredForeground on view {} with foreground drawable type {}", view.name, fg::class.java)
 
       else -> view.view.foreground = layeredForeground(requireContext(), fg)
     }

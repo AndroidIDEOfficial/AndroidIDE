@@ -33,11 +33,11 @@ import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.Template
 import com.itsaky.androidide.templates.impl.ConstraintVerifier
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.TemplateRecipeExecutor
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
+import org.slf4j.LoggerFactory
 
 /**
  * A fragment which shows a wizard-like interface for creating templates.
@@ -48,9 +48,13 @@ class TemplateDetailsFragment :
   FragmentWithBinding<FragmentTemplateDetailsBinding>(
     R.layout.fragment_template_details, FragmentTemplateDetailsBinding::bind) {
 
-  private val log = ILogger.newInstance("TemplateDetailsFragment")
   private val viewModel by viewModels<MainViewModel>(
     ownerProducer = { requireActivity() })
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(TemplateDetailsFragment::class.java)
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -99,8 +103,7 @@ class TemplateDetailsFragment :
         viewModel.creatingProject.value = false
         if (result == null || err != null || result !is ProjectTemplateRecipeResult) {
           err?.printStackTrace()
-          log.error(
-            "Failed to create project. result=$result, err=${err?.message}")
+          log.error("Failed to create project. result={}, err={}", result, err?.message)
           if (err != null) {
             flashError(err.cause?.message ?: err.message)
           } else {

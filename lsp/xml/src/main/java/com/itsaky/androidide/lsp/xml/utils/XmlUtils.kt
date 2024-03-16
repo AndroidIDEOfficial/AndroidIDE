@@ -21,17 +21,17 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
-import com.itsaky.androidide.utils.ILogger
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMElement
 import org.eclipse.lemminx.dom.DOMNode
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 object XmlUtils {
   
-  private val log = ILogger.newInstance("XmlUtils")
+  private val log = LoggerFactory.getLogger(XmlUtils::class.java)
   
   fun isTag(node: DOMNode, index: Int): Boolean {
     var name = node.nodeName
@@ -76,14 +76,14 @@ object XmlUtils {
     return when (type) {
       TAG -> {
         val nodeAt = parsed.findNodeAt(index) ?: run {
-          log.warn("Unable to find node at index $index")
+          log.warn("Unable to find node at index {}", index)
           return null
         }
         text.substring(nodeAt.start, index)
       }
       ATTRIBUTE -> {
         val attr = parsed.findAttrAt(index) ?: run {
-          log.warn("Unable to find attribute at index $index")
+          log.warn("Unable to find attribute at index {}", index)
           return null
         }
   
@@ -91,7 +91,7 @@ object XmlUtils {
       }
       ATTRIBUTE_VALUE -> {
         val attrAt = parsed.findAttrAt(index) ?: run {
-          log.warn("Unable to find attribute at index $index")
+          log.warn("Unable to find attribute at index {}", index)
           return null
         }
   
@@ -107,7 +107,7 @@ object XmlUtils {
 
   fun getNodeType(parsed: DOMDocument, cursor: Int): NodeType {
     val nodeAt = parsed.findNodeAt(cursor) ?: run {
-      log.warn("Unable to find node at index $cursor")
+      log.warn("Unable to find node at index {}", cursor)
       return UNKNOWN
     }
   

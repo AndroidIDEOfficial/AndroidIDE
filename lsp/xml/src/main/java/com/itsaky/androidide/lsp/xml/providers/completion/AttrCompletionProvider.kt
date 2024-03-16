@@ -98,12 +98,12 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     list: MutableList<CompletionItem>
   ) {
     if (namespace == null) {
-      log.warn("Namespace is null. Cannot compute completions for namespace prefix: $nsPrefix.")
+      log.warn("Namespace is null. Cannot compute completions for namespace prefix: {}.", nsPrefix)
       return
     }
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
-      log.warn("No resource tables found for namespace; $namespace")
+      log.warn("No resource tables found for namespace: {}", namespace)
       return
     }
 
@@ -343,7 +343,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   protected open fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
     val value = styleables.findEntry(name)?.findValue(ConfigDescription())?.value
     if (value !is Styleable) {
-      log.warn("Cannot find styleable for $name")
+      log.warn("Cannot find styleable for {}", name)
       return null
     }
     return value

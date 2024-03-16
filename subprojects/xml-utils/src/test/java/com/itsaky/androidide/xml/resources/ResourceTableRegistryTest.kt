@@ -27,12 +27,12 @@ import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.findAndroidJar
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry
-import java.io.File
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)

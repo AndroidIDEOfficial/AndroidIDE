@@ -58,7 +58,6 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
@@ -67,6 +66,7 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
 import kotlin.system.exitProcess
@@ -75,7 +75,6 @@ class IDEApplication : TermuxApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
   private var ideLogcatReader: IDELogcatReader? = null
-  private val log = ILogger.newInstance("IDEApplication")
 
   init {
     if (!VMUtils.isJvm()) {
@@ -94,21 +93,16 @@ class IDEApplication : TermuxApplication() {
 
     if (BuildConfig.DEBUG) {
       StrictMode.setVmPolicy(
-        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build()
-      )
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build())
 
       if (dumpLogs) {
         startLogcatReader()
       }
     }
 
-    EventBus.builder()
-      .addIndex(AppEventsIndex())
-      .addIndex(EditorEventsIndex())
-      .addIndex(ProjectsApiEventsIndex())
-      .addIndex(LspApiEventsIndex())
-      .addIndex(LspJavaEventsIndex())
-      .installDefaultEventBus(true)
+    EventBus.builder().addIndex(AppEventsIndex()).addIndex(EditorEventsIndex())
+      .addIndex(ProjectsApiEventsIndex()).addIndex(LspApiEventsIndex())
+      .addIndex(LspJavaEventsIndex()).installDefaultEventBus(true)
 
     EventBus.getDefault().register(this)
 
@@ -139,7 +133,7 @@ class IDEApplication : TermuxApplication() {
 
       exitProcess(1)
     } catch (error: Throwable) {
-      LOG.error("Unable to show crash handler activity", error)
+      log.error("Unable to show crash handler activity", error)
     }
   }
 
@@ -154,7 +148,7 @@ class IDEApplication : TermuxApplication() {
     try {
       startActivity(intent)
     } catch (th: Throwable) {
-      LOG.error("Unable to start activity to show changelog", th)
+      log.error("Unable to start activity to show changelog", th)
       flashError("Unable to start activity")
     }
   }
@@ -167,23 +161,20 @@ class IDEApplication : TermuxApplication() {
     }
 
     val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-    val request = PeriodicWorkRequestBuilder<StatUploadWorker>(Duration.ofHours(24))
-      .setInputData(AndroidIDEStats.statData.toInputData())
-      .setConstraints(constraints)
-      .addTag(StatUploadWorker.WORKER_WORK_NAME)
-      .build()
+    val request = PeriodicWorkRequestBuilder<StatUploadWorker>(Duration.ofHours(24)).setInputData(
+        AndroidIDEStats.statData.toInputData()).setConstraints(constraints)
+      .addTag(StatUploadWorker.WORKER_WORK_NAME).build()
 
     val workManager = WorkManager.getInstance(this)
 
     log.info("reportStatsIfNecessary: Enqueuing StatUploadWorker...")
-    val operation = workManager
-      .enqueueUniquePeriodicWork(StatUploadWorker.WORKER_WORK_NAME,
+    val operation = workManager.enqueueUniquePeriodicWork(StatUploadWorker.WORKER_WORK_NAME,
         ExistingPeriodicWorkPolicy.UPDATE, request)
 
     operation.state.observeForever(object : Observer<Operation.State> {
-      override fun onChanged(t: Operation.State) {
+      override fun onChanged(value: Operation.State) {
         operation.state.removeObserver(this)
-        log.debug("reportStatsIfNecessary: WorkManager enqueue result: $t")
+        log.debug("reportStatsIfNecessary: WorkManager enqueue result: {}", value)
       }
     })
   }
@@ -238,16 +229,16 @@ class IDEApplication : TermuxApplication() {
     val operation = WorkManager.getInstance(this)
       .cancelUniqueWork(StatUploadWorker.WORKER_WORK_NAME)
     operation.state.observeForever(object : Observer<Operation.State> {
-      override fun onChanged(t: Operation.State) {
+      override fun onChanged(value: Operation.State) {
         operation.state.removeObserver(this)
-        log.info("StatUploadWorker: Cancellation result state: $t")
+        log.info("StatUploadWorker: Cancellation result state: {}", value)
       }
     })
   }
 
   companion object {
 
-    private val LOG = ILogger.newInstance("IDEApplication")
+    private val log = LoggerFactory.getLogger(IDEApplication::class.java)
 
     @JvmStatic
     lateinit var instance: IDEApplication

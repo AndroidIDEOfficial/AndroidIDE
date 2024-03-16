@@ -75,7 +75,6 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
@@ -87,6 +86,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -95,9 +96,7 @@ import java.io.File
  * @author Akash Yadav
  */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseEditorActivity :
-  IDEActivity(),
-  TabLayout.OnTabSelectedListener,
+abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListener,
   DiagnosticClickListener {
 
   protected val mLifecycleObserver = EditorActivityLifecyclerObserver()
@@ -107,8 +106,6 @@ abstract class BaseEditorActivity :
 
   var isDestroying = false
     protected set
-
-  protected val log: ILogger = ILogger.newInstance("EditorActivity")
 
   /**
    * Editor activity's [CoroutineScope] for executing tasks in the background.
@@ -127,22 +124,24 @@ abstract class BaseEditorActivity :
   override val subscribeToEvents: Boolean
     get() = true
 
-  private val onBackPressedCallback: OnBackPressedCallback =
-    object : OnBackPressedCallback(true) {
-      override fun handleOnBackPressed() {
-        if (binding.root.isDrawerOpen(GravityCompat.START)) {
-          binding.root.closeDrawer(GravityCompat.START)
-        } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
-          editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        } else {
-          doConfirmProjectClose()
-        }
+  private val onBackPressedCallback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+    override fun handleOnBackPressed() {
+      if (binding.root.isDrawerOpen(GravityCompat.START)) {
+        binding.root.closeDrawer(GravityCompat.START)
+      } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
+        editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+      } else {
+        doConfirmProjectClose()
       }
     }
+  }
 
   private var optionsMenuInvalidator: Runnable? = null
 
   companion object {
+
+    @JvmStatic
+    protected val log: Logger = LoggerFactory.getLogger(BaseEditorActivity::class.java)
 
     private const val OPTIONS_MENU_INVALIDATION_DELAY = 150L
 
@@ -210,8 +209,7 @@ abstract class BaseEditorActivity :
     }
 
     Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-      .setAction(string.yes) { IntentUtils.launchApp(this, packageName) }
-      .show()
+      .setAction(string.yes) { IntentUtils.launchApp(this, packageName) }.show()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -240,8 +238,8 @@ abstract class BaseEditorActivity :
     setupContainers()
     setupDiagnosticInfo()
 
-    uiDesignerResultLauncher =
-      registerForActivityResult(StartActivityForResult(), this::handleUiDesignerResult)
+    uiDesignerResultLauncher = registerForActivityResult(StartActivityForResult(),
+      this::handleUiDesignerResult)
   }
 
   override fun onPause() {
@@ -320,18 +318,13 @@ abstract class BaseEditorActivity :
 
   open fun handleSearchResults(map: Map<File, List<SearchResult>>?) {
     val results = map ?: emptyMap()
-    setSearchResultAdapter(
-      SearchListAdapter(
-        results,
-        { file ->
-          doOpenFile(file, null)
-          hideBottomSheet()
-        }
-      ) { match ->
-        doOpenFile(match.file, match)
-        hideBottomSheet()
-      }
-    )
+    setSearchResultAdapter(SearchListAdapter(results, { file ->
+      doOpenFile(file, null)
+      hideBottomSheet()
+    }) { match ->
+      doOpenFile(match.file, match)
+      hideBottomSheet()
+    })
 
     showSearchResults()
     doDismissSearchProgress()
@@ -356,8 +349,8 @@ abstract class BaseEditorActivity :
       editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    val index =
-      binding.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(SearchResultFragment::class.java)
+    val index = binding.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(
+      SearchResultFragment::class.java)
 
     if (index >= 0 && index < binding.bottomSheet.binding.tabs.tabCount) {
       binding.bottomSheet.binding.tabs.getTabAt(index)?.select()
@@ -373,19 +366,15 @@ abstract class BaseEditorActivity :
   }
 
   open fun showFirstBuildNotice() {
-    newMaterialDialogBuilder(this)
-      .setPositiveButton(android.R.string.ok, null)
-      .setTitle(string.title_first_build)
-      .setMessage(string.msg_first_build)
-      .setCancelable(false)
-      .create()
-      .show()
+    newMaterialDialogBuilder(this).setPositiveButton(android.R.string.ok, null)
+      .setTitle(string.title_first_build).setMessage(string.msg_first_build).setCancelable(false)
+      .create().show()
   }
 
   open fun getFileTreeFragment(): FileTreeFragment? {
     if (filesTreeFragment == null) {
-      filesTreeFragment =
-        supportFragmentManager.findFragmentByTag(FileTreeFragment.TAG) as FileTreeFragment?
+      filesTreeFragment = supportFragmentManager.findFragmentByTag(
+        FileTreeFragment.TAG) as FileTreeFragment?
     }
     return filesTreeFragment
   }
@@ -411,7 +400,7 @@ abstract class BaseEditorActivity :
 
   private fun handleUiDesignerResult(result: ActivityResult) {
     if (result.resultCode != RESULT_OK || result.data == null) {
-      log.warn("UI Designer returned invalid result", result.resultCode, result.data)
+      log.warn("UI Designer returned invalid result: resultCode={}, data={}", result.resultCode, result.data)
       return
     }
     val generated = result.data!!.getStringExtra(UIDesignerActivity.RESULT_GENERATED_XML)
@@ -429,14 +418,8 @@ abstract class BaseEditorActivity :
   }
 
   private fun setupDrawers() {
-    val toggle =
-      ActionBarDrawerToggle(
-        this,
-        binding.editorDrawerLayout,
-        binding.editorToolbar,
-        string.app_name,
-        string.app_name
-      )
+    val toggle = ActionBarDrawerToggle(this, binding.editorDrawerLayout, binding.editorToolbar,
+      string.app_name, string.app_name)
 
     binding.editorDrawerLayout.addDrawerListener(toggle)
     toggle.syncState()
@@ -480,35 +463,29 @@ abstract class BaseEditorActivity :
     setupNoEditorView()
     setupBottomSheet()
 
-    if (
-      !app.prefManager.getBoolean(KEY_BOTTOM_SHEET_SHOWN) &&
-      editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
+    if (!app.prefManager.getBoolean(
+        KEY_BOTTOM_SHEET_SHOWN) && editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
     ) {
       editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
-      ThreadUtils.runOnUiThreadDelayed(
-        {
-          editorBottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
-          app.prefManager.putBoolean(KEY_BOTTOM_SHEET_SHOWN, true)
-        },
-        1500
-      )
+      ThreadUtils.runOnUiThreadDelayed({
+        editorBottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
+        app.prefManager.putBoolean(KEY_BOTTOM_SHEET_SHOWN, true)
+      }, 1500)
     }
   }
 
   private fun setupNoEditorView() {
     binding.noEditorSummary.movementMethod = LinkMovementMethod()
-    val filesSpan: ClickableSpan =
-      object : ClickableSpan() {
-        override fun onClick(widget: View) {
-          binding.root.openDrawer(GravityCompat.START)
-        }
+    val filesSpan: ClickableSpan = object : ClickableSpan() {
+      override fun onClick(widget: View) {
+        binding.root.openDrawer(GravityCompat.START)
       }
-    val bottomSheetSpan: ClickableSpan =
-      object : ClickableSpan() {
-        override fun onClick(widget: View) {
-          editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
-        }
+    }
+    val bottomSheetSpan: ClickableSpan = object : ClickableSpan() {
+      override fun onClick(widget: View) {
+        editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
       }
+    }
     val sb = SpannableStringBuilder()
     appendClickableSpan(sb, string.msg_drawer_for_files, filesSpan)
     appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan)
@@ -536,36 +513,33 @@ abstract class BaseEditorActivity :
 
   private fun setupBottomSheet() {
     editorBottomSheet = BottomSheetBehavior.from<View>(binding.bottomSheet)
-    editorBottomSheet?.addBottomSheetCallback(
-      object : BottomSheetCallback() {
-        override fun onStateChanged(bottomSheet: View, newState: Int) {
-          if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-            val editor = provideCurrentEditor()
-            editor?.editor?.ensureWindowsDismissed()
-          }
-        }
-
-        override fun onSlide(bottomSheet: View, slideOffset: Float) {
-          binding.apply {
-            val editorScale = 1 - slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR)
-            this.bottomSheet.onSlide(slideOffset)
-            this.viewContainer.scaleX = editorScale
-            this.viewContainer.scaleY = editorScale
-          }
+    editorBottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
+      override fun onStateChanged(bottomSheet: View, newState: Int) {
+        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+          val editor = provideCurrentEditor()
+          editor?.editor?.ensureWindowsDismissed()
         }
       }
-    )
 
-    val observer: OnGlobalLayoutListener =
-      object : OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-          binding.let {
-            it.viewContainer.pivotY = 0f
-            it.viewContainer.pivotX = it.viewContainer.width / 2f
-            it.viewContainer.viewTreeObserver.removeOnGlobalLayoutListener(this)
-          }
+      override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        binding.apply {
+          val editorScale = 1 - slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR)
+          this.bottomSheet.onSlide(slideOffset)
+          this.viewContainer.scaleX = editorScale
+          this.viewContainer.scaleY = editorScale
         }
       }
+    })
+
+    val observer: OnGlobalLayoutListener = object : OnGlobalLayoutListener {
+      override fun onGlobalLayout() {
+        binding.let {
+          it.viewContainer.pivotY = 0f
+          it.viewContainer.pivotX = it.viewContainer.width / 2f
+          it.viewContainer.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        }
+      }
+    }
 
     binding.apply {
       viewContainer.viewTreeObserver.addOnGlobalLayoutListener(observer)

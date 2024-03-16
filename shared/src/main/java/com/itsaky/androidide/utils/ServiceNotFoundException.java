@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.utils;
 
-import java.util.Objects;
-
 /**
  * Exception thrown when a service cannot be loaded by {@link ServiceLoader}.
  *

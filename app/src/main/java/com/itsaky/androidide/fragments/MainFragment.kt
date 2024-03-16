@@ -1,6 +1,5 @@
 package com.itsaky.androidide.fragments
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
-import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.activities.PreferencesActivity
@@ -19,15 +17,12 @@ import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.databinding.FragmentMainBinding
-import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tasks.runOnUiThread
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
@@ -37,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.CancellationException
 
@@ -46,7 +42,10 @@ class MainFragment : BaseFragment() {
     ownerProducer = { requireActivity() })
   private var binding: FragmentMainBinding? = null
 
-  private val log = ILogger.newInstance("MainFragment")
+  companion object {
+
+    private val log = LoggerFactory.getLogger(MainFragment::class.java)
+  }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
@@ -127,7 +126,7 @@ class MainFragment : BaseFragment() {
 
   private fun doClone(repo: String?) {
     if (repo.isNullOrBlank()) {
-      log.warn("Unable to clone repo. Invalid repo URL : '$repo'")
+      log.warn("Unable to clone repo. Invalid repo URL : {}'", repo)
       return
     }
 

@@ -31,7 +31,6 @@ import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.flashError
@@ -39,6 +38,7 @@ import com.itsaky.androidide.utils.flashSuccess
 import com.unnamed.b.atv.model.TreeNode
 import jdkx.lang.model.SourceVersion
 import org.greenrobot.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern
@@ -58,13 +58,14 @@ class NewFileAction(context: Context, override val order: Int) :
   override val id: String = "ide.editor.fileTree.newFile"
 
   companion object {
+
     const val RES_PATH_REGEX = "/.*/src/.*/res"
     const val LAYOUT_RES_PATH_REGEX = "/.*/src/.*/res/layout"
     const val MENU_RES_PATH_REGEX = "/.*/src/.*/res/menu"
     const val DRAWABLE_RES_PATH_REGEX = "/.*/src/.*/res/drawable"
     const val JAVA_PATH_REGEX = "/.*/src/.*/java"
 
-    private val log = ILogger.newInstance("NewFileAction")
+    private val log = LoggerFactory.getLogger(NewFileAction::class.java)
   }
 
   override suspend fun execAction(data: ActionData) {
@@ -74,7 +75,7 @@ class NewFileAction(context: Context, override val order: Int) :
     try {
       createNewFile(context, node, file, false)
     } catch (e: Exception) {
-      log.error(e)
+      log.error("Failed to create new file", e)
       flashError(e.cause?.message ?: e.message)
     }
   }
@@ -163,7 +164,7 @@ class NewFileAction(context: Context, override val order: Int) :
       try {
         doCreateJavaFile(binding, file, context, node)
       } catch (e: Exception) {
-        log.error(e)
+        log.error("Failed to create Java file", e)
         flashError(e.cause?.message ?: e.message)
       }
     }
@@ -350,8 +351,8 @@ class NewFileAction(context: Context, override val order: Int) :
     builder.setTitle(R.string.new_file)
     builder.setMessage(
       context.getString(R.string.msg_can_contain_slashes) +
-        "\n\n" +
-        context.getString(R.string.msg_newfile_dest, folder.absolutePath)
+          "\n\n" +
+          context.getString(R.string.msg_newfile_dest, folder.absolutePath)
     )
     builder.setView(binding.root)
     builder.setCancelable(false)
@@ -370,7 +371,7 @@ class NewFileAction(context: Context, override val order: Int) :
       try {
         createFile(context, node, folder, name, content)
       } catch (e: Exception) {
-        log.error(e)
+        log.error("Failed to create file", e)
         flashError(e.cause?.message ?: e.message)
       }
     }

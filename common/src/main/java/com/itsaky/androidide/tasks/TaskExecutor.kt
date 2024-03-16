@@ -20,13 +20,14 @@ import android.app.ProgressDialog
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.common.R
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Callable
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 
 object TaskExecutor {
-  private val log = ILogger.newInstance("TaskExecutor")
+
+  private val log = LoggerFactory.getLogger(TaskExecutor::class.java)
 
   @JvmOverloads
   @JvmStatic

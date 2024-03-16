@@ -50,7 +50,6 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultSyncIssue
 import com.itsaky.androidide.builder.model.DefaultUnresolvedDependency
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * As the data is sent over streams, and the instances of properties specified in [AndroidModule]
@@ -62,8 +61,6 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 object AndroidModulePropertyCopier {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   fun copy(viewBindingOptions: ViewBindingOptions?): DefaultViewBindingOptions? {
     return when (viewBindingOptions) {

@@ -42,7 +42,6 @@ import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess

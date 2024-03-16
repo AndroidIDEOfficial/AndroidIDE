@@ -21,10 +21,17 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.utils.ILogger;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.DeclaredType;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.ExpressionTree;
 import openjdk.source.tree.LineMap;
@@ -33,17 +40,8 @@ import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import jdkx.lang.model.element.ExecutableElement;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.type.DeclaredType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RemoveException extends Rewrite {
 
@@ -52,7 +50,7 @@ public class RemoveException extends Rewrite {
   final String[] erasedParameterTypes;
   final String exceptionType;
 
-  private static final ILogger LOG = ILogger.newInstance("RemoveException");
+  private static final Logger LOG = LoggerFactory.getLogger(RemoveException.class);
 
   public RemoveException(
       String className, String methodName, String[] erasedParameterTypes, String exceptionType) {
@@ -68,7 +66,7 @@ public class RemoveException extends Rewrite {
     Path file = compiler.findTypeDeclaration(className);
 
     if (file == CompilerProvider.NOT_FOUND) {
-      LOG.warn("Unable to find source file for class:", this.className);
+      LOG.warn("Unable to find source file for class: {}", this.className);
       return CANCELLED;
     }
 

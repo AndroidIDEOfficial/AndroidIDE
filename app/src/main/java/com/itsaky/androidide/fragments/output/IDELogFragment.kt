@@ -19,8 +19,12 @@ package com.itsaky.androidide.fragments.output
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
 import com.itsaky.androidide.R
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.logging.LifecycleAwareAppender
+import org.slf4j.LoggerFactory
 
 /**
  * Fragment to show IDE logs.
@@ -28,21 +32,7 @@ import com.itsaky.androidide.utils.ILogger
  */
 class IDELogFragment : LogViewFragment() {
 
-  private var logListener: ILogger.LogListener? =
-    ILogger.LogListener { level, tag, message ->
-      if (message.contains("\n")) {
-        val split = message.split("\n").toTypedArray()
-        for (line in split) {
-          logLine(level, tag, line)
-        }
-      } else {
-        logLine(level, tag, message)
-      }
-    }
-
-  init {
-    ILogger.addLogListener(this.logListener)
-  }
+  private val lifecycleAwareAppender = LifecycleAwareAppender(Lifecycle.State.CREATED)
 
   override fun isSimpleFormattingEnabled() = true
   override fun getFilename() = "ide_logs"
@@ -50,11 +40,24 @@ class IDELogFragment : LogViewFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     emptyStateViewModel.emptyMessage.value = getString(R.string.msg_emptyview_idelogs)
+
+    lifecycleAwareAppender.consumer = this::appendLine
+    lifecycleAwareAppender.attachTo(viewLifecycleOwner)
+
+    val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+
+    lifecycleAwareAppender.context = loggerContext
+    lifecycleAwareAppender.start()
+
+    rootLogger.addAppender(lifecycleAwareAppender)
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    ILogger.removeLogListener(logListener)
-    logListener = null
+    lifecycleAwareAppender.stop()
+
+    val logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+    logger.detachAppender(lifecycleAwareAppender)
   }
 }

@@ -19,10 +19,11 @@ package com.itsaky.androidide.utils;
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.syntax.highlighters.JavaHighlighter;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressLint("SdCardPath")
 public final class Environment {
@@ -34,7 +35,7 @@ public final class Environment {
   public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
   public static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
   private static final String ANDROIDIDE_PROJECT_CACHE_DIR = ".androidide";
-  private static final ILogger LOG = ILogger.newInstance("Environment");
+  private static final Logger LOG = LoggerFactory.getLogger(Environment.class);
   public static File ROOT;
   public static File PREFIX;
   public static File HOME;

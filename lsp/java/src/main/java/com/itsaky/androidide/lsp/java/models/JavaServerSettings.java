@@ -20,7 +20,6 @@ import static com.itsaky.androidide.preferences.internal.JavaPreferencesKt.GOOGL
 import static com.itsaky.androidide.preferences.internal.JavaPreferencesKt.isJavaDiagnosticsEnabled;
 
 import androidx.annotation.NonNull;
-
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.itsaky.androidide.lsp.util.PrefBasedServerSettings;
 import com.itsaky.androidide.managers.PreferenceManager;

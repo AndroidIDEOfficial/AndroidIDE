@@ -22,7 +22,6 @@ import com.itsaky.androidide.editor.language.IDELanguage;
 import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
-import com.itsaky.androidide.utils.ILogger;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -33,12 +32,14 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CppLanguage extends IDELanguage {
 
-  private static final ILogger LOG = ILogger.newInstance("CppLanguage");
+  private static final Logger LOG = LoggerFactory.getLogger(CppLanguage.class);
   private final NewlineHandler[] newlineHandlers =
-      new NewlineHandler[] {new BracketsNewlineHandler(this::getIndentAdvance, this::useTab)};
+      new NewlineHandler[]{new BracketsNewlineHandler(this::getIndentAdvance, this::useTab)};
   private final CommonSymbolPairs symbolPairs = new CommonSymbolPairs();
   private CppAnalyzer analyzer;
 

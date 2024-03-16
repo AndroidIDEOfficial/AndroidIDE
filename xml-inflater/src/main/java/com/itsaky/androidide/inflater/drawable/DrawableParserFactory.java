@@ -22,23 +22,20 @@ import android.graphics.NinePatch;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ImageUtils;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.inflater.vectormaster.VectorMasterDrawable;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Utility methods for creating instances of suitable drawable parsers for a file or an XML code.
@@ -47,7 +44,7 @@ import java.io.StringReader;
  */
 public abstract class DrawableParserFactory {
 
-  private static final ILogger LOG = ILogger.newInstance("IDrawableParser");
+  private static final Logger LOG = LoggerFactory.getLogger(DrawableParserFactory.class);
 
   /**
    * Create a new drawable parser for the given file. If the given file is not an XML Document, then
@@ -164,7 +161,7 @@ public abstract class DrawableParserFactory {
         return constructor.newInstance(parser, IDrawableParser.ANY_DEPTH);
       }
     } catch (Throwable th) {
-      LOG.error("No drawable parser found for tag", name, th);
+      LOG.error("No drawable parser found for tag: {}", name, th);
     }
 
     return null;

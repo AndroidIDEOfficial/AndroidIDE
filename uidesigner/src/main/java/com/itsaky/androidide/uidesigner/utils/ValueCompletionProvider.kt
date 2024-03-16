@@ -24,8 +24,8 @@ import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -69,9 +69,13 @@ internal class ValueCompletionProvider(
     private val onComplete: (List<String>) -> Unit
   ) : Thread("AttributeValueCompletionThread") {
 
-    private val log = ILogger.newInstance("CompletionThread")
     var prefix: String = ""
     var attribute: com.itsaky.androidide.inflater.IAttribute? = null
+
+    companion object {
+
+      private val log = LoggerFactory.getLogger(CompletionThread::class.java)
+    }
 
     fun cancel() {
       interrupt()
@@ -84,9 +88,9 @@ internal class ValueCompletionProvider(
             onComplete(emptyList())
             return
           }
-  
+
       val ns = attribute.namespace?.prefix?.let { "${it}:" } ?: ""
-      log.info("Complete attribute value: '${ns}${attribute.name}'")
+      log.info("Complete attribute value: '{}{}'", ns, attribute.name)
 
       val result =
         completionProvider.completeValue(
@@ -97,7 +101,8 @@ internal class ValueCompletionProvider(
         )
 
       log.debug(
-        "Found ${result.items.size} items",
+        "Found {} items{}",
+        result.items.size,
         if (result.isIncomplete) "(incomplete)" else "",
       )
 

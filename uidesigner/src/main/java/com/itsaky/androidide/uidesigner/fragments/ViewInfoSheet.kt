@@ -32,16 +32,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoSheetBinding
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class ViewInfoSheet : BottomSheetDialogFragment() {
+
   private var binding: LayoutViewInfoSheetBinding? = null
   private val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
-  private val log = ILogger.newInstance("ViewInfoSheet")
-
   companion object {
+
     const val TAG = "ide.uidesigner.viewinfo"
   }
 

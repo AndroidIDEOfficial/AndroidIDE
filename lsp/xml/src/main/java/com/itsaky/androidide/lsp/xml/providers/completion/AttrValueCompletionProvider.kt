@@ -78,7 +78,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     val attrName =
       attrAtCursor.localName
         ?: run {
-          log.warn("Cannot find attribute at index ${params.position.index}")
+          log.warn("Cannot find attribute at index {}", params.position.index)
           return EMPTY
         }
 
@@ -89,7 +89,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     val namespace =
       attrAtCursor.namespaceURI
         ?: run {
-          log.warn("Unknown namespace for attribute", attrAtCursor)
+          log.warn("Unknown namespace for attribute: {}", attrAtCursor)
           return EMPTY
         }
 
@@ -123,7 +123,8 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       findAttr(tables, namespace, pck, attrName)
         ?: run {
           log.warn(
-            "No attribute found with name '$attrName' in package '${if (namespace == NAMESPACE_AUTO) "<auto>" else pck}'"
+            "No attribute found with name '{}' in package '{}'", attrName,
+            if (namespace == NAMESPACE_AUTO) "<auto>" else pck
           )
           return EMPTY
         }
@@ -360,9 +361,9 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
               return@mapNotNull null
             }
             pck.name to
-              pck.findGroup(type)?.findEntries { entryName ->
-                matchLevel(entryName, prefix) != NO_MATCH
-              }
+                pck.findGroup(type)?.findEntries { entryName ->
+                  matchLevel(entryName, prefix) != NO_MATCH
+                }
           }
         }
         .toHashSet()
@@ -390,7 +391,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     }
 
     tables.addAll(super.findResourceTables(nsUri))
-    log.info("Found ${tables.size} resource tables for namespace: $nsUri")
+    log.info("Found {} resource tables for namespace: {}", tables.size, nsUri)
     return tables
   }
 

@@ -18,23 +18,37 @@
 package com.itsaky.androidide.models
 
 import com.google.gson.annotations.SerializedName
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.JSONUtility.gson
 import com.itsaky.androidide.utils.ListingFileRedirect.getListingFile
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 
 class ApkMetadata {
-  @SerializedName("version") var version = 0
-  @SerializedName("artifactType") var artifactType: ArtifactType? = null
-  @SerializedName("applicationId") var applicationId: String? = null
-  @SerializedName("variantName") var variantName: String? = null
-  @SerializedName("elements") var elements: List<MetadataElement>? = null
-  @SerializedName("elementType") var elementType: String? = null
+
+  @SerializedName("version")
+  var version = 0
+
+  @SerializedName("artifactType")
+  var artifactType: ArtifactType? = null
+
+  @SerializedName("applicationId")
+  var applicationId: String? = null
+
+  @SerializedName("variantName")
+  var variantName: String? = null
+
+  @SerializedName("elements")
+  var elements: List<MetadataElement>? = null
+
+  @SerializedName("elementType")
+  var elementType: String? = null
 
   companion object {
-    private val log = ILogger.newInstance("ApkMetadata")
+
+    private val log = LoggerFactory.getLogger(ApkMetadata::class.java)
+
     fun findApkFile(listingFIle: File): File? {
       return try {
         // This sometimes might be a redirect to the listing file
@@ -45,20 +59,20 @@ class ApkMetadata {
         FileReader(redirectedFile).use {
           val metadata = gson.fromJson(it, ApkMetadata::class.java)
           if (!isValid(metadata)) {
-            log.warn("Invalid APK metadata:", metadata)
+            log.warn("Invalid APK metadata: {}", metadata)
             return@use null
           }
 
           for (element in metadata.elements!!) {
             if (element.outputFile == null) {
-              log.warn("No output file specified in APK metadata element:", element)
+              log.warn("No output file specified in APK metadata element: {}", element)
               continue
             }
 
             if (element.outputFile!!.endsWith(".apk")) {
               val apk = element.outputFile?.let { File(dir, it) } ?: continue
               if (apk.exists() && apk.isFile) {
-                log.info("Found apk in metadata:", apk)
+                log.info("Found apk in metadata: {}", apk)
                 return@use apk
               }
             }
@@ -75,24 +89,24 @@ class ApkMetadata {
     private fun isValid(metadata: ApkMetadata?): Boolean {
       // Null checks
       if (metadata?.artifactType?.type == null || metadata.elements == null) {
-        log.warn("APK metadata null check failed. Metadata:", metadata)
+        log.warn("APK metadata null check failed. Metadata: {}", metadata)
         return false
       }
 
       val type = metadata.artifactType
       val elements = metadata.elements
       if (type!!.type != ArtifactType.TYPE_APK) {
-        log.warn("Artifact is not of type APK. Metadata:", metadata)
+        log.warn("Artifact is not of type APK. Metadata: {}", metadata)
         return false
       }
       if (elements!!.isEmpty()) {
-        log.warn("No output elements found for metadata:", metadata)
+        log.warn("No output elements found for metadata: {}", metadata)
         return false
       }
       var atLeastOneApk = false
       for (element in elements) {
         if (element.outputFile?.endsWith(".apk") == false) {
-          log.warn("Skipping output element because file is not APK:", element)
+          log.warn("Skipping output element because file is not APK: {}", element)
           continue
         }
         atLeastOneApk = true

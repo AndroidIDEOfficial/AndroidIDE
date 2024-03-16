@@ -23,14 +23,14 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import openjdk.source.tree.SwitchTree
-import openjdk.source.util.TreePath
-import openjdk.source.util.Trees
-import java.nio.file.Path
 import jdkx.lang.model.element.ElementKind.ENUM
 import jdkx.lang.model.element.ElementKind.ENUM_CONSTANT
 import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.type.DeclaredType
+import openjdk.source.tree.SwitchTree
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
+import java.nio.file.Path
 
 /**
  * Provides completions for switch constants.
@@ -71,7 +71,7 @@ class SwitchConstantCompletionProvider(
       return completeIdentifier(task, exprPath, partial, endsWithParen)
     }
 
-    log.info("...complete constants of type $type")
+    log.info("...complete constants of type {}", type)
 
     val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
 

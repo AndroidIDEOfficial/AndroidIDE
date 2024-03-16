@@ -30,7 +30,7 @@ import com.itsaky.androidide.inflater.internal.utils.tagName
 import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.resources.R.drawable
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 open class ViewImpl
 @JvmOverloads
@@ -41,7 +41,6 @@ constructor(
   override val simpleName: String = name.simpleName(),
   override val tag: String = name.tagName()
 ) : IView {
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   private var fg: Drawable? = null
   private var touched: Drawable? = null
@@ -55,6 +54,11 @@ constructor(
     get() = this.namespaces.values
   override val attributes: List<IAttribute>
     get() = this._attributes
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(ViewImpl::class.java)
+  }
 
   override fun addAttribute(attribute: IAttribute, apply: Boolean, update: Boolean) {
     if (hasAttribute(attribute)) {
@@ -121,7 +125,7 @@ constructor(
   override fun applyAttribute(attribute: IAttribute) {
     val adapter = viewAdapter
     if (adapter == null) {
-      log.warn("No attribute adapter found for view $name")
+      log.warn("No attribute adapter found for view {}", name)
       return
     }
     adapter.apply(this, attribute)

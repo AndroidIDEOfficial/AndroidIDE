@@ -18,7 +18,6 @@
 package com.itsaky.androidide.preferences
 
 import androidx.preference.Preference
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
 import com.itsaky.androidide.preferences.internal.EMPTY_ELEMENTS_BEHAVIOR
 import com.itsaky.androidide.preferences.internal.INSERT_FINAL_NEW_LINE
@@ -49,9 +48,10 @@ import com.itsaky.androidide.preferences.internal.splitAttributes
 import com.itsaky.androidide.preferences.internal.splitAttributesIndentSize
 import com.itsaky.androidide.preferences.internal.trimFinalNewLine
 import com.itsaky.androidide.preferences.internal.trimTrailingWhitespace
+import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.IgnoredOnParcel
-import org.eclipse.lemminx.dom.builder.EmptyElements
 import kotlinx.parcelize.Parcelize
+import org.eclipse.lemminx.dom.builder.EmptyElements
 
 @Parcelize
 class XMLPreferences(

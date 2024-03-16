@@ -24,16 +24,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-
 import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
-
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.models.FileExtension;
 import com.itsaky.androidide.resources.R;
 import com.unnamed.b.atv.model.TreeNode;
-
 import java.io.File;
 
 public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {

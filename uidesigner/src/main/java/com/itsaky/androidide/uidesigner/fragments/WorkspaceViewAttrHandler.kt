@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.uidesigner.fragments
 
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.undo.AttrAddedAction
 import com.itsaky.androidide.uidesigner.undo.AttrRemovedAction

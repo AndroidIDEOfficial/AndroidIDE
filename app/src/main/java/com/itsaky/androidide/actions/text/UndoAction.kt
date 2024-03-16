@@ -19,9 +19,9 @@ package com.itsaky.androidide.actions.text
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
+import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
 class UndoAction(context: Context, override val order: Int) : EditorRelatedAction() {

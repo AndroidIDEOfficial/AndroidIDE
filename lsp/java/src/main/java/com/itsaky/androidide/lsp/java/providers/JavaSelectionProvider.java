@@ -18,13 +18,13 @@
 package com.itsaky.androidide.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.visitors.FindBiggerRange;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.models.Range;
 import openjdk.source.tree.CompilationUnitTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Selection provider implementation for Java.
@@ -33,7 +33,7 @@ import openjdk.source.tree.CompilationUnitTree;
  */
 public class JavaSelectionProvider {
 
-  private static final ILogger LOG = ILogger.newInstance("JavaSelectionProvider");
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSelectionProvider.class);
   private final CompilerProvider compiler;
 
   public JavaSelectionProvider(CompilerProvider compiler) {
@@ -51,7 +51,7 @@ public class JavaSelectionProvider {
               final Range range = rangeFinder.scan(root, params.getSelection());
 
               if (range != null) {
-                LOG.verbose("Expanding selection to range", range);
+                LOG.info("Expanding selection to range: {}", range);
                 return range;
               }
 

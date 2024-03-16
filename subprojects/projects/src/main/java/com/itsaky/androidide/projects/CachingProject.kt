@@ -28,8 +28,8 @@ import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.api.models.result.SelectProjectResult
-import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.*
+import org.slf4j.LoggerFactory
+import java.util.concurrent.CompletableFuture
 
 /**
  * A project which lazily caches some required properties of the given project.
@@ -39,10 +39,13 @@ import java.util.concurrent.*
 @RestrictTo(LIBRARY)
 open class CachingProject(val project: IProject) : IProject {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
   private val projects = mutableListOf<BasicProjectMetadata>()
   private var syncIssues: DefaultProjectSyncIssues? = null
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(CachingProject::class.java)
+  }
 
   override fun getProjects(): CompletableFuture<List<BasicProjectMetadata>> {
     return if (this.projects.isNotEmpty()) {

@@ -41,7 +41,6 @@ import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.withStopWatch
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +54,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -90,7 +90,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
 
   companion object {
 
-    private val log = ILogger.newInstance("ProjectManagerImpl")
+    private val log = LoggerFactory.getLogger(ProjectManagerImpl::class.java)
 
     @JvmStatic
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
@@ -113,7 +113,8 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       androidBuildVariants = buildVariants
     }
 
-    log.info("Found ${rootProject.projectSyncIssues.syncIssues.size} project sync issues: ${rootProject.projectSyncIssues.syncIssues}")
+    log.info("Found {} project sync issues: {}", rootProject.projectSyncIssues.syncIssues.size,
+      rootProject.projectSyncIssues.syncIssues)
 
     withStopWatch("Setup project") {
       val indexerScope = CoroutineScope(Dispatchers.Default)
@@ -226,7 +227,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       val variant = module.getSelectedVariant()
       if (variant == null) {
         log.error(
-          "Selected build variant for project '${module.path}' not found")
+          "Selected build variant for project '{}' not found", module.path)
         return@flatMap emptyList()
       }
 
@@ -249,7 +250,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       .whenComplete { result, taskErr ->
         if (result == null || !result.isSuccessful || taskErr != null) {
           log.warn(
-            "Execution for tasks failed: $tasks",
+            "Execution for tasks failed: {} {}", tasks,
             taskErr ?: ""
           )
         } else {

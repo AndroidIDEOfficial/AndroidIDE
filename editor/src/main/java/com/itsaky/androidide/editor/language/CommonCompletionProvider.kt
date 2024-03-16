@@ -25,10 +25,10 @@ import com.itsaky.androidide.lsp.models.FailureType.COMPLETION
 import com.itsaky.androidide.lsp.models.LSPFailure
 import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.util.concurrent.CancellationException
 
@@ -45,7 +45,7 @@ internal class CommonCompletionProvider(
 
   companion object {
 
-    private val log = ILogger.newInstance("CommonCompletionProvider")
+    private val log = LoggerFactory.getLogger(CommonCompletionProvider::class.java)
   }
 
   /**

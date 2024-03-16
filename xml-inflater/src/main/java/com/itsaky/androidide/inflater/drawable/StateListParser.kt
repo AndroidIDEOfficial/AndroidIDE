@@ -21,7 +21,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.StateListDrawable
 import com.itsaky.androidide.inflater.InflateException
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import org.xmlpull.v1.XmlPullParser
 
 /**
@@ -29,11 +29,18 @@ import org.xmlpull.v1.XmlPullParser
  *
  * @author Akash Yadav
  */
-class StateListParser protected constructor(parser: XmlPullParser?, minDepth: Int) : IDrawableParser(parser, minDepth) {
+class StateListParser(parser: XmlPullParser?, minDepth: Int) :
+  IDrawableParser(parser, minDepth) {
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(StateListParser::class.java)
+  }
+
   @Throws(Exception::class)
   public override fun parseDrawable(context: Context): Drawable {
     val states = StateListDrawable()
-    
+
     // --------------------------- NOTE -------------------------
     // Unsupported attributes :
     //  1. android:constantSize
@@ -58,7 +65,7 @@ class StateListParser protected constructor(parser: XmlPullParser?, minDepth: In
     }
     return states
   }
-  
+
   /**
    * Add all the defined states of the current tag in `parser` to the given state list
    * drawable.
@@ -89,19 +96,15 @@ class StateListParser protected constructor(parser: XmlPullParser?, minDepth: In
     }
     states.addState(arr, drawable)
   }
-  
+
   private fun reflectState(name: String): Int {
     return try {
       val clazz = attr::class.java
       val field = clazz.getDeclaredField(name)
       field.getInt(null)
     } catch (th: Throwable) {
-      LOG.error("Unable to get state ID with name:", name)
+      log.error("Unable to get state ID with name: {}", name)
       -1
     }
-  }
-  
-  companion object {
-    private val LOG = ILogger.newInstance("StateListParser")
   }
 }

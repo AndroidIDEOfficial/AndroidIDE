@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.javac.services.util
 
-import openjdk.tools.javac.api.ClientCodeWrapper
-import openjdk.tools.javac.util.JCDiagnostic
 import jdkx.tools.Diagnostic
 import jdkx.tools.JavaFileObject
+import openjdk.tools.javac.api.ClientCodeWrapper
+import openjdk.tools.javac.util.JCDiagnostic
 
 /** @author Akash Yadav */
 class JavaDiagnosticUtils {

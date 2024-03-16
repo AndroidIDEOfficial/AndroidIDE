@@ -21,8 +21,8 @@ import com.google.auto.service.AutoService
 import com.itsaky.androidide.models.JdkDistribution
 import com.itsaky.androidide.preferences.internal.javaHome
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.JdkUtils
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -33,7 +33,7 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
 
   companion object {
 
-    private val log = ILogger.newInstance("JdkDistributionProviderImpl")
+    private val log = LoggerFactory.getLogger(JdkDistributionProviderImpl::class.java)
   }
 
   private var _installedDistributions: List<JdkDistribution>? = null
@@ -79,7 +79,7 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
         java.setExecutable(true)
       }
 
-      log.debug("Setting Environment.JAVA_HOME to $javaHome")
+      log.debug("Setting Environment.JAVA_HOME to {}", javaHome)
 
       Environment.JAVA_HOME = File(javaHome)
       Environment.JAVA = Environment.JAVA_HOME.resolve("bin/java")

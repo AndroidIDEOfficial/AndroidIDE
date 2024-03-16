@@ -35,6 +35,8 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import openjdk.tools.javac.code.Type;
 import openjdk.tools.javac.comp.Attr;
 import openjdk.tools.javac.comp.AttrContext;
@@ -49,9 +51,6 @@ import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
 import openjdk.tools.javac.tree.TreeMaker;
 import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.List;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 
 /**
  * @author lahvac

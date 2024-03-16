@@ -31,10 +31,10 @@ import com.itsaky.androidide.inflater.internal.utils.parseIntegerArray
 import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.parseStringArray
 import org.junit.Before
-import kotlin.math.roundToInt
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class ValueParsersTest {

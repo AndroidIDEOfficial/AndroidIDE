@@ -108,7 +108,7 @@ class ClassNamesCompletionProvider(
       }
     }
 
-    log.info("...found " + list.size + " class names")
+    log.info("...found {} class names", list.size)
 
     return CompletionResult(list)
   }

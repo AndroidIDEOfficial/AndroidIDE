@@ -18,18 +18,16 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
-import openjdk.source.tree.Scope;
-import openjdk.source.util.Trees;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-
 import jdkx.lang.model.element.Element;
 import jdkx.lang.model.element.Modifier;
 import jdkx.lang.model.element.TypeElement;
 import jdkx.lang.model.type.DeclaredType;
 import jdkx.lang.model.util.Elements;
+import openjdk.source.tree.Scope;
+import openjdk.source.util.Trees;
 
 public class ScopeHelper {
   public static List<Element> scopeMembers(

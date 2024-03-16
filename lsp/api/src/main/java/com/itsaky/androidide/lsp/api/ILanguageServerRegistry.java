@@ -20,8 +20,6 @@ package com.itsaky.androidide.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.ILogger;
-
 /**
  * A language server registry which keeps track of registered language servers.
  *
@@ -30,7 +28,6 @@ import com.itsaky.androidide.utils.ILogger;
 public abstract class ILanguageServerRegistry {
 
   private static ILanguageServerRegistry sRegistry = null;
-  protected static final ILogger LOG = ILogger.newInstance("ILanguageServerRegistry");
 
   public static ILanguageServerRegistry getDefault() {
     if (sRegistry == null) {

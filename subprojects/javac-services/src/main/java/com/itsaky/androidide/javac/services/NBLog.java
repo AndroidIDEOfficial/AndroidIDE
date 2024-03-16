@@ -35,11 +35,6 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import openjdk.tools.javac.code.Symbol;
-import openjdk.tools.javac.util.Context;
-import openjdk.tools.javac.util.JCDiagnostic;
-import openjdk.tools.javac.util.Log;
-
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -48,9 +43,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import jdkx.tools.Diagnostic;
 import jdkx.tools.JavaFileObject;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.JCDiagnostic;
+import openjdk.tools.javac.util.Log;
 
 /**
  * @author Tomas Zezula

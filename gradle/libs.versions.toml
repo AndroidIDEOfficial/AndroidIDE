@@ -5,7 +5,7 @@ gradle-tooling = "8.6"
 junit-jupiter = "5.10.2"
 kotlin = "1.9.22"
 kotlin-coroutines = "1.8.0"
-tree-sitter = "4.0.1"
+tree-sitter = "4.2.0"
 editor = "0.23.4"
 glide = "4.16.0"
 androidx-vectordrawable = "1.1.0"
@@ -17,6 +17,7 @@ androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 markwon = "4.6.2"
 maven-publish-plugin = "0.27.0"
+logback = "1.5.3"
 
 [libraries]
 
@@ -117,6 +118,9 @@ aapt2-common = { module = "com.android.tools:common", version = "31.2.2" }
 aapt2-annotations = { module = "com.android.tools:annotations", version = "31.2.2" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
 aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.3.0-10880808" }
+
+logging-logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+logging-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }

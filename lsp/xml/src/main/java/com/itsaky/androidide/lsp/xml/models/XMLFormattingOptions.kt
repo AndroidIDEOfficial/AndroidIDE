@@ -19,9 +19,9 @@ package com.itsaky.androidide.lsp.xml.models
 
 import com.itsaky.androidide.lsp.xml.providers.format.FormatElementCategory
 import com.itsaky.androidide.lsp.xml.providers.format.FormatElementCategory.PreserveSpace
-import org.eclipse.lemminx.dom.builder.EmptyElements
-import org.eclipse.lemminx.dom.builder.BaseXmlFormattingOptions
 import org.eclipse.lemminx.dom.DOMElement
+import org.eclipse.lemminx.dom.builder.BaseXmlFormattingOptions
+import org.eclipse.lemminx.dom.builder.EmptyElements
 
 /**
  * Options for XML code formatting.

@@ -25,7 +25,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import androidx.core.view.ViewCompat
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 
 /**

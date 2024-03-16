@@ -72,7 +72,6 @@ import com.itsaky.androidide.tasks.JobCancelChecker
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
@@ -95,6 +94,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -177,7 +177,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private const val SELECTION_CHANGE_DELAY = 500L
 
-    internal val log = ILogger.newInstance("IDEEditor")
+    internal val log = LoggerFactory.getLogger(IDEEditor::class.java)
 
     /**
      * Create input type flags for the editor.
@@ -596,7 +596,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
       language.setupWith(finalScheme)
 
       if (finalScheme.getLanguageScheme(type) == null) {
-        log.warn("Color scheme does not support file type '$type'")
+        log.warn("Color scheme does not support file type '{}'", type)
         finalScheme = SchemeAndroidIDE.newInstance(context)
       }
     }
@@ -626,7 +626,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
       }.also { job ->
         job.invokeOnCompletion { err ->
           if (err != null) {
-            log.error("Failed to setup tree sitter language for file: $file", err)
+            log.error("Failed to setup tree sitter language for file: {}", file, err)
           }
 
           setupTsLanguageJob = null
@@ -888,7 +888,7 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
       }
   }
 
-  private inline fun <T> safeGet(name: String, action: () -> T) : T? {
+  private inline fun <T> safeGet(name: String, action: () -> T): T? {
     return try {
       action()
     } catch (err: Throwable) {
@@ -897,16 +897,16 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     }
   }
 
-  private fun Job.logError(action: String) : Job = apply {
+  private fun Job.logError(action: String): Job = apply {
     invokeOnCompletion { err -> logError(err, action) }
   }
 
   private fun logError(err: Throwable?, action: String) {
     err ?: return
     if (CancelChecker.isCancelled(err)) {
-      log.warn("$action has been cancelled")
+      log.warn("{} has been cancelled", action)
     } else {
-      log.error("$action failed")
+      log.error("{} failed", action)
     }
   }
 }

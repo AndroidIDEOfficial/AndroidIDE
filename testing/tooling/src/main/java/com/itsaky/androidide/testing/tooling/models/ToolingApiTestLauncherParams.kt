@@ -20,7 +20,8 @@ package com.itsaky.androidide.testing.tooling.models
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.utils.FileProvider
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import kotlin.io.path.pathString
 
@@ -36,7 +37,7 @@ data class ToolingApiTestLauncherParams(
     projectDir.pathString,
     client.gradleDistParams
   ),
-  val log: ILogger = ILogger.newInstance("BuildOutputLogger"),
+  val log: Logger = LoggerFactory.getLogger("BuildOutputLogger"),
   val sysProps: Map<String, String> = emptyMap(),
   val sysEnvs: Map<String, String> = emptyMap()
 )

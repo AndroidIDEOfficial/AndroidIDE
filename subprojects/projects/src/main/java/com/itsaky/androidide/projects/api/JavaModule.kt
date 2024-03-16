@@ -20,11 +20,11 @@ package com.itsaky.androidide.projects.api
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.tooling.api.ProjectType.Java
-import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
-import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.models.JavaContentRoot
 import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
 import java.io.File
 
 /**

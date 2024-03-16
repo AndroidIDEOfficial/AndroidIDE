@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater
 
-import android.view.*
-import android.widget.*
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

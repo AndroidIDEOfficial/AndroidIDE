@@ -17,14 +17,13 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
+import java.io.IOException;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.MethodTree;
 import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreeScanner;
 import openjdk.source.util.Trees;
-
-import java.io.IOException;
 
 public class PruneMethodBodies extends TreeScanner<StringBuilder, Long> {
   private final JavacTask task;

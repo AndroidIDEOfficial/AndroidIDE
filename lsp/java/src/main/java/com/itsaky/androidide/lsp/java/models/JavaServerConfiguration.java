@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.models;
 
 import androidx.annotation.NonNull;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;

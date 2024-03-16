@@ -35,6 +35,9 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import java.util.HashMap;
+import java.util.Map;
+import jdkx.lang.model.element.Element;
 import openjdk.source.tree.VariableTree;
 import openjdk.source.util.TreePath;
 import openjdk.tools.javac.api.JavacTrees;
@@ -45,11 +48,6 @@ import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
 import openjdk.tools.javac.tree.TreeInfo;
 import openjdk.tools.javac.tree.TreeMaker;
 import openjdk.tools.javac.util.Context;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import jdkx.lang.model.element.Element;
 
 /**
  * @author lahvac

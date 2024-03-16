@@ -126,7 +126,7 @@ open class TsLanguageSpec(
         }
       }
       if (!tsQuery.canAccess()) {
-        throw IllegalArgumentException("Syntax highlights query is invalid")
+        throw IllegalArgumentException("Syntax highlights query is invalid, errOffset=" + tsQuery.errorOffset + ", errType=" + tsQuery.errorType)
       }
       if (tsQuery.errorType != TSQueryError.None) {
         val region = if (tsQuery.errorOffset < highlightScmOffset) "locals" else "highlight"

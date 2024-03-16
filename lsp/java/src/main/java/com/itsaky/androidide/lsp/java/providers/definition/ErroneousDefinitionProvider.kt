@@ -26,12 +26,12 @@ import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.utils.DocumentUtils.isSameFile
-import openjdk.source.util.Trees
-import java.nio.file.Path
-import java.nio.file.Paths
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.TypeElement
 import jdkx.tools.JavaFileObject
+import openjdk.source.util.Trees
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Finds definition for erroneous elements.
@@ -57,7 +57,7 @@ class ErroneousDefinitionProvider(
     val otherFile = compiler.findAnywhere(className)
     abortIfCancelled()
     if (!otherFile.isPresent) {
-      log.error("Cannot find source file for class:", className)
+      log.error("Cannot find source file for class: {}", className)
       return emptyList()
     }
 

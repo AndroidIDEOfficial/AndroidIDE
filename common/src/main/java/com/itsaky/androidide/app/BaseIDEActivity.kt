@@ -21,10 +21,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
-
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.ui.themes.IThemeManager
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,10 +82,4 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   protected open fun preSetContentLayout() {}
 
   protected abstract fun bindLayout(): View
-
-  companion object {
-
-    const val REQCODE_STORAGE = 1009
-    protected var LOG = ILogger.newInstance("StudioActivity")
-  }
 }

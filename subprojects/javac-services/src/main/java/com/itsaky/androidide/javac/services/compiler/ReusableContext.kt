@@ -31,7 +31,6 @@ import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.javac.services.fs.JarPackageProviderImpl
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.zipfs2.JarPackageProvider
-import java.net.URI
 import jdkx.tools.DiagnosticListener
 import jdkx.tools.JavaFileManager
 import jdkx.tools.JavaFileObject
@@ -57,6 +56,7 @@ import openjdk.tools.javac.util.Context
 import openjdk.tools.javac.util.DefinedBy
 import openjdk.tools.javac.util.DefinedBy.Api.COMPILER_TREE
 import openjdk.tools.javac.util.Log
+import java.net.URI
 
 /**
  * Reusable [Context] for [ReusableCompiler].

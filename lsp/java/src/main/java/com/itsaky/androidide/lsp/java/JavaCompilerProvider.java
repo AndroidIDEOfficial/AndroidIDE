@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java;
 import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.androidide.projects.api.ModuleProject;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

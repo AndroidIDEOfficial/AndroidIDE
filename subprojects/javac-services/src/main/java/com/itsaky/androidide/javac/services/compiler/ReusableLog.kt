@@ -17,14 +17,14 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.NBLog
+import jdkx.tools.Diagnostic
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileObject
 import openjdk.tools.javac.util.Context
 import openjdk.tools.javac.util.DefinedBy
 import openjdk.tools.javac.util.DefinedBy.Api.COMPILER
 import openjdk.tools.javac.util.Log
 import java.io.PrintWriter
-import jdkx.tools.Diagnostic
-import jdkx.tools.DiagnosticListener
-import jdkx.tools.JavaFileObject
 
 /**
  * Reusable Log; exposes a method to clean up the component from leftovers associated with

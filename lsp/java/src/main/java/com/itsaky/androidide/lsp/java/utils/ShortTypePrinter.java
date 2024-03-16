@@ -1,7 +1,6 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import java.util.stream.Collectors;
-
 import jdkx.lang.model.type.ArrayType;
 import jdkx.lang.model.type.DeclaredType;
 import jdkx.lang.model.type.ErrorType;

@@ -79,7 +79,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
         result.asCodeActions(compiler, label)
       } catch (e: Exception) {
         flashError(e.cause?.message ?: e.message)
-        ILogger.instance().error(e)
+        ILogger.ROOT.error(e.cause?.message ?: e.message, e)
         return
       }
 
@@ -87,10 +87,10 @@ abstract class BaseJavaCodeAction : EditorActionItem {
       onPerformCodeActionFailed(data)
       return
     }
-    
+
     data.getLanguageClient()?.performCodeAction(actions)
   }
-  
+
   protected open fun onPerformCodeActionFailed(data: ActionData) {
     flashError(R.string.msg_codeaction_failed)
   }

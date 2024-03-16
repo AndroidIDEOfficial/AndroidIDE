@@ -25,8 +25,6 @@ import com.itsaky.androidide.adapters.SymbolInputAdapter;
 import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.models.Symbol;
 import com.itsaky.androidide.utils.Symbols;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SymbolInputView extends RecyclerView {

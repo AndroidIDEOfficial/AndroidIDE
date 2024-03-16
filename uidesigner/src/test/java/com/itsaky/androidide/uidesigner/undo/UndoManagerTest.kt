@@ -18,8 +18,8 @@
 package com.itsaky.androidide.uidesigner.undo
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.uidesigner.createView
 import com.itsaky.androidide.uidesigner.createLayout
+import com.itsaky.androidide.uidesigner.createView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.requiresActivity
 import org.junit.Test

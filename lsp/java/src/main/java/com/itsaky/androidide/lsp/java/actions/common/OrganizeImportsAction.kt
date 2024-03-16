@@ -11,15 +11,19 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 
 class OrganizeImportsAction : BaseJavaCodeAction() {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   override val id: String = "lsp_java_organizeImports"
   override var label: String = ""
   override val titleTextRes: Int = string.action_organize_imports
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(OrganizeImportsAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

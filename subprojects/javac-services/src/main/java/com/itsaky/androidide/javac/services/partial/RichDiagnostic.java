@@ -17,12 +17,10 @@
 
 package com.itsaky.androidide.javac.services.partial;
 
+import java.util.Locale;
+import jdkx.tools.Diagnostic;
 import openjdk.tools.javac.api.DiagnosticFormatter;
 import openjdk.tools.javac.util.JCDiagnostic;
-
-import java.util.Locale;
-
-import jdkx.tools.Diagnostic;
 
 /**
  * @author Akash Yadav

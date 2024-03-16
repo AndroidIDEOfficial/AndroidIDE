@@ -23,7 +23,6 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
-
 import com.itsaky.androidide.inflater.vectormaster.utilities.parser.PathParser;
 
 public class ClipPathModel {

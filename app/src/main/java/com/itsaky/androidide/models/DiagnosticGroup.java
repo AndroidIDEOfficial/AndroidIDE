@@ -18,7 +18,6 @@
 package com.itsaky.androidide.models;
 
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
-
 import java.io.File;
 import java.util.List;
 

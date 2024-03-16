@@ -19,7 +19,6 @@ package com.itsaky.androidide.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.itsaky.androidide.R
 
 /**
  * @author Akash Yadav

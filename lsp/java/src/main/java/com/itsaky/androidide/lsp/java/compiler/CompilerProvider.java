@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.compiler;
 
 import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import jdkx.tools.JavaFileObject;
 
 public interface CompilerProvider {

@@ -20,22 +20,27 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.resources.R
 import jdkx.tools.Diagnostic
 import jdkx.tools.JavaFileObject
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
+
   override val id: String = "ide.editor.lsp.java.diagnostics.implementAbstractMethods"
   override var label: String = ""
   private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override val titleTextRes: Int = R.string.action_implement_abstract_methods
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(ImplementAbstractMethodsAction::class.java)
+  }
 
   @Suppress("UNCHECKED_CAST")
   override fun prepare(data: ActionData) {
@@ -45,7 +50,7 @@ class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!data.hasRequiredData(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
@@ -70,7 +75,8 @@ class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
   override suspend fun execAction(data: ActionData): Any {
     val diagnostic =
       JavaDiagnosticUtils.asJCDiagnostic(
-        data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
+        data.get(
+          com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
       )
     return ImplementAbstractMethods(diagnostic!!)
   }

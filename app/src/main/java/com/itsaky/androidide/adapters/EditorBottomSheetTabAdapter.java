@@ -23,21 +23,20 @@ import androidx.collection.LongSparseArray;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import com.itsaky.androidide.resources.R;
-import com.itsaky.androidide.fragments.output.AppLogFragment;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
-import com.itsaky.androidide.fragments.output.IDELogFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
+import com.itsaky.androidide.fragments.output.AppLogFragment;
 import com.itsaky.androidide.fragments.output.BuildOutputFragment;
-import com.itsaky.androidide.utils.ILogger;
-
+import com.itsaky.androidide.fragments.output.IDELogFragment;
+import com.itsaky.androidide.resources.R;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
-  private static final ILogger LOG = ILogger.newInstance("EditorBottomSheetTabAdapter");
+  private static final Logger LOG = LoggerFactory.getLogger(EditorBottomSheetTabAdapter.class);
   private final List<Tab> fragments;
 
   public EditorBottomSheetTabAdapter(@NonNull FragmentActivity fragmentActivity) {

@@ -51,13 +51,13 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.models.GradleTask
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.updateSystemBarColors
 import com.itsaky.androidide.viewmodel.RunTasksViewModel
+import org.slf4j.LoggerFactory
 
 /**
  * A bottom sheet dialog fragment to show UI which allows the users to select and execute Gradle
@@ -71,9 +71,9 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
   private lateinit var run: LayoutRunTaskBinding
   private val viewModel: RunTasksViewModel by viewModels()
 
-  private val log = ILogger.newInstance("RunTasksDialogFragment")
-
   companion object {
+    private val log = LoggerFactory.getLogger(RunTasksDialogFragment::class.java)
+
     private const val CHILD_LOADING = 0
     private const val CHILD_TASKS = 1
     private const val CHILD_CONFIRMATION = 2

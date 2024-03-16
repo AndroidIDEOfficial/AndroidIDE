@@ -33,7 +33,6 @@ import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.utils.DocumentUtils;
-import com.itsaky.androidide.utils.ILogger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -43,11 +42,13 @@ import jdkx.lang.model.element.Element;
 import jdkx.lang.model.element.TypeElement;
 import jdkx.lang.model.type.TypeKind;
 import jdkx.tools.JavaFileObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefinitionProvider extends CancelableServiceProvider {
 
   public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
-  private static final ILogger LOG = ILogger.newInstance("JavaDefinitionProvider");
+  private static final Logger LOG = LoggerFactory.getLogger(DefinitionProvider.class);
   private final JavaCompilerService compiler;
   private final IServerSettings settings;
   private Path file;
@@ -71,7 +72,7 @@ public class DefinitionProvider extends CancelableServiceProvider {
     this.position = new Position(this.line, this.column);
     final List<Location> locations = findDefinition();
 
-    LOG.debug("Found", locations.size(), "definitions...");
+    LOG.debug("Found {} definitions...", locations.size());
     return new DefinitionResult(locations);
   }
 
@@ -83,7 +84,7 @@ public class DefinitionProvider extends CancelableServiceProvider {
         compile.get(task -> NavigationHelper.findElement(task, file, line, column, this));
 
     if (element == null) {
-      LOG.error("Cannot find element at line:", line, "and column:", column);
+      LOG.error("Cannot find element at line: {} and column: {}", line, column);
       return NOT_SUPPORTED;
     }
 
@@ -98,13 +99,13 @@ public class DefinitionProvider extends CancelableServiceProvider {
     if (provider == null) {
       final String className = className(element);
       if (TextUtils.isEmpty(className)) {
-        LOG.error("No class name found for element:", element);
+        LOG.error("No class name found for element: {}", element);
         return NOT_SUPPORTED;
       }
 
       final Optional<JavaFileObject> optional = compiler.findAnywhere(className);
       if (!optional.isPresent()) {
-        LOG.error("Cannot find source file for class:", className);
+        LOG.error("Cannot find source file for class: {}", className);
         return NOT_SUPPORTED;
       }
 

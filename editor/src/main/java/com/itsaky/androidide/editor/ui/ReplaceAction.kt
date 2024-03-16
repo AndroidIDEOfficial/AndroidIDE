@@ -21,7 +21,7 @@ import android.view.LayoutInflater
 import com.itsaky.androidide.editor.databinding.LayoutEditorFindReplaceBinding
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.DialogUtils
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 /**
  * Handles the replace action while searching in file.
@@ -30,7 +30,7 @@ import com.itsaky.androidide.utils.ILogger
  */
 object ReplaceAction {
 
-  private val log = ILogger.newInstance("ReplaceAction")
+  private val log = LoggerFactory.getLogger(ReplaceAction::class.java)
 
   @JvmStatic
   fun doReplace(editor: IDEEditor) {

@@ -18,13 +18,13 @@
 package com.itsaky.androidide.xml.internal.versions
 
 import com.google.auto.service.AutoService
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.versions.ClassInfo
 import com.itsaky.androidide.xml.versions.FieldInfo
 import com.itsaky.androidide.xml.versions.Info
 import com.itsaky.androidide.xml.versions.MethodInfo
+import org.slf4j.LoggerFactory
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.File
@@ -38,14 +38,13 @@ import java.util.concurrent.ConcurrentHashMap
 @AutoService(ApiVersionsRegistry::class)
 class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   private val versions = ConcurrentHashMap<String, ApiVersions>()
 
-  override var isLoggingEnabled: Boolean
-    get() = log.isEnabled
-    set(value) {
-      log.isEnabled = value
-    }
+  companion object {
+    private val log = LoggerFactory.getLogger(DefaultApiVersionsRegistry::class.java)
+  }
+
+  override var isLoggingEnabled: Boolean = true
 
   override fun forPlatformDir(platform: File): ApiVersions? {
     var version = versions[platform.path]
@@ -64,7 +63,10 @@ class DefaultApiVersionsRegistry : ApiVersionsRegistry {
       return null
     }
 
-    log.info("Creating API versions table for platform dir: $platform")
+    if (isLoggingEnabled) {
+      log.info("Creating API versions table for platform dir: $platform")
+    }
+
     return versionsFile.bufferedReader().use {
       val parser =
         XmlPullParserFactory.newInstance().run {

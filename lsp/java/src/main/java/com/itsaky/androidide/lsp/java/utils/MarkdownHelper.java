@@ -19,15 +19,6 @@ package com.itsaky.androidide.lsp.java.utils;
 
 import com.itsaky.androidide.lsp.models.MarkupContent;
 import com.itsaky.androidide.lsp.models.MarkupKind;
-import openjdk.source.doctree.DocCommentTree;
-import openjdk.source.doctree.DocTree;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -38,7 +29,6 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,6 +38,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import openjdk.source.doctree.DocCommentTree;
+import openjdk.source.doctree.DocTree;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class MarkdownHelper {
 

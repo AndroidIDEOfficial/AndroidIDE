@@ -18,16 +18,13 @@
 package com.itsaky.androidide.lsp.java.compiler;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.tools.javac.api.JavacTaskImpl;
-
 import java.nio.file.Path;
 import java.util.List;
-
 import jdkx.tools.Diagnostic;
 import jdkx.tools.JavaFileObject;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.tools.javac.api.JavacTaskImpl;
 
 public class CompileTask implements AutoCloseable {
 

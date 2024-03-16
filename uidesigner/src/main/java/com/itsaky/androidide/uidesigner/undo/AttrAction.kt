@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 
 /**

@@ -20,7 +20,7 @@ package com.itsaky.androidide.stats
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -44,12 +44,12 @@ class StatUploadWorker(context: Context, workerParams: WorkerParameters) : Worke
     const val KEY_APP_VERSION = "app_version"
     const val KEY_APP_CPU_ARCH = "app_cpu_arch"
 
-    private val log = ILogger.newInstance("StatUploadWorker")
+    private val log = LoggerFactory.getLogger(StatUploadWorker::class.java)
   }
 
   override fun doWork(): Result {
     val data = StatData.fromInputData(inputData = inputData)
-    log.debug("Uploading stats: $data")
+    log.debug("Uploading stats: {}", data)
 
     val retrofit = Retrofit.Builder().baseUrl(STAT_UPLOAD_BASE_URL)
       .addConverterFactory(GsonConverterFactory.create()).build()
@@ -65,20 +65,19 @@ class StatUploadWorker(context: Context, workerParams: WorkerParameters) : Worke
     val body = response.body()
     if (!response.isSuccessful || body == null) {
       log.error(
-        "Stat upload failed: responseCode: ${response.code()}, responseBody: $body, errBody: ${
-          response.errorBody()?.string() ?: "(empty)"
-        }")
+        "Stat upload failed: responseCode: {}, responseBody: {}, errBody: {}", response.code(),
+        body, response.errorBody()?.string() ?: "(empty)")
 
       // try again next time
       return Result.failure()
     }
 
     if (body.status != 200) {
-      log.error("Stat upload failed: response: $body")
+      log.error("Stat upload failed: response: {}", body)
       return Result.failure()
     }
 
-    log.info("Stat upload successful: $body")
+    log.info("Stat upload successful: {}", body)
     return Result.success()
   }
 }

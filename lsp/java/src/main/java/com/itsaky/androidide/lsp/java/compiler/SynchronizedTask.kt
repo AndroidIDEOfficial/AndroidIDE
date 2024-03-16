@@ -34,7 +34,7 @@ package com.itsaky.androidide.lsp.java.compiler
 
 import com.itsaky.androidide.lsp.java.CompilationCancellationException
 import com.itsaky.androidide.lsp.java.utils.CancelChecker.Companion.isCancelled
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Semaphore
 
 class SynchronizedTask {
@@ -49,6 +49,12 @@ class SynchronizedTask {
   @PublishedApi
   internal var task: CompileTask? = null
     private set
+
+  companion object {
+
+    @PublishedApi
+    internal val log = LoggerFactory.getLogger(SynchronizedTask::class.java)
+  }
 
   inline fun run(crossinline taskConsumer: (CompileTask) -> Unit) {
     try {
@@ -123,13 +129,7 @@ class SynchronizedTask {
    * **FOR INTERNAL USE ONLY!**
    */
   fun logStats() {
-    log.warn("[SynchronizedTask] isCompiling =", isCompiling)
-    log.warn("[SynchronizedTask] queuedLength =", semaphore.queueLength)
-  }
-
-  companion object {
-
-    @PublishedApi
-    internal val log: ILogger = ILogger.newInstance("SynchronizedTask")
+    log.warn("[SynchronizedTask] isCompiling={} queuedLength={}", isCompiling,
+      semaphore.queueLength)
   }
 }

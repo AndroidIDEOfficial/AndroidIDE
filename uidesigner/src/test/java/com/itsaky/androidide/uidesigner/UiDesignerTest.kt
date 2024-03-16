@@ -22,7 +22,6 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.itsaky.androidide.inflater.IComponentFactory.Companion.LAYOUT_INFLATER_COMPONENT_FACTORY_KEY
-import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
@@ -30,8 +29,8 @@ import com.itsaky.androidide.inflater.internal.utils.ViewFactory
 import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.uidesigner.utils.UiInflaterComponentFactory
-import java.io.File
 import org.robolectric.Robolectric
+import java.io.File
 
 private val activity by lazy { Robolectric.buildActivity(AppCompatActivity::class.java).get() }
 

@@ -27,10 +27,10 @@ import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SourceClassTrie
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import com.itsaky.androidide.utils.StopWatch
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.pathString
@@ -51,11 +51,11 @@ abstract class ModuleProject(
 ) :
   GradleProject(name, description, path, projectDir, buildDir, buildScript, tasks) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
   abstract val compilerSettings: IJavaCompilerSettings
 
   companion object {
+
+    private val log = LoggerFactory.getLogger(ModuleProject::class.java)
 
     @JvmStatic
     val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
@@ -122,7 +122,7 @@ abstract class ModuleProject(
   /** Finds the source files and classes from source directories and classpaths and indexes them. */
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
   fun indexSourcesAndClasspaths() {
-    log.info("Indexing sources and classpaths for project:", path)
+    log.info("Indexing sources and classpaths for project: {}", path)
     indexSources()
     indexClasspaths()
   }
@@ -145,7 +145,7 @@ abstract class ModuleProject(
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
 
     watch.log()
-    log.debug("Found ${topLevelClasses.size} classpaths.")
+    log.debug("Found {} classpaths.", topLevelClasses.size)
 
     if (this is AndroidModule) {
       BootClasspathProvider.update(bootClassPaths.map { it.path })
@@ -172,7 +172,7 @@ abstract class ModuleProject(
     }
 
     watch.log()
-    log.debug("Found $count source files.")
+    log.debug("Found {} source files.", count)
   }
 
   fun getSourceFilesInDir(dir: Path): List<SourceNode> =

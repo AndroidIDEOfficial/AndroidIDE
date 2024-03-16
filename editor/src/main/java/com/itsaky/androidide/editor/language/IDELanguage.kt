@@ -24,13 +24,13 @@ import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useSoftTab
 import com.itsaky.androidide.progress.ICancelChecker
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
+import org.slf4j.LoggerFactory
 import java.nio.file.Paths
 
 /**
@@ -76,13 +76,14 @@ abstract class IDELanguage : Language {
     val server = languageServer ?: return
     val path = extraArguments.getString(IEditor.KEY_FILE, null)
     if (path == null) {
-      LOG.warn("Cannot provide completions. No file provided.")
+      log.warn("Cannot provide completions. No file provided.")
       return
     }
 
     val completionProvider = CommonCompletionProvider(server, cancelChecker)
     val file = Paths.get(path)
-    val completionItems = completionProvider.complete(content, file, position) { checkIsCompletionChar(it) }
+    val completionItems = completionProvider.complete(content, file,
+      position) { checkIsCompletionChar(it) }
     publisher.setUpdateThreshold(1)
     (publisher as IDECompletionPublisher).addLSPItems(completionItems)
   }
@@ -116,6 +117,6 @@ abstract class IDELanguage : Language {
 
   companion object {
 
-    private val LOG = ILogger.newInstance("IDELanguage")
+    private val log = LoggerFactory.getLogger(IDELanguage::class.java)
   }
 }

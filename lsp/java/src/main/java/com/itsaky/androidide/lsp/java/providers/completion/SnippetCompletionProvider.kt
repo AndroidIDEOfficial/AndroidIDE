@@ -28,11 +28,11 @@ import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.snippets.ISnippet
 import com.itsaky.androidide.preferences.internal.tabSize
 import io.github.rosemoe.sora.text.TextUtils
-import java.nio.file.Path
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
 import openjdk.source.tree.MethodTree
 import openjdk.source.util.TreePath
+import java.nio.file.Path
 
 /**
  * Provides snippet completion for Java files.

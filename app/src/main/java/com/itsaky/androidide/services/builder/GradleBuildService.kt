@@ -61,16 +61,15 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -129,10 +128,9 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   companion object {
 
-    private val log = ILogger.newInstance("GradleBuildService")
-    private val serverLogger = ILogger.newInstance("ToolingApiServer")
+    private val log = LoggerFactory.getLogger(GradleBuildService::class.java)
     private val NOTIFICATION_ID = R.string.app_name
-    private val SERVER_System_err = ILogger.newInstance("ToolingApiErrorStream")
+    private val SERVER_System_err = LoggerFactory.getLogger("ToolingApiErrorStream")
   }
 
   override fun onCreate() {
@@ -188,7 +186,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     mBinder?.release()
     mBinder = null
 
-    log.info("Service is being destroyed.", "Dismissing the shown notification...")
+    log.info("Service is being destroyed. Dismissing the shown notification...")
     notificationManager!!.cancel(NOTIFICATION_ID)
 
     val lookup = Lookup.getDefault()
@@ -237,7 +235,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   override fun onServerExited(exitCode: Int) {
-    log.warn("Tooling API process terminated with exit code:", exitCode)
+    log.warn("Tooling API process terminated with exit code: {}", exitCode)
     stopForeground(STOP_FOREGROUND_REMOVE)
   }
 
@@ -249,8 +247,15 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   override fun logMessage(params: LogMessageParams) {
-    val line = params.toLogLine()
-    serverLogger.log(line.level, line.formattedTagAndMessage())
+    val logger = LoggerFactory.getLogger(params.tag)
+    when (params.level) {
+      'D' -> logger.debug(params.message)
+      'W' -> logger.warn(params.message)
+      'E' -> logger.error(params.message)
+      'I' -> logger.info(params.message)
+
+      else -> logger.trace(params.message)
+    }
   }
 
   override fun logOutput(line: String) {

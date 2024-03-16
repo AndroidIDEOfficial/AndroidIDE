@@ -19,9 +19,9 @@ package com.itsaky.androidide.lsp.java.models
 
 import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor
 import com.itsaky.androidide.lsp.java.compiler.DefaultCompilationTaskProcessor
-import java.util.function.Consumer
 import jdkx.tools.JavaFileObject
 import openjdk.tools.javac.util.Context
+import java.util.function.Consumer
 
 /**
  * Data sent to compiler to request a compilation.

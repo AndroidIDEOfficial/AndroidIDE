@@ -28,16 +28,16 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashInfo
+import io.github.rosemoe.sora.widget.CodeEditor
+import jdkx.lang.model.element.Modifier.STATIC
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.Tree.Kind.VARIABLE
 import openjdk.source.tree.VariableTree
-import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
-import jdkx.lang.model.element.Modifier.STATIC
 
 /**
  * Any action that has to work with fields in the current class can inherit this action.
@@ -46,18 +46,21 @@ import jdkx.lang.model.element.Modifier.STATIC
  */
 abstract class FieldBasedAction : BaseJavaCodeAction() {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(FieldBasedAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
     if (
       !visible ||
-        !data.hasRequiredData(
-          com.itsaky.androidide.models.Range::class.java,
-          CodeEditor::class.java
-        ) ||
-        IProjectManager.getInstance().rootProject == null
+      !data.hasRequiredData(
+        com.itsaky.androidide.models.Range::class.java,
+        CodeEditor::class.java
+      ) ||
+      IProjectManager.getInstance().rootProject == null
     ) {
       markInvisible()
       return
@@ -78,7 +81,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
       val fields = triple.third
       val fieldNames = fields.map { "${it.name}: ${it.type}" } // Get the names
 
-      log.debug("Found ${fieldNames.size} fields in class ${type.simpleName}")
+      log.debug("Found {} fields in class {}", fieldNames.size, type.simpleName)
 
       return@get fieldNames
     }

@@ -18,22 +18,19 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import openjdk.source.tree.LineMap;
 import openjdk.tools.javac.parser.Scanner;
 import openjdk.tools.javac.parser.ScannerFactory;
 import openjdk.tools.javac.parser.Tokens;
 import openjdk.tools.javac.parser.Tokens.TokenKind;
 import openjdk.tools.javac.util.Context;
-
 import org.jetbrains.annotations.Contract;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Akash Yadav

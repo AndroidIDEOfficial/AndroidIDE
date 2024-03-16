@@ -18,8 +18,6 @@
 package com.itsaky.androidide.lsp.util
 
 import com.itsaky.androidide.lsp.api.ICompletionProvider
-import com.itsaky.androidide.lsp.models.CompletionParams
-import com.itsaky.androidide.lsp.models.CompletionResult
 
 /** @author Akash Yadav */
 class NoCompletionsProvider : ICompletionProvider {

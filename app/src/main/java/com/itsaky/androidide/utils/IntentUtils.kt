@@ -117,7 +117,7 @@ object IntentUtils {
     } catch (e: Throwable) {
       flashError(R.string.msg_app_launch_failed)
       if (logError) {
-        ILogger.instance().error("Failed to launch application with package name '$packageName'", e)
+        ILogger.ROOT.error("Failed to launch application with package name '{}'", packageName, e)
       }
       return false
     }
@@ -138,7 +138,7 @@ object IntentUtils {
     } catch (e: Throwable) {
       flashError(R.string.msg_app_launch_failed)
       if (logError) {
-        ILogger.instance().error("Failed to launch app", e)
+        ILogger.ROOT.error("Failed to launch app", e)
       }
       false
     }

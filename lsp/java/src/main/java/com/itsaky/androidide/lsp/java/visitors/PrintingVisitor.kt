@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.lsp.java.visitors
 
-import com.itsaky.androidide.utils.ILogger
 import openjdk.tools.javac.tree.JCTree
 import openjdk.tools.javac.tree.JCTree.JCErroneous
 import openjdk.tools.javac.tree.TreeScanner
+import org.slf4j.LoggerFactory
 
 /**
  * Prints all the trees it visits. For debugging/testing purposes only.
@@ -29,10 +29,13 @@ import openjdk.tools.javac.tree.TreeScanner
  */
 class PrintingVisitor : TreeScanner() {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(PrintingVisitor::class.java)
+  }
 
   override fun scan(tree: JCTree?) {
-    log.debug(if (tree != null) tree::class.java else "NullClass", tree)
+    log.debug(if (tree != null) tree::class.java.name else "NullClass", tree)
     super.scan(tree)
   }
 

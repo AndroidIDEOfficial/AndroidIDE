@@ -22,18 +22,16 @@ import androidx.core.graphics.ColorUtils
 import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryCapture
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.parseHexColor
 import io.github.rosemoe.sora.editor.ts.spans.DefaultSpanFactory
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.SpanFactory
 import io.github.rosemoe.sora.lang.styling.Styles
-import io.github.rosemoe.sora.lang.styling.span.SpanColorResolver
 import io.github.rosemoe.sora.lang.styling.span.SpanConstColorResolver
-import io.github.rosemoe.sora.lang.styling.span.SpanExt
 import io.github.rosemoe.sora.lang.styling.span.SpanExtAttrs
 import io.github.rosemoe.sora.text.ContentReference
+import org.slf4j.LoggerFactory
 
 /**
  * [TsSpanFactory] for tree sitter languages.
@@ -49,7 +47,7 @@ class TreeSitterSpanFactory(
 
   companion object {
 
-    private val log = ILogger.newInstance("TreeSitterSpanFactory")
+    private val log = LoggerFactory.getLogger(TreeSitterSpanFactory::class.java)
 
     @JvmStatic
     private val HEX_REGEX = "#\\b([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\\b".toRegex()
@@ -103,7 +101,7 @@ class TreeSitterSpanFactory(
       val color = try {
         parseHexColor(result.groupValues[1]).toInt()
       } catch (e: Exception) {
-        log.error("An error occurred parsing hex color. text=$text", e)
+        log.error("An error occurred parsing hex color. text={}", text, e)
         return@forEach
       }
 

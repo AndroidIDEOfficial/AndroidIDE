@@ -18,9 +18,9 @@
 package com.itsaky.androidide.xml.internal.widgets
 
 import com.google.auto.service.AutoService
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,13 +33,13 @@ import java.util.concurrent.ConcurrentHashMap
 class DefaultWidgetTableRegistry : WidgetTableRegistry {
 
   private val tables = ConcurrentHashMap<String, WidgetTable>()
-  private val log = ILogger.newInstance(WidgetTableRegistry::class.java.simpleName)
 
-  override var isLoggingEnabled: Boolean
-    get() = log.isEnabled
-    set(value) {
-      log.isEnabled = value
-    }
+  companion object {
+
+    private val log = LoggerFactory.getLogger(DefaultWidgetTableRegistry::class.java)
+  }
+
+  override var isLoggingEnabled: Boolean = true
 
   override fun forPlatformDir(platform: File): WidgetTable? {
     var table = tables[platform.path]
@@ -55,11 +55,16 @@ class DefaultWidgetTableRegistry : WidgetTableRegistry {
   private fun createTable(platformDir: File): WidgetTable? {
     val widgets = File(platformDir, "data/widgets.txt")
     if (!widgets.exists() || !widgets.isFile) {
-      log.warn("'widgets.txt' file does not exist in ${platformDir.absolutePath}/data directory")
+      if (isLoggingEnabled) {
+        log.warn("'widgets.txt' file does not exist in {}/data directory", platformDir.absolutePath)
+      }
       return null
     }
 
-    log.info("Creating widget table for platform dir: $platformDir")
+    if (isLoggingEnabled) {
+      log.info("Creating widget table for platform dir: {}", platformDir)
+    }
+
     return widgets.inputStream().bufferedReader().useLines {
       val table = DefaultWidgetTable()
       it.forEach { line ->

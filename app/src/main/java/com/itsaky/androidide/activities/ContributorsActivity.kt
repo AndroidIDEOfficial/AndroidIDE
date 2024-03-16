@@ -26,7 +26,6 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.ContributorsGridAdapter
 import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityContributorsBinding
-import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.getConnectionInfo
 import com.itsaky.androidide.viewmodel.ContributorsViewModel
 

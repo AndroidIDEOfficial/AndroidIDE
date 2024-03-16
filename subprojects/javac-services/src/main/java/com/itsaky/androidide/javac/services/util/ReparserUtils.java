@@ -18,10 +18,11 @@
 package com.itsaky.androidide.javac.services.util;
 
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.javac.services.visitors.UnEnter;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.VMUtils;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
 import openjdk.tools.javac.comp.Enter;
 import openjdk.tools.javac.parser.JavacParser;
 import openjdk.tools.javac.parser.LazyDocCommentTable;
@@ -29,17 +30,15 @@ import openjdk.tools.javac.tree.DocCommentTable;
 import openjdk.tools.javac.tree.JCTree;
 import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.Position;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Akash Yadav
  */
 public class ReparserUtils {
 
-  private static final ILogger LOG = ILogger.newInstance("ReparserUtils");
+  private static final Logger LOG = LoggerFactory.getLogger(ReparserUtils.class);
 
   private static final boolean isAndroid = !VMUtils.isJvm();
   private static boolean needUnenterScanner = true;

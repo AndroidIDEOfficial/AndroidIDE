@@ -25,7 +25,8 @@ import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
-
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.Content;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -36,9 +37,6 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.Content;
-
 /**
  * This class provides API to search in files recursively
  *
@@ -46,15 +44,13 @@ import io.github.rosemoe.sora.text.Content;
  */
 public class RecursiveFileSearcher {
 
-  private static final ILogger logger = ILogger.newInstance("RecursiveFileSearcher");
-
   /**
    * Search the given text in files recursively in given search directories
    *
-   * @param text Text to search
-   * @param exts Extentions of file to search. Maybe null.
+   * @param text       Text to search
+   * @param exts       Extentions of file to search. Maybe null.
    * @param searchDirs Directories to search in. Subdirectories will be included
-   * @param callback A listener that will listen to the search result
+   * @param callback   A listener that will listen to the search result
    */
   public static void searchRecursiveAsync(
       String text, List<String> exts, List<File> searchDirs, Callback callback) {
@@ -97,9 +93,13 @@ public class RecursiveFileSearcher {
             FileUtils.listFilesInDirWithFilter(dir, new MultiFileFilter(exts), true);
         for (int j = 0; files != null && j < files.size(); j++) {
           final File file = files.get(j);
-          if (file.isDirectory()) continue;
+          if (file.isDirectory()) {
+            continue;
+          }
           final String text = FileIOUtils.readFile2String(file);
-          if (text == null || text.trim().isEmpty()) continue;
+          if (text == null || text.trim().isEmpty()) {
+            continue;
+          }
           final Content content = new Content(text);
           final List<SearchResult> ranges = new ArrayList<>();
           Matcher matcher = Pattern.compile(Pattern.quote(this.query)).matcher(text);
@@ -157,6 +157,7 @@ public class RecursiveFileSearcher {
   }
 
   public static interface Callback {
+
     void onResult(Map<File, List<SearchResult>> results);
   }
 }

@@ -33,12 +33,11 @@ import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
-import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.mockk.every
 import io.mockk.mockkStatic
@@ -49,6 +48,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Path
 
@@ -68,9 +69,10 @@ abstract class LSPTest {
   var file: Path? = null
   var contents: StringBuilder? = null
 
-  protected val log = ILogger.newInstance(javaClass.simpleName)
-
   companion object {
+
+    @JvmStatic
+    protected val log: Logger = LoggerFactory.getLogger(LSPTest::class.java)
 
     @JvmStatic
     protected var isInitialized: Boolean = false

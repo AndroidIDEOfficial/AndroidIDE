@@ -35,6 +35,10 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Queue;
+import java.util.function.Consumer;
 import openjdk.tools.javac.comp.AttrContext;
 import openjdk.tools.javac.comp.Env;
 import openjdk.tools.javac.main.JavaCompiler;
@@ -42,11 +46,6 @@ import openjdk.tools.javac.tree.JCTree;
 import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.List;
 import openjdk.tools.javac.util.Pair;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Queue;
-import java.util.function.Consumer;
 
 /**
  * @author lahvac

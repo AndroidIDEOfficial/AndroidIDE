@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.contributors
 
-import com.itsaky.androidide.utils.ILogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 internal object Contributors {
 
-  val log: ILogger = ILogger.newInstance("Contributors")
+  private val log = LoggerFactory.getLogger(Contributors::class.java)
 
   @JvmStatic
   suspend inline fun <reified Service, reified Model : Contributor> getAllContributors(

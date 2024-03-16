@@ -36,11 +36,11 @@ package com.itsaky.androidide.utils;
 
 import static com.itsaky.androidide.utils.LogUtils.preProcessLogTag;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.itsaky.androidide.buildinfo.BuildInfo;
 import java.util.Map;
-import java.util.Objects;
 import java.util.WeakHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Logger for the IDE.
@@ -52,11 +52,9 @@ import java.util.WeakHashMap;
  */
 public abstract class ILogger {
 
-  public static final String DEFAULT_TAG = "AndroidIDE";
-  public static final String MSG_SEPARATOR = " "; // Separate messages with a space.
+  public static final Logger ROOT = LoggerFactory.getLogger(BuildInfo.PACKAGE_NAME);
 
-  private static final List<LogListener> logListeners = new ArrayList<>();
-  private static final Map<String, ILogger> cachedLoggers = new WeakHashMap<>();
+  public static final String MSG_SEPARATOR = " "; // Separate messages with a space.
 
   protected final String TAG;
 
@@ -64,173 +62,6 @@ public abstract class ILogger {
 
   protected ILogger(String tag) {
     TAG = preProcessLogTag(tag);
-  }
-
-  public static ILogger instance() {
-    return cachedLoggers.computeIfAbsent(DEFAULT_TAG, ILogger::createInstance);
-  }
-
-  private static ILogger createInstance(String tag) {
-    return cachedLoggers.computeIfAbsent(tag, ILogger::newPlatformDependentLogger);
-  }
-
-  private static ILogger newPlatformDependentLogger(String tag) {
-    return LogUtils.isJvm() ? new JvmLogger(tag) : new AndroidLogger(tag);
-  }
-
-  public static void addLogListener(LogListener listener) {
-    logListeners.add(Objects.requireNonNull(listener));
-  }
-
-  public static void removeLogListener(LogListener listener) {
-    logListeners.remove(Objects.requireNonNull(listener));
-  }
-
-  public static ILogger newInstance(String tag) {
-    return createInstance(tag);
-  }
-
-  /**
-   * Log error messages.
-   *
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger error(Object... messages) {
-    return log(Level.ERROR, messages);
-  }
-
-  /**
-   * Log messages with the given log level.
-   *
-   * @param level    The log level of the messages.
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger log(Level level, Object... messages) {
-    logAndNotify(level, generateMessage(messages));
-    return this;
-  }
-
-  private void logAndNotify(Level level, String msg) {
-    if (!isEnabled()) {
-      // logger is disabled
-      return;
-    }
-
-    doLog(level, msg);
-    for (final var listener : logListeners) {
-      listener.log(level, TAG, msg);
-    }
-  }
-
-  /**
-   * Log the message to an appropriate stream where the user can see the log messages.
-   *
-   * @param level   The log level for this message.
-   * @param message The full generated message for this log. Might contain new lines.
-   * @see Level#DEBUG
-   * @see Level#ERROR
-   * @see Level#WARNING
-   * @see Level#VERBOSE
-   * @see Level#INFO
-   */
-  protected abstract void doLog(Level level, String message);
-
-  protected String generateMessage(Object... messages) {
-    StringBuilder sb = new StringBuilder();
-    if (messages == null) {
-      return "null";
-    }
-
-    for (Object msg : messages) {
-      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-      sb.append(msg instanceof Throwable ? LogUtils.getFullStackTrace(((Throwable) msg)) : msg);
-      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-    }
-
-    return sb.toString();
-  }
-
-  /**
-   * Log warning messages.
-   *
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger warn(Object... messages) {
-    return log(Level.WARNING, messages);
-  }
-
-  /**
-   * Log verbose messages.
-   *
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger verbose(Object... messages) {
-    return log(Level.VERBOSE, messages);
-  }
-
-  /**
-   * Log information messages.
-   *
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger info(Object... messages) {
-    return log(Level.INFO, messages);
-  }
-
-  /**
-   * Logs the name of method and class which calls this method.
-   */
-  public void logThis() {
-    debug(getCallerClassDescription());
-  }
-
-  /**
-   * Log debug messages.
-   *
-   * @param messages The messages to log.
-   * @return This logger instance.
-   */
-  public ILogger debug(Object... messages) {
-    return log(Level.DEBUG, messages);
-  }
-
-  /**
-   * Enable or disable this logger instance.
-   *
-   * @param enabled Whether this logger is enabled.
-   * @see #isEnabled()
-   */
-  public void setEnabled(boolean enabled) {
-    isEnabled = enabled;
-  }
-
-  /**
-   * @return Whether this logger is enabled.
-   * @see #setEnabled(boolean)
-   */
-  public boolean isEnabled() {
-    return isEnabled;
-  }
-
-  protected String getCallerClassDescription() {
-    final var elements = Thread.currentThread().getStackTrace();
-    for (int i = 1, elementsLength = elements.length; i < elementsLength; i++) {
-      final var element = elements[i];
-      final var klass = element.getClassName();
-      final var method = element.getMethodName();
-      if (ILogger.class.getName().equals(klass) || klass.contains("java.lang.Thread")) {
-        continue;
-      }
-
-      return String.format("%s [%s]", method, klass);
-    }
-
-    return "<Logger> <Cannot get caller information>";
   }
 
   /**
@@ -252,6 +83,11 @@ public abstract class ILogger {
 
     public static Level forChar(char c) {
       c = Character.toUpperCase(c);
+      if (c == 'T') {
+        // trace
+        return VERBOSE;
+      }
+
       for (Level value : values()) {
         if (value.levelChar == c) {
           return value;

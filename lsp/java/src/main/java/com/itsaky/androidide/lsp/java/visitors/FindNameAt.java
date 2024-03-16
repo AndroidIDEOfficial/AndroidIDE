@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java.visitors;
 
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
+import jdkx.lang.model.element.Name;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.IdentifierTree;
@@ -33,8 +34,6 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
-
-import jdkx.lang.model.element.Name;
 
 public class FindNameAt extends TreePathScanner<TreePath, Long> {
 

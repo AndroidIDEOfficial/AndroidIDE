@@ -29,16 +29,21 @@ import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class AddThrowsAction : BaseJavaCodeAction() {
+
   override val id = "ide.editor.lsp.java.diagnostics.addThrows"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override val titleTextRes: Int = R.string.action_add_throws
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(AddThrowsAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

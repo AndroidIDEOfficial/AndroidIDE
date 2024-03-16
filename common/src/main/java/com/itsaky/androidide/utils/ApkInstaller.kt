@@ -27,6 +27,7 @@ import android.content.pm.PackageInstaller.SessionCallback
 import android.text.TextUtils
 import androidx.core.content.FileProvider
 import com.itsaky.androidide.tasks.executeAsync
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 
@@ -37,7 +38,7 @@ import java.io.IOException
  */
 object ApkInstaller {
 
-  private val log = ILogger.newInstance("ApkInstaller")
+  private val log = LoggerFactory.getLogger(ApkInstaller::class.java)
   private const val DEBUG_FALLBACK_INSTALLER = false
 
   /**
@@ -51,11 +52,11 @@ object ApkInstaller {
   @JvmStatic
   fun installApk(context: Context, sender: IntentSender, apk: File, callback: SessionCallback) {
     if (!apk.exists() || !apk.isFile || apk.extension != "apk") {
-      log.error("File is not an APK:", apk)
+      log.error("File is not an APK: {}", apk)
       return
     }
 
-    log.info("Installing APK:", apk)
+    log.info("Installing APK: {}", apk)
 
     if (isMiui() || DEBUG_FALLBACK_INSTALLER) {
       log.warn(

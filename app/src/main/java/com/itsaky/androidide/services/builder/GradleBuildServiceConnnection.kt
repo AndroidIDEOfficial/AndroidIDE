@@ -20,7 +20,7 @@ package com.itsaky.androidide.services.builder
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 /**
  * [ServiceConnection] for [GradleBuildService].
@@ -28,15 +28,19 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class GradleBuildServiceConnnection : ServiceConnection {
-  
+
   internal var onConnected: ((GradleBuildService) -> Unit)? = null
-  private val log = ILogger.newInstance("GradleBuildServiceConnnection")
-  
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(GradleBuildServiceConnnection::class.java)
+  }
+
   override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
     val serviceBinder = service as GradleServiceBinder
     onConnected?.invoke(serviceBinder.service!!)
   }
-  
+
   override fun onServiceDisconnected(name: ComponentName?) {
     onConnected = null
     log.info("Disconnected from Gradle build service")

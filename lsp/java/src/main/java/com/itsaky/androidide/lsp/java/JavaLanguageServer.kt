@@ -63,7 +63,6 @@ import com.itsaky.androidide.projects.IProjectManager.Companion.getInstance
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +71,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.util.Objects
 
@@ -98,7 +98,7 @@ class JavaLanguageServer : ILanguageServer {
   companion object {
 
     const val SERVER_ID = "ide.lsp.java"
-    private val LOG = ILogger.newInstance("JavaLanguageServer")
+    private val log = LoggerFactory.getLogger(JavaLanguageServer::class.java)
   }
 
   init {
@@ -168,7 +168,7 @@ class JavaLanguageServer : ILanguageServer {
     }
 
     if (diagnosticProvider!!.isAnalyzing()) {
-      LOG.warn("Cancelling source code analysis due to completion request")
+      log.warn("Cancelling source code analysis due to completion request")
       diagnosticProvider.cancel()
     }
 

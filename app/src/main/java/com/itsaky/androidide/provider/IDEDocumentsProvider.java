@@ -27,19 +27,17 @@ import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 import android.webkit.MimeTypeMap;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A document provider for the Storage Access Framework which exposes the files in the $HOME/
@@ -53,36 +51,36 @@ import java.util.Locale;
  * http://developer.android.com/guide/topics/providers/document-provider.html#43
  *
  * @see <a
- *     href="https://github.com/termux/termux-app/blob/master/app/src/main/java/com/termux/filepicker/TermuxDocumentsProvider.java">TermuxDocumentsProvider</a>
+ * href="https://github.com/termux/termux-app/blob/master/app/src/main/java/com/termux/filepicker/TermuxDocumentsProvider.java">TermuxDocumentsProvider</a>
  */
 public class IDEDocumentsProvider extends DocumentsProvider {
 
   private static final String ALL_MIME_TYPES = "*/*";
-  private static final ILogger LOG = ILogger.newInstance("IDEDocumentsProvider");
+  private static final Logger LOG = LoggerFactory.getLogger(IDEDocumentsProvider.class);
   private static final File BASE_DIR = getBaseDir();
   // The default columns to return information about a root if no specific
   // columns are requested in a query.
   private static final String[] DEFAULT_ROOT_PROJECTION =
-      new String[] {
-        Root.COLUMN_ROOT_ID,
-        Root.COLUMN_MIME_TYPES,
-        Root.COLUMN_FLAGS,
-        Root.COLUMN_ICON,
-        Root.COLUMN_TITLE,
-        Root.COLUMN_SUMMARY,
-        Root.COLUMN_DOCUMENT_ID,
-        Root.COLUMN_AVAILABLE_BYTES
+      new String[]{
+          Root.COLUMN_ROOT_ID,
+          Root.COLUMN_MIME_TYPES,
+          Root.COLUMN_FLAGS,
+          Root.COLUMN_ICON,
+          Root.COLUMN_TITLE,
+          Root.COLUMN_SUMMARY,
+          Root.COLUMN_DOCUMENT_ID,
+          Root.COLUMN_AVAILABLE_BYTES
       };
   // The default columns to return information about a document if no specific
   // columns are requested in a query.
   private static final String[] DEFAULT_DOCUMENT_PROJECTION =
-      new String[] {
-        Document.COLUMN_DOCUMENT_ID,
-        Document.COLUMN_MIME_TYPE,
-        Document.COLUMN_DISPLAY_NAME,
-        Document.COLUMN_LAST_MODIFIED,
-        Document.COLUMN_FLAGS,
-        Document.COLUMN_SIZE
+      new String[]{
+          Document.COLUMN_DOCUMENT_ID,
+          Document.COLUMN_MIME_TYPE,
+          Document.COLUMN_DISPLAY_NAME,
+          Document.COLUMN_LAST_MODIFIED,
+          Document.COLUMN_FLAGS,
+          Document.COLUMN_SIZE
       };
 
   @NonNull
@@ -263,8 +261,8 @@ public class IDEDocumentsProvider extends DocumentsProvider {
    * Add a representation of a file to a cursor.
    *
    * @param result the cursor to modify
-   * @param docId the document ID representing the desired file (may be null if given file)
-   * @param file the File object representing the desired file (may be null if given docID)
+   * @param docId  the document ID representing the desired file (may be null if given file)
+   * @param file   the File object representing the desired file (may be null if given docID)
    */
   private void includeFile(MatrixCursor result, String docId, File file)
       throws FileNotFoundException {
@@ -276,15 +274,21 @@ public class IDEDocumentsProvider extends DocumentsProvider {
 
     int flags = 0;
     if (file.isDirectory()) {
-      if (file.canWrite()) flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+      if (file.canWrite()) {
+        flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+      }
     } else if (file.canWrite()) {
       flags |= Document.FLAG_SUPPORTS_WRITE;
     }
-    if (file.getParentFile().canWrite()) flags |= Document.FLAG_SUPPORTS_DELETE;
+    if (file.getParentFile().canWrite()) {
+      flags |= Document.FLAG_SUPPORTS_DELETE;
+    }
 
     final String displayName = file.getName();
     final String mimeType = getMimeType(file);
-    if (mimeType.startsWith("image/")) flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
+    if (mimeType.startsWith("image/")) {
+      flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
+    }
 
     final MatrixCursor.RowBuilder row = result.newRow();
     row.add(Document.COLUMN_DOCUMENT_ID, docId);
@@ -296,10 +300,14 @@ public class IDEDocumentsProvider extends DocumentsProvider {
     row.add(Document.COLUMN_ICON, R.mipmap.ic_launcher);
   }
 
-  /** Get the file given a document id (the reverse of {@link #getDocIdForFile(File)}). */
+  /**
+   * Get the file given a document id (the reverse of {@link #getDocIdForFile(File)}).
+   */
   private static File getFileForDocId(String docId) throws FileNotFoundException {
     final File f = new File(docId);
-    if (!f.exists()) throw new FileNotFoundException(f.getAbsolutePath() + " not found");
+    if (!f.exists()) {
+      throw new FileNotFoundException(f.getAbsolutePath() + " not found");
+    }
     return f;
   }
 
@@ -312,7 +320,9 @@ public class IDEDocumentsProvider extends DocumentsProvider {
       if (lastDot >= 0) {
         final String extension = name.substring(lastDot + 1).toLowerCase(Locale.ROOT);
         final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if (mime != null) return mime;
+        if (mime != null) {
+          return mime;
+        }
       }
       return "application/octet-stream";
     }

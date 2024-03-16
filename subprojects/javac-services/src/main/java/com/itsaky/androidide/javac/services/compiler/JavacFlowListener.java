@@ -18,10 +18,8 @@
 package com.itsaky.androidide.javac.services.compiler;
 
 import androidx.annotation.NonNull;
-
-import openjdk.tools.javac.util.Context;
-
 import jdkx.tools.JavaFileObject;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author Akash Yadav

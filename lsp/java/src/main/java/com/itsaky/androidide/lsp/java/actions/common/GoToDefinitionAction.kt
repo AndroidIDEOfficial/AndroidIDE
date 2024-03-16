@@ -19,11 +19,9 @@ package com.itsaky.androidide.lsp.java.actions.common
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
-import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.api.ILspEditor
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 
@@ -34,11 +32,11 @@ import java.io.File
  * @author Akash Yadav
  */
 class GoToDefinitionAction : BaseJavaCodeAction() {
+
   override val titleTextRes: Int = R.string.action_goto_definition
   override val id: String = "ide.editor.lsp.java.gotoDefinition"
   override var label: String = ""
   override var requiresUIThread: Boolean = true
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

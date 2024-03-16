@@ -35,7 +35,6 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.itsaky.androidide.utils.ILogger;
 import openjdk.tools.javac.parser.JavacParser;
 import openjdk.tools.javac.parser.Lexer;
 import openjdk.tools.javac.parser.ParserFactory;
@@ -64,8 +63,6 @@ public class NBParserFactory extends ParserFactory {
   public static final String KEEP_COMMENTS_OVERRIDE = "keepCommentsOverride";
   public static final String KEEP_COMMENTS_OVERRIDE_KEEP = "keep";
   public static final String KEEP_COMMENTS_OVERRIDE_IGNORE = "ignore";
-
-  private static final ILogger LOG = ILogger.newInstance("NBParserFactory");
 
   protected final ScannerFactory scannerFactory;
   protected final Names names;

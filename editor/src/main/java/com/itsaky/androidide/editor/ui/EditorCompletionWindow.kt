@@ -22,11 +22,11 @@ import android.net.Uri
 import android.widget.ListView
 import com.itsaky.androidide.lsp.util.DocumentationReferenceProvider
 import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.KeyboardUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
+import org.slf4j.LoggerFactory
 import java.lang.ref.WeakReference
 import kotlin.math.min
 
@@ -39,7 +39,11 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
 
   private var listView: ListView? = null
   private val items: MutableList<CompletionItem> = mutableListOf()
-  private val log = ILogger.newInstance(javaClass.simpleName)
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(EditorCompletionWindow::class.java)
+  }
 
   init {
     setLayout(EditorCompletionLayout())
@@ -80,7 +84,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     return try {
       super.select(pos)
     } catch (e: Throwable) {
-      log.warn("Unable to select completion item at $pos", e)
+      log.warn("Unable to select completion item at {}", pos, e)
       false
     }
   }
@@ -153,8 +157,8 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
           }
 
           if (adapter!!.count >= 1
-              && KeyboardUtils.isHardKeyboardConnected(context)
-            ) {
+            && KeyboardUtils.isHardKeyboardConnected(context)
+          ) {
             currentSelection = 0
           }
         },

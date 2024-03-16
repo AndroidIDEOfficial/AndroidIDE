@@ -17,14 +17,12 @@
  */
 package com.itsaky.androidide.adapters;
 
-import static com.itsaky.androidide.preferences.utils.EditorUtilKt.getIndentationString;
 import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
@@ -32,7 +30,6 @@ import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.models.Symbol;
 import io.github.rosemoe.sora.widget.SelectionMovement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 

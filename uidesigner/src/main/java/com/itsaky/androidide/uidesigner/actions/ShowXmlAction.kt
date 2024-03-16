@@ -27,7 +27,6 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.ShowXmlActivity
 import com.itsaky.androidide.uidesigner.utils.ViewToXml
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 
 /**
@@ -38,8 +37,6 @@ import com.itsaky.androidide.utils.flashError
 class ShowXmlAction(context: Context) : UiDesignerAction() {
 
   override val id: String = "ide.uidesigner.showXml"
-
-  private val log = ILogger.newInstance("ShowXmlAction")
 
   init {
     label = context.getString(R.string.xml)

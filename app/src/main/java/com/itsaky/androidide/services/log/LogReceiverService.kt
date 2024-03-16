@@ -25,7 +25,7 @@ import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.preferences.logsenderEnabled
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -42,9 +42,10 @@ class LogReceiverService : Service() {
   private val isBoundToConsumer = AtomicBoolean(false)
 
   private val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
-  private val log = ILogger.newInstance("LogReceiverService")
 
   companion object {
+
+    private val log = LoggerFactory.getLogger(LogReceiverService::class.java)
 
     internal const val ACTION_CONNECT_LOG_CONSUMER = "com.itsaky.androidide.logrecevier.CONNECT_LOG_CONSUMER"
     internal const val ACTION_CONNECTION_UPDATE = "com.itsaky.androidide.logreceiver.CONNECTION_UPDATE"
@@ -62,7 +63,7 @@ class LogReceiverService : Service() {
   }
 
   override fun onBind(intent: Intent?): IBinder? {
-    log.debug("Received bind request: $intent")
+    log.debug("Received bind request: {}", intent)
 
     if (!logsenderEnabled) {
       log.debug("Rejecting bind request. LogReceiver is disabled.")
@@ -83,7 +84,7 @@ class LogReceiverService : Service() {
     }
 
     if (intent?.action != LogSender.SERVICE_ACTION) {
-      log.debug("Rejecting bind request: action=${intent?.action}")
+      log.debug("Rejecting bind request: action={}", intent?.action)
       return null
     }
 

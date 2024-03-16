@@ -18,11 +18,9 @@
 package com.itsaky.androidide.projects.util;
 
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.models.ActiveJavaDocument;
 import com.itsaky.androidide.utils.Cache;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;

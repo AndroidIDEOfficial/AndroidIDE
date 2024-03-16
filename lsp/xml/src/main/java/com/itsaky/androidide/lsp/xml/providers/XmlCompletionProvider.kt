@@ -57,11 +57,11 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.lsp.xml.utils.forTransitionAttr
 import com.itsaky.androidide.utils.CharSequenceReader
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import io.github.rosemoe.sora.text.ContentReference
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import org.slf4j.LoggerFactory
 import java.io.Reader
 import kotlin.io.path.name
 
@@ -73,11 +73,14 @@ import kotlin.io.path.name
 class XmlCompletionProvider(settings: IServerSettings) :
   AbstractServiceProvider(), ICompletionProvider {
 
+  companion object {
+
+    private val log = LoggerFactory.getLogger(XmlCompletionProvider::class.java)
+  }
+
   init {
     super.applySettings(settings)
   }
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun complete(params: CompletionParams): CompletionResult {
     return try {
@@ -95,7 +98,8 @@ class XmlCompletionProvider(settings: IServerSettings) :
   private fun doComplete(params: CompletionParams): CompletionResult {
     val contents = toString(contents = params.requireContents())
     val document =
-      DOMParser.getInstance().parse(contents, "http://schemas.android.com/apk/res/android", URIResolverExtensionManager())
+      DOMParser.getInstance().parse(contents, "http://schemas.android.com/apk/res/android",
+        URIResolverExtensionManager())
     val type = XmlUtils.getNodeType(document, params.position.requireIndex())
 
     if (type == UNKNOWN) {
@@ -114,7 +118,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
       getCompleter(pathData, type)
         ?: run {
           log.error(
-            "No completer available for resource type '${pathData.type}' and node type '$type'"
+            "No completer available for resource type '{}' and node type '{}'", pathData.type, type
           )
           return EMPTY
         }
@@ -146,6 +150,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (type) {
       ATTRIBUTE ->
         InheritingAttrCompletionProvider(::forTransitionAttr, TransitionTagTransformer, this)
+
       ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
       else -> null
     }

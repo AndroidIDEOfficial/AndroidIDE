@@ -18,10 +18,6 @@ package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
-import com.itsaky.androidide.preferences.utils.EditorUtilKt;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
@@ -31,17 +27,12 @@ import com.itsaky.androidide.lsp.java.visitors.FindAnonymousTypeDeclaration;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import com.squareup.javapoet.MethodSpec;
-import openjdk.source.tree.ClassTree;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.source.tree.ImportTree;
-import openjdk.source.tree.Tree;
-import openjdk.source.util.Trees;
-import openjdk.tools.javac.util.JCDiagnostic;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,17 +42,24 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import jdkx.lang.model.element.Element;
 import jdkx.lang.model.element.ElementKind;
 import jdkx.lang.model.element.ExecutableElement;
 import jdkx.lang.model.element.Modifier;
 import jdkx.lang.model.element.TypeElement;
 import jdkx.lang.model.util.Elements;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.ImportTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.Trees;
+import openjdk.tools.javac.util.JCDiagnostic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImplementAbstractMethods extends Rewrite {
 
-  private static final ILogger LOG = ILogger.newInstance("main");
+  private static final Logger LOG = LoggerFactory.getLogger(ImplementAbstractMethods.class);
   private final String className;
   private final String classFile;
   private final long position;
@@ -88,8 +86,8 @@ public class ImplementAbstractMethods extends Rewrite {
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final Path file = compiler.findTypeDeclaration(this.classFile);
     if (file == CompilerProvider.NOT_FOUND) {
-      LOG.warn(
-          "Unable to find source file for class:", this.className, "classFile=", this.classFile);
+      LOG.warn("Unable to find source file for class: {} classFile={}", this.className,
+          this.classFile);
       return CANCELLED;
     }
 

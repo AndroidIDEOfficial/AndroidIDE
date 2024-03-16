@@ -24,8 +24,9 @@ import com.itsaky.androidide.lsp.java.providers.DefinitionProvider
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ICancelChecker
-import com.itsaky.androidide.utils.ILogger
 import jdkx.lang.model.element.Element
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 /**
@@ -41,10 +42,14 @@ abstract class IJavaDefinitionProvider(
   cancelChecker: ICancelChecker
 ) : BaseJavaServiceProvider(completingFile, compiler, settings), ICancelChecker by cancelChecker {
 
-  protected val log = ILogger.newInstance(javaClass.simpleName)
-
   protected val line = position.line
   protected val column = position.column
+
+  companion object {
+
+    @JvmStatic
+    protected val log: Logger = LoggerFactory.getLogger(IJavaDefinitionProvider::class.java)
+  }
 
   /**
    * Finds the definition for the given element.

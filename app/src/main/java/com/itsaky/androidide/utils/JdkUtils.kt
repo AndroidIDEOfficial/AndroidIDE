@@ -23,6 +23,7 @@ import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.models.JdkDistribution
 import com.itsaky.androidide.shell.executeProcessAsync
 import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Files
 
@@ -33,7 +34,7 @@ import java.nio.file.Files
  */
 object JdkUtils {
 
-  private val log = ILogger.newInstance("JdkUtils")
+  private val log = LoggerFactory.getLogger(JdkUtils::class.java)
 
   /**
    * Finds the available JDK installations and returns the JAVA_HOME for each installation.
@@ -65,7 +66,7 @@ object JdkUtils {
 
           return@mapNotNull getDistFromJavaBin(java)
         } ?: run {
-          log.error("Failed to list files in $optDir")
+          log.error("Failed to list files in {}", optDir)
           emptyList()
         }
       }
@@ -92,12 +93,12 @@ object JdkUtils {
   fun getDistFromJavaBin(java: File): JdkDistribution? {
     if (!java.exists() || !java.isFile || !java.canExecute()) {
       log.error(
-        "Failed to lookup JDK installation. File '$java' does not exist or cannot be executed.")
+        "Failed to lookup JDK installation. File '{}' does not exist or cannot be executed.", java)
       return null
     }
 
     val properties = readProperties(java) ?: run {
-      log.error("Failed to retrieve Java properties from java binary: '$java'")
+      log.error("Failed to retrieve Java properties from java binary: '{}'", java)
       return null
     }
 
@@ -107,7 +108,7 @@ object JdkUtils {
   @VisibleForTesting
   internal fun readDistFromProps(properties: String): JdkDistribution? {
     val javaHome = Regex("java\\.home\\s*=\\s*(.*)").find(properties)?.groupValues?.get(1) ?: run {
-      log.error("Failed to determine property 'java.home'. Properties:", properties)
+      log.error("Failed to determine property 'java.home'. Properties: {}", properties)
       return null
     }
 
@@ -115,11 +116,11 @@ object JdkUtils {
 
     val javaVersion = Regex("java\\.version\\s*=\\s*(.*)").find(properties)?.groupValues?.get(1)
       ?: run {
-        log.error("Failed to determine property 'java.version'. Properties:", properties)
+        log.error("Failed to determine property 'java.version'. Properties: {}", properties)
         return null
       }
 
-    log.debug("Found java.version=${javaVersion}")
+    log.debug("Found java.version={}", javaVersion)
 
     return JdkDistribution(javaVersion, javaHome)
   }
@@ -149,7 +150,8 @@ object JdkUtils {
 
     if (!canExecute(shell)) {
       log.warn(
-        "Unable to determine JDK installations. Command ${shell.absolutePath} not found or is not executable.")
+        "Unable to determine JDK installations. Command {} not found or is not executable.",
+        shell.absolutePath)
       return null
     }
 

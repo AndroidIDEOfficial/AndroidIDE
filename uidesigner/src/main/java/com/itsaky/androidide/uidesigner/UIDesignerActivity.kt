@@ -40,8 +40,8 @@ import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 import com.itsaky.androidide.uidesigner.utils.ViewToXml
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -52,7 +52,6 @@ import java.io.File
 class UIDesignerActivity : BaseIDEActivity() {
 
   private var binding: ActivityUiDesignerBinding? = null
-  private val log = ILogger.newInstance("UIDesignerActivity")
   private val viewModel by viewModels<WorkspaceViewModel>()
 
   private val workspace: DesignerWorkspaceFragment?
@@ -96,21 +95,23 @@ class UIDesignerActivity : BaseIDEActivity() {
       }
     }
 
+  companion object {
+
+    private val log = LoggerFactory.getLogger(UIDesignerActivity::class.java)
+
+    const val EXTRA_FILE = "layout_file"
+    const val RESULT_GENERATED_XML = "ide.uidesigner.generatedXml"
+  }
+
   private fun onXmlGenerated(xml: String) {
     setResult(RESULT_OK, Intent().apply { putExtra(RESULT_GENERATED_XML, xml) })
     finish()
   }
 
   private fun onFailedToReturnXml(reason: String) {
-    log.error("Failed to generate XML code because '$reason'")
+    log.error("Failed to generate XML code because '{}'", reason)
     setResult(RESULT_CANCELED)
     finish()
-  }
-
-  companion object {
-
-    const val EXTRA_FILE = "layout_file"
-    const val RESULT_GENERATED_XML = "ide.uidesigner.generatedXml"
   }
 
   override fun bindLayout(): View {

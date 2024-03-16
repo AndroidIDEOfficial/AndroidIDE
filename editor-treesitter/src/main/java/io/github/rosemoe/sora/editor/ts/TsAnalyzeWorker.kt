@@ -25,7 +25,6 @@ import com.itsaky.androidide.treesitter.api.TreeSitterInputEdit
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.data.ObjectAllocator
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.analysis.StyleReceiver
@@ -40,7 +39,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import java.lang.RuntimeException
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -58,7 +57,7 @@ internal class TsAnalyzeWorker(
 
   companion object {
 
-    private val log = ILogger.newInstance("TsAnalyzeWorker")
+    private val log = LoggerFactory.getLogger(TsAnalyzeWorker::class.java)
   }
 
   var stylesReceiver: StyleReceiver? = null
@@ -151,7 +150,11 @@ internal class TsAnalyzeWorker(
       } else ""
       val pendingMsgs = messageChannel.size
       log.error(
-        "AnalyzeWorker[lang=$langName, message=${msgType}${msgTypeSuffix}], pendingMsgs=$pendingMsgs] crashed",
+        "AnalyzeWorker[lang={}, message={}{}], pendingMsgs={}] crashed",
+        langName,
+        msgType,
+        msgTypeSuffix,
+        pendingMsgs,
         err)
     }
   }

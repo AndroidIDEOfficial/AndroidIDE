@@ -17,13 +17,12 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
-import openjdk.source.tree.ClassTree;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.source.util.TreeScanner;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreeScanner;
 
 public class FindTypeDeclarations extends TreeScanner<Void, List<String>> {
   private List<CharSequence> qualifiedName = new ArrayList<>();

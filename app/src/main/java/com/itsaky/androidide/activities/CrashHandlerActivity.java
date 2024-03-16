@@ -19,7 +19,6 @@ package com.itsaky.androidide.activities;
 
 import android.os.Bundle;
 import android.view.View;
-
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityCrashHandlerBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;

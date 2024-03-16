@@ -30,12 +30,6 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.ClassTrie.Node
-import openjdk.source.util.TreePath
-import openjdk.tools.javac.api.JavacTrees
-import openjdk.tools.javac.code.Symbol.MethodSymbol
-import openjdk.tools.javac.model.JavacTypes
-import openjdk.tools.javac.tree.JCTree.JCImport
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind
 import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
@@ -50,6 +44,12 @@ import jdkx.lang.model.element.ElementKind.METHOD
 import jdkx.lang.model.element.ElementKind.STATIC_INIT
 import jdkx.lang.model.element.Modifier.STATIC
 import jdkx.lang.model.element.TypeElement
+import openjdk.source.util.TreePath
+import openjdk.tools.javac.api.JavacTrees
+import openjdk.tools.javac.code.Symbol.MethodSymbol
+import openjdk.tools.javac.model.JavacTypes
+import openjdk.tools.javac.tree.JCTree.JCImport
+import java.nio.file.Path
 
 /**
  * Provides completions for imports.
@@ -78,7 +78,7 @@ class ImportCompletionProvider(
       return CompletionResult.EMPTY
     }
 
-    log.info("...complete import for path:", importPath)
+    log.info("...complete import for path: {}", importPath)
 
     val names: MutableSet<String> = HashSet()
     val list = mutableListOf<CompletionItem>()

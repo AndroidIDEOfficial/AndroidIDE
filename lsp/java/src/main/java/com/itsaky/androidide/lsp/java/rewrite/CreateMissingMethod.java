@@ -32,7 +32,6 @@ import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.preferences.utils.EditorUtilKt;
-import com.itsaky.androidide.utils.ILogger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -53,10 +52,12 @@ import openjdk.source.tree.MethodTree;
 import openjdk.source.tree.Tree;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreateMissingMethod extends Rewrite {
 
-  private static final ILogger LOG = ILogger.newInstance("main");
+  private static final Logger LOG = LoggerFactory.getLogger(CreateMissingMethod.class);
   private static final String TODO_COMMENT = "// TODO: Implement this method";
   final Path file;
   final int position;
@@ -189,7 +190,7 @@ public class CreateMissingMethod extends Rewrite {
   ) {
     String methodName = extractMethodName(call.getMethodSelect());
     String returnType = type == null || "(ERROR)".equals(type) ? "void" : type;
-    LOG.info("Creating missing method '" + methodName + "' with return type: " + returnType);
+    LOG.info("Creating missing method '{}' with return type: {}", methodName, returnType);
     String parameters = printParameters(task, call);
     String modifiers = isMemberSelect ? "public" : "private";
     if (isStatic) {

@@ -45,8 +45,6 @@ import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.lsp.snippets.ISnippet
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.itsaky.androidide.utils.ILogger
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
 import jdkx.lang.model.element.ElementKind.CLASS
@@ -70,6 +68,9 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.element.VariableElement
 import openjdk.source.tree.Tree
 import openjdk.source.util.TreePath
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.nio.file.Path
 
 /**
  * Completion provider for Java source code.
@@ -82,9 +83,13 @@ abstract class IJavaCompletionProvider(
   compiler: JavaCompilerService,
   settings: IServerSettings,
 ) : BaseJavaServiceProvider(completingFile, compiler, settings) {
-  protected val log: ILogger = ILogger.newInstance(javaClass.name)
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
+  
+  companion object {
+    @JvmStatic
+    protected val log: Logger = LoggerFactory.getLogger(IJavaCompletionProvider::class.java)
+  }
 
   open fun complete(
     task: CompileTask,

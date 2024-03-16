@@ -19,14 +19,12 @@ package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
-
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.utils.InsertUtilsKt;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;

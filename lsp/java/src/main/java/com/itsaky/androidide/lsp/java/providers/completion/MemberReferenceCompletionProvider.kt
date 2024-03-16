@@ -25,11 +25,6 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import openjdk.source.tree.MemberReferenceTree
-import openjdk.source.tree.Scope
-import openjdk.source.util.TreePath
-import openjdk.source.util.Trees
-import java.nio.file.Path
 import jdkx.lang.model.element.ElementKind.METHOD
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.Modifier.STATIC
@@ -37,6 +32,11 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.type.ArrayType
 import jdkx.lang.model.type.DeclaredType
 import jdkx.lang.model.type.TypeVariable
+import openjdk.source.tree.MemberReferenceTree
+import openjdk.source.tree.Scope
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
+import java.nio.file.Path
 
 /**
  * Completions for member reference.
@@ -58,7 +58,7 @@ class MemberReferenceCompletionProvider(
   ): CompletionResult {
     val trees = Trees.instance(task.task)
     val select = path.leaf as MemberReferenceTree
-    log.info("...complete methods of " + select.qualifierExpression)
+    log.info("...complete methods of {}", select.qualifierExpression)
 
     val exprPath = TreePath(path, select.qualifierExpression)
     val element = trees.getElement(exprPath)

@@ -38,8 +38,15 @@ package com.itsaky.androidide.javac.services;
 import static openjdk.tools.javac.jvm.ClassFile.Version.V45_3;
 
 import android.text.TextUtils;
-
-import com.itsaky.androidide.utils.ILogger;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jdkx.tools.ForwardingJavaFileObject;
+import jdkx.tools.JavaFileObject;
 import openjdk.tools.javac.code.ClassFinder.BadClassFile;
 import openjdk.tools.javac.code.Symbol;
 import openjdk.tools.javac.code.Symbol.ClassSymbol;
@@ -50,24 +57,14 @@ import openjdk.tools.javac.resources.CompilerProperties.Warnings;
 import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.Log;
 import openjdk.tools.javac.util.Name;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import jdkx.tools.ForwardingJavaFileObject;
-import jdkx.tools.JavaFileObject;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author lahvac
  */
 public class NBClassReader extends ClassReader {
 
-  private static final ILogger LOG = ILogger.newInstance("NBClassReader");
+  private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(NBClassReader.class);
   private final NBNames nbNames;
   private final Log log;
 
@@ -82,14 +79,14 @@ public class NBClassReader extends ClassReader {
     log = Log.instance(context);
 
     NBAttributeReader[] readers = {
-      new NBAttributeReader(
-          nbNames._org_netbeans_EnclosingMethod, V45_3, CLASS_OR_MEMBER_ATTRIBUTE) {
-        public void read(Symbol sym, int attrLen) {
-          int newbp = bp + attrLen;
-          readEnclosingMethodAttr(sym);
-          bp = newbp;
-        }
-      },
+        new NBAttributeReader(
+            nbNames._org_netbeans_EnclosingMethod, V45_3, CLASS_OR_MEMBER_ATTRIBUTE) {
+          public void read(Symbol sym, int attrLen) {
+            int newbp = bp + attrLen;
+            readEnclosingMethodAttr(sym);
+            bp = newbp;
+          }
+        },
     };
 
     for (NBAttributeReader r : readers) {
@@ -99,7 +96,7 @@ public class NBClassReader extends ClassReader {
 
   @Override
   public BadClassFile badClassFile(final String key, final Object... args) {
-    LOG.debug("Bad class file", key, TextUtils.join(", ", args), new RuntimeException());
+    LOG.debug("Bad class file {} {}", key, TextUtils.join(", ", args), new RuntimeException());
     return super.badClassFile(key, args);
   }
 

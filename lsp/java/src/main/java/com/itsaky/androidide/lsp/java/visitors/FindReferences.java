@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
+import java.util.List;
+import jdkx.lang.model.element.Element;
 import openjdk.source.tree.IdentifierTree;
 import openjdk.source.tree.MemberReferenceTree;
 import openjdk.source.tree.MemberSelectTree;
@@ -25,10 +27,6 @@ import openjdk.source.util.JavacTask;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
-
-import java.util.List;
-
-import jdkx.lang.model.element.Element;
 
 public class FindReferences extends TreePathScanner<Void, List<TreePath>> {
 

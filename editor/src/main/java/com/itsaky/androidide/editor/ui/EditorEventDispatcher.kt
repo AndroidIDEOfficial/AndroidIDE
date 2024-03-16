@@ -26,7 +26,6 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent
 import com.itsaky.androidide.projects.FileManager.onDocumentClose
 import com.itsaky.androidide.projects.FileManager.onDocumentContentChange
 import com.itsaky.androidide.projects.FileManager.onDocumentOpen
-import com.itsaky.androidide.utils.ILogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,6 +33,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CancellationException
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -51,7 +51,7 @@ class EditorEventDispatcher(
 
   companion object {
 
-    private val log = ILogger.newInstance("EditorEventDispatcher")
+    private val log = LoggerFactory.getLogger(EditorEventDispatcher::class.java)
   }
 
   fun init(scope: CoroutineScope) {

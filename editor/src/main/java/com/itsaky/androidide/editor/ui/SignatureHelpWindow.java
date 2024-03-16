@@ -25,10 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureInformation;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.ResourceUtilsKt;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@link EditorPopupWindow} used to show signature help.
@@ -37,7 +38,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  */
 public class SignatureHelpWindow extends BaseEditorWindow {
 
-  private static final ILogger LOG = ILogger.newInstance("SignatureHelpWindow");
+  private static final Logger LOG = LoggerFactory.getLogger(SignatureHelpWindow.class);
 
   /**
    * Create a signature help popup window for editor
@@ -48,12 +49,12 @@ public class SignatureHelpWindow extends BaseEditorWindow {
     super(editor);
 
     editor.subscribeEvent(
-      SelectionChangeEvent.class,
-      (event, unsubscribe) -> {
-        if (isShowing()) {
-          dismiss();
-        }
-      });
+        SelectionChangeEvent.class,
+        (event, unsubscribe) -> {
+          if (isShowing()) {
+            dismiss();
+          }
+        });
   }
 
   public void setupAndDisplay(SignatureHelp signature) {
@@ -83,29 +84,26 @@ public class SignatureHelpWindow extends BaseEditorWindow {
     final SpannableStringBuilder sb = new SpannableStringBuilder();
 
     if (activeSignature < 0 || activeParameter < 0) {
-      LOG.debug("activeSignature:", activeSignature, "activeParameter:", activeParameter);
+      LOG.debug("activeSignature: {}, activeParameter: {}", activeSignature, activeParameter);
       return null;
     }
 
     var count = signatures.size();
     if (activeSignature >= count) {
-      LOG.debug("Active signature is invalid", "Size is " + count);
+      LOG.debug("Active signature is invalid. Size is {}", count);
       return null;
     }
 
     // remove all with non-applicable signatures
     signatures.removeIf(
-      info -> {
-        final var remove = activeParameter >= info.getParameters().size();
-        if (remove) {
-          LOG.debug(
-            "Removing",
-            info,
-            "params=" + info.getParameters().size(),
-            "active=" + activeParameter);
-        }
-        return remove;
-      });
+        info -> {
+          final var remove = activeParameter >= info.getParameters().size();
+          if (remove) {
+            LOG.debug("Removing {} params={} active={}", info, info.getParameters().size(),
+                activeParameter);
+          }
+          return remove;
+        });
 
     count = signatures.size();
     for (var i = 0; i < count; i++) {
@@ -127,22 +125,22 @@ public class SignatureHelpWindow extends BaseEditorWindow {
    * @param result     The builder to append spanned text to.
    */
   private void formatSignature(
-    @NonNull SignatureInformation signature,
-    int paramIndex,
-    SpannableStringBuilder result) {
+      @NonNull SignatureInformation signature,
+      int paramIndex,
+      SpannableStringBuilder result) {
 
     String name = signature.getLabel();
     name = name.substring(0, name.indexOf("("));
 
     final var foreground = ResourceUtilsKt.resolveAttr(getEditor().getContext(),
-      attr.colorOnSecondaryContainer);
+        attr.colorOnSecondaryContainer);
     final var paramSelected = 0xffff6060;
     final var operators = 0xff4fc3f7;
 
     result.append(
-      name, new ForegroundColorSpan(foreground), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        name, new ForegroundColorSpan(foreground), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
     result.append(
-      "(", new ForegroundColorSpan(operators), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        "(", new ForegroundColorSpan(operators), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
 
     var params = signature.getParameters();
     for (int i = 0; i < params.size(); i++) {
@@ -150,22 +148,22 @@ public class SignatureHelpWindow extends BaseEditorWindow {
       final var info = params.get(i);
       if (i == params.size() - 1) {
         result.append(
-          info.getLabel() + "",
-          new ForegroundColorSpan(color),
-          SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            info.getLabel(),
+            new ForegroundColorSpan(color),
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
       } else {
         result.append(
-          info.getLabel() + "",
-          new ForegroundColorSpan(color),
-          SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            info.getLabel(),
+            new ForegroundColorSpan(color),
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         result.append(
-          ",",
-          new ForegroundColorSpan(operators),
-          SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ",",
+            new ForegroundColorSpan(operators),
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         result.append(" ");
       }
     }
     result.append(
-      ")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
   }
 }

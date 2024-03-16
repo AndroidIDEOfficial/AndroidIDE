@@ -20,8 +20,8 @@ package com.itsaky.androidide.xml.internal.versions
 import com.itsaky.androidide.xml.versions.ClassInfo
 import com.itsaky.androidide.xml.versions.FieldInfo
 import com.itsaky.androidide.xml.versions.MethodInfo
-import java.util.concurrent.ConcurrentHashMap
 import org.eclipse.jdt.core.Signature
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Default implementation of [ClassInfo]

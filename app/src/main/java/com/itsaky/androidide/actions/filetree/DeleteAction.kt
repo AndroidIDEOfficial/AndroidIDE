@@ -29,8 +29,8 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.FlashType
 import com.itsaky.androidide.utils.flashMessage
-import java.io.File
 import org.greenrobot.eventbus.EventBus
+import java.io.File
 
 /**
  * File tree action to delete files.

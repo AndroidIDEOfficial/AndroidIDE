@@ -26,7 +26,6 @@ import com.itsaky.androidide.adapters.BuildVariantsAdapter
 import com.itsaky.androidide.databinding.FragmentBuildVariantsBinding
 import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
-import com.itsaky.androidide.tooling.api.models.mapToSelectedVariants
 import com.itsaky.androidide.viewmodel.BuildVariantsViewModel
 import com.itsaky.androidide.viewmodel.EditorViewModel
 

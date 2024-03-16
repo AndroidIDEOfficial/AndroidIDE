@@ -23,18 +23,17 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.itsaky.androidide.terminal.IdeTerminalSessionClient
 import com.itsaky.androidide.terminal.IdesetupSession
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.termux.R
 import com.termux.app.TermuxActivity
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient
 import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession
+import org.slf4j.LoggerFactory
 
 /**
  * @author Akash Yadav
@@ -54,7 +53,7 @@ class TerminalActivity : TermuxActivity() {
 
   companion object {
 
-    private val log = ILogger.newInstance("TerminalActivity")
+    private val log = LoggerFactory.getLogger(TerminalActivity::class.java)
     private const val KEY_TERMINAL_CAN_ADD_SESSIONS = "ide.terminal.sessions.canAddSessions"
 
     const val EXTRA_ONBOARDING_RUN_IDESETUP = "ide.onboarding.terminal.runIdesetup"

@@ -18,10 +18,6 @@
 package com.itsaky.androidide.javac.services.partial;
 
 import androidx.annotation.Nullable;
-
-import openjdk.tools.javac.api.ClientCodeWrapper;
-import openjdk.tools.javac.util.JCDiagnostic;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,10 +29,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import jdkx.tools.Diagnostic;
 import jdkx.tools.DiagnosticListener;
 import jdkx.tools.JavaFileObject;
+import openjdk.tools.javac.api.ClientCodeWrapper;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 /**
  * @author Akash Yadav

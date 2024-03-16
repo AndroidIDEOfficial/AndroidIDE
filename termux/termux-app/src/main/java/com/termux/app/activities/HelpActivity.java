@@ -10,9 +10,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.termux.shared.termux.TermuxConstants;
 
 /** Basic embedded browser for viewing help pages. */

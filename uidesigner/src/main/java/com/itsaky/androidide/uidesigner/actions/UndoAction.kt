@@ -20,7 +20,6 @@ package com.itsaky.androidide.uidesigner.actions
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.uidesigner.R
 
 /**

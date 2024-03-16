@@ -31,15 +31,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
 import com.google.android.material.slider.Slider;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.common.databinding.LayoutColorPickerBinding;
-import com.itsaky.androidide.utils.ILogger;
 
 /**
  * A color picker view.
@@ -48,7 +45,6 @@ import com.itsaky.androidide.utils.ILogger;
  */
 public class ColorPickerView extends LinearLayout {
 
-  private static final ILogger LOG = ILogger.newInstance("ColorPickerView");
   private final LayoutColorPickerBinding binding;
   private final int DEFAULT_COLOR;
   private int alpha;
@@ -142,11 +138,14 @@ public class ColorPickerView extends LinearLayout {
     this.mPickListener = listener;
   }
 
-  /** A TextWatcher that is used to listen for text updates in the hex color input field. */
+  /**
+   * A TextWatcher that is used to listen for text updates in the hex color input field.
+   */
   private class ColorTextWatcher implements TextWatcher {
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -160,8 +159,10 @@ public class ColorPickerView extends LinearLayout {
     }
 
     @Override
-    public void afterTextChanged(Editable s) {}
+    public void afterTextChanged(Editable s) {
+    }
   }
+
   /**
    * Set the color value of this picker to the given hex color code.
    *
@@ -182,11 +183,12 @@ public class ColorPickerView extends LinearLayout {
     /**
      * Called when the user picks a color using the 'Pick' button.
      *
-     * @param color The integer value of the color.
+     * @param color   The integer value of the color.
      * @param hexCode The hex color code of the color.
      */
     void onPick(int color, String hexCode);
   }
+
   /**
    * Set the color value for this color picker. this will in turn update value of the sliders and
    * the color preview.
@@ -217,7 +219,9 @@ public class ColorPickerView extends LinearLayout {
     return argb(alpha, red, green, blue);
   }
 
-  /** Call this method to update the preview of the current color. */
+  /**
+   * Call this method to update the preview of the current color.
+   */
   private void updatePreview() {
     this.binding.colorPreview.setBackgroundColor(getColor());
   }

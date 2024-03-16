@@ -18,15 +18,14 @@
 package com.itsaky.androidide.treesitter.api
 
 import com.itsaky.androidide.treesitter.TSNode
-import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 @PublishedApi
-internal val log = ILogger.newInstance("TsUtilsKt")
+internal val log = LoggerFactory.getLogger("TsUtilsKt")
 
 /**
  * Safely create a query cursor and execute the given [TSQuery]. The given [action] will be called for
@@ -45,18 +44,24 @@ inline fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   debugName: String = "",
   debugLogging: Boolean = false,
   crossinline action: (TSQueryMatch) -> ResultT
-) : ResultT? {
-
-  log.isEnabled = debugLogging
+): ResultT? {
 
   if (tree == null || !tree.canAccess()) {
-    log.debug("$debugName: Cannot execute query, tree is null or not accessible", "tree=$tree", "tree.canAccess=${tree?.canAccess()}")
+    if (debugLogging) {
+      log.debug("$debugName: Cannot execute query, tree is null or not accessible", "tree=$tree",
+        "tree.canAccess=${tree?.canAccess()}")
+    }
     return null
   }
 
   val rootNode = tree.rootNode
   if (!rootNode.canAccess() || rootNode.hasChanges()) {
-    log.debug("$debugName, Cannot execute query, tree's root node is not accessible or has been edited", "rootNode=$rootNode", "rootNode.canAccess=${rootNode.canAccess()}", "rootNode.hasChanges=${rootNode.canAccess() && rootNode.hasChanges()}")
+    if (debugLogging) {
+      log.debug(
+        "$debugName, Cannot execute query, tree's root node is not accessible or has been edited",
+        "rootNode=$rootNode", "rootNode.canAccess=${rootNode.canAccess()}",
+        "rootNode.hasChanges=${rootNode.canAccess() && rootNode.hasChanges()}")
+    }
     return null
   }
 
@@ -66,7 +71,7 @@ inline fun <ResultT> TSQueryCursor.safeExecQueryCursor(
     recycleNodeAfterUse = recycleNodeAfterUse,
     matchCondition = {
       val result = tree.canAccess() && matchCondition(it)
-      if (!result) {
+      if (!result && debugLogging) {
         log.debug("$debugName: tree.canAccess=${tree.canAccess()}")
       }
       result
@@ -96,14 +101,15 @@ inline fun <ResultT> TSQueryCursor.safeExecQueryCursor(
   debugName: String = "",
   debugLogging: Boolean = false,
   crossinline action: (TSQueryMatch) -> ResultT
-) : ResultT? {
+): ResultT? {
 
   return doSafeExecQueryCursor(
     query = query,
     node = node,
     recycleNodeAfterUse = recycleNodeAfterUse,
     matchCondition = { match ->
-      match != null && canAccess() && node.canAccess() && !node.hasChanges() && matchCondition(match)
+      match != null && canAccess() && node.canAccess() && !node.hasChanges() && matchCondition(
+        match)
     },
     whileTrue = whileTrue,
     onClosedOrEdited = onClosedOrEdited,
@@ -123,17 +129,21 @@ internal inline fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
   debugName: String = "",
   debugLogging: Boolean = false,
   crossinline action: (TSQueryMatch) -> ResultT
-) : ResultT? {
-
-  log.isEnabled = debugLogging
+): ResultT? {
 
   if (!query.canAccess()) {
-    log.debug("$debugName: Cannot execute query, query is not accessible")
+    if (debugLogging) {
+      log.debug("$debugName: Cannot execute query, query is not accessible")
+    }
     return null
   }
 
   if (!node.canAccess() || node.hasChanges()) {
-    log.debug("$debugName: Cannot execute query, node is not accessible or has been edited", "node.canAccess=${node.canAccess()}", "node.hasChanges=${node.canAccess() && node.hasChanges()}")
+    if (debugLogging) {
+      log.debug("$debugName: Cannot execute query, node is not accessible or has been edited",
+        "node.canAccess=${node.canAccess()}",
+        "node.hasChanges=${node.canAccess() && node.hasChanges()}")
+    }
     return null
   }
 
@@ -144,13 +154,15 @@ internal inline fun <ResultT> TSQueryCursor.doSafeExecQueryCursor(
     val result = action(match)
 
     if (!matchCondition(match)) {
-      log.debug(
-        "$debugName: Cannot proceed with query operation.",
-        "cursor.canAccess=${canAccess()}",
-        "query.canAccess=${query.canAccess()}",
-        "node.canAccess=${node.canAccess()}",
-        "node.hasChanges=${node.canAccess() && node.hasErrors()}"
-      )
+      if (debugLogging) {
+        log.debug(
+          "$debugName: Cannot proceed with query operation.",
+          "cursor.canAccess=${canAccess()}",
+          "query.canAccess=${query.canAccess()}",
+          "node.canAccess=${node.canAccess()}",
+          "node.hasChanges=${node.canAccess() && node.hasErrors()}"
+        )
+      }
       onClosedOrEdited()
       break
     }

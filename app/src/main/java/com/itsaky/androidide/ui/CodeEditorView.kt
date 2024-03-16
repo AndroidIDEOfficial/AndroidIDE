@@ -75,7 +75,6 @@ import com.itsaky.androidide.preferences.internal.wordwrap
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.tasks.runOnUiThread
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.customOrJBMono
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.LineSeparator
@@ -92,6 +91,7 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
 
@@ -150,7 +150,7 @@ class CodeEditorView(
 
   companion object {
 
-    private val log = ILogger.newInstance("CodeEditorView")
+    private val log = LoggerFactory.getLogger(CodeEditorView::class.java)
   }
 
   init {
@@ -232,7 +232,7 @@ class CodeEditorView(
     val file = this.file ?: return false
 
     if (!isModified && file.exists()) {
-      log.info("File was not modified. Skipping save operation.", file.name)
+      log.info("File was not modified. Skipping save operation for file {}", file.name)
       return false
     }
 

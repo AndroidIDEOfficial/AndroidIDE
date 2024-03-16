@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.editor.schemes
 
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
+import org.slf4j.LoggerFactory
 
 /**
  * Provides local
@@ -27,7 +27,7 @@ import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
  */
 object LocalCaptureSpecProvider {
 
-  private val log = ILogger.newInstance("LocalCaptureSpecProvider")
+  private val log = LoggerFactory.getLogger(LocalCaptureSpecProvider::class.java)
 
   @JvmStatic
   fun newLocalCaptureSpec(type: String): LocalsCaptureSpec {
@@ -35,9 +35,7 @@ object LocalCaptureSpecProvider {
       IDEColorSchemeProvider.getColorSchemeForType(type)?.languages?.get(type)
         ?: run {
           log.error(
-            "Cannot create LocalsCaptureSpec",
-            "Failed to load current color scheme.",
-            "Falling back to default implementation"
+            "Cannot create LocalsCaptureSpec. Failed to load current color scheme. Falling back to default implementation"
           )
           return LocalsCaptureSpec.DEFAULT
         }
@@ -46,7 +44,7 @@ object LocalCaptureSpecProvider {
       override fun isDefinitionCapture(captureName: String): Boolean {
         return lang.isLocalDef(captureName)
       }
-  
+
       override fun isDefinitionValueCapture(captureName: String): Boolean {
         return lang.isLocalDefVal(captureName)
       }
@@ -54,11 +52,11 @@ object LocalCaptureSpecProvider {
       override fun isReferenceCapture(captureName: String): Boolean {
         return lang.isLocalRef(captureName)
       }
-      
+
       override fun isScopeCapture(captureName: String): Boolean {
         return lang.isLocalScope(captureName)
       }
-  
+
       override fun isMembersScopeCapture(captureName: String): Boolean {
         return lang.isMembersScope(captureName)
       }

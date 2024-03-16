@@ -28,7 +28,8 @@ import com.itsaky.androidide.utils.flashError
 /**
  * @see openApplicationModuleChooser
  */
-inline fun openApplicationModuleChooser(data: ActionData, crossinline callback: (AndroidModule) -> Unit) =
+inline fun openApplicationModuleChooser(data: ActionData,
+  crossinline callback: (AndroidModule) -> Unit) =
   openApplicationModuleChooser(data.requireContext(), callback)
 
 /**
@@ -38,13 +39,13 @@ inline fun openApplicationModuleChooser(data: ActionData, crossinline callback: 
  *
  * @param
  */
-inline fun openApplicationModuleChooser(context: Context, crossinline callback: (AndroidModule) -> Unit) {
-  val log = ILogger.newInstance("ActionUtils")
+inline fun openApplicationModuleChooser(context: Context,
+  crossinline callback: (AndroidModule) -> Unit) {
   val projectManager = IProjectManager.getInstance()
   val applications = projectManager.getAndroidAppModules()
   if (applications.isEmpty()) {
     flashError(R.string.msg_launch_failure_no_app_module)
-    log.error("Cannot run application. No application modules found in project.")
+    ILogger.ROOT.error("Cannot run application. No application modules found in project.")
     return
   }
 
@@ -62,7 +63,7 @@ inline fun openApplicationModuleChooser(context: Context, crossinline callback: 
     applications.map { it.path }.toTypedArray(),
     0) { selection ->
     val app = applications[selection]
-    log.info("Selected application: '${app.path}'")
+    ILogger.ROOT.info("Selected application: '{}'", app.path)
     callback(app)
   }
 

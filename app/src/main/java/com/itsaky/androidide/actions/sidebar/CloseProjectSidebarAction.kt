@@ -20,10 +20,10 @@ package com.itsaky.androidide.actions.sidebar
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireContext
 import com.itsaky.androidide.activities.editor.BaseEditorActivity
+import com.itsaky.androidide.resources.R
 import kotlin.reflect.KClass
 
 /**

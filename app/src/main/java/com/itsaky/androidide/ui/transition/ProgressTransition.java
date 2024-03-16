@@ -22,10 +22,8 @@ import android.animation.ObjectAnimator;
 import android.util.Property;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
 import androidx.transition.Transition;
 import androidx.transition.TransitionValues;
-
 import com.itsaky.androidide.utils.IntProperty;
 
 public class ProgressTransition extends Transition {

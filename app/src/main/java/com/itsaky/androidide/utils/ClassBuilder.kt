@@ -19,7 +19,6 @@ package com.itsaky.androidide.utils
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec

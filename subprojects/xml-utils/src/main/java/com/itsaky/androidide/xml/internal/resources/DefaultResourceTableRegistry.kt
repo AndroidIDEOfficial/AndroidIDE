@@ -35,14 +35,14 @@ import com.android.aaptcompiler.extractPathData
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -60,6 +60,7 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
    * @property filename The filename which contains the single-line entries.
    */
   internal enum class SingleLineValueEntryType(val filename: String) {
+
     ACTIVITY_ACTIONS(FN_INTENT_ACTIONS_ACTIVITY),
     BROADCAST_ACTIONS(FN_INTENT_ACTIONS_BROADCAST),
     SERVICE_ACTIONS(FN_INTENT_ACTIONS_SERVICE),
@@ -67,19 +68,18 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
     FEATURES("features.txt")
   }
 
-  private val log = ILogger.newInstance(ResourceTableRegistry::class.java.simpleName)
-
   private val tables = ConcurrentHashMap<String, ResourceTable>()
   private val platformTables = ConcurrentHashMap<String, ResourceTable>()
   private val manifestAttrs = ConcurrentHashMap<String, ResourceTable>()
   private val singleLineValueEntries =
     ConcurrentHashMap<String, ConcurrentHashMap<SingleLineValueEntryType, List<String>>>()
 
-  override var isLoggingEnabled: Boolean
-    get() = log.isEnabled
-    set(value) {
-      log.isEnabled = value
-    }
+  companion object {
+
+    private val log = LoggerFactory.getLogger(DefaultResourceTableRegistry::class.java)
+  }
+
+  override var isLoggingEnabled: Boolean = true
 
   override fun forPackage(name: String, vararg resDirs: File): ResourceTable? {
 
@@ -91,7 +91,7 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       ?: createTable(*resDirs)?.also {
         tables[name] = it
         it.packages.firstOrNull()?.name = name
-        
+
         resDirs.forEach { resDir ->
           addFileReferences(it, name, resDir)
         }
@@ -199,7 +199,7 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       ?: createTable(dir)?.also { table ->
         platformTables[dir.path] = table
         table.packages.firstOrNull()?.name = PCK_ANDROID
-        
+
         addFileReferences(table, PCK_ANDROID, dir)
       }
   }
@@ -209,7 +209,9 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       return null
     }
 
-    log.info("Creating resource table for ${resDirs.size} resource directories")
+    if (isLoggingEnabled) {
+      log.info("Creating resource table for {} resource directories", resDirs.size)
+    }
 
     val logger = BlameLogger(IDELogger)
     val table = ResourceTable()
@@ -225,23 +227,25 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
 
     return table
   }
-  
+
   private fun addFileReferences(table: ResourceTable, pck: String, resDir: File) {
     resDir.listFiles()?.forEach { dir ->
       if (dir.name.startsWith(SdkConstants.FD_RES_VALUES)) {
         return@forEach
       }
-      
+
       dir.listFiles()?.forEach { file ->
         var typeName = dir.name
         if (typeName.contains('-')) {
           typeName = typeName.substringBefore('-')
         }
-  
+
         val type = try {
           AaptResourceType.valueOf(typeName.uppercase())
         } catch (error: Exception) {
-          log.warn("Unknown resource type:", typeName.uppercase(), error.message)
+          if (isLoggingEnabled) {
+            log.warn("Unknown resource type: {} :: {}", typeName.uppercase(), error.message)
+          }
           AaptResourceType.UNKNOWN
         }
         val resName = ResourceName(pck, type, file.nameWithoutExtension)
@@ -249,9 +253,10 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       }
     }
   }
-  
+
   private fun getDefaultOptions(): TableExtractorOptions {
-    return TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
+    return TableExtractorOptions(translatable = true, errorOnPositionalArgs = false,
+      visibility = PUBLIC)
   }
 
   private fun updateFromDirectory(
@@ -310,7 +315,9 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       try {
         extractor.extract(stream)
       } catch (err: Exception) {
-        log.warn("Failed to compile ${pathData.file}")
+        if (isLoggingEnabled) {
+          log.warn("Failed to compile {}", pathData.file)
+        }
       }
     }
   }

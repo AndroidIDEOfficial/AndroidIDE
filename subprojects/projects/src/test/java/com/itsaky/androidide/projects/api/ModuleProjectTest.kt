@@ -25,17 +25,17 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
+import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.utils.FileProvider
 import kotlinx.coroutines.runBlocking
-import java.io.File
-import java.nio.file.Files
-import kotlin.io.path.writeText
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.File
+import java.nio.file.Files
+import kotlin.io.path.writeText
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)

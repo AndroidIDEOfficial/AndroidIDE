@@ -26,9 +26,9 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
+import org.slf4j.LoggerFactory
 import java.lang.ref.WeakReference
 
 /**
@@ -42,7 +42,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
   companion object {
 
-    private val log = ILogger.newInstance("EditorBuildEventListener")
+    private val log = LoggerFactory.getLogger(EditorBuildEventListener::class.java)
   }
 
   private val _activity: EditorHandlerActivity?
@@ -137,7 +137,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
     return _activity.also {
       if (it == null) {
-        log.warn("[$action] Activity reference has been destroyed!")
+        log.warn("[{}] Activity reference has been destroyed!", action)
         enabled = false
       }
     }

@@ -21,9 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Path;
-
 import com.itsaky.androidide.inflater.vectormaster.enums.TintMode;
-
 import java.util.ArrayList;
 
 public class VectorModel {

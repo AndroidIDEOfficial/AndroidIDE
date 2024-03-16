@@ -23,7 +23,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
-
 import com.itsaky.androidide.inflater.vectormaster.DefaultValues;
 import com.itsaky.androidide.inflater.vectormaster.utilities.Utils;
 import com.itsaky.androidide.inflater.vectormaster.utilities.parser.PathParser;

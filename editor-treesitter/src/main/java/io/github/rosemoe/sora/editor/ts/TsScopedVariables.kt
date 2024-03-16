@@ -32,12 +32,11 @@ import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.treesitter.string.UTF16String
-import com.itsaky.androidide.utils.ILogger
 import java.util.Stack
 
 private typealias TSNodeIndices = Pair<Int, Int>
 
-private fun TSNode.indices() : TSNodeIndices {
+private fun TSNode.indices(): TSNodeIndices {
   return startByte to endByte
 }
 
@@ -53,11 +52,6 @@ private fun TSNode.indices() : TSNodeIndices {
 class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpec) {
 
   private val rootScope: Scope
-
-  companion object {
-
-    private val log = ILogger.newInstance("TsScopedVariables")
-  }
 
   init {
     val rootNode = tree.rootNode

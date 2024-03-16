@@ -1,14 +1,11 @@
 package com.termux.app.api.file;
 
-import com.termux.app.api.file.FileReceiverActivity;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class FileReceiverActivityTest {

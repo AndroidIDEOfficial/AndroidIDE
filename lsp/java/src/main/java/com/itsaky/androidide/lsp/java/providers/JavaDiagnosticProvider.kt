@@ -25,7 +25,7 @@ import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
@@ -37,11 +37,15 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class JavaDiagnosticProvider {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   private val analyzeTimestamps = mutableMapOf<Path, Instant>()
   private var cachedDiagnostics = DiagnosticResult.NO_UPDATE
   private var analyzing = AtomicBoolean(false)
   private var analyzingThread: AnalyzingThread? = null
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(JavaDiagnosticProvider::class.java)
+  }
 
   fun analyze(file: Path): DiagnosticResult {
 
@@ -51,7 +55,7 @@ class JavaDiagnosticProvider {
 
     abortIfCancelled()
 
-    log.debug("Analyzing:", file)
+    log.debug("Analyzing: {}", file)
 
     val modifiedAt = FileManager.getLastModified(file)
     val analyzedAt = analyzeTimestamps[file]
@@ -110,7 +114,7 @@ class JavaDiagnosticProvider {
           }
         )
     return result.also {
-      log.info("Analyze file completed. Found ${result.diagnostics.size} diagnostic items")
+      log.info("Analyze file completed. Found {} diagnostic items", result.diagnostics.size)
     }
   }
 

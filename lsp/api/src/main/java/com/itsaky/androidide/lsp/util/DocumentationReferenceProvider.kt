@@ -21,7 +21,7 @@ import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.ICompletionData
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
 /**
  * Provides the documentation URL for classes, methods, fields, etc.
@@ -29,6 +29,8 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 object DocumentationReferenceProvider {
+
+  private val log = LoggerFactory.getLogger(DocumentationReferenceProvider::class.java)
 
   const val DOCS_BASE_URL = "https://developer.android.com/reference/"
 
@@ -85,9 +87,10 @@ object DocumentationReferenceProvider {
       url.append(data.parameterTypes.joinToString(separator = ", "))
       url.append(')')
     }
-    log.debug(url)
+
+    log.debug("Documentation URL for {}#{} is {}", klass.className,
+      ((data as? MemberCompletionData?)?.memberName ?: "<self>"), url)
+
     return url.toString()
   }
-
-  private val log = ILogger.newInstance("DocumentationReferenceProvider")
 }

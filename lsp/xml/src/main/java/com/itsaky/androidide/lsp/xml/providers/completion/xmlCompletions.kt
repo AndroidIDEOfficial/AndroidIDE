@@ -23,8 +23,8 @@ import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import kotlin.math.min
 import org.eclipse.lemminx.dom.DOMNode
+import kotlin.math.min
 
 fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
   val simpleNameMatchLevel = matchLevel(simpleName, prefix)

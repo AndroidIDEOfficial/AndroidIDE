@@ -36,6 +36,15 @@ import com.github.javaparser.printer.DefaultPrettyPrinter;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.printer.configuration.PrinterConfiguration;
 import com.itsaky.androidide.lsp.java.visitors.PrettyPrintingVisitor;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.function.Predicate;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.NoType;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.type.TypeVariable;
 import openjdk.source.tree.IdentifierTree;
 import openjdk.source.tree.ParameterizedTypeTree;
 import openjdk.source.tree.PrimitiveTypeTree;
@@ -44,17 +53,6 @@ import openjdk.source.tree.TypeParameterTree;
 import openjdk.source.tree.WildcardTree;
 import openjdk.tools.javac.code.BoundKind;
 import openjdk.tools.javac.tree.JCTree;
-
-import java.nio.file.Path;
-import java.util.Objects;
-import java.util.function.Predicate;
-
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.type.DeclaredType;
-import jdkx.lang.model.type.NoType;
-import jdkx.lang.model.type.TypeKind;
-import jdkx.lang.model.type.TypeMirror;
-import jdkx.lang.model.type.TypeVariable;
 
 public class TypeUtils {
 

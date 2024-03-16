@@ -21,7 +21,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.io.Reader
 
 /**
@@ -34,7 +34,7 @@ data class OpenedFilesCache(@SerializedName(KEY_SELECTED_FILE) val selectedFile:
 
     private const val KEY_SELECTED_FILE = "selectedFile"
     private const val KEY_ALL_FILES = "allFiles"
-    private val log = ILogger.newInstance("OpenedFilesCache")
+    private val log = LoggerFactory.getLogger(OpenedFilesCache::class.java)
 
     @JvmStatic
     fun parse(contentReader: Reader): OpenedFilesCache? {

@@ -19,14 +19,13 @@ package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.CancelService
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.atomic.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Cancel service implementation for the java compiler.
  * @author Akash Yadav
  */
 class CancelServiceImpl : CancelService() {
-  private val log = ILogger.newInstance(javaClass.simpleName)
   val cancelled = AtomicBoolean(false)
 
   /**
@@ -36,11 +35,8 @@ class CancelServiceImpl : CancelService() {
    * otherwise.
    */
   fun cancel(): Boolean {
-    log.info("...requesting compilation cancellation")
-    if (cancelled.getAndSet(true)) {
-      return false
-    }
-    return true
+    ILogger.ROOT.info("...requesting compilation cancellation")
+    return !cancelled.getAndSet(true)
   }
 
   override fun isCanceled(): Boolean = cancelled.get()

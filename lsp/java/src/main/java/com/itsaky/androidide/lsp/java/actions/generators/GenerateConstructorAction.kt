@@ -33,8 +33,8 @@ import com.itsaky.androidide.lsp.java.utils.ShortTypePrinter.NO_PACKAGE
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import io.github.rosemoe.sora.widget.CodeEditor
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.VariableTree
 import openjdk.source.util.TreePath
@@ -45,7 +45,7 @@ import openjdk.tools.javac.code.Type
 import openjdk.tools.javac.tree.JCTree
 import openjdk.tools.javac.tree.TreeInfo
 import openjdk.tools.javac.util.ListBuffer
-import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -57,6 +57,15 @@ import java.util.concurrent.CompletableFuture
  * @author Akash Yadav
  */
 class GenerateConstructorAction : FieldBasedAction() {
+
+  override val titleTextRes: Int = string.action_generate_constructor
+  override val id: String = "ide.editor.lsp.java.generator.constructor"
+  override var label: String = ""
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(GenerateConstructorAction::class.java)
+  }
 
   override fun onGetFields(fields: List<String>, data: ActionData) {
     showFieldSelector(fields, data) { selected ->
@@ -85,7 +94,7 @@ class GenerateConstructorAction : FieldBasedAction() {
 
       fields.removeIf { !selected.contains("${it.name}: ${it.type}") }
 
-      log.debug("Creating toString() method with fields: ", fields.map { it.name })
+      log.debug("Creating toString() method with fields: {}", fields.map { it.name })
 
       generateForFields(data, task, type, fields.map { TreePath(typeFinder.path, it) })
     }
@@ -105,7 +114,7 @@ class GenerateConstructorAction : FieldBasedAction() {
 
     if (paths.isEmpty() || trees.findConstructor(sym, varTypes) != null) {
       log.warn(
-        "A constructor with same parameter types is already available in class ${type.simpleName}"
+        "A constructor with same parameter types is already available in class {}", type.simpleName
       )
       flashError(data[Context::class.java]!!.getString(string.msg_constructor_available))
       return
@@ -164,9 +173,4 @@ class GenerateConstructorAction : FieldBasedAction() {
 
     return buffer.toList()
   }
-
-  override val titleTextRes: Int = string.action_generate_constructor
-  override val id: String = "ide.editor.lsp.java.generator.constructor"
-  override var label: String = ""
-  private val log = ILogger.newInstance(javaClass.simpleName)
 }

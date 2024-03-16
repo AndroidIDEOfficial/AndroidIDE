@@ -23,6 +23,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
 import com.itsaky.androidide.services.InstallationResultReceiver
+import org.slf4j.LoggerFactory
 
 /**
  * Handles result of APK installation.
@@ -31,28 +32,28 @@ import com.itsaky.androidide.services.InstallationResultReceiver
  */
 object InstallationResultHandler {
 
-  private val log = ILogger.newInstance("InstallationResultHandler")
-
   private const val INSTALL_PACKAGE_REQ_CODE = 2304
   private const val INSTALL_PACKAGE_ACTION = "com.itsaky.androidide.installer.INSTALL_PACKAGE"
+
+  private val log = LoggerFactory.getLogger(InstallationResultHandler::class.java)
 
   @JvmStatic
   fun createEditorActivitySender(context: Context): IntentSender {
     val intent = Intent(context, InstallationResultReceiver::class.java)
     intent.action = INSTALL_PACKAGE_ACTION
     return PendingIntent.getBroadcast(
-        context,
-        INSTALL_PACKAGE_REQ_CODE,
-        intent,
-        PendingIntent.FLAG_UPDATE_CURRENT
-      )
+      context,
+      INSTALL_PACKAGE_REQ_CODE,
+      intent,
+      PendingIntent.FLAG_UPDATE_CURRENT
+    )
       .intentSender
   }
 
   @JvmStatic
   fun onResult(context: Context?, intent: Intent?): String? {
     if (context == null || intent == null || intent.action != INSTALL_PACKAGE_ACTION) {
-      log.warn("Invalid broadcast received", "action=${intent?.action}")
+      log.warn("Invalid broadcast received. action={}", intent?.action)
       return null
     }
 
@@ -79,10 +80,12 @@ object InstallationResultHandler {
         }
         null
       }
+
       PackageInstaller.STATUS_SUCCESS -> {
         log.info("Package installed successfully!")
         packageName
       }
+
       PackageInstaller.STATUS_FAILURE,
       PackageInstaller.STATUS_FAILURE_ABORTED,
       PackageInstaller.STATUS_FAILURE_BLOCKED,
@@ -90,11 +93,12 @@ object InstallationResultHandler {
       PackageInstaller.STATUS_FAILURE_INCOMPATIBLE,
       PackageInstaller.STATUS_FAILURE_INVALID,
       PackageInstaller.STATUS_FAILURE_STORAGE -> {
-        log.error("Package installation failed with status code", status, "and message:", message)
+        log.error("Package installation failed with status code {} and message {}", status, message)
         null
       }
+
       else -> {
-        log.warn("Invalid status code received in broadcast:", status)
+        log.warn("Invalid status code received in broadcast: {}", status)
         null
       }
     }

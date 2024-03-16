@@ -19,10 +19,10 @@ package com.itsaky.androidide.services.log
 
 import com.itsaky.androidide.logsender.socket.SenderInfoCommand
 import com.itsaky.androidide.models.LogLine
-import com.itsaky.androidide.utils.ILogger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import java.net.Socket
 import java.net.SocketException
 
@@ -31,15 +31,16 @@ import java.net.SocketException
  *
  * @author Akash Yadav
  */
-class LogSenderHandler(
-  private val sender: SenderInfoCommand,
-  private val socket: Socket,
+class LogSenderHandler(private val sender: SenderInfoCommand, private val socket: Socket,
   internal var consumer: ((LogLine) -> Unit)? = null,
-  private var onClose: ((String) -> Unit)? = null
-) : AutoCloseable {
+  private var onClose: ((String) -> Unit)? = null) : AutoCloseable {
 
   private var manuallyClosed = false
-  private val log = ILogger.newInstance("LogSenderHandler")
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(LogSenderHandler::class.java)
+  }
 
   suspend fun startAsync() = withContext(Dispatchers.IO) {
     try {
@@ -54,8 +55,7 @@ class LogSenderHandler(
       }
     } catch (err: SocketException) {
       if (!manuallyClosed) {
-        log.error("An error occurred while reading from socket")
-        log.error(err)
+        log.error("An error occurred while reading from socket", err)
       }
     } finally {
       close()

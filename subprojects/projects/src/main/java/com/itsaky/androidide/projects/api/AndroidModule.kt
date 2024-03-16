@@ -35,7 +35,6 @@ import com.itsaky.androidide.tooling.api.ProjectType.Android
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.util.findPackageName
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.withStopWatch
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -50,6 +49,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -120,7 +120,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     tasks
   ) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(AndroidModule::class.java)
+  }
 
   init {
     type = Android
@@ -140,7 +143,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   fun getResourceDirectories(): Set<File> {
     if (mainSourceSet == null) {
-      log.error("No main source set found in application module: $name")
+      log.error("No main source set found in application module: {}", name)
       return emptySet()
     }
 
@@ -160,7 +163,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   override fun getSourceDirectories(): Set<File> {
     if (mainSourceSet == null) {
-      log.warn("No main source set is available for project $name. Cannot get source directories.")
+      log.warn("No main source set is available for project {}. Cannot get source directories.",
+        name)
       return mutableSetOf()
     }
 
@@ -375,7 +379,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
           }
       )
 
-      log.info("Created ${it.size} resource tables for $deps dependencies of module '$path'")
+      log.info("Created {} resource tables for {} dependencies of module '{}'", it.size, deps, path)
     }
   }
 
@@ -489,14 +493,14 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     val info = projectManager.androidBuildVariants[this.path]
     if (info == null) {
       log.error(
-        "Failed to find selected build variant for module: '${this.path}'")
+        "Failed to find selected build variant for module: '{}'", this.path)
       return null
     }
 
     val variant = this.getVariant(info.selectedVariant)
     if (variant == null) {
       log.error(
-        "Build variant with name '${info.selectedVariant}' not found.")
+        "Build variant with name '{}' not found.", info.selectedVariant)
       return null
     }
 

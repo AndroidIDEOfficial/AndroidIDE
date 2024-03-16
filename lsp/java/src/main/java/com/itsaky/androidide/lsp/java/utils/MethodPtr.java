@@ -18,21 +18,18 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import com.squareup.javapoet.ImportCollectingCodeWriter;
 import com.squareup.javapoet.TypeName;
-import openjdk.source.util.JavacTask;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-
 import jdkx.lang.model.element.ExecutableElement;
 import jdkx.lang.model.element.TypeElement;
 import jdkx.lang.model.element.VariableElement;
 import jdkx.lang.model.type.TypeKind;
 import jdkx.lang.model.type.TypeMirror;
 import jdkx.lang.model.util.Types;
+import openjdk.source.util.JavacTask;
 
 /**
  * @author Akash Yadav

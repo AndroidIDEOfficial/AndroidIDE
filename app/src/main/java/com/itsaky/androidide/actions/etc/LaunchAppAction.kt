@@ -25,11 +25,10 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.openApplicationModuleChooser
-import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
+import org.slf4j.LoggerFactory
 
 /**
  * An action to launch the already installed application on the device.
@@ -47,7 +46,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
   }
 
   companion object {
-    private val log = ILogger.newInstance("LaunchAppAction")
+    private val log = LoggerFactory.getLogger(LaunchAppAction::class.java)
   }
 
   override fun prepare(data: ActionData) {
@@ -67,7 +66,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
     openApplicationModuleChooser(data) { app ->
       val variant = app.getSelectedVariant()
 
-      log.debug("Selected variant: ${variant?.name}")
+      log.debug("Selected variant: {}", variant?.name)
 
       if (variant == null) {
         flashError(R.string.err_selected_variant_not_found)
@@ -81,7 +80,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
         return@openApplicationModuleChooser
       }
 
-      log.info("Launching application: $applicationId")
+      log.info("Launching application: {}", applicationId)
 
       val activity = data.requireActivity()
       IntentUtils.launchApp(activity, applicationId, logError = false)

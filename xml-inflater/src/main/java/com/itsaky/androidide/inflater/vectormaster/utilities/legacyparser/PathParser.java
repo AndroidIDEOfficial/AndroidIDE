@@ -17,17 +17,15 @@
 package com.itsaky.androidide.inflater.vectormaster.utilities.legacyparser;
 
 import android.graphics.Path;
-
 import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.utils.ILogger;
-
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class is a duplicate of the PathParser.java in androidx.core.graphics package. */
 public class PathParser {
 
-  private static final ILogger LOG = ILogger.newInstance("PathParser");
+  private static final Logger LOG = LoggerFactory.getLogger(PathParser.class);
 
   // Copy from Arrays.copyOfRange() which is only available from API level 9.
   private PathParser() {}
@@ -630,7 +628,7 @@ public class PathParser {
       }
       double disc = 1.0 / dsq - 1.0 / 4.0;
       if (disc < 0.0) {
-        LOG.warn("Points are too far apart " + dsq);
+        LOG.warn("Points are too far apart {}", dsq);
         float adjust = (float) (Math.sqrt(dsq) / 1.99999);
         drawArc(p, x0, y0, x1, y1, a * adjust, b * adjust, theta, isMoreThanHalf, isPositiveArc);
         return; /* Points are too far apart */

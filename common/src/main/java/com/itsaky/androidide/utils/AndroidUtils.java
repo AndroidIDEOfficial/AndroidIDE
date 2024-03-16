@@ -2,12 +2,10 @@ package com.itsaky.androidide.utils;
 
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.resources.R;
-
+import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
 
 public class AndroidUtils {
   /**

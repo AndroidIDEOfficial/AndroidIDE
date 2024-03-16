@@ -47,7 +47,6 @@ import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.SpanFactory
@@ -64,17 +63,14 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
  *
  * @author Rosemoe
  */
-class LineSpansGenerator(
-  internal var tree: TSTree, internal var lineCount: Int,
+class LineSpansGenerator(internal var tree: TSTree, internal var lineCount: Int,
   private val content: Content, internal var theme: TsTheme,
   private val languageSpec: TsLanguageSpec, var scopedVariables: TsScopedVariables,
-  private val spanFactory: TsSpanFactory
-) : Spans {
+  private val spanFactory: TsSpanFactory) : Spans {
 
   companion object {
 
     const val CACHE_THRESHOLD = 60
-    private val log = ILogger.newInstance("LineSpansGenerator")
   }
 
   private val caches = mutableListOf<SpanCache>()
@@ -115,19 +111,10 @@ class LineSpansGenerator(
     TSQueryCursor.create().use { cursor ->
       cursor.setByteRange(startIndex * 2, endIndex * 2)
 
-      cursor.safeExecQueryCursor(
-        query = languageSpec.tsQuery,
-        tree = tree,
-        recycleNodeAfterUse = true,
-        debugLogging = false,
-        debugName = "LineSpansGenerator.captureRegion()"
-      ) { match ->
-        if (languageSpec.queryPredicator.doPredicate(
-            languageSpec.predicates,
-            content,
-            match
-          )
-        ) {
+      cursor.safeExecQueryCursor(query = languageSpec.tsQuery, tree = tree,
+        recycleNodeAfterUse = true, debugLogging = false,
+        debugName = "LineSpansGenerator.captureRegion()") { match ->
+        if (languageSpec.queryPredicator.doPredicate(languageSpec.predicates, content, match)) {
           captures.addAll(match.captures)
         }
       }
@@ -141,27 +128,14 @@ class LineSpansGenerator(
         val start = (startByte / 2 - startIndex).coerceAtLeast(0)
         val pattern = capture.index
         // Do not add span for overlapping regions and out-of-bounds regions
-        if (start >= lastIndex && endByte / 2 >= startIndex && startByte / 2 < endIndex
-          && (pattern !in languageSpec.localsScopeIndices && pattern !in languageSpec.localsDefinitionIndices
-              && pattern !in languageSpec.localsDefinitionValueIndices && pattern !in languageSpec.localsMembersScopeIndices)
-        ) {
+        if (start >= lastIndex && endByte / 2 >= startIndex && startByte / 2 < endIndex && (pattern !in languageSpec.localsScopeIndices && pattern !in languageSpec.localsDefinitionIndices && pattern !in languageSpec.localsDefinitionValueIndices && pattern !in languageSpec.localsMembersScopeIndices)) {
           if (start != lastIndex) {
-            list.addAll(
-              createSpans(
-                capture,
-                lastIndex,
-                start - 1,
-                theme.normalTextStyle
-              )
-            )
+            list.addAll(createSpans(capture, lastIndex, start - 1, theme.normalTextStyle))
           }
           var style = 0L
           if (capture.index in languageSpec.localsReferenceIndices) {
-            val def = scopedVariables.findDefinition(
-              startByte / 2,
-              endByte / 2,
-              content.substring(startByte / 2, endByte / 2)
-            )
+            val def = scopedVariables.findDefinition(startByte / 2, endByte / 2,
+              content.substring(startByte / 2, endByte / 2))
             if (def != null && def.matchedHighlightPattern != -1) {
               style = theme.resolveStyleForPattern(def.matchedHighlightPattern)
             }
@@ -196,12 +170,8 @@ class LineSpansGenerator(
     return list
   }
 
-  private fun createSpans(
-    capture: TSQueryCapture,
-    startColumn: Int,
-    endColumn: Int,
-    style: Long
-  ): List<Span> {
+  private fun createSpans(capture: TSQueryCapture, startColumn: Int, endColumn: Int,
+    style: Long): List<Span> {
     val spans = spanFactory.createSpans(capture, startColumn, style)
     if (spans.size > 1) {
       var prevCol = spans[0].column

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.utils
 
+import org.slf4j.LoggerFactory
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
@@ -52,7 +53,7 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     private const val CACHE_HIT_WARNING_THRESHOLD = 50f
 
     private val log by lazy {
-      ILogger.newInstance("RecyclableObjectPool")
+      LoggerFactory.getLogger(RecyclableObjectPool::class.java)
     }
 
     const val CAPACITY_DEFAULT: Int = 4096
@@ -96,7 +97,7 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
    */
   fun recycle(obj: RecyclableT): Boolean {
     if (obj.isRecycled) {
-      log.warn("Trying to recyle already recycled object: $obj")
+      log.warn("Trying to recyle already recycled object: {}", obj)
       return false
     }
 
@@ -156,7 +157,7 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
   }
 
   fun logMetrics() {
-    if ( !(metricsEnabled && DEBUG) || System.currentTimeMillis() - lastMetricsLog.get() < 1000) {
+    if (!(metricsEnabled && DEBUG) || System.currentTimeMillis() - lastMetricsLog.get() < 1000) {
       return
     }
 
@@ -167,24 +168,24 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     val cacheHitRate = cacheHitRate()
 
     val simpleName = objName.let { if (it.contains('.')) it.substringAfterLast('.') else it }
-    log.debug("${javaClass.simpleName}: $simpleName($objName)")
-    log.debug("    Recycle count          : $rec")
-    log.debug("    Access count           : $access")
-    log.debug("    Cache hit count        : $cacheHit")
-    log.debug("    Cache hit rate         : $cacheHitRate%")
-    log.debug("    Cache miss rate        : ${cacheMissRate()}%")
-    log.debug("    Recycle rate           : ${recycleRate()}%")
-    log.debug("    Cache utilization rate : ${cacheUtilization()}%")
-    log.debug("    Objects in cache       : ${cache.size}")
-    log.debug("    Total capacity         : $capacity")
+    log.debug("{}: {}({})", javaClass.simpleName, simpleName, objName)
+    log.debug("    Recycle count          : {}", rec)
+    log.debug("    Access count           : {}", access)
+    log.debug("    Cache hit count        : {}", cacheHit)
+    log.debug("    Cache hit rate         : {}%", cacheHitRate)
+    log.debug("    Cache miss rate        : {}%", cacheMissRate())
+    log.debug("    Recycle rate           : {}%", recycleRate())
+    log.debug("    Cache utilization rate : {}%", cacheUtilization())
+    log.debug("    Objects in cache       : {}", cache.size)
+    log.debug("    Total capacity         : {}", capacity)
 
     if (cacheHitRate < CACHE_HIT_WARNING_THRESHOLD) {
       // Cache hit rate is less than threshold
       // something might be wrong
       // log an error
       log.error("!!!!!!!!!!!!!!!!!!!!! CRITICAL ERROR !!!!!!!!!!!!!!!!!!!!!")
-      log.error("Cache-hit rate for '${simpleName}' is less than ${CACHE_HIT_WARNING_THRESHOLD}%!!")
-      log.error("Make sure that instances of $objName are obtained using the object pool")
+      log.error("Cache-hit rate for '{}' is less than {}%!!", simpleName, CACHE_HIT_WARNING_THRESHOLD)
+      log.error("Make sure that instances of {} are obtained using the object pool", objName)
       log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     }
 

@@ -27,7 +27,7 @@ import com.itsaky.androidide.lsp.xml.utils.XMLBuilder
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.utils.DialogUtils
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 
@@ -38,7 +38,7 @@ import java.util.concurrent.CompletionException
  */
 object ViewToXml {
 
-  private val log = ILogger.newInstance("ViewToXml")
+  private val log = LoggerFactory.getLogger(ViewToXml::class.java)
 
   @JvmStatic
   @JvmOverloads
@@ -68,13 +68,13 @@ object ViewToXml {
 
       val progress =
         DialogUtils.newProgressDialog(
-            this,
-            getString(R.string.title_generating_xml),
-            getString(R.string.please_wait),
-            false
-          ) { _, _ ->
-            future.cancel(true)
-          }
+          this,
+          getString(R.string.title_generating_xml),
+          getString(R.string.please_wait),
+          false
+        ) { _, _ ->
+          future.cancel(true)
+        }
           .show()
 
       future.whenComplete { result, error ->
@@ -116,7 +116,7 @@ object ViewToXml {
     for (attr in view.attributes) {
       linefeed()
       indent(indent)
-  
+
       val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
       addSingleAttribute("${ns}${attr.name}", attr.value, true)
     }

@@ -21,7 +21,6 @@ import com.itsaky.androidide.javac.services.compiler.JavacFlowListener
 import com.itsaky.androidide.javac.services.util.ReparserUtils
 import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor
 import com.itsaky.androidide.javac.services.visitors.TranslateMethodPositionsVisitor
-import com.itsaky.androidide.utils.ILogger
 import openjdk.source.tree.BlockTree
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -54,8 +53,9 @@ import openjdk.tools.javac.util.Context
 import openjdk.tools.javac.util.List
 import openjdk.tools.javac.util.Log
 import openjdk.tools.javac.util.Names
+import org.slf4j.LoggerFactory
 import java.nio.CharBuffer
-import java.util.*
+import java.util.Arrays
 
 /**
  * Partial reparser implementation.
@@ -64,8 +64,11 @@ import java.util.*
  */
 class PartialReparserImpl : PartialReparser {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   private var allowPartialReparse: Boolean = ReparserUtils.canReparse()
+
+  companion object {
+    private val log = LoggerFactory.getLogger(PartialReparserImpl::class.java)
+  }
 
   override fun reparseMethod(
     ci: CompilationInfo,
@@ -93,19 +96,19 @@ class PartialReparserImpl : PartialReparser {
     val origStartPos = jt.sourcePositions.getStartPosition(cu, method.body).toInt()
     val origEndPos = jt.sourcePositions.getEndPosition(cu, method.body).toInt()
     if (origStartPos < 0) {
-      log.warn("Javac returned start position $origStartPos < 0")
+      log.warn("Javac returned start position {} < 0", origStartPos)
       return false
     }
 
     if (origStartPos > origEndPos) {
-      log.warn("Java returned start position: $origStartPos > end position: $origEndPos")
+      log.warn("Java returned start position: {} > end position: {}", origStartPos, origEndPos)
       return false
     }
 
     val fav = FindAnonymousVisitor()
     fav.scan(method.body, null)
     if (fav.hasLocalClass) {
-      log.debug("Skipped reparse method. Old local classes.", fo)
+      log.debug("Skipped reparse method. Old local classes: {}", fo)
       return false
     }
 
@@ -126,7 +129,7 @@ class PartialReparserImpl : PartialReparser {
         block = reparseMethodBody(context, cu, method, newBody, docComments)
         val endPosTable = (cu as JCCompilationUnit).endPositions
         if (block == null) {
-          log.debug("Skipped reparse method. Invalid position, newBody: $newBody")
+          log.debug("Skipped reparse method. Invalid position, newBody: {}", newBody)
           return false
         }
 
@@ -142,7 +145,7 @@ class PartialReparserImpl : PartialReparser {
 
         val newNoInner = fav.noInner
         if (fav.hasLocalClass || noInner != newNoInner) {
-          log.debug("Skipped method reparse (new local class): $fo")
+          log.debug("Skipped method reparse (new local class): {}", fo)
           return false
         }
 

@@ -21,7 +21,6 @@ import android.app.Activity
 import androidx.annotation.StringRes
 import com.blankj.utilcode.util.ActivityUtils
 import com.itsaky.androidide.flashbar.Flashbar
-import java.util.function.Consumer
 
 fun flashbarBuilder(): Flashbar.Builder? {
   return withActivity { flashbarBuilder() }
@@ -70,7 +69,7 @@ fun <R> flashProgress(
 private fun <T> withActivity(action: Activity.() -> T?): T? {
   return ActivityUtils.getTopActivity()?.let { it.action() }
     ?: run {
-      ILogger.instance().warn("Cannot show flashbar message. Cannot get top activity.")
+      ILogger.ROOT.warn("Cannot show flashbar message. Cannot get top activity.")
       null
     }
 }

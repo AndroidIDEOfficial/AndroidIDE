@@ -20,11 +20,11 @@ package com.itsaky.androidide.terminal
 import android.content.Context
 import com.itsaky.androidide.managers.ToolsManager
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.ILogger
 import com.termux.shared.file.FileUtils
 import com.termux.shared.shell.command.ExecutionCommand
 import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession
 import com.termux.terminal.TerminalSession
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.charset.StandardCharsets
 
@@ -49,7 +49,7 @@ class IdesetupSession private constructor(
 
   companion object {
 
-    private val log = ILogger.newInstance("IdesetupSession")
+    private val log = LoggerFactory.getLogger(IdesetupSession::class.java)
 
     @JvmStatic
     fun wrap(session: TermuxSession?, script: File) : IdesetupSession? {
@@ -76,7 +76,7 @@ class IdesetupSession private constructor(
         val error = FileUtils.writeTextToFile("idsetupScript", script.absolutePath,
           StandardCharsets.UTF_8, it.readBytes().toString(StandardCharsets.UTF_8), false)
         if (error != null) {
-          log.error("Failed to write idesetup script", error.errorLogString)
+          log.error("Failed to write idesetup script: {}", error.errorLogString)
           return false
         }
       }

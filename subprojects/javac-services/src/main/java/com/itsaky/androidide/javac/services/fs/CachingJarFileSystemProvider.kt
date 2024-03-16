@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.javac.services.fs
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.zipfs2.JarFileSystemProvider
 import com.itsaky.androidide.zipfs2.ZipFileSystem
+import org.slf4j.LoggerFactory
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -34,7 +34,8 @@ import kotlin.io.path.pathString
  */
 object CachingJarFileSystemProvider : JarFileSystemProvider() {
   private val cachedFs = ConcurrentHashMap<String, CachedJarFileSystem>()
-  private val log = ILogger.newInstance("CachingJarFileSystemProvider")
+
+  private val log = LoggerFactory.getLogger(CachingJarFileSystemProvider::class.java)
 
   override fun createFs(path: Path, env: MutableMap<String, *>?): ZipFileSystem {
     val cached = cachedFs[path.normalize().pathString]
@@ -77,7 +78,7 @@ object CachingJarFileSystemProvider : JarFileSystemProvider() {
   fun clearCache(path: String) {
     val fs = cachedFs.remove(path)
     if (fs != null) {
-      log.debug("Clearing cached JAR file system for path:", path)
+      log.debug("Clearing cached JAR file system for path: {}", path)
       closeFs(fs)
     }
   }
@@ -86,7 +87,7 @@ object CachingJarFileSystemProvider : JarFileSystemProvider() {
     try {
       fs.doClose()
     } catch (err: Throwable) {
-      log.error("Failed to close cached zip file system: $fs", err)
+      log.error("Failed to close cached zip file system: {}", fs, err)
     }
   }
 

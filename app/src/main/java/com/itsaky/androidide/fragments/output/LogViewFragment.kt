@@ -30,10 +30,10 @@ import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.models.LogLine
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Level
 import com.itsaky.androidide.utils.jetbrainsMono
 import io.github.rosemoe.sora.widget.style.CursorAnimator
+import org.slf4j.LoggerFactory
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
@@ -50,6 +50,8 @@ abstract class LogViewFragment :
   ShareableOutputFragment {
 
   companion object {
+
+    private val log = LoggerFactory.getLogger(LogViewFragment::class.java)
 
     /** The maximum number of characters to append to the editor in case of huge log texts. */
     const val MAX_CHUNK_SIZE = 10000
@@ -87,55 +89,56 @@ abstract class LogViewFragment :
   private val cache = StringBuilder()
   private var cacheLineTrack = ArrayBlockingQueue<Int>(MAX_LINE_COUNT, true)
 
-  private val log = ILogger.newInstance("LogViewFragment")
-
   private val isTrimming = AtomicBoolean(false)
 
   private val logHandler = Handler(Looper.getMainLooper())
-  private val logRunnable =
-    object : Runnable {
-      override fun run() {
-        cacheLock.withLock {
-          if (cacheLineTrack.size == MAX_LINE_COUNT) {
-            cache.delete(0, cacheLineTrack.poll()!!)
-          }
+  private val logRunnable = object : Runnable {
+    override fun run() {
+      cacheLock.withLock {
+        if (cacheLineTrack.size == MAX_LINE_COUNT) {
+          cache.delete(0, cacheLineTrack.poll()!!)
+        }
 
-          cacheLineTrack.clear()
+        cacheLineTrack.clear()
 
-          if (cache.length < MAX_CHUNK_SIZE) {
-            append(cache)
-            cache.clear()
-          } else {
-            // Append the lines in chunks to avoid UI lags
-            val length = min(cache.length, MAX_CHUNK_SIZE)
-            append(cache.subSequence(0, length))
-            cache.delete(0, length)
-          }
+        if (cache.length < MAX_CHUNK_SIZE) {
+          append(cache)
+          cache.clear()
+        } else {
+          // Append the lines in chunks to avoid UI lags
+          val length = min(cache.length, MAX_CHUNK_SIZE)
+          append(cache.subSequence(0, length))
+          cache.delete(0, length)
+        }
 
-          if (cache.isNotEmpty()) {
-            // if we still have data left to append, resechedule this
-            logHandler.removeCallbacks(this)
-            logHandler.postDelayed(this, LOG_DELAY)
-          } else {
-            trimLinesAtStart()
-          }
+        if (cache.isNotEmpty()) {
+          // if we still have data left to append, resechedule this
+          logHandler.removeCallbacks(this)
+          logHandler.postDelayed(this, LOG_DELAY)
+        } else {
+          trimLinesAtStart()
         }
       }
     }
+  }
 
   fun appendLog(line: LogLine) {
 
-    var lineString =
-      if (isSimpleFormattingEnabled()) {
-        line.toSimpleString()
-      } else {
-        line.toString()
-      }
+    val lineString = if (isSimpleFormattingEnabled()) {
+      line.toSimpleString()
+    } else {
+      line.toString()
+    }
 
     line.recycle()
 
-    if (!lineString.endsWith("\n")) {
-      lineString += "\n"
+    appendLine(lineString)
+  }
+
+  protected fun appendLine(line: String) {
+    var lineStr = line
+    if (!lineStr.endsWith("\n")) {
+      lineStr += "\n"
     }
 
     if (isTrimming.get() || cache.isNotEmpty() || System.currentTimeMillis() - lastLog <= LOG_FREQUENCY) {
@@ -143,7 +146,7 @@ abstract class LogViewFragment :
         logHandler.removeCallbacks(logRunnable)
 
         // If the log lines are too frequent, cache the lines to log them later at once
-        cache.append(lineString)
+        cache.append(lineStr)
         logHandler.postDelayed(logRunnable, LOG_DELAY)
 
         lastLog = System.currentTimeMillis()
@@ -159,7 +162,7 @@ abstract class LogViewFragment :
 
     lastLog = System.currentTimeMillis()
 
-    append(lineString)
+    append(lineStr)
     trimLinesAtStart()
   }
 
@@ -188,7 +191,7 @@ abstract class LogViewFragment :
 
         isTrimming.set(true)
         val lastLine = lineCount - MAX_LINE_COUNT
-        log.debug("Deleting log text till line $lastLine")
+        log.debug("Deleting log text till line {}", lastLine)
         delete(0, 0, lastLine, getColumnCount(lastLine))
         isTrimming.set(false)
       }
@@ -240,11 +243,8 @@ abstract class LogViewFragment :
       }
     }
 
-    IDEColorSchemeProvider.readSchemeAsync(
-      context = requireContext(),
-      coroutineScope = editor.editorScope,
-      type = LogLanguage.TS_TYPE
-    ) { scheme ->
+    IDEColorSchemeProvider.readSchemeAsync(context = requireContext(),
+      coroutineScope = editor.editorScope, type = LogLanguage.TS_TYPE) { scheme ->
       val language = TreeSitterLanguageProvider.forType(LogLanguage.TS_TYPE, requireContext())
       checkNotNull(language) { "No TreeSitterLanguage found for type ${LogLanguage.TS_TYPE}" }
 

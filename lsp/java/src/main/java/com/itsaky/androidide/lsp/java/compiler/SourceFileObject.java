@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.compiler;
 import com.google.common.base.MoreObjects;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.utils.DocumentUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Objects;
-
 import jdkx.lang.model.element.Modifier;
 import jdkx.lang.model.element.NestingKind;
 import jdkx.tools.JavaFileObject;

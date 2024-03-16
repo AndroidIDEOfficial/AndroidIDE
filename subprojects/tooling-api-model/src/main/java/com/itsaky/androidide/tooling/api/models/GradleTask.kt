@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.api.models
 
-import java.io.Serializable
-
 /**
  * A Gradle task.
  *

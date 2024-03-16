@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.utils
 
+import org.slf4j.LoggerFactory
+import java.io.PrintStream
+
 /**
  * A stop watch helps to log duration between the time when the instance of the stopwatch instance
  * was created and the time when [StopWatch.log] or [StopWatch.lap] method is called.
@@ -32,20 +35,27 @@ constructor(
   var lastLap: Long = start
 ) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(StopWatch::class.java)
+  }
 
   fun log() {
-    log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
+    log.debug("{} completed in {}ms", label, System.currentTimeMillis() - start)
   }
 
   fun lap(message: String) {
-    log.debug("$message in ${System.currentTimeMillis() - start}ms")
+    log.debug("{} in {}ms", message, System.currentTimeMillis() - start)
     lastLap = System.currentTimeMillis()
   }
 
   fun lapFromLast(message: String) {
-    log.debug("$message in ${System.currentTimeMillis() - lastLap}ms")
+    log.debug("{} in {}ms", message, System.currentTimeMillis() - lastLap)
     lastLap = System.currentTimeMillis()
+  }
+
+  fun writeTo(stream: PrintStream) {
+    stream.println("$label completed in ${System.currentTimeMillis() - start}ms")
   }
 }
 

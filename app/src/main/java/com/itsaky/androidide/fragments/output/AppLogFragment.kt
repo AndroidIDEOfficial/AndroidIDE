@@ -31,7 +31,7 @@ import com.itsaky.androidide.services.log.LogReceiverImpl
 import com.itsaky.androidide.services.log.LogReceiverService
 import com.itsaky.androidide.services.log.LogReceiverServiceConnection
 import com.itsaky.androidide.services.log.lookupLogService
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class AppLogFragment : LogViewFragment() {
 
-  private val log = ILogger.newInstance("AppLogFragment")
   private val isBoundToLogReceiver = AtomicBoolean(false)
 
   private var logServiceConnection: LogReceiverServiceConnection? = null
@@ -75,6 +74,11 @@ class AppLogFragment : LogViewFragment() {
         return
       }
     }
+  }
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(AppLogFragment::class.java)
   }
 
   override fun isSimpleFormattingEnabled() = false
@@ -130,8 +134,8 @@ class AppLogFragment : LogViewFragment() {
       }
 
       val context = context ?: return
-      val intent = Intent(context, LogReceiverService::class.java)
-        .setAction(LogReceiverService.ACTION_CONNECT_LOG_CONSUMER)
+      val intent = Intent(context, LogReceiverService::class.java).setAction(
+          LogReceiverService.ACTION_CONNECT_LOG_CONSUMER)
 
       val serviceConnection = logServiceConnection ?: LogReceiverServiceConnection { binder ->
         logReceiverImpl = binder

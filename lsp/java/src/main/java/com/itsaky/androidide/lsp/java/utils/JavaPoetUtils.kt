@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.utils
 
-import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ImportCollectingCodeWriter

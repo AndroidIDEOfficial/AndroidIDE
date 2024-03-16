@@ -21,12 +21,12 @@ import com.android.builder.model.v2.models.Versions
 import com.itsaky.androidide.builder.model.DefaultSyncIssue
 import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.utils.AndroidPluginVersion
 import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.MINIMUM_SUPPORTED
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.LogUtils
+import com.itsaky.androidide.utils.StopWatch
 import org.gradle.api.Action
 import org.gradle.tooling.BuildController
 import org.gradle.tooling.UnknownModelException

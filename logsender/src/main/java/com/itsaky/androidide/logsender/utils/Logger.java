@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.logsender.utils;
 
-import com.itsaky.androidide.utils.ILogger;
+import java.util.Arrays;
+import org.slf4j.LoggerFactory;
 
 /**
  * Static methods for logging messages.
@@ -25,21 +26,74 @@ import com.itsaky.androidide.utils.ILogger;
  * @author Akash Yadav
  */
 public class Logger {
-  public static final ILogger LOG = ILogger.newInstance("LogSender");
+
+  private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Logger.class);
 
   public static void error(Object... messages) {
-    LOG.error(messages);
+    if (messages == null || messages.length == 0) {
+      return;
+    }
+    if (messages.length == 1) {
+      LOG.error(String.valueOf(messages[0]));
+      return;
+    }
+
+    if (messages.length == 2) {
+      LOG.error(String.valueOf(messages[0]), messages[1]);
+      return;
+    }
+
+    LOG.error(String.valueOf(messages[0]), Arrays.copyOfRange(messages, 1, messages.length));
   }
 
   public static void warn(Object... messages) {
-    LOG.warn(messages);
+    if (messages == null || messages.length == 0) {
+      return;
+    }
+    if (messages.length == 1) {
+      LOG.warn(String.valueOf(messages[0]));
+      return;
+    }
+
+    if (messages.length == 2) {
+      LOG.warn(String.valueOf(messages[0]), messages[1]);
+      return;
+    }
+
+    LOG.warn(String.valueOf(messages[0]), Arrays.copyOfRange(messages, 1, messages.length));
   }
 
   public static void info(Object... messages) {
-    LOG.info(messages);
+    if (messages == null || messages.length == 0) {
+      return;
+    }
+    if (messages.length == 1) {
+      LOG.info(String.valueOf(messages[0]));
+      return;
+    }
+
+    if (messages.length == 2) {
+      LOG.info(String.valueOf(messages[0]), messages[1]);
+      return;
+    }
+
+    LOG.info(String.valueOf(messages[0]), Arrays.copyOfRange(messages, 1, messages.length));
   }
 
   public static void debug(Object... messages) {
-    LOG.debug(messages);
+    if (messages == null || messages.length == 0) {
+      return;
+    }
+    if (messages.length == 1) {
+      LOG.debug(String.valueOf(messages[0]));
+      return;
+    }
+
+    if (messages.length == 2) {
+      LOG.debug(String.valueOf(messages[0]), messages[1]);
+      return;
+    }
+
+    LOG.debug(String.valueOf(messages[0]), Arrays.copyOfRange(messages, 1, messages.length));
   }
 }

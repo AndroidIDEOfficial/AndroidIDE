@@ -19,16 +19,18 @@ package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.utils.ILogger;
-
+import java.util.List;
 import org.eclipse.lemminx.commons.BadLocationException;
 import org.eclipse.lemminx.dom.DOMDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-/** XML formatter support. */
+/**
+ * XML formatter support.
+ */
 public class XMLFormatter {
-  private static final ILogger LOG = ILogger.newInstance("XMLFormatter");
+
+  private static final Logger LOG = LoggerFactory.getLogger(XMLFormatter.class);
 
   /**
    * Returns a List containing a single TextEdit, containing the newly formatted changes of the

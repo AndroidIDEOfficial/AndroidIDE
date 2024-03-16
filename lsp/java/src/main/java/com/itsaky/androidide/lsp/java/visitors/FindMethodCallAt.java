@@ -17,7 +17,11 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
-import com.itsaky.androidide.utils.ILogger;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.NestingKind;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.lang.model.type.TypeMirror;
 import openjdk.source.tree.AssignmentTree;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
@@ -31,14 +35,8 @@ import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
 
-import jdkx.lang.model.element.Element;
-import jdkx.lang.model.element.NestingKind;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.type.TypeKind;
-import jdkx.lang.model.type.TypeMirror;
-
 public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Integer> {
-  private static final ILogger LOG = ILogger.newInstance("main");
+
   private final Trees trees;
   private final SourcePositions pos;
   private CompilationUnitTree root;
@@ -94,7 +92,9 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
 
   @Override
   public MethodInvocationTree reduce(MethodInvocationTree r1, MethodInvocationTree r2) {
-    if (r1 != null) return r1;
+    if (r1 != null) {
+      return r1;
+    }
     return r2;
   }
 
@@ -173,7 +173,9 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
       TypeMirror typeMirror = this.trees.getTypeMirror(getCurrentPath());
       if (typeMirror != null
           && typeMirror.getKind() != TypeKind.NONE
-          && typeMirror.getKind() != TypeKind.ERROR) return typeMirror.toString();
+          && typeMirror.getKind() != TypeKind.ERROR) {
+        return typeMirror.toString();
+      }
     }
     return null;
   }
@@ -226,7 +228,9 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
     while (element != null) {
       if (element instanceof TypeElement) {
         TypeElement type = (TypeElement) element;
-        if (type.getNestingKind() == NestingKind.TOP_LEVEL) return type;
+        if (type.getNestingKind() == NestingKind.TOP_LEVEL) {
+          return type;
+        }
       }
 
       element = element.getEnclosingElement();
@@ -239,7 +243,9 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
       if (element instanceof TypeElement) {
         TypeElement type = (TypeElement) element;
         final ClassTree tree = trees.getTree(type);
-        if (tree != null) return type;
+        if (tree != null) {
+          return type;
+        }
       }
 
       element = element.getEnclosingElement();

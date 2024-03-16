@@ -26,17 +26,17 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import openjdk.source.tree.CompilationUnitTree
-import openjdk.source.tree.MemberSelectTree
-import openjdk.source.util.TreePath
-import openjdk.source.util.Trees
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind.METHOD
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.Modifier.STATIC
 import jdkx.lang.model.element.Name
 import jdkx.lang.model.element.TypeElement
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.tree.MemberSelectTree
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
+import java.nio.file.Path
 
 /**
  * Completes static imports.
@@ -113,7 +113,7 @@ class StaticImportCompletionProvider(
       list.add(method(task, value, !endsWithParen, matchLevel, partial))
     }
 
-    log.info("...found " + list.size + " static imports")
+    log.info("...found {} static imports", list.size)
 
     return CompletionResult(list)
   }

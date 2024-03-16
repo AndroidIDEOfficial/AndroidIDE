@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.adapters
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +28,6 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.contributors.Contributor
 import com.itsaky.androidide.databinding.LayoutContributorsItemBinding
-import com.itsaky.androidide.templates.Template
 
 /**
  * @author Akash Yadav

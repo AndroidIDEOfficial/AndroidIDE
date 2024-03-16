@@ -23,13 +23,15 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cache maps a file + an arbitrary key to a value. When the file is modified, the mapping expires.
  */
 public class Cache<K, V> {
 
-  private static final ILogger LOG = ILogger.newInstance("Cache");
+  private static final Logger LOG = LoggerFactory.getLogger(Cache.class);
   // Cannot access FileManager from this module
   private static Object FileManager_INSTANCE;
   private static Method FileManager_getLastModified;

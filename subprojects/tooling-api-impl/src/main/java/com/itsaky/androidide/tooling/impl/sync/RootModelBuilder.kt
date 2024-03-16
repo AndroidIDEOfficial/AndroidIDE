@@ -27,9 +27,9 @@ import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
 import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.Main.finalizeLauncher
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
-import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.model.idea.IdeaProject
+import org.slf4j.LoggerFactory
 import java.io.Serializable
 
 /**
@@ -38,7 +38,8 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 class RootModelBuilder(initializationParams: InitializeProjectParams) :
-  AbstractModelBuilder<RootProjectModelBuilderParams, IProject>(initializationParams), Serializable {
+  AbstractModelBuilder<RootProjectModelBuilderParams, IProject>(initializationParams),
+  Serializable {
 
   private val serialVersionUID = 1L
 
@@ -111,7 +112,7 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
       executor.withCancellationToken(cancellationToken)
     }
 
-    val logger = ILogger.newInstance("ProjectReader")
+    val logger = LoggerFactory.getLogger("RootModelBuilder")
     logger.warn("Starting build. See build output for more details...")
 
     if (Main.client != null) {
@@ -119,7 +120,7 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
     }
 
     return executor.run().also {
-      logger.debug("Build action executed. Result:", it)
+      logger.debug("Build action executed. Result: {}", it)
     }
   }
 

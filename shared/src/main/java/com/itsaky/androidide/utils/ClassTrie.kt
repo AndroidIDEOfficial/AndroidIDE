@@ -18,7 +18,7 @@
 package com.itsaky.androidide.utils
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.*
+import java.util.function.Predicate
 
 /**
  * Maps classes with their package name segments.

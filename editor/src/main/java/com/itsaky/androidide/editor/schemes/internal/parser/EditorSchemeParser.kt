@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.editor.schemes.internal.parser
 
-import androidx.core.util.set
 import com.google.gson.stream.JsonReader
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser.EditorColors

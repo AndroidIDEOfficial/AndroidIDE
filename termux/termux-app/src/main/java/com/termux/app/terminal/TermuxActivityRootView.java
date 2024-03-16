@@ -11,10 +11,8 @@ import android.view.WindowInsets;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.termux.app.TermuxActivity;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.view.ViewUtils;

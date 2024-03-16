@@ -22,14 +22,14 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ConvertFieldToBlock
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.resources.R
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class FieldToBlockAction : BaseJavaCodeAction() {
@@ -37,9 +37,13 @@ class FieldToBlockAction : BaseJavaCodeAction() {
   override val id: String = "ide.editor.lsp.java.diagnostics.fieldToBlock"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override val titleTextRes: Int = R.string.action_convert_to_block
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(FieldToBlockAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)
@@ -48,7 +52,7 @@ class FieldToBlockAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!data.hasRequiredData( DiagnosticItem::class.java)) {
+    if (!data.hasRequiredData(DiagnosticItem::class.java)) {
       markInvisible()
       return
     }

@@ -21,8 +21,8 @@ import com.google.gson.JsonParseException
 import com.google.gson.stream.JsonReader
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.tasks.executeAsyncProvideError
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object SnippetParser {
 
-  private val log = ILogger.newInstance("SnippetParser")
+  private val log = LoggerFactory.getLogger(SnippetParser::class.java)
 
   fun <S : ISnippetScope> parse(
     lang: String,
@@ -86,7 +86,7 @@ object SnippetParser {
       }
     }) { result, err ->
       if (result == null || err != null) {
-        log.error("Failed to load '${type}' snippets", err)
+        log.error("Failed to load '{}' snippets", type, err)
       }
     }
   }

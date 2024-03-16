@@ -78,7 +78,14 @@ import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration
 import com.github.javaparser.printer.configuration.PrinterConfiguration
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.lsp.java.visitors.PrettyPrintingVisitor
-import com.itsaky.androidide.utils.ILogger
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.element.TypeParameterElement
+import jdkx.lang.model.element.VariableElement
+import jdkx.lang.model.type.ExecutableType
+import jdkx.lang.model.type.TypeKind
+import jdkx.lang.model.type.TypeMirror
+import jdkx.lang.model.type.TypeVariable
 import openjdk.source.tree.AnnotationTree
 import openjdk.source.tree.AssignmentTree
 import openjdk.source.tree.BlockTree
@@ -98,23 +105,13 @@ import openjdk.source.tree.StatementTree
 import openjdk.source.tree.Tree
 import openjdk.source.tree.TypeParameterTree
 import openjdk.source.tree.VariableTree
-import java.util.*
-import java.util.function.*
-import java.util.stream.*
-import jdkx.lang.model.element.ExecutableElement
-import jdkx.lang.model.element.Modifier
-import jdkx.lang.model.element.TypeParameterElement
-import jdkx.lang.model.element.VariableElement
-import jdkx.lang.model.type.ExecutableType
-import jdkx.lang.model.type.TypeKind
-import jdkx.lang.model.type.TypeMirror
-import jdkx.lang.model.type.TypeVariable
-import kotlin.jvm.optionals.getOrNull
 import org.jetbrains.annotations.Contract
+import java.util.function.Predicate
+import java.util.stream.IntStream
+import java.util.stream.Stream
+import kotlin.jvm.optionals.getOrNull
 
 object JavaParserUtils {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   /**
    * Collects all the type names from the given node.
@@ -128,8 +125,8 @@ object JavaParserUtils {
     if (returnType != null) {
       if (
         returnType.kind != TypeKind.VOID &&
-          returnType.kind != TypeKind.TYPEVAR &&
-          !returnType.kind.isPrimitive
+        returnType.kind != TypeKind.TYPEVAR &&
+        !returnType.kind.isPrimitive
       ) {
         val fqn = getTypeToImport(returnType)
         if (fqn != null) {
@@ -242,6 +239,7 @@ object JavaParserUtils {
       LONG,
       FLOAT,
       INT -> IntegerLiteralExpr("0")
+
       else -> NullLiteralExpr()
     }
   }
@@ -572,8 +570,8 @@ object JavaParserUtils {
     methodDeclaration.parameters =
       IntStream.range(0, method.parameters.size)
         .mapToObj {
-          return@mapToObj toParameter(type!!.parameterTypes[it], method.parameters[it]).also {
-            parameter ->
+          return@mapToObj toParameter(type!!.parameterTypes[it],
+            method.parameters[it]).also { parameter ->
             val firstType = getTypeWithoutBounds(parameter.type)
             parameter.type = firstType
           }

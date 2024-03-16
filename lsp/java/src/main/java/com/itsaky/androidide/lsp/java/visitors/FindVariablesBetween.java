@@ -18,7 +18,8 @@
 package com.itsaky.androidide.lsp.java.visitors;
 
 import androidx.annotation.NonNull;
-
+import java.util.ArrayList;
+import java.util.List;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.VariableTree;
 import openjdk.source.util.JavacTask;
@@ -26,9 +27,6 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Finds variables between the given start and end indexes.

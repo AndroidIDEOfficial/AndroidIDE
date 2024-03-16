@@ -19,7 +19,6 @@ package com.itsaky.androidide.actions
 
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * Marker class for actions that execute build related tasks.
@@ -28,7 +27,6 @@ import com.itsaky.androidide.utils.ILogger
  */
 abstract class BaseBuildAction : EditorActivityAction() {
 
-  protected val log: ILogger = ILogger.newInstance(javaClass.simpleName)
   protected val buildService: BuildService?
     get() = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
 

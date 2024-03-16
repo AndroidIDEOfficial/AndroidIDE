@@ -48,7 +48,6 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.ui.CodeEditorView;
 import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
 import io.github.rosemoe.sora.text.Content;
@@ -64,6 +63,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import kotlin.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -72,7 +73,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
   public static final int MAX_DIAGNOSTIC_FILES = 10;
   public static final int MAX_DIAGNOSTIC_ITEMS_PER_FILE = 20;
-  protected static final ILogger LOG = ILogger.newInstance("AbstractLanguageClient");
+  protected static final Logger LOG = LoggerFactory.getLogger(IDELanguageClientImpl.class);
   private static IDELanguageClientImpl mInstance;
   private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
   protected EditorHandlerActivity activity;
@@ -168,10 +169,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     final var action = params.getAction();
     if (!canUseActivity()) {
-      LOG.error(
-          "Unable to perform code action",
-          "activity=" + null,
-          "action=" + action);
+      LOG.error("Unable to perform code action activity=null action={}", action);
       FlashbarUtilsKt.flashError(string.msg_cannot_perform_fix);
       return;
     }
@@ -199,8 +197,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         (result, throwable) -> {
           progress.dismiss();
           if (result == null || throwable != null || !result) {
-            LOG.error(
-                "Unable to perform code action", "result=" + result, "throwable=" + throwable);
+            LOG.error("Unable to perform code action result={}", result, throwable);
             FlashbarActivityUtilsKt.flashError(this.activity, string.msg_cannot_perform_fix);
           } else if (editor != null) {
             editor.executeCommand(action.getCommand());
@@ -328,10 +325,8 @@ public class IDELanguageClientImpl implements ILanguageClient {
       // Trim the diagnostics list if we have too many diagnostic items.
       // Including a lot of diagnostic items will result in UI lag when they are shown
       if (fileDiagnostics.size() > MAX_DIAGNOSTIC_ITEMS_PER_FILE) {
-        LOG.warn(
-            "Limiting diagnostics to",
+        LOG.warn("Limiting diagnostics to {} items for file {}",
             MAX_DIAGNOSTIC_ITEMS_PER_FILE,
-            "items for file",
             file.getName());
 
         fileDiagnostics = fileDiagnostics.subList(0, MAX_DIAGNOSTIC_ITEMS_PER_FILE);

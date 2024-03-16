@@ -6,17 +6,21 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireEditor
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.resources.R.string
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 
 class RemoveUnusedImportsAction : BaseJavaCodeAction() {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   override val id: String = "ide.editor.lsp.java.removeUnusedImports"
   override var label: String = ""
   override val titleTextRes: Int = string.action_remove_unused_imports
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(RemoveUnusedImportsAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

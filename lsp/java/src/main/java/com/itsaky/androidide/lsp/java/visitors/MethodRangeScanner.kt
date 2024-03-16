@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.visitors
 import androidx.core.util.Pair
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.utils.ILogger
 import openjdk.source.tree.CompilationUnitTree
 import openjdk.source.tree.LineMap
 import openjdk.source.tree.MethodTree
@@ -28,6 +27,7 @@ import openjdk.source.util.TreePath
 import openjdk.source.util.TreePathScanner
 import openjdk.source.util.Trees
 import openjdk.tools.javac.api.JavacTaskImpl
+import org.slf4j.LoggerFactory
 
 /**
  * Visits all methods and adds them to the given list of pair of method range and its tree.
@@ -37,11 +37,14 @@ import openjdk.tools.javac.api.JavacTaskImpl
 class MethodRangeScanner(val task: JavacTaskImpl) :
   TreePathScanner<Unit, MutableList<Pair<Range, TreePath>>>() {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
   var root: CompilationUnitTree? = null
   var lines: LineMap? = null
   val pos = Trees.instance(task).sourcePositions
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(MethodRangeScanner::class.java)
+  }
 
   override fun visitCompilationUnit(
     node: CompilationUnitTree?,
@@ -63,7 +66,7 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
     val end = getEndPosition(node)
 
     if (start == null || end == null) {
-      log.warn("Method '${node.name}' skipped. Invalid position.")
+      log.warn("Method '{}' skipped. Invalid position.", node.name)
       return
     }
 

@@ -21,7 +21,6 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.progress.ICancelChecker
-import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
 
 /**
@@ -34,8 +33,6 @@ abstract class BaseJavaServiceProvider(
   protected val compiler: JavaCompilerService,
   protected val settings: IServerSettings
 ) {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   /** Abort the completion if cancelled. */
   fun abortCompletionIfCancelled() {

@@ -60,11 +60,11 @@ import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.inflater.drawable.DrawableParserFactory
 import com.itsaky.androidide.inflater.utils.module
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
 
-private val log = ILogger.newInstance("ParseUtilsKt")
+private val log = LoggerFactory.getLogger("ParseUtilsKt")
 
 // TODO : We need a more descriptive string here
 private const val DEFAULT_STRING_VALUE = "AndroidIDE"
@@ -235,7 +235,7 @@ fun parseLayoutReference(value: String): File? {
     }
   val type = parseResourceReference(value)?.second ?: return null
   if (type != LAYOUT) {
-    log.warn("Layout file reference is expected but '$type' was found for value '$value'")
+    log.warn("Layout file reference is expected but '{}' was found for value '{}'", type, value)
     return null
   }
   return parseReference(value, type, null, layoutResolver)
@@ -247,7 +247,8 @@ fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPA
 }
 
 @JvmOverloads
-fun parseColor(@Suppress("UNUSED_PARAMETER") context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
+fun parseColor(@Suppress("UNUSED_PARAMETER") context: Context, value: String,
+  def: Int = Color.TRANSPARENT): Int {
   if (value.isEmpty()) {
     return def
   }
@@ -268,7 +269,7 @@ fun parseHexColor(value: String, def: Int = Color.TRANSPARENT): Int {
   return try {
     Color.parseColor(value)
   } catch (err: Throwable) {
-    log.warn("Unable to parse color code", value)
+    log.warn("Unable to parse color code: {}", value)
     def
   }
 }
@@ -318,9 +319,11 @@ fun parseDimension(
     return when (value) {
       "wrap_content" -> LayoutParams.WRAP_CONTENT.toFloat()
       "fill_parent",
-      "match_parent", -> LayoutParams.MATCH_PARENT.toFloat()
+      "match_parent",
+      -> LayoutParams.MATCH_PARENT.toFloat()
+
       else -> {
-        log.warn("Cannot infer type of dimension resource: '$value'")
+        log.warn("Cannot infer type of dimension resource: '{}'", value)
         def
       }
     }
@@ -371,7 +374,10 @@ fun <T> parseReference(
   val (pck, type, name) = parseResourceReference(value) ?: return def
   if (type != expectedType) {
     log.warn(
-      "Reference of type '$expectedType' is expected but '$type' was found for value '$value'"
+      "Reference of type '{}' is expected but '{}' was found for value '{}'",
+      expectedType,
+      type,
+      value
     )
     return def
   }

@@ -51,7 +51,7 @@ public class LogSenderService extends Service {
 
   @Override
   public void onCreate() {
-    Logger.LOG.logThis();
+    Logger.debug("[LogSenderService] onCreate()");
     super.onCreate();
     setupNotificationChannel();
     startForeground(NOTIFICATION_ID, buildNotification());
@@ -106,7 +106,7 @@ public class LogSenderService extends Service {
 
   @Override
   public void onTaskRemoved(Intent rootIntent) {
-    Logger.LOG.logThis();
+    Logger.debug("[LogSenderService] [onTaskRemoved]", rootIntent);
 
     if (!logSender.isConnected() && !logSender.isBinding()) {
       Logger.debug("Not bound to AndroidIDE. Ignored.");
@@ -120,7 +120,7 @@ public class LogSenderService extends Service {
 
   @Override
   public void onDestroy() {
-    Logger.LOG.logThis();
+    Logger.debug("[LogSenderService] [onDestroy]");
     if (!logSender.isConnected() && !logSender.isBinding()) {
       Logger.debug("Not bound to AndroidIDE. Ignored.");
       return;

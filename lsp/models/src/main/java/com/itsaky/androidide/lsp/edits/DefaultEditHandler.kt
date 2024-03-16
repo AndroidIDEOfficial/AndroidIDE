@@ -23,10 +23,10 @@ import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.util.RewriteHelper
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.snippet.parser.CodeSnippetParser
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 
 /**
  * Default edit handler for completion items.
@@ -35,7 +35,10 @@ import io.github.rosemoe.sora.widget.CodeEditor
  */
 open class DefaultEditHandler : IEditHandler {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(DefaultEditHandler::class.java)
+  }
 
   override fun performEdits(
     item: CompletionItem,

@@ -1,8 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+import ch.qos.logback.core.util.EnvUtil
 import com.itsaky.androidide.build.config.BuildConfig
+import com.itsaky.androidide.desugaring.ch.qos.logback.core.util.DesugarEnvUtil
 import com.itsaky.androidide.desugaring.utils.JavaIOReplacements.applyJavaIOReplacements
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
+import kotlin.reflect.jvm.javaMethod
 
 plugins {
   id("com.android.application")
@@ -15,6 +18,13 @@ plugins {
 
 apply {
   plugin(AndroidIDEAssetsPlugin::class.java)
+}
+
+buildscript {
+  dependencies {
+    classpath(libs.logging.logback.core)
+    classpath(libs.composite.desugaringCore)
+  }
 }
 
 android {
@@ -45,9 +55,20 @@ kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEv
 
 desugaring {
   replacements {
-    includePackage("org.eclipse.jgit")
+    includePackage(
+      "org.eclipse.jgit",
+      "ch.qos.logback.classic.util",
+    )
 
     applyJavaIOReplacements()
+
+    // EnvUtil.logbackVersion() uses newer Java APIs like Class.getModule() which is not available
+    // on Android. We replace the method usage with DesugarEnvUtil.logbackVersion() which
+    // always returns null
+    replaceMethod(
+      EnvUtil::logbackVersion.javaMethod!!,
+      DesugarEnvUtil::logbackVersion.javaMethod!!
+    )
   }
 }
 

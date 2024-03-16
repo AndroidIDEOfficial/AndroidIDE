@@ -21,8 +21,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.ChangeBounds
-import androidx.transition.TransitionManager.beginDelayedTransition
 import com.itsaky.androidide.uidesigner.adapters.WidgetsCategoryAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutUiWidgetsCategoryBinding
 import com.itsaky.androidide.uidesigner.models.UiWidgetCategory

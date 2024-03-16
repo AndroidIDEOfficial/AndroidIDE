@@ -18,11 +18,8 @@
 package com.itsaky.androidide.projects.util;
 
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader;
-import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader;
 import com.itsaky.androidide.utils.ClassTrie;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides class names from the boot classpath (i.e. android.jar).
@@ -39,26 +38,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BootClasspathProvider {
 
   private static final Map<String, ClassTrie> bootClasspathClasses = new ConcurrentHashMap<>();
-  private static final ILogger LOG = ILogger.newInstance("BootClassProvider");
+  private static final Logger LOG = LoggerFactory.getLogger(BootClasspathProvider.class);
 
   /**
    * Updates the boot classpath cache. If a classpath is already indexed, it is skipped.
    *
    * @param classpaths The full file paths of JAR files to index.
    * @return <code>true</code> if the the classpath cache was updated. <code>false</code> otherwise.
-   *     <p>This method <code>true</code> if and only if any new classpath classes are added into
-   *     the cache.
+   * <p>This method <code>true</code> if and only if any new classpath classes are added into
+   * the cache.
    */
   public static synchronized boolean update(Collection<String> classpaths) {
     final var watch = new StopWatch("Indexing " + classpaths.size() + " bootclasspaths");
     var count = 0;
     for (final var classpath : classpaths) {
       if (bootClasspathClasses.containsKey(classpath)) {
-        LOG.info("Skipping indexing for boot classpath as it is already indexed:", classpath);
+        LOG.info("Skipping indexing for boot classpath as it is already indexed: {}", classpath);
         continue;
       }
 
-      LOG.debug("Indexing boot classpath:", classpath);
+      LOG.debug("Indexing boot classpath: {}", classpath);
       final var classes =
           new JarFsClasspathReader().listClasses(Collections.singleton(new File(classpath)));
       final var trie = new ClassTrie();

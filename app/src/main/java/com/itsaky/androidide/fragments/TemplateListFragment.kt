@@ -30,8 +30,8 @@ import com.itsaky.androidide.databinding.FragmentTemplateListBinding
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.utils.FlexboxUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.viewmodel.MainViewModel
+import org.slf4j.LoggerFactory
 
 /**
  * A fragment to show the list of available templates.
@@ -48,6 +48,11 @@ class TemplateListFragment :
   private lateinit var globalLayoutListener: OnGlobalLayoutListener
 
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(TemplateListFragment::class.java)
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -83,8 +88,6 @@ class TemplateListFragment :
     binding.list.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
     super.onDestroyView()
   }
-
-  private val log = ILogger.newInstance("TemplateListFragment")
 
   private fun reloadTemplates() {
     _binding ?: return

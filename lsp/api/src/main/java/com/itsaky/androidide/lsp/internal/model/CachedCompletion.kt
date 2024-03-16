@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.internal.model
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.nio.file.Paths
 
 /**
@@ -34,8 +34,9 @@ private constructor(
   val result: com.itsaky.androidide.lsp.models.CompletionResult
 ) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   companion object {
+
+    private val log = LoggerFactory.getLogger(CachedCompletion::class.java)
 
     /** Empty cached completion. Could be used to represent "no cache available". */
     @JvmField

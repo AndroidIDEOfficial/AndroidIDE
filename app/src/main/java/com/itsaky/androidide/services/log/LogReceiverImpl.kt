@@ -22,7 +22,7 @@ import com.itsaky.androidide.logsender.ILogReceiver
 import com.itsaky.androidide.logsender.ILogSender
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tasks.executeAsyncProvideError
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -34,7 +34,6 @@ import kotlin.concurrent.withLock
  */
 class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub(), AutoCloseable {
 
-  private val log = ILogger.newInstance("LogReceiverImpl")
   private val senderHandler = MultiLogSenderHandler()
   private val senders = LogSendersRegistry()
   private val consumerLock = ReentrantLock(true)
@@ -47,6 +46,11 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
       field = value
       senderHandler.consumer = value?.let { synchronizeConsumer(value) }
     }
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(LogReceiverImpl::class.java)
+  }
 
   private fun synchronizeConsumer(consumer: (LogLine) -> Unit): (LogLine) -> Unit {
     return { line -> consumerLock.withLock { consumer(line) } }
@@ -98,7 +102,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
     // logging this also makes sure that the package name, pid and sender ID are
     // cached when the sender binds to the service
     // these fields are then used on disconnectAll()
-    log.info("Connecting to client ${caching.packageName}:${caching.id}:${caching.pid}")
+    log.info("Connecting to client {}:{}:{}", caching.packageName, caching.pid, caching.id)
 
     this.senders.put(caching)
 
@@ -117,7 +121,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
 
     doAsync("startReaders") {
       senders.getPendingSenders().forEach { sender ->
-        log.info("Notifying sender '${sender.packageName}' to start reading logs...")
+        log.info("Notifying sender '{}' to start reading logs...", sender.packageName)
         sender.startReader(sender.port)
       }
     }
@@ -153,7 +157,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   }
 
   private fun disconnectSender(packageName: String, senderId: String) {
-    log.info("Disconnecting from client: '${packageName}'")
+    log.info("Disconnecting from client: '{}'", packageName)
     this.senderHandler.removeClient(senderId)
     this.senders.remove(packageName)
     logTotalConnected()
@@ -172,7 +176,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   private fun doAsync(actionName: String, action: () -> Unit) {
     executeAsyncProvideError(action::invoke) { _, error ->
       if (error != null) {
-        log.error("Failed to perform action '$actionName'", error)
+        log.error("Failed to perform action '{}'", actionName, error)
       }
     }
   }
@@ -182,6 +186,6 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   }
 
   private fun logTotalConnected() {
-    log.info("Total clients connected: ${senders.size}")
+    log.info("Total clients connected: {}", senders.size)
   }
 }

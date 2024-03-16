@@ -22,15 +22,14 @@ import com.itsaky.androidide.javac.services.compiler.ReusableJavaCompiler
 import com.itsaky.androidide.lsp.java.parser.ts.TSJavaParser
 import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner.prune
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.withStopWatch
 import jdkx.tools.JavaFileObject
 import jdkx.tools.JavaFileObject.Kind.SOURCE
-import kotlin.io.path.name
 import openjdk.tools.javac.api.ClientCodeWrapper
 import openjdk.tools.javac.tree.JCTree.JCCompilationUnit
 import openjdk.tools.javac.util.Context
+import kotlin.io.path.name
 
 class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
 

@@ -20,7 +20,6 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.graphics.BlendMode
-import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.widget.AnalogClock
 import androidx.annotation.RequiresApi

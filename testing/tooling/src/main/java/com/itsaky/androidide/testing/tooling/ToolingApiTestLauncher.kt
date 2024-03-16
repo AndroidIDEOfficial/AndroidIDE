@@ -28,13 +28,14 @@ import com.itsaky.androidide.tooling.api.messages.LogMessageParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
-import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
-import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.api.util.ToolingProps
+import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
@@ -76,11 +77,12 @@ object ToolingApiTestLauncher {
       projectDir.pathString,
       client.gradleDistParams
     ),
-    log: ILogger = ILogger.newInstance("BuildOutputLogger"),
+    log: Logger = LoggerFactory.getLogger("BuildOutputLogger"),
     sysProps: Map<String, String> = emptyMap(),
     sysEnvs: Map<String, String> = emptyMap(),
     action: ToolingApiTestScope.() -> Unit
-  ) = launchServer(ToolingApiTestLauncherParams(projectDir, client, initParams, log, sysProps, sysEnvs), action)
+  ) = launchServer(
+    ToolingApiTestLauncherParams(projectDir, client, initParams, log, sysProps, sysEnvs), action)
 
   @JvmOverloads
   @JvmStatic
@@ -120,7 +122,8 @@ object ToolingApiTestLauncher {
 
     proc.onExit().whenComplete { process, error ->
       if (process != null) {
-        println("[ToolingApiTestLauncher] Tooling API server process finished with exit code: ${process.exitValue()}")
+        println(
+          "[ToolingApiTestLauncher] Tooling API server process finished with exit code: ${process.exitValue()}")
       }
       if (error != null) {
         println("[ToolingApiTestLauncher] Tooling API server process error")
@@ -191,7 +194,7 @@ object ToolingApiTestLauncher {
     var agpVersion: String = DEFAULT_AGP_VERSION,
     var gradleVersion: String = DEFAULT_GRADLE_VERSION,
     private val androidBlockConfig: String = "",
-    private val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName),
+    private val log: Logger = LoggerFactory.getLogger(MultiVersionTestClient::class.java),
     private val extraArgs: List<String> = emptyList(),
     private var excludeUnresolvedDependency: Boolean = false
   ) : IToolingApiClient {
@@ -216,7 +219,16 @@ object ToolingApiTestLauncher {
 
     override fun logMessage(params: LogMessageParams) {
       val line = params.toLogLine()
-      log.log(line.level, line.formattedTagAndMessage())
+      val message = line.message
+      val logger = LoggerFactory.getLogger(line.tag)
+      when (line.level) {
+        ILogger.Level.DEBUG -> logger.debug(message)
+        ILogger.Level.WARNING -> logger.warn(message)
+        ILogger.Level.ERROR -> logger.error(message)
+        ILogger.Level.INFO -> logger.info(message)
+
+        else -> logger.trace(message)
+      }
     }
 
     override fun logOutput(line: String) {
@@ -295,7 +307,7 @@ object ToolingApiTestLauncher {
     }
   }
 
-  private class Reader(val input: InputStream, val log: ILogger) : Runnable {
+  private class Reader(val input: InputStream, val log: Logger) : Runnable {
 
     override fun run() {
       try {
@@ -306,7 +318,7 @@ object ToolingApiTestLauncher {
           line = reader.readLine()
         }
       } catch (error: Throwable) {
-        log.error(error)
+        log.error("An error occurred reading from tooling API", error)
       }
     }
   }

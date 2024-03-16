@@ -17,11 +17,9 @@
 
 package com.itsaky.androidide.projects.api
 
-import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import java.io.File
-import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 
 /**

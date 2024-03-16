@@ -24,18 +24,19 @@ import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class SaveFileAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
-  private val log = ILogger.newInstance("SaveFileAction")
-
   override val id: String = "ide.editor.files.saveAll"
-
   override var requiresUIThread: Boolean = false
+
+  companion object {
+    private val log = LoggerFactory.getLogger(SaveFileAction::class.java)
+  }
 
   init {
     label = context.getString(R.string.save)

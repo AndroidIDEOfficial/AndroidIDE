@@ -28,7 +28,6 @@ import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.brackets.BracketsProvider
 import io.github.rosemoe.sora.lang.brackets.PairedBracket
 import io.github.rosemoe.sora.text.Content
@@ -39,18 +38,13 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
 
   companion object {
 
-    private val log = ILogger.newInstance("TsBracketPairs")
-
     val OPEN_NAME = "editor.brackets.open"
     val CLOSE_NAME = "editor.brackets.close"
 
   }
 
   override fun getPairedBracketAt(text: Content, index: Int): PairedBracket? {
-    if (!languageSpec.bracketsQuery.canAccess()
-      || languageSpec.bracketsQuery.patternCount <= 0
-      || !tree.canAccess()
-    ) {
+    if (!languageSpec.bracketsQuery.canAccess() || languageSpec.bracketsQuery.patternCount <= 0 || !tree.canAccess()) {
       return null
     }
 
@@ -59,13 +53,9 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
 
       var matched = false
 
-      return@use cursor.safeExecQueryCursor(
-        query = languageSpec.bracketsQuery,
-        tree = tree,
-        recycleNodeAfterUse = true,
-        whileTrue = { !matched },
-        debugName = "TsBracketPairs.getPairedBracketAt()"
-      ) { match ->
+      return@use cursor.safeExecQueryCursor(query = languageSpec.bracketsQuery, tree = tree,
+        recycleNodeAfterUse = true, whileTrue = { !matched },
+        debugName = "TsBracketPairs.getPairedBracketAt()") { match ->
         if (!languageSpec.bracketsPredicator.doPredicate(languageSpec.predicates, text, match)) {
           return@safeExecQueryCursor null
         }
@@ -100,8 +90,7 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
 
         if (matched && positions.find { it == -1 } == null) {
           return@safeExecQueryCursor PairedBracket(startStartByte / 2,
-            (startEndByte - startStartByte) / 2, endStartByte / 2,
-            (endEndByte - endStartByte) / 2)
+            (startEndByte - startStartByte) / 2, endStartByte / 2, (endEndByte - endStartByte) / 2)
         }
 
         return@safeExecQueryCursor null

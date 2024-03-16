@@ -19,10 +19,8 @@ package com.itsaky.androidide.inflater.vectormaster.models;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-
 import com.itsaky.androidide.inflater.vectormaster.DefaultValues;
 import com.itsaky.androidide.inflater.vectormaster.utilities.Utils;
-
 import java.util.ArrayList;
 
 public class GroupModel {

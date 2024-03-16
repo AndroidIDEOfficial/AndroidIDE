@@ -83,7 +83,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     if (MB_10 < event.file.length()) {
       flashError("File is too big!")
       log.warn(
-        "Cannot open ${event.file.name} as it is too big. File size: ${event.file.length()} bytes")
+        "Cannot open {} as it is too big. File size: {} bytes", event.file, event.file.length())
       return
     }
 

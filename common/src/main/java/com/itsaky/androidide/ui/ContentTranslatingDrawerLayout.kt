@@ -22,7 +22,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * A [DrawerLayout] that scales its content when navigation drawers are opened or closed.
@@ -38,11 +37,6 @@ class ContentTranslatingDrawerLayout : InterceptableDrawerLayout {
     attrs: AttributeSet?,
     defStyleAttr: Int
   ) : super(context, attrs, defStyleAttr)
-
-  companion object {
-
-    private val log = ILogger.newInstance("ContentTranslatingDrawerLayout")
-  }
 
   /**
    * The ID of the child view which will be translated when the navigation views are expanded/collapsed.

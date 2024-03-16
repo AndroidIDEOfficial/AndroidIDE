@@ -26,19 +26,16 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.itsaky.androidide.inflater.vectormaster.models.GroupModel;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.inflater.vectormaster.models.ClipPathModel;
+import com.itsaky.androidide.inflater.vectormaster.models.GroupModel;
 import com.itsaky.androidide.inflater.vectormaster.models.PathModel;
 import com.itsaky.androidide.inflater.vectormaster.models.VectorModel;
 import com.itsaky.androidide.inflater.vectormaster.utilities.Utils;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
+import com.itsaky.androidide.resources.R;
 import java.io.IOException;
 import java.util.Stack;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class VectorMasterView extends View {
 

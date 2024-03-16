@@ -163,7 +163,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     if (selectedFile == null || openedFiles.isEmpty()) {
       editorViewModel.writeOpenedFiles(null)
       editorViewModel.openedFilesCache = null
-      log.debug("[onPause]", "No opened files.", "Opened files cache reset to null.")
+      log.debug("[onPause] No opened files. Opened files cache reset to null.")
       isOpenedFilesSaved.set(true)
       return
     }
@@ -172,7 +172,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     editorViewModel.writeOpenedFiles(cache)
     editorViewModel.openedFilesCache = if (!isDestroying) cache else null
-    log.debug("[onPause]", "Opened files cache reset to ${editorViewModel.openedFilesCache}")
+    log.debug("[onPause] Opened files cache reset to {}", editorViewModel.openedFilesCache)
     isOpenedFilesSaved.set(true)
   }
 
@@ -307,8 +307,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     return try {
       getEditorAtIndex(index)
     } catch (th: Throwable) {
-      log.error("Unable to get editor fragment at opened file index", index)
-      log.error(th)
+      log.error("Unable to get editor fragment at opened file index {}", index, th)
       null
     }
   }
@@ -325,7 +324,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     val position = editorViewModel.getOpenedFileCount()
 
-    log.info("Opening file at index:", position, "file: ", file)
+    log.info("Opening file at index {} file:{}", position, file)
 
     val editor = CodeEditorView(this, file, selection!!)
     editor.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -504,11 +503,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val opened = editorViewModel.getOpenedFile(index)
-    log.info("Closing file:", opened)
+    log.info("Closing file: {}", opened)
 
     val editor = getEditorAtIndex(index)
     if (editor?.isModified == true) {
-      log.info("File has been modified:", opened)
+      log.info("File has been modified: {}", opened)
       notifyFilesUnsaved(listOf(editor)) {
         closeFile(index, runAfter)
       }
@@ -554,7 +553,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       val editor = getEditorAtIndex(index)
 
       if (editor == null) {
-        log.error("Unable to save file at index:", index)
+        log.error("Unable to save file at index {}", index)
         continue
       }
 
@@ -583,7 +582,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     // Files were already saved, close all files one by one
     for (i in 0 until count) {
       getEditorAtIndex(i)?.close() ?: run {
-        log.error("Unable to close file at index:", i)
+        log.error("Unable to close file at index {}", i)
       }
     }
 

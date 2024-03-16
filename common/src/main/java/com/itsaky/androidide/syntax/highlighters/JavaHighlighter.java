@@ -19,18 +19,14 @@ package com.itsaky.androidide.syntax.highlighters;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 
 public class JavaHighlighter implements Highlighter {
 

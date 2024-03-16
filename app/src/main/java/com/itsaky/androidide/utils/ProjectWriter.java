@@ -21,15 +21,10 @@ import static java.lang.Character.isUpperCase;
 import static java.lang.Character.toLowerCase;
 
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.interfaces.ProjectWriterCallback;
-
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import kotlin.text.StringsKt;
 
 public class ProjectWriter {

@@ -46,7 +46,7 @@ class EditorFeatures(
   override fun setSelection(start: Position, end: Position) {
     withEditor {
       if (!isValidPosition(start, true) || !isValidPosition(end, true)) {
-        log.warn("Invalid selection range: start=$start end=$end")
+        log.warn("Invalid selection range: start={} end={}", start, end)
         return@withEditor
       }
 

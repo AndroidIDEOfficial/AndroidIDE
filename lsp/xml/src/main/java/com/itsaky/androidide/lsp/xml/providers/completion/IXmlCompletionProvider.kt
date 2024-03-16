@@ -41,11 +41,12 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.utils.DocumentUtils
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMNode
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Base class for all XML completion providers.
@@ -53,14 +54,15 @@ import org.eclipse.lemminx.dom.DOMNode
  * @author Akash Yadav
  */
 abstract class IXmlCompletionProvider(private val provider: ICompletionProvider) {
-
-  protected val log: ILogger = ILogger.newInstance("XmlCompletionProvider")
+  
   protected lateinit var nodeAtCursor: DOMNode
   protected lateinit var attrAtCursor: DOMAttr
   protected lateinit var allNamespaces: Set<Pair<String, String>>
 
   companion object {
-
+    @JvmStatic
+    protected val log: Logger = LoggerFactory.getLogger(IXmlCompletionProvider::class.java)
+    
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
@@ -260,7 +262,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
     val pck = nsUri.substringAfter(NAMESPACE_PREFIX)
     if (pck.isBlank()) {
-      log.warn("Invalid namespace: $nsUri")
+      log.warn("Invalid namespace: {}", nsUri)
       return emptySet()
     }
 

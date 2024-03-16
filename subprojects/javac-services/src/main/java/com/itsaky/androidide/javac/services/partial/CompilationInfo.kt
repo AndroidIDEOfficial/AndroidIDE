@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.javac.services.partial
 
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileObject
 import openjdk.source.tree.CompilationUnitTree
 import openjdk.tools.javac.api.JavacTaskImpl
 import openjdk.tools.javac.api.JavacTrees
-import jdkx.tools.DiagnosticListener
-import jdkx.tools.JavaFileObject
 
 /**
  * Information about a compilation.

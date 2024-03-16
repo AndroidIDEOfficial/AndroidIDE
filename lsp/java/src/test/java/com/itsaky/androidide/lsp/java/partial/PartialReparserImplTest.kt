@@ -26,6 +26,7 @@ import com.itsaky.androidide.lsp.java.models.CompilationRequest
 import com.itsaky.androidide.lsp.java.models.PartialReparseRequest
 import com.itsaky.androidide.lsp.java.visitors.PrintingVisitor
 import com.itsaky.androidide.models.Range
+import jdkx.lang.model.type.ArrayType
 import openjdk.source.tree.ExpressionStatementTree
 import openjdk.source.tree.LiteralTree
 import openjdk.source.tree.Tree
@@ -40,7 +41,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import jdkx.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)

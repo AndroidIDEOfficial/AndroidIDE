@@ -26,12 +26,6 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import openjdk.source.tree.MemberSelectTree
-import openjdk.source.tree.Scope
-import openjdk.source.util.TreePath
-import openjdk.source.util.Trees
-import openjdk.tools.javac.code.Symbol
-import java.nio.file.Path
 import jdkx.lang.model.element.ElementKind.CONSTRUCTOR
 import jdkx.lang.model.element.ElementKind.METHOD
 import jdkx.lang.model.element.ExecutableElement
@@ -40,6 +34,12 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.type.ArrayType
 import jdkx.lang.model.type.DeclaredType
 import jdkx.lang.model.type.TypeVariable
+import openjdk.source.tree.MemberSelectTree
+import openjdk.source.tree.Scope
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
+import openjdk.tools.javac.code.Symbol
+import java.nio.file.Path
 
 /**
  * Completions for member select.
@@ -63,11 +63,11 @@ class MemberSelectCompletionProvider(
     val select =
       path.leaf as? MemberSelectTree
         ?: run {
-          log.error("A member select tree was expected but was ${path.leaf.javaClass}")
+          log.error("A member select tree was expected but was {}", path.leaf.javaClass)
           return CompletionResult.EMPTY
         }
 
-    log.info("...complete members of " + select.expression)
+    log.info("...complete members of {}", select.expression)
 
     val exprPath = TreePath(path, select.expression)
     val isStatic = trees.getElement(exprPath) is TypeElement
@@ -79,8 +79,10 @@ class MemberSelectCompletionProvider(
       is ArrayType -> completeArrayMemberSelect(isStatic, partial)
       is TypeVariable ->
         completeTypeVariableMemberSelect(task, scope, type, isStatic, partial, endsWithParen)
+
       is DeclaredType ->
         completeDeclaredTypeMemberSelect(task, scope, type, isStatic, partial, endsWithParen)
+
       else -> CompletionResult.EMPTY
     }
   }
@@ -120,6 +122,7 @@ class MemberSelectCompletionProvider(
           partial,
           endsWithParen
         )
+
       is TypeVariable ->
         completeTypeVariableMemberSelect(
           task,
@@ -129,6 +132,7 @@ class MemberSelectCompletionProvider(
           partial,
           endsWithParen
         )
+
       else -> CompletionResult.EMPTY
     }
   }
@@ -147,7 +151,11 @@ class MemberSelectCompletionProvider(
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
     val matchLevels = mutableMapOf<String, MatchLevel>()
 
-    log.debug("DeclaredType $typeElement with members ${(typeElement as Symbol).members()} in scope: $scope")
+    log.debug("DeclaredType {} with members {} in scope: {}",
+      typeElement,
+      (typeElement as Symbol).members(),
+      scope
+    )
 
     abortIfCancelled()
     abortCompletionIfCancelled()
@@ -176,7 +184,7 @@ class MemberSelectCompletionProvider(
       }
     }
 
-    log.debug("Found ${list.size} members along with ${methods.size} methods")
+    log.debug("Found {} members along with {} methods", list.size, methods.size)
 
     abortIfCancelled()
     abortCompletionIfCancelled()
@@ -208,13 +216,13 @@ class MemberSelectCompletionProvider(
       if (method != null && method.modifiers.contains(STATIC)) {
         return false
       }
-      
+
       // If we find the enclosing class
       val thisElement = s.enclosingClass
       if (thisElement != null && thisElement.asType() == type) {
         return true
       }
-      
+
       // If the enclosing class is static, stop looking
       if (thisElement != null && thisElement.modifiers.contains(STATIC)) {
         return false

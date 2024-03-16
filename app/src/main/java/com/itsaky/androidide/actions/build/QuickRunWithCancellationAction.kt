@@ -42,6 +42,7 @@ import com.itsaky.androidide.utils.resolveAttr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -54,6 +55,11 @@ import java.io.File
  */
 class QuickRunWithCancellationAction(context: Context, override val order: Int) :
   BaseBuildAction() {
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(QuickRunWithCancellationAction::class.java)
+  }
 
   init {
     label = context.getString(R.string.quick_run_debug)
@@ -130,7 +136,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
   ) {
 
     val buildService = this.buildService ?: run {
-      log.error("Cannot execute task '$taskName'. BuildService not found.")
+      log.error("Cannot execute task '{}'. BuildService not found.", taskName)
       return
     }
 
@@ -143,7 +149,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       data.getActivity()
         ?: run {
           log.error(
-            "Cannot execute task '$taskName'. Activity instance not provided in ActionData.")
+            "Cannot execute task '{}'. Activity instance not provided in ActionData.", taskName)
           return
         }
 
@@ -154,17 +160,17 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
         buildService.executeTasks(taskName).get()
       }
 
-      log.debug("Task execution result:", result)
+      log.debug("Task execution result: {}", result)
 
       if (result?.isSuccessful != true) {
-        log.error("Tasks failed to execute: '$taskName'")
+        log.error("Tasks failed to execute: '{}'", taskName)
         return@launch
       }
 
       handleResult(data, result, module, variant)
     }.invokeOnCompletion { error ->
       if (error != null) {
-        log.error("Failed to run '$taskName'", error)
+        log.error("Failed to run '{}'", taskName, error)
       }
     }
   }
@@ -186,7 +192,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
 
       if (!result.wasEnqueued) {
         log.warn(
-          "Unable to enqueue cancellation request",
+          "Unable to enqueue cancellation request reason={} reason.message={}",
           result.failureReason,
           result.failureReason!!.message
         )
@@ -210,7 +216,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       return
     }
 
-    log.debug("Installing APK(s) for project: '${module.path}' variant: '${variant.name}'")
+    log.debug("Installing APK(s) for project: '{}' variant: '{}'", module.path, variant.name)
 
     val main = variant.mainArtifact
     val outputListingFile = main.assembleTaskOutputListingFile
@@ -219,15 +225,15 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       return
     }
 
-    log.verbose("Parsing metadata")
+    log.trace("Parsing metadata")
     val apkFile = ApkMetadata.findApkFile(outputListingFile)
     if (apkFile == null) {
-      log.error("No apk file specified in output listing file:", outputListingFile)
+      log.error("No apk file specified in output listing file: {}", outputListingFile)
       return
     }
 
     if (!apkFile.exists()) {
-      log.error("APK file specified in output listing file does not exist!", apkFile)
+      log.error("APK file specified in output listing file does not exist! {}", apkFile)
       return
     }
 
@@ -243,7 +249,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
         }
 
     activity.runOnUiThread {
-      log.debug("Installing APK:", apk)
+      log.debug("Installing APK: {}", apk)
 
       if (!apk.exists()) {
         log.error("APK file does not exist!")

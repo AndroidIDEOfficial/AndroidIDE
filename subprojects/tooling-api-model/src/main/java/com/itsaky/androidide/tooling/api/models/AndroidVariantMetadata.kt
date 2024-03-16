@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.api.models
 
-import java.io.Serializable
-
 /**
  * Metadata about a variant in an Android project.
  *

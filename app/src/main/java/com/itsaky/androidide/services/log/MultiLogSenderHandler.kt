@@ -21,16 +21,15 @@ import com.itsaky.androidide.logsender.socket.SenderInfoCommand
 import com.itsaky.androidide.logsender.socket.SocketCommandParser
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tasks.cancelIfActive
-import com.itsaky.androidide.utils.ILogger
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import java.lang.Thread.currentThread
 import java.net.ServerSocket
-import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -42,7 +41,6 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : AutoCloseable {
 
-  private val log = ILogger.newInstance("MultiLogSenderHandler")
   private val clients = ConcurrentHashMap<String, LogSenderHandler>()
   private val port = AtomicInteger(-1)
   private var isAlive = AtomicBoolean(false)
@@ -55,6 +53,10 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : AutoCloseab
       field = value
       clients.forEach { (_, client) -> client.consumer = value }
     }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(MultiLogSenderHandler::class.java)
+  }
 
   fun getPort(): Int {
     return port.get()
@@ -71,7 +73,7 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : AutoCloseab
 
     try {
       port.set(server.localPort)
-      log.info("Starting log receiver server socket at port ${getPort()}")
+      log.info("Starting log receiver server socket at port {}", getPort())
 
       while (job?.isCancelled != true && isAlive.get()) {
         val clientSocket = server.accept()

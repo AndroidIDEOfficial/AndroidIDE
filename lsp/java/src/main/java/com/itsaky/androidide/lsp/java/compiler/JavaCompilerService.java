@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.compiler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.javac.services.partial.CompilationInfo;
@@ -41,15 +40,8 @@ import com.itsaky.androidide.projects.util.BootClasspathProvider;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.Cache;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.source.tree.MethodTree;
-import openjdk.source.util.SourcePositions;
-import openjdk.source.util.TreePath;
-import openjdk.source.util.Trees;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -68,17 +60,23 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import jdkx.tools.Diagnostic;
 import jdkx.tools.JavaFileObject;
 import jdkx.tools.StandardLocation;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.Trees;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JavaCompilerService implements CompilerProvider {
 
   public static final JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
   private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
-  private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
+  private static final Logger LOG = LoggerFactory.getLogger(JavaCompilerService.class);
   protected final Set<String> classPathClasses;
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
@@ -290,7 +288,7 @@ public class JavaCompilerService implements CompilerProvider {
   private synchronized void reparseOrRecompile(CompilationRequest request) {
 //    if (needsRecompilation(request)) {
 //      LOG.warn("Cannot reparse. Recompilation is required");
-      recompile(request);
+    recompile(request);
 //    } else {
 //      LOG.debug("Trying to perform a reparse...");
 //      tryReparse(request);
@@ -309,7 +307,7 @@ public class JavaCompilerService implements CompilerProvider {
   private boolean isChangeValidForReparse() {
     return this.lastReparsePosition == Position.NONE
         || (this.newCursorPosition != Position.NONE
-            && this.lastReparsePosition.getLine() == this.newCursorPosition.getLine());
+        && this.lastReparsePosition.getLine() == this.newCursorPosition.getLine());
   }
 
   private void tryReparse(@NonNull final CompilationRequest request) {
@@ -339,7 +337,7 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     final MethodTree methodTree = (MethodTree) currentMethod.second.getLeaf();
-    LOG.debug("Trying to reparse method:", methodTree.getName());
+    LOG.debug("Trying to reparse method: {}", methodTree.getName());
 
     final CompilationInfo info =
         new CompilationInfo(
@@ -352,12 +350,11 @@ public class JavaCompilerService implements CompilerProvider {
 
     if (start < 0 || end < 0 || start > end || end >= partialRequest.contents.length()) {
       LOG.warn(
-          "Cannot reparse. Invalid change delta. end:",
+          "Cannot reparse. Invalid change delta. end: {} changeDelta: {} content.length: {}",
           end,
-          "changeDelta:",
           this.changeDelta,
-          "content.length:",
-          partialRequest.contents.length());
+          partialRequest.contents.length()
+      );
       recompile(request);
       return;
     }
@@ -375,7 +372,7 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     watch.log();
-    LOG.info("Successfully reparsed method", methodTree.getName());
+    LOG.info("Successfully reparsed method: {}", methodTree.getName());
     updateModificationCache(request);
     cachedCompile.updatePositions(info.cu, true);
     this.changeDelta = 0;
@@ -440,7 +437,7 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     // If the compiler needs additional source files that contain package-private files
-    LOG.info("...need to recompile with " + addFiles);
+    LOG.info("...need to recompile with {}", addFiles);
     firstAttempt.close();
     firstAttempt.borrow.close();
 

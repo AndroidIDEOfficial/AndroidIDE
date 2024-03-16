@@ -25,7 +25,6 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
 import com.itsaky.androidide.app.configuration.IJdkDistributionProvider;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,10 +36,12 @@ import java.util.concurrent.CompletableFuture;
 import kotlin.io.ConstantsKt;
 import kotlin.io.FilesKt;
 import org.jetbrains.annotations.Contract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ToolsManager {
 
-  private static final ILogger LOG = ILogger.newInstance("ToolsManager");
+  private static final Logger LOG = LoggerFactory.getLogger(ToolsManager.class);
 
   public static String COMMON_ASSET_DATA_DIR = "data/common";
 
@@ -136,7 +137,7 @@ public class ToolsManager {
 
       return version > fileVersion;
     } catch (Throwable err) {
-      LOG.error("Failed to read color scheme version for scheme '" + path + "'", err);
+      LOG.error("Failed to read color scheme version for scheme '{}'", path, err);
       return false;
     }
   }
@@ -164,7 +165,7 @@ public class ToolsManager {
   private static void deleteIdeenv() {
     final var file = new File(Environment.BIN_DIR, "ideenv");
     if (file.exists() && !file.delete()) {
-      LOG.warn("Unable to delete", file);
+      LOG.warn("Unable to delete file: {}", file);
     }
   }
 
@@ -182,7 +183,7 @@ public class ToolsManager {
       if (sourceAapt2.exists() && sourceAapt2.isFile()) {
         FilesKt.copyTo(sourceAapt2, Environment.AAPT2, true, ConstantsKt.DEFAULT_BUFFER_SIZE);
       } else {
-        LOG.error(sourceAapt2 + " file does not exist! This can be problematic.");
+        LOG.error("{} file does not exist! This can be problematic.", sourceAapt2);
       }
     }
 

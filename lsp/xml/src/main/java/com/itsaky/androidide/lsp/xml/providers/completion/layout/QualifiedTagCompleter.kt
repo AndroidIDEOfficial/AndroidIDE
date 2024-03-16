@@ -28,8 +28,8 @@ import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.utils.ClassTrie
-import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.internal.widgets.DefaultWidgetTable
+import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**

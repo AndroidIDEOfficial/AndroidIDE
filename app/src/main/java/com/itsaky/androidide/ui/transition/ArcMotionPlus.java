@@ -38,10 +38,10 @@ package com.itsaky.androidide.ui.transition;
  * </changeBounds>
  * }</pre>
  */
+
 import android.content.Context;
 import android.graphics.Path;
 import android.util.AttributeSet;
-
 import androidx.transition.PathMotion;
 
 public class ArcMotionPlus extends PathMotion {

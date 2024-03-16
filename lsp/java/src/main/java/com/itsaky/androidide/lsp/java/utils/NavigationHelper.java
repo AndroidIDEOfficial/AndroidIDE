@@ -38,14 +38,12 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.visitors.FindNameAt;
 import com.itsaky.androidide.progress.ICancelChecker;
+import java.nio.file.Path;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.Modifier;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
-
-import java.nio.file.Path;
-
-import jdkx.lang.model.element.Element;
-import jdkx.lang.model.element.Modifier;
 
 public class NavigationHelper {
 

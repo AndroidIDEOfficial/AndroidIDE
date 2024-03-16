@@ -18,9 +18,9 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
+import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
 class CopyAction(context: Context, override val order: Int) : BaseEditorAction() {

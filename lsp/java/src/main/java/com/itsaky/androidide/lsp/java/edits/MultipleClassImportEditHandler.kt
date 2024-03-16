@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.lsp.java.edits
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 /**
@@ -36,7 +36,10 @@ class MultipleClassImportEditHandler(
   file: Path
 ) : AdvancedJavaEditHandler(file) {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  companion object {
+
+    private val log = LoggerFactory.getLogger(MultipleClassImportEditHandler::class.java)
+  }
 
   override fun performEdits(
     compiler: JavaCompilerService,
@@ -48,7 +51,7 @@ class MultipleClassImportEditHandler(
       try {
         edits.addAll(EditHelper.addImportIfNeeded(compiler, file, imported, className))
       } catch (err: Throwable) {
-        log.error("Unable to compute edits to perform import for class:", className)
+        log.error("Unable to compute edits to perform import for class: {}", className)
       }
     }
     com.itsaky.androidide.lsp.util.RewriteHelper.performEdits(edits, editor)

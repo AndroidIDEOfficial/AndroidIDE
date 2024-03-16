@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.lsp.util;
 
-import static com.itsaky.androidide.utils.ILogger.newInstance;
-
 import com.itsaky.androidide.actions.ActionItem;
 import com.itsaky.androidide.actions.ActionMenu;
 import com.itsaky.androidide.actions.ActionsRegistry;
@@ -31,15 +29,13 @@ import com.itsaky.androidide.utils.ILogger;
  */
 public class LSPEditorActions {
 
-  private static final ILogger LOG = newInstance("LSPEditorActions");
-
   public static void ensureActionsMenuRegistered(IActionsMenuProvider provider) {
     final var registry = ActionsRegistry.getInstance();
     final var action =
         registry.findAction(ActionItem.Location.EDITOR_TEXT_ACTIONS, CodeActionsMenu.ID);
 
     if (action == null) {
-      LOG.error("Cannot find registered editor actions menu");
+      ILogger.ROOT.error("[LSPEditorActions] Cannot find registered editor actions menu");
       return;
     }
 

@@ -22,8 +22,8 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R
 
 /**
  * Attribute adapter for [Spinner].

@@ -22,12 +22,12 @@ import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lsp.java.parser.IJavaParser
 import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import jdkx.tools.JavaFileObject
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.slf4j.LoggerFactory
 
 /**
  * [IJavaParser] which uses tree sitter to parse source files.
@@ -36,7 +36,6 @@ import org.greenrobot.eventbus.ThreadMode
  */
 object TSJavaParser : IJavaParser<TSParseResult> {
 
-  private val log = ILogger.newInstance("TSJavaParser")
   private val cache = TSParseCache(15) // cache 15 results at max
 
   private var isClosed = false
@@ -45,6 +44,8 @@ object TSJavaParser : IJavaParser<TSParseResult> {
       check(!isClosed) { "${javaClass.simpleName} instance has been closed" }
       return field
     }
+
+  private val log = LoggerFactory.getLogger(TSJavaParser::class.java)
 
   init {
     EventBus.getDefault().register(this)

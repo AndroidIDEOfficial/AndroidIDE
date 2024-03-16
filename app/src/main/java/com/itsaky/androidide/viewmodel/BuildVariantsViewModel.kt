@@ -19,7 +19,6 @@ package com.itsaky.androidide.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 
 /**

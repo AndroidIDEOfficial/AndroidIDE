@@ -51,10 +51,10 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.TaskExecutor.CallbackWithError
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
 import com.itsaky.androidide.utils.flashError
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -87,9 +87,9 @@ constructor(
 
   val pagerAdapter: EditorBottomSheetTabAdapter
 
-  private val log = ILogger.newInstance("EditorBottomSheet")
-
   companion object {
+
+    private val log = LoggerFactory.getLogger(EditorBottomSheet::class.java)
 
     const val CHILD_HEADER = 0
     const val CHILD_SYMBOL_INPUT = 1
@@ -129,7 +129,7 @@ constructor(
       val fragment = pagerAdapter.getFragmentAtIndex(binding.tabs.selectedTabPosition)
 
       if (fragment !is ShareableOutputFragment) {
-        log.error("Unknown fragment:", fragment)
+        log.error("Unknown fragment: {}", fragment)
         return@setOnClickListener
       }
 
@@ -148,7 +148,7 @@ constructor(
     binding.clearFab.setOnClickListener {
       val fragment: Fragment = pagerAdapter.getFragmentAtIndex(binding.tabs.selectedTabPosition)
       if (fragment !is ShareableOutputFragment) {
-        log.error("Unknown fragment:", fragment)
+        log.error("Unknown fragment: {}", fragment)
         return@setOnClickListener
       }
       (fragment as ShareableOutputFragment).clearOutput()

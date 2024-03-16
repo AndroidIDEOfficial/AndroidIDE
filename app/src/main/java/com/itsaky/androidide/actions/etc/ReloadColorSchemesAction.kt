@@ -20,15 +20,11 @@ package com.itsaky.androidide.actions.etc
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
-import com.itsaky.androidide.tasks.executeAsyncProvideError
-import com.itsaky.androidide.tasks.executeWithProgress
 import com.itsaky.androidide.tasks.launchAsyncWithProgress
-import com.itsaky.androidide.utils.ILogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -45,8 +41,6 @@ class ReloadColorSchemesAction(context: Context, override val order: Int) : Edit
   // This property is set to true just to make sure that the ProgressDialog instance is created on
   // the UI thread
   override var requiresUIThread: Boolean = true
-
-  private val log = ILogger.newInstance("ReloadColorSchemesAction")
 
   init {
     label = context.getString(R.string.title_reload_color_schemes)

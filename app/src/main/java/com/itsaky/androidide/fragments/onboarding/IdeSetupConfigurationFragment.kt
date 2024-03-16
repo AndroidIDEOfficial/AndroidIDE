@@ -33,7 +33,6 @@ import android.text.Html
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.URLSpan
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.content.getSystemService

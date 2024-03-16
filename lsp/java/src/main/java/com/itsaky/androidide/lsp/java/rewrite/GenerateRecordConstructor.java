@@ -18,24 +18,15 @@
 package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
-
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
-import com.itsaky.androidide.preferences.utils.EditorUtilKt;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.EditHelper;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-import openjdk.source.tree.ClassTree;
-import openjdk.source.tree.MethodTree;
-import openjdk.source.tree.Tree;
-import openjdk.source.tree.VariableTree;
-import openjdk.source.util.SourcePositions;
-import openjdk.source.util.Trees;
-
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,13 +35,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-
 import jdkx.lang.model.element.Modifier;
 import jdkx.lang.model.element.TypeElement;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.Trees;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GenerateRecordConstructor extends Rewrite {
 
-  private static final ILogger LOG = ILogger.newInstance("main");
+  private static final Logger LOG = LoggerFactory.getLogger(GenerateRecordConstructor.class);
   final String className;
 
   public GenerateRecordConstructor(String className) {
@@ -60,12 +58,12 @@ public class GenerateRecordConstructor extends Rewrite {
   @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
-    LOG.info("Generate default constructor for " + className + "...");
+    LOG.info("Generate default constructor for {}...", className);
     // TODO this needs to fall back on looking for inner classes and package-private classes
     Path file = compiler.findTypeDeclaration(className);
 
     if (file == CompilerProvider.NOT_FOUND) {
-      LOG.warn("Unable to find source file for class:", this.className);
+      LOG.warn("Unable to find source file for class: {}", this.className);
       return CANCELLED;
     }
 
@@ -155,7 +153,7 @@ public class GenerateRecordConstructor extends Rewrite {
       if (member.getKind() == Tree.Kind.METHOD) {
         MethodTree method = (MethodTree) member;
         if (method.getReturnType() == null) continue;
-        LOG.info("...insert constructor before " + method.getName());
+        LOG.info("...insert constructor before {}", method.getName());
         return EditHelper.insertBefore(task.task, task.root(), method);
       }
     }

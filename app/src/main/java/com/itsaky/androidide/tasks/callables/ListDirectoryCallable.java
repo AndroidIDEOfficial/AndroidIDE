@@ -21,9 +21,7 @@
 package com.itsaky.androidide.tasks.callables;
 
 import android.text.TextUtils;
-
 import com.blankj.utilcode.util.FileUtils;
-
 import java.io.File;
 import java.io.FileFilter;
 

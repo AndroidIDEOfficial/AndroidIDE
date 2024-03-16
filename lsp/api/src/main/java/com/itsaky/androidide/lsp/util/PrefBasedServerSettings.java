@@ -18,10 +18,9 @@
 package com.itsaky.androidide.lsp.util;
 
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.lsp.api.IServerSettings;
+import com.itsaky.androidide.managers.PreferenceManager;
 
 /**
  * {@link IServerSettings} implementation which uses {@link

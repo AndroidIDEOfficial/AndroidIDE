@@ -17,13 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.utils;
 
-import static com.itsaky.androidide.utils.ILogger.newInstance;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite;
@@ -32,6 +28,13 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
@@ -40,17 +43,9 @@ import openjdk.source.tree.Tree;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 import openjdk.tools.javac.util.JCDiagnostic;
-
 import org.jetbrains.annotations.Contract;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import jdkx.lang.model.element.ExecutableElement;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.tools.Diagnostic;
-import jdkx.tools.JavaFileObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Akash Yadav
@@ -61,7 +56,7 @@ public class CodeActionUtils {
       Pattern.compile("^'((\\w+\\.)*\\w+)' is not thrown");
   private static final Pattern UNREPORTED_EXCEPTION =
       Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
-  private static final ILogger LOG = newInstance("JavaCodeActionUtils");
+  private static final Logger LOG = LoggerFactory.getLogger(CodeActionUtils.class);
 
   public static CodeActionItem createQuickFix(
       final CompilerProvider compiler, String title, Rewrite rewrite) {
@@ -104,7 +99,9 @@ public class CodeActionUtils {
   @Nullable
   public static String findClassNeedingConstructor(CompileTask task, Range range) {
     final ClassTree type = findClassTree(task, range);
-    if (type == null || hasConstructor(task, type)) return null;
+    if (type == null || hasConstructor(task, type)) {
+      return null;
+    }
     return qualifiedName(task, type);
   }
 
@@ -167,7 +164,7 @@ public class CodeActionUtils {
   public static String extractNotThrownExceptionName(String message) {
     final Matcher matcher = NOT_THROWN_EXCEPTION.matcher(message);
     if (!matcher.find()) {
-      LOG.warn(String.format("`%s` doesn't match `%s`", message, NOT_THROWN_EXCEPTION));
+      LOG.warn("`{}` doesn't match `{}`", message, NOT_THROWN_EXCEPTION);
       return "";
     }
     return matcher.group(1);
@@ -176,7 +173,7 @@ public class CodeActionUtils {
   public static String extractExceptionName(String message) {
     final Matcher matcher = UNREPORTED_EXCEPTION.matcher(message);
     if (!matcher.find()) {
-      LOG.warn(String.format("`%s` doesn't match `%s`", message, UNREPORTED_EXCEPTION));
+      LOG.warn("`{}` doesn't match `{}`", message, UNREPORTED_EXCEPTION);
       return "";
     }
     return matcher.group(1);

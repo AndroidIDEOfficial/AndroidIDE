@@ -33,9 +33,9 @@ import com.itsaky.androidide.lsp.models.CodeActionItem
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
 import jdkx.tools.Diagnostic
 import jdkx.tools.JavaFileObject
+import org.slf4j.LoggerFactory
 
 /** @author Akash Yadav */
 class AddImportAction : BaseJavaCodeAction() {
@@ -43,9 +43,13 @@ class AddImportAction : BaseJavaCodeAction() {
   override val id: String = "ide.editor.lsp.java.diagnostics.addImport"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.NOT_IMPORTED.id
-  private val log = ILogger.newInstance("AddImportAction")
 
   override val titleTextRes: Int = R.string.action_import_classes
+
+  companion object {
+
+    private val log = LoggerFactory.getLogger(AddImportAction::class.java)
+  }
 
   override fun prepare(data: ActionData) {
     super.prepare(data)

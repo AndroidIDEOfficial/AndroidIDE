@@ -35,6 +35,13 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jdkx.tools.JavaFileObject;
 import openjdk.tools.javac.code.ClassFinder;
 import openjdk.tools.javac.code.Flags;
 import openjdk.tools.javac.code.Kinds.Kind;
@@ -48,15 +55,6 @@ import openjdk.tools.javac.util.JCDiagnostic.DiagnosticType;
 import openjdk.tools.javac.util.JCDiagnostic.SimpleDiagnosticPosition;
 import openjdk.tools.javac.util.Log;
 import openjdk.tools.javac.util.Names;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Locale;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import jdkx.tools.JavaFileObject;
 
 /**
  * @author lahvac

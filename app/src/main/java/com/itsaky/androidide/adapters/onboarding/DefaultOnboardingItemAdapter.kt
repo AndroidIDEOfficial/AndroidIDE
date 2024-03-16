@@ -21,12 +21,9 @@ import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.LayoutOnboardingItemBinding
 import com.itsaky.androidide.models.OnboardingItem
-import com.itsaky.androidide.utils.resolveAttr
 
 /**
  * Default implmentation of [RecyclerView.Adapter] for showing [OnboardingItem]s.

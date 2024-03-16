@@ -28,6 +28,9 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.utils.DocumentUtils.isSameFile
+import jdkx.lang.model.element.Element
+import jdkx.tools.Diagnostic
+import jdkx.tools.JavaFileObject
 import openjdk.source.tree.BlockTree
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -40,10 +43,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Locale
 import java.util.regex.Pattern
-import jdkx.lang.model.element.Element
-import jdkx.tools.Diagnostic
-import jdkx.tools.JavaFileObject
-import java.lang.IndexOutOfBoundsException
 
 /**
  * Finds errors and warnings from a compilation task.

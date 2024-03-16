@@ -26,21 +26,15 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyw
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
 import static io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle;
 
-import com.itsaky.androidide.editor.language.incremental.IncrementalToken;
 import com.itsaky.androidide.editor.language.incremental.BaseIncrementalAnalyzeManager;
+import com.itsaky.androidide.editor.language.incremental.IncrementalToken;
 import com.itsaky.androidide.editor.language.incremental.LineState;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
-import com.itsaky.androidide.utils.ILogger;
-
-import java.lang.Override;
+import io.github.rosemoe.sora.lang.styling.Span;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.rosemoe.sora.lang.styling.Span;
-
 public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
-
-  private static final ILogger LOG = ILogger.newInstance("CppAnalyzer");
 
   public CppAnalyzer() {
     super(CPP14Lexer.class);
@@ -48,9 +42,9 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
 
   @Override
   protected int[][] getMultilineTokenStartEndTypes() {
-    final var start = new int[] {CPP14Lexer.Div, CPP14Lexer.Star};
-    final var end = new int[] {CPP14Lexer.Star, CPP14Lexer.Div};
-    return new int[][] {start, end};
+    final var start = new int[]{CPP14Lexer.Div, CPP14Lexer.Star};
+    final var end = new int[]{CPP14Lexer.Star, CPP14Lexer.Div};
+    return new int[][]{start, end};
   }
 
   @Override
@@ -228,6 +222,6 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
 
   @Override
   protected int[] getCodeBlockTokens() {
-    return new int[] {CPP14Lexer.LeftBrace, CPP14Lexer.RightBrace};
+    return new int[]{CPP14Lexer.LeftBrace, CPP14Lexer.RightBrace};
   }
 }

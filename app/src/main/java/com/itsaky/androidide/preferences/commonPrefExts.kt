@@ -19,7 +19,6 @@ package com.itsaky.androidide.preferences
 
 import androidx.preference.Preference
 import com.itsaky.androidide.utils.uncheckedCast
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlin.reflect.KMutableProperty0
 
 internal abstract class PropertyBasedMultiChoicePreference : MultiChoicePreference() {

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.uidesigner.utils
 
-import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 

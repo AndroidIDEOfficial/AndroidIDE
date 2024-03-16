@@ -20,7 +20,6 @@
 package com.itsaky.androidide.syntax.highlighters;
 
 import android.text.SpannableStringBuilder;
-
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 
 /**

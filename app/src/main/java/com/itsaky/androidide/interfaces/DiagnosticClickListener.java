@@ -17,9 +17,8 @@
  **************************************************************************************/
 package com.itsaky.androidide.interfaces;
 
-import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
-
+import com.itsaky.androidide.models.DiagnosticGroup;
 import java.io.File;
 
 public interface DiagnosticClickListener {

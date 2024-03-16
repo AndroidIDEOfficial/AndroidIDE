@@ -21,7 +21,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.CloseUtils;
 import com.itsaky.androidide.javac.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
@@ -30,9 +29,7 @@ import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +42,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
-
 import jdkx.tools.FileObject;
 import jdkx.tools.ForwardingJavaFileManager;
 import jdkx.tools.JavaFileObject;
@@ -53,18 +49,19 @@ import jdkx.tools.StandardLocation;
 import openjdk.tools.javac.api.JavacTool;
 import openjdk.tools.javac.file.JavacFileManager;
 import openjdk.tools.javac.util.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManager> {
 
-  public static final String ANDROIDIDE_CACHE_LOCATION = "ANDROIDIDE_CACHE_LOCATION";
   public static final SourceFileManager NO_MODULE;
-  private static final ILogger LOG;
+  private static final Logger LOG;
   private static final Map<ModuleProject, SourceFileManager> cachedFileManagers =
       new ConcurrentHashMap<>();
 
   static {
     // Initialize LOG first to prevent NPE
-    LOG = ILogger.newInstance("SourceFileManager");
+    LOG = LoggerFactory.getLogger(SourceFileManager.class);
     NO_MODULE = new SourceFileManager(null);
   }
 
@@ -81,8 +78,9 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
     }
 
     // Must be set before setting classpaths
-    System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, Environment.JAVA_HOME.getAbsolutePath());
-    
+    System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME,
+        Environment.JAVA_HOME.getAbsolutePath());
+
     setLocationLogError(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
     setLocationLogError(StandardLocation.CLASS_PATH, configureClasspaths(module));
     listLocations(EnumSet.of(StandardLocation.CLASS_PATH, StandardLocation.PLATFORM_CLASS_PATH));
@@ -93,18 +91,19 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
     if (module == null) {
       return emptySet();
     }
-  
+
     if (module instanceof AndroidModule) {
       final AndroidModule androidModule = (AndroidModule) module;
       setLocationLogError(StandardLocation.PLATFORM_CLASS_PATH, androidModule.getBootClassPaths());
     }
-  
+
     return module.getCompileClasspaths();
   }
 
   private static JavacFileManager createDelegateFileManager() {
     return JavacTool.create()
-        .getStandardFileManager(LOG::debug, Locale.getDefault(), StandardCharsets.UTF_8);
+        .getStandardFileManager(msg -> LOG.debug(String.valueOf(msg)), Locale.getDefault(),
+            StandardCharsets.UTF_8);
   }
 
   public void setLocationLogError(Location location, Iterable<File> searchPath) {
@@ -121,7 +120,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
         fileManager.cacheLocation(location);
       } catch (Exception e) {
         // Ignored
-        LOG.debug("Failed to list location:", location, e);
+        LOG.debug("Failed to list location: {}", location, e);
       }
     }
   }
@@ -151,7 +150,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
           nodes
               .filter(it -> it instanceof SourceClassTrie.SourceNode)
               .map(it -> asJavaFileObject((SourceClassTrie.SourceNode) it));
-  
+
       return stream::iterator;
     }
 
@@ -164,7 +163,9 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
       SourceFileObject source = (SourceFileObject) file;
       String packageName = packageNameOrEmpty(source.path);
       String className = removeExtension(source.path.getFileName().toString());
-      if (!packageName.isEmpty()) className = packageName + "." + className;
+      if (!packageName.isEmpty()) {
+        className = packageName + "." + className;
+      }
       return className;
     }
 
@@ -234,7 +235,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
   }
 
   private static SourceFileManager createForModule(@NonNull ModuleProject project) {
-    LOG.info("Creating source file manager instance for module:", project);
+    LOG.info("Creating source file manager instance for module: {}", project);
     return new SourceFileManager(project);
   }
 

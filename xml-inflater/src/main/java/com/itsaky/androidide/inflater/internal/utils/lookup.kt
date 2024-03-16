@@ -27,9 +27,9 @@ import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.ResourceTablePackage
 import com.itsaky.androidide.inflater.utils.module
-import com.itsaky.androidide.utils.ILogger
+import org.slf4j.LoggerFactory
 
-private val log: ILogger = ILogger.newInstance("ParseLookupUtils")
+private val log = LoggerFactory.getLogger("ParseLookupUtils")
 
 internal data class LookupResult(
   val table: ResourceTable,
@@ -49,7 +49,7 @@ internal fun lookupUnqualifedResource(
   val (table, group, pack, entry) =
     findUnqualifiedResourceEntry(type, name)
       ?: run {
-        log.warn("Unable to find resource entry '$value'")
+        log.warn("Unable to find resource entry '{}'", value)
         return null
       }
 

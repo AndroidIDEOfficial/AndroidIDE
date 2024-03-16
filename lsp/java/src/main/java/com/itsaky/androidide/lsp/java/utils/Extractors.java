@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

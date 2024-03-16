@@ -19,14 +19,12 @@ package com.itsaky.androidide.lsp.java.providers.definition
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.lsp.java.compiler.SourceFileObject
-import com.itsaky.androidide.lsp.java.utils.NavigationHelper
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ICancelChecker
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.tools.JavaFileObject
+import java.nio.file.Path
 
 /**
  * Finds definition of an element in other source locations.

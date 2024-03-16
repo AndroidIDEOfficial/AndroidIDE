@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.actions.common
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
-import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.api.ILspEditor
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.resources.R

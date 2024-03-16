@@ -45,8 +45,6 @@ package com.itsaky.androidide.utils
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.lang.NullPointerException
-import kotlin.jvm.Throws
 
 /**
  * Reads all bytes from this input stream and writes the bytes to the
