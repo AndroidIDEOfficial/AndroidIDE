@@ -33,6 +33,7 @@ android {
 
 dependencies {
 
+  implementation(projects.logger)
   implementation(projects.logsender)
 
   implementation(libs.androidx.appcompat)
