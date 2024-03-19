@@ -39,6 +39,11 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
       }
+
+      buildTypes.register("dev") {
+        initWith(buildTypes.getByName("release"))
+        isMinifyEnabled = false
+      }
     }
   }
 
