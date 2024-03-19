@@ -38,7 +38,9 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
   open var styles = Styles()
 
-  private var analyzeWorker: TsAnalyzeWorker? = null
+  private var _analyzeWorker: TsAnalyzeWorker? = null
+  val analyzeWorker: TsAnalyzeWorker?
+    get() = _analyzeWorker
 
   open fun updateTheme(theme: TsTheme) {
     this.theme = theme
@@ -49,7 +51,7 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
   override fun setReceiver(receiver: StyleReceiver?) {
     stylesReceiver = receiver
-    analyzeWorker?.stylesReceiver = receiver
+    _analyzeWorker?.stylesReceiver = receiver
   }
 
   override fun reset(content: ContentReference, extraArguments: Bundle) {
@@ -70,7 +72,13 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       lineCount = reference!!.lineCount
       edit(edit)
     }
-    analyzeWorker?.onMod(Mod(TextMod(start.index, end.index, edit, insertedContent.toString())))
+    _analyzeWorker?.onMod(Mod(TextMod(
+      start.index,
+      end.index,
+      edit,
+      insertedContent.toString(),
+      reference?.documentVersion ?: 0
+    )))
   }
 
   override fun delete(start: CharPosition, end: CharPosition, deletedContent: CharSequence) {
@@ -86,12 +94,18 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       lineCount = reference!!.lineCount
       edit(edit)
     }
-    analyzeWorker?.onMod(Mod(TextMod(start.index, end.index, edit, null)))
+    _analyzeWorker?.onMod(Mod(TextMod(
+      start.index,
+      end.index,
+      edit,
+      null,
+      reference?.documentVersion ?: 0
+    )))
   }
 
   override fun rerun() {
-    analyzeWorker?.stop()
-    analyzeWorker = null
+    _analyzeWorker?.stop()
+    _analyzeWorker = null
 
     (styles.spans as LineSpansGenerator?)?.tree?.close()
     styles.spans = null
@@ -99,17 +113,17 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
     val initText = reference?.reference?.toString() ?: ""
 
-    analyzeWorker = TsAnalyzeWorker(this, languageSpec, theme, styles, reference!!, spanFactory)
-    analyzeWorker!!.apply {
+    _analyzeWorker = TsAnalyzeWorker(this, languageSpec, theme, styles, reference!!, spanFactory)
+    _analyzeWorker!!.apply {
       this.stylesReceiver = this@TsAnalyzeManager.stylesReceiver
-      init(Init(initText))
+      init(Init(TextInit(initText, reference?.documentVersion ?: 0)))
       start()
     }
   }
 
   override fun destroy() {
-    analyzeWorker?.stop()
-    analyzeWorker = null
+    _analyzeWorker?.stop()
+    _analyzeWorker = null
 
     (styles.spans as LineSpansGenerator?)?.tree?.close()
     styles.spans = null

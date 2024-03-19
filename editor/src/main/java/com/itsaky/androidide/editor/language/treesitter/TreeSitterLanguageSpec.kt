@@ -29,7 +29,8 @@ import java.io.Closeable
  * @author Akash Yadav
  */
 class TreeSitterLanguageSpec
-@JvmOverloads constructor(val spec: TsLanguageSpec,
+@JvmOverloads constructor(
+  val spec: TsLanguageSpec,
   indentsQueryScm: String = ""
 ) : Closeable {
 
@@ -38,9 +39,12 @@ class TreeSitterLanguageSpec
     get() = spec.language
   // </editor-fold>
 
-  val indentsQuery: TSQuery? = if (indentsQueryScm.isBlank()) TSQuery.EMPTY else TSQuery.create(
-    language, indentsQueryScm)
-    .let { if (it.canAccess()) it else null }
+  val indentsQuery: TSQuery? = if (indentsQueryScm.isBlank()) {
+    TSQuery.EMPTY
+  } else {
+    TSQuery.create(language, indentsQueryScm)
+      .let { if (it.canAccess()) it else null }
+  }
 
   init {
     indentsQuery?.validateOrThrow(name = "indents")

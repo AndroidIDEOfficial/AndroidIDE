@@ -5,7 +5,7 @@ gradle-tooling = "8.6"
 junit-jupiter = "5.10.2"
 kotlin = "1.9.22"
 kotlin-coroutines = "1.8.0"
-tree-sitter = "4.2.0"
+tree-sitter = "4.3.1"
 editor = "0.23.4"
 glide = "4.16.0"
 androidx-vectordrawable = "1.1.0"
@@ -24,16 +24,16 @@ logback = "1.5.3"
 # Dependencies in composite build
 composite-appintro = { module = "com.itsaky.androidide.build:appintro" }
 composite-desugaringCore = { module = "com.itsaky.androidide.build:desugaring-core" }
-composite-fuzzysearch = { module ="com.itsaky.androidide.build:fuzzysearch" }
-composite-googleJavaFormat = { module ="com.itsaky.androidide.build:google-java-format" }
-composite-javaCompiler = { module ="com.itsaky.androidide.build:java-compiler" }
-composite-javac = { module ="com.itsaky.androidide.build:javac" }
-composite-jdkCompiler = { module ="com.itsaky.androidide.build:jdk-compiler" }
-composite-jdkJdeps = { module ="com.itsaky.androidide.build:jdk-jdeps" }
-composite-javapoet = { module ="com.itsaky.androidide.build:javapoet" }
-composite-jaxp = { module ="com.itsaky.androidide.build:jaxp" }
-composite-jdt = { module ="com.itsaky.androidide.build:jdt" }
-composite-layoutlibApi = { module ="com.itsaky.androidide.build:layoutlib-api" }
+composite-fuzzysearch = { module = "com.itsaky.androidide.build:fuzzysearch" }
+composite-googleJavaFormat = { module = "com.itsaky.androidide.build:google-java-format" }
+composite-javaCompiler = { module = "com.itsaky.androidide.build:java-compiler" }
+composite-javac = { module = "com.itsaky.androidide.build:javac" }
+composite-jdkCompiler = { module = "com.itsaky.androidide.build:jdk-compiler" }
+composite-jdkJdeps = { module = "com.itsaky.androidide.build:jdk-jdeps" }
+composite-javapoet = { module = "com.itsaky.androidide.build:javapoet" }
+composite-jaxp = { module = "com.itsaky.androidide.build:jaxp" }
+composite-jdt = { module = "com.itsaky.androidide.build:jdt" }
+composite-layoutlibApi = { module = "com.itsaky.androidide.build:layoutlib-api" }
 
 # AndroidIDE
 androidide-ts = { module = "com.itsaky.androidide.treesitter:android-tree-sitter", version.ref = "tree-sitter" }
@@ -95,9 +95,9 @@ androidx-nav-ui = { module = "androidx.navigation:navigation-ui-ktx", version.re
 androidx-tracing = { module = "androidx.tracing:tracing", version = "1.2.0" }
 androidx-tracing-ktx = { module = "androidx.tracing:tracing-ktx", version = "1.2.0" }
 androidx-viewpager = { module = "androidx.viewpager:viewpager", version = "1.0.0" }
-androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version = "1.0.0"}
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version = "1.0.0" }
 #noinspection GradleDependency
-androidx-window-v1alpha9 = { module = "androidx.window:window", version="1.0.0-alpha09" }
+androidx-window-v1alpha9 = { module = "androidx.window:window", version = "1.0.0-alpha09" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
 androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 

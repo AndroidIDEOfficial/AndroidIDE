@@ -1,42 +1,42 @@
-; Query for computing indents in tree-sitter language
-; Capture names can be 'indent' or 'outdent'. Any other capture name will be ignored
-; indent - increments indentation
-; outdent - decrements indentation
+; https://github.com/nvim-treesitter/nvim-treesitter/blob/57a8acf0c4ed5e7f6dda83c3f9b073f8a99a70f9/queries/java/indents.scm
 
-(class_body
-  "{" @indent
-  "}" @outdent)
+; format-ignore
+[
+  ; ... refers to the portion that this indent query will have effects on
+  (class_body)                        ; { ... } of `class X`
+  (enum_body)                         ; { ... } of `enum X`
+  (interface_body)                    ; { ... } of `interface X`
+  (constructor_body)                  ; { `modifier` X() {...} } inside `class X`
+  (annotation_type_body)              ; { ... } of `@interface X`
+  (block)                             ; { ... } that's not mentioned in this scope
+  (switch_block)                      ; { ... } in `switch X`
+  (array_initializer)                 ; [1, 2]
+  (argument_list)                     ; foo(...)
+  (formal_parameters)                 ; method foo(...)
+  (annotation_argument_list)          ; @Annotation(...)
+  (element_value_array_initializer)   ; { a, b } inside @Annotation()
+] @indent.begin
 
-(enum_body
-  "{" @indent
-  "}" @outdent)
+(expression_statement
+  (method_invocation) @indent.begin)
 
-(interface_body
-  "{" @indent
-  "}" @outdent)
+[
+  "("
+  ")"
+  "{"
+  "}"
+  "["
+  "]"
+] @indent.branch
 
-(constructor_body
-  "{" @indent
-  "}" @outdent)
+(annotation_argument_list
+  ")" @indent.end) ; This should be a special cased as `()` here doesn't have ending `;`
 
-(block
-  "{" @indent
-  "}" @outdent)
+"}" @indent.end
 
-(switch_block
-  "{" @indent
-  "}" @outdent)
+(line_comment) @indent.ignore
 
-(array_initializer
-  "{" @indent
-  "}" @outdent)
-
-(formal_parameters
-  "(" @indent
-  ")" @outdent)
-
-(argument_list
-  "(" @indent
-  ")" @outdent)
-
-; (expression_statement (method_invocation) @indent)
+[
+  (ERROR)
+  (block_comment)
+] @indent.auto

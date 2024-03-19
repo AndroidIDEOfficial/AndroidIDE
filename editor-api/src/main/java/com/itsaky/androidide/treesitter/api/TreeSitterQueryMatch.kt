@@ -29,7 +29,7 @@ class TreeSitterQueryMatch @JvmOverloads internal constructor(
   id: Int = 0,
   patternIndex: Int = 0,
   captures: Array<out TSQueryCapture?>? = null
-) : TSQueryMatch(id, patternIndex, captures),
+) : TSQueryMatch(id, patternIndex, captures, null),
   RecyclableObjectPool.Recyclable by DefaultRecyclable() {
 
   companion object {

@@ -102,10 +102,13 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-open class IDEEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null,
-  defStyleAttr: Int = 0, defStyleRes: Int = 0,
-  private val editorFeatures: EditorFeatures = EditorFeatures()) :
-  CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
+open class IDEEditor @JvmOverloads constructor(
+  context: Context,
+  attrs: AttributeSet? = null,
+  defStyleAttr: Int = 0,
+  defStyleRes: Int = 0,
+  private val editorFeatures: EditorFeatures = EditorFeatures()
+) : CodeEditor(context, attrs, defStyleAttr, defStyleRes), IEditor by editorFeatures, ILspEditor {
 
   @Suppress("PropertyName")
   internal var _file: File? = null
@@ -908,5 +911,9 @@ open class IDEEditor @JvmOverloads constructor(context: Context, attrs: Attribut
     } else {
       log.error("{} failed", action)
     }
+  }
+
+  override fun setSelectionAround(line: Int, column: Int) {
+    editorFeatures.setSelectionAround(line, column)
   }
 }
