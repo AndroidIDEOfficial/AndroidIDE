@@ -19,6 +19,7 @@ package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.utils.VMUtils
 import openjdk.tools.javac.file.CacheFSInfo
+import org.slf4j.LoggerFactory
 import java.nio.file.Path
 
 /**
@@ -27,26 +28,35 @@ import java.nio.file.Path
  * @author Akash Yadav
  */
 object CacheFSInfoSingleton : CacheFSInfo() {
-  
+
+  const val TEST_PROP_ENABLED_ON_JVM = "ide.testing.javac.fsCache.isEnabledOnJVM"
+  private val log = LoggerFactory.getLogger(CacheFSInfoSingleton::class.java)
+
   /**
    * Caches information about the given [Path].
    */
   @JvmOverloads
   fun cache(file: Path, cacheJarClasspath: Boolean = true) {
-    
-    if (VMUtils.isJvm()) {
-      return
+
+    if (System.getProperty(TEST_PROP_ENABLED_ON_JVM, null) != "true") {
+      if (VMUtils.isJvm()) {
+        return
+      }
     }
-    
-    // Cache canonical path
-    getCanonicalFile(file)
-    
-    // Cache attributes
-    getAttributes(file)
-    
-    // Cache jar classpath if requested
-    if (cacheJarClasspath) {
-      getJarClassPath(file)
+
+    try {
+      // Cache canonical path
+      getCanonicalFile(file)
+
+      // Cache attributes
+      getAttributes(file)
+
+      // Cache jar classpath if requested
+      if (cacheJarClasspath) {
+        getJarClassPath(file)
+      }
+    } catch (err: Throwable) {
+      log.warn("Failed to cache jar file: {}", file, err)
     }
   }
 }
