@@ -17,20 +17,13 @@
 
 package com.itsaky.androidide.logging.encoder;
 
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 
 /**
  * Encoder to format the log events in AndroidIDE.
  *
  * @author Akash Yadav
  */
-public class IDELogFormatEncoder extends PatternLayoutEncoder {
+public class IDELogFormatEncoder extends LayoutWrappingEncoder<IDELogFormatLayout> {
 
-  private static final String LOG_PATTERN = "%date %-5level [%thread] %logger{0}: %msg%n";
-
-  public IDELogFormatEncoder() {
-    super();
-    setPattern(LOG_PATTERN);
-    setOutputPatternAsHeader(true);
-  }
 }

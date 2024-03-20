@@ -17,11 +17,8 @@
 
 package com.itsaky.androidide.tooling.impl
 
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.AppenderBase
 import com.android.builder.model.v2.ide.LibraryType
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.logging.encoder.IDELogFormatEncoder
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
@@ -32,21 +29,6 @@ import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
-
-internal class CollectingAppender : AppenderBase<ILoggingEvent>() {
-
-  private val encoder = IDELogFormatEncoder()
-  private val string = StringBuilder()
-
-  override fun append(eventObject: ILoggingEvent?) {
-    string.append(encoder.layout.doLayout(eventObject))
-    string.append(System.lineSeparator())
-  }
-
-  override fun toString(): String {
-    return string.toString()
-  }
-}
 
 internal fun performBasicProjectAssertions(project: IProject, server: IToolingApiServer) {
   assertThat(project).isNotNull()

@@ -20,10 +20,10 @@ package com.itsaky.androidide.logging
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.core.Context
+import com.itsaky.androidide.logging.encoder.IDELogFormatLayout
 
 /**
  * An [AppenderBase] implementation to show the logs in the GUI.
@@ -36,13 +36,11 @@ class LifecycleAwareAppender @JvmOverloads constructor(
 ) : AppenderBase<ILoggingEvent>(), LifecycleEventObserver {
 
   private var currentState: Lifecycle.State? = null
-  private val encoder = PatternLayoutEncoder()
+  private val logLayout = IDELogFormatLayout()
 
   init {
     setName("LifecycleAwareAppender")
-
-    encoder.pattern = "%date %-5level [%thread] %logger{0}:"
-    encoder.isOutputPatternAsHeader = true
+    logLayout.isOmitMessage = true
   }
 
   fun attachTo(lifecycleOwner: LifecycleOwner) = attachTo(lifecycleOwner.lifecycle)
@@ -66,19 +64,19 @@ class LifecycleAwareAppender @JvmOverloads constructor(
   }
 
   override fun start() {
-    this.encoder.start()
+    this.logLayout.start()
     super.start()
   }
 
   override fun stop() {
     super.stop()
-    this.encoder.stop()
+    this.logLayout.stop()
     this.consumer = null
   }
 
   override fun setContext(context: Context?) {
     super.setContext(context)
-    this.encoder.context = context
+    this.logLayout.context = context
   }
 
   override fun append(eventObject: ILoggingEvent?) {
@@ -88,7 +86,7 @@ class LifecycleAwareAppender @JvmOverloads constructor(
 
     // When rendering the logs in the GUI, we need to ensure that the message does not span multiple lines
     // if it does, we need to prefix the message with the layout header
-    val prefix = encoder.layout.doLayout(eventObject)
+    val prefix = logLayout.doLayout(eventObject)
     eventObject.formattedMessage.split('\n').forEach {
       consumer?.invoke("$prefix $it")
     }
