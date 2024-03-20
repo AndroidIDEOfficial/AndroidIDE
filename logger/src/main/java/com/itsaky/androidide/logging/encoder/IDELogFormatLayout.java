@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.logging.encoder;
 
+import ch.qos.logback.classic.pattern.Abbreviator;
+import ch.qos.logback.classic.pattern.ClassNameOnlyAbbreviator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
 import java.text.SimpleDateFormat;
@@ -30,6 +32,7 @@ import java.util.Locale;
  */
 public class IDELogFormatLayout extends LayoutBase<ILoggingEvent> {
 
+  private final Abbreviator loggerNameAbbreviator = new ClassNameOnlyAbbreviator();
   private boolean omitMessage = false;
 
   public void setOmitMessage(boolean omitMessage) {
@@ -54,7 +57,7 @@ public class IDELogFormatLayout extends LayoutBase<ILoggingEvent> {
     builder.append(event.getThreadName());
     builder.append("]");
     builder.append(' ');
-    builder.append(event.getLoggerName());
+    builder.append(loggerNameAbbreviator.abbreviate(event.getLoggerName()));
     builder.append(": ");
 
     if (!isOmitMessage()) {
