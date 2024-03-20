@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.impl
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.buildinfo.BuildInfo
@@ -30,7 +28,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.slf4j.LoggerFactory
 
 /**
  * @author Akash Yadav
@@ -69,72 +66,47 @@ class CIOnlyToolingApiTests {
 
   @Test
   fun `test CI-only latest tested AGP version warning`() {
-    collectOuput { appender ->
-      val agpVersion = AndroidPluginVersion.parse(BuildInfo.AGP_VERSION_LATEST)
+    val agpVersion = AndroidPluginVersion.parse(BuildInfo.AGP_VERSION_LATEST)
 
-      val client = ToolingApiTestLauncher.MultiVersionTestClient(
-        agpVersion = agpVersion.toStringSimple(),
-        gradleVersion = BuildInfo.AGP_VERSION_GRADLE_LATEST
+    val client = ToolingApiTestLauncher.MultiVersionTestClient(
+      agpVersion = agpVersion.toStringSimple(),
+      gradleVersion = BuildInfo.AGP_VERSION_GRADLE_LATEST
+    )
+
+    ToolingApiTestLauncher.launchServer(
+      client = client,
+
+      // Version of Android Gradle Plugin that the tooling API should recognize
+      // as the latest one
+      sysProps = mapOf(
+        ToolingProps.TESTING_LATEST_AGP_VERSION
+            to ToolingApiTestLauncher.MultiVersionTestClient.DEFAULT_AGP_VERSION
       )
+    ) {
+      assertThat(result?.isSuccessful).isTrue()
 
-      ToolingApiTestLauncher.launchServer(
-        client = client,
-
-        // Version of Android Gradle Plugin that the tooling API should recognize
-        // as the latest one
-        sysProps = mapOf(
-          ToolingProps.TESTING_LATEST_AGP_VERSION
-              to ToolingApiTestLauncher.MultiVersionTestClient.DEFAULT_AGP_VERSION
-        )
-      ) {
-        val output = appender.toString()
-
-        if (result?.isSuccessful != true) {
-          // print the output if the initialization fails
-          println(output)
-        }
-
-        assertThat(result?.isSuccessful).isTrue()
-
-        val syncIssues = project.getProjectSyncIssues().get()
-        assertThat(syncIssues).isNotNull()
-        assertThat(syncIssues.syncIssues).isNotEmpty()
-        assertThat(
-          syncIssues.syncIssues.find { it.type == IDESyncIssue.TYPE_AGP_VERSION_TOO_NEW }).isNotNull()
-      }
+      val syncIssues = project.getProjectSyncIssues().get()
+      assertThat(syncIssues).isNotNull()
+      assertThat(syncIssues.syncIssues).isNotEmpty()
+      assertThat(
+        syncIssues.syncIssues.find { it.type == IDESyncIssue.TYPE_AGP_VERSION_TOO_NEW }).isNotNull()
     }
   }
 
   @Test
   fun `test CI-only minimum AGP version failure`() {
-    collectOuput { appender ->
-      val agpVersion = "7.1.0"
-      val client = ToolingApiTestLauncher.MultiVersionTestClient(agpVersion = agpVersion,
-        gradleVersion = "7.2")
-      ToolingApiTestLauncher.launchServer(client = client) {
-        assertThat(result?.isSuccessful).isFalse()
-
-        val output = appender.toString()
-        assertThat(output).contains(
-          "Android Gradle Plugin version $agpVersion is not supported by AndroidIDE.")
+    val agpVersion = "7.1.0"
+    val client = ToolingApiTestLauncher.MultiVersionTestClient(
+      agpVersion = agpVersion,
+      gradleVersion = "7.2",
+      outputValidator = { line ->
+        line.contains("Android Gradle Plugin version $agpVersion is not supported by AndroidIDE.")
       }
-    }
-  }
+    )
 
-  private fun <T : Any?> collectOuput(action: (appender: CollectingAppender) -> T): T {
-
-    val appender = CollectingAppender()
-    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-    appender.context = LoggerFactory.getILoggerFactory() as LoggerContext
-    appender.start()
-
-    rootLogger.addAppender(appender)
-
-    return try {
-      action(appender)
-    } finally {
-      appender.stop()
-      rootLogger.detachAppender(appender)
+    ToolingApiTestLauncher.launchServer(client = client) {
+      assertThat(result?.isSuccessful).isFalse()
+      assertThat(client.isOutputValid).isTrue()
     }
   }
 }

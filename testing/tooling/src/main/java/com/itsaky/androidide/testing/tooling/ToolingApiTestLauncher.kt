@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.testing.tooling
 
+import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
 import com.itsaky.androidide.testing.tooling.models.ToolingApiTestScope
 import com.itsaky.androidide.tooling.api.IProject
@@ -80,7 +81,7 @@ object ToolingApiTestLauncher {
     log: Logger = LoggerFactory.getLogger("BuildOutputLogger"),
     sysProps: Map<String, String> = emptyMap(),
     sysEnvs: Map<String, String> = emptyMap(),
-    action: ToolingApiTestScope.() -> Unit
+    action: ToolingApiTestScope.() -> Unit,
   ) = launchServer(
     ToolingApiTestLauncherParams(projectDir, client, initParams, log, sysProps, sysEnvs), action)
 
@@ -196,12 +197,17 @@ object ToolingApiTestLauncher {
     private val androidBlockConfig: String = "",
     private val log: Logger = LoggerFactory.getLogger(MultiVersionTestClient::class.java),
     private val extraArgs: List<String> = emptyList(),
-    private var excludeUnresolvedDependency: Boolean = false
+    private var excludeUnresolvedDependency: Boolean = false,
+    var outputValidator: (String) -> Boolean = { true },
   ) : IToolingApiClient {
+
+    var isOutputValid = false
+      private set
 
     val gradleDistParams: GradleDistributionParams
       get() = GradleDistributionParams.forVersion(this.gradleVersion)
 
+    @Suppress("ConstPropertyName")
     companion object {
 
       const val buildFile = "build.gradle"
@@ -232,7 +238,15 @@ object ToolingApiTestLauncher {
     }
 
     override fun logOutput(line: String) {
-      log.debug(line.trim())
+      val trimmed = line.trim()
+      val curr = this.isOutputValid;
+      this.isOutputValid = this.isOutputValid || outputValidator(trimmed)
+
+      if (!curr && this.isOutputValid) {
+        log.debug("Output validation succeeded")
+      }
+
+      log.debug(trimmed)
     }
 
     override fun prepareBuild(buildInfo: BuildInfo) {
@@ -261,7 +275,7 @@ object ToolingApiTestLauncher {
       onBuildResult(result)
     }
 
-    private fun onBuildResult(result: BuildResult) {
+    private fun onBuildResult(@Suppress("UNUSED_PARAMETER") result: BuildResult) {
       projectDir.resolve(buildFile).deleteIfExists()
       projectDir.resolve(appBuildFile).deleteIfExists()
     }
