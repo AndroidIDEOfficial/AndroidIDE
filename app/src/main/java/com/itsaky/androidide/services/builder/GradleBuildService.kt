@@ -226,8 +226,11 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     return mBinder
   }
 
-  override fun onListenerStarted(server: IToolingApiServer, projectProxy: IProject,
-    errorStream: InputStream) {
+  override fun onListenerStarted(
+    server: IToolingApiServer,
+    projectProxy: IProject,
+    errorStream: InputStream
+  ) {
     startServerOutputReader(errorStream)
     this.server = server
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy)
