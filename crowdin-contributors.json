@@ -79,8 +79,8 @@
     "id": "15757161",
     "username": "liziq",
     "name": "zhiq liu (liziq)",
-    "translated": 4088,
-    "approved": 2863,
+    "translated": 4120,
+    "approved": 3161,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15757161/medium/f3903c160404f095de68760f81609430.jpeg",
     "languages": [
       {
@@ -93,8 +93,8 @@
     "id": "15550047",
     "username": "andihasan97",
     "name": "Andi Hasan A (andihasan97)",
-    "translated": 3597,
-    "approved": 2136,
+    "translated": 3621,
+    "approved": 2160,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png",
     "languages": [
       {
@@ -114,6 +114,20 @@
       {
         "id": "ar",
         "name": "Arabic"
+      }
+    ]
+  },
+  {
+    "id": "15555625",
+    "username": "Smooth-E",
+    "name": "Smooth-E",
+    "translated": 2357,
+    "approved": 1671,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15555625/medium/1fc098969551e0430a579242afe26c5f.png",
+    "languages": [
+      {
+        "id": "ru",
+        "name": "Russian"
       }
     ]
   },
@@ -160,24 +174,10 @@
     ]
   },
   {
-    "id": "15555625",
-    "username": "Smooth-E",
-    "name": "Smooth-E",
-    "translated": 1800,
-    "approved": 86,
-    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15555625/medium/1fc098969551e0430a579242afe26c5f.png",
-    "languages": [
-      {
-        "id": "ru",
-        "name": "Russian"
-      }
-    ]
-  },
-  {
     "id": "12564628",
     "username": "krc440002",
     "name": "Furkan Karcıoğlu (krc440002)",
-    "translated": 1783,
+    "translated": 1799,
     "approved": 0,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/12564628/medium/addb4132479fae98076ae2fa4ccb42a4_default.png",
     "languages": [
@@ -258,6 +258,20 @@
       {
         "id": "pt-PT",
         "name": "Portuguese"
+      }
+    ]
+  },
+  {
+    "id": "16205550",
+    "username": "hassanowo013",
+    "name": "HASSAN OWO (hassanowo013)",
+    "translated": 285,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16205550/medium/75073a2fde9eb6735fae539714cda4e1.jpeg",
+    "languages": [
+      {
+        "id": "ar",
+        "name": "Arabic"
       }
     ]
   },
