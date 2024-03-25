@@ -16,7 +16,7 @@ androidx-work = "2.9.0"
 androidx-espresso = "3.5.1"
 retrofit = "2.9.0"
 markwon = "4.6.2"
-maven-publish-plugin = "0.27.0"
+maven-publish-plugin = "0.28.0"
 logback = "1.5.3"
 
 [libraries]
