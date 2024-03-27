@@ -444,7 +444,7 @@
   <string name="msg_files_being_saved">फ़ाइल सहेजने का कार्य पहले से ही प्रगति पर है!</string>
   <string name="title_install_tools">SDK इंस्टालेशन</string>
   <string name="subtitle_install_tools">विकास उपकरण इनस्टॉल करें</string>
-  <string name="msg_install_tools">आईडीई के काम करने के लिए विकास उपकरण इनस्टॉल होने चाहिए। डन बटन पर क्लिक करने से उपकरण इनस्टॉल करने के लिए टर्मिनल खुल जाएगा। इंस्टॉल करने के लिए, <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">इन</a > निर्देशों का पालन करें । <br/><br/>या <a href="https://androidide.com/docs/">दस्तावेज़ीकरण</a>]]> पढ़ें।</string>
+  <string name="msg_install_tools">आईडीई के काम करने के लिए विकास उपकरण इनस्टॉल होने चाहिए। डन बटन पर क्लिक करने से उपकरण इनस्टॉल करने के लिए टर्मिनल खुल जाएगा। इंस्टॉल करने के लिए, <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">इन</a > निर्देशों का पालन करें । <br/><br/>या <a href="https://docs.androidide.com/">दस्तावेज़ीकरण</a>]]> पढ़ें।</string>
   <string name="greeting_title">स्वागत है</string>
   <string name="greeting_subtitle">सीखें, निर्माण करें, लॉन्च करें। सभी आपके Android पर.</string>
   <string name="title_grant">अनुमति दें</string>

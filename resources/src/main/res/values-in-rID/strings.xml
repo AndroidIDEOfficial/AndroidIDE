@@ -444,7 +444,7 @@
   <string name="msg_files_being_saved">Operasi penyimpanan file sedang berlangsung!</string>
   <string name="title_install_tools">Instalasi SDK</string>
   <string name="subtitle_install_tools">Instal alat pengembangan</string>
-  <string name="msg_install_tools">Alat pengembangan harus diinstal agar IDE dapat berfungsi. Mengklik tombol selesai akan membuka terminal untuk menginstal alat. Untuk menginstal, ikuti petunjuk <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">di sini</a>.<br/><br/>Atau baca <a href="https://androidide.com/docs/">dokumentasi</a>]]>.</string>
+  <string name="msg_install_tools">Alat pengembangan harus diinstal agar IDE dapat berfungsi. Mengklik tombol selesai akan membuka terminal untuk menginstal alat. Untuk menginstal, ikuti petunjuk <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">di sini</a>.<br/><br/>Atau baca <a href="https://docs.androidide.com/">dokumentasi</a>]]>.</string>
   <string name="greeting_title">Selamat datang</string>
   <string name="greeting_subtitle">Pelajari, bangun, luncurkan. Semua di Android Anda.</string>
   <string name="title_grant">Izinkan</string>

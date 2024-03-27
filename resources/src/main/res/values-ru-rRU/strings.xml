@@ -445,7 +445,7 @@
   <string name="msg_files_being_saved">Сохранение файла уже в процессе!</string>
   <string name="title_install_tools">Установка SDK</string>
   <string name="subtitle_install_tools">Установка инструментов разработки</string>
-  <string name="msg_install_tools">Для работы IDE требуется установить инструменты разработки (SDK). Кнопка ниже запустит терминал для дальнейшей установки SDK. Следуйте <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">инструкциям</a>.<br/><br/>Вы также можете ознакомиться с <a href="https://androidide.com/docs/">документацией</a>]]>.</string>
+  <string name="msg_install_tools">Для работы IDE требуется установить инструменты разработки (SDK). Кнопка ниже запустит терминал для дальнейшей установки SDK. Следуйте <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">инструкциям</a>.<br/><br/>Вы также можете ознакомиться с <a href="https://docs.androidide.com/">документацией</a>]]>.</string>
   <string name="greeting_title">Добро пожаловать!</string>
   <string name="greeting_subtitle">Изучайте, создавайте и запускайте. Полноценное IDE на вашем Android!</string>
   <string name="title_grant">Предоставить</string>

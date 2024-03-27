@@ -444,7 +444,7 @@
   <string name="msg_files_being_saved">Bir dosya kaydetme işlemi zaten devam ediyor!</string>
   <string name="title_install_tools">SDK kurulumu</string>
   <string name="subtitle_install_tools">Geliştirme araçlarını yükle</string>
-  <string name="msg_install_tools">Geliştirici araçları IDE\'nin çalışması için yüklenmeli. Tamam butonuna tıklamak kurulum terminalini açacaktır. Yüklemek için, adımları takip edin <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">Buradan</a>. <br/><br/> Veya <a href="https://androidide.com/docs/">Dokümanları okuyun</a>]]>.</string>
+  <string name="msg_install_tools">Geliştirici araçları IDE\'nin çalışması için yüklenmeli. Tamam butonuna tıklamak kurulum terminalini açacaktır. Yüklemek için, adımları takip edin <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">Buradan</a>. <br/><br/> Veya <a href="https://docs.androidide.com/">Dokümanları okuyun</a>]]>.</string>
   <string name="greeting_title">Hoş geldiniz</string>
   <string name="greeting_subtitle">Öğren, inşa et, çalıştır. Hepsi Android\'inde.</string>
   <string name="title_grant">İzin ver</string>

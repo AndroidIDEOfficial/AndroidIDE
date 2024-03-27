@@ -444,7 +444,7 @@
   <string name="msg_files_being_saved">文件保存操作已在进行中！</string>
   <string name="title_install_tools">SDK 安装</string>
   <string name="subtitle_install_tools">安装开发工具</string>
-  <string name="msg_install_tools">必须安装开发工具才能使 IDE 工作，单击完成按钮将打开终端来安装工具。若要安装，请按照<![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">此处</a>的说明进行操作。<br/><br/>或者阅读<a href="https://androidide.com/docs/">文档</a>]]>。</string>
+  <string name="msg_install_tools">必须安装开发工具才能使 IDE 工作，单击完成按钮将打开终端来安装工具。若要安装，请按照<![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">此处</a>的说明进行操作。<br/><br/>或者阅读<a href="https://docs.androidide.com/">文档</a>]]>。</string>
   <string name="greeting_title">欢迎</string>
   <string name="greeting_subtitle">学习、构建、启动，一切尽在您的 Android 设备上。</string>
   <string name="title_grant">授权</string>
