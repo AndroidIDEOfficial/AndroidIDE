@@ -380,9 +380,9 @@
   <string name="msg_invalid_module_name">Неверное имя модуля Gradle</string>
   <string name="msg_value_empty">Пустое значение</string>
   <string name="msg_file_not_exist">Файл не существует</string>
-  <string name="msg_path_must_be_file" comment="Error message shown to the user to indicate that the path provided by the user must be path to an existing file on the filesystem.">Должно быть путём к файлу</string>
+  <string name="msg_path_must_be_file">Должно быть путём к файлу</string>
   <string name="msg_classname_with_keywords">Имя класса содержит зарезервированные слова</string>
-  <string name="msg_path_must_be_dir" comment="Error message shown to the user to indicate that the path provided by the user must be path to an existing directory on the filesystem.">Должно быть путём к директории</string>
+  <string name="msg_path_must_be_dir">Должно быть путём к директории</string>
   <string name="msg_invalid_layout_name">Недопустимое имя файла разметки</string>
   <string name="msg_invalid_project_details">Неверные сведения о проекте</string>
   <string name="msg_use_kts">Использовать Kotlin Script (.kts) для файлов сборки Gradle</string>
@@ -445,7 +445,7 @@
   <string name="msg_files_being_saved">Сохранение файла уже в процессе!</string>
   <string name="title_install_tools">Установка SDK</string>
   <string name="subtitle_install_tools">Установка инструментов разработки</string>
-  <string name="msg_install_tools">Для работы IDE требуется установить инструменты разработки (SDK). Кнопка ниже запустит терминал для дальнейшей установки SDK. Следуйте <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">инструкциям</a>.<br/><br/>Вы также можете ознакомиться с <a href="https://androidide.com/docs/">документацией</a>]]>.</string>
+  <string name="msg_install_tools">The development tools must be installed for the IDE to work. Clicking the done button will open terminal to install the tools. To install, follow the instructions <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">here</a>.<br/><br/>Or read the <a href="https://docs.androidide.com/">documentation</a>]]>.</string>
   <string name="greeting_title">Добро пожаловать!</string>
   <string name="greeting_subtitle">Изучайте, создавайте и запускайте. Полноценное IDE на вашем Android!</string>
   <string name="title_grant">Предоставить</string>
