@@ -445,7 +445,7 @@
   <string name="msg_files_being_saved">একটি ফাইল save অপারেশন ইতিমধ্যেই চলছে!</string>
   <string name="title_install_tools">SDK ইনস্টলেশন</string>
   <string name="subtitle_install_tools">ডেভেলপমেন্ট টুলসগুলি ইনস্টল করুন</string>
-  <string name="msg_install_tools">IDE কাজ করার জন্য ডেভেলপমেন্ট টুলগুলি ইনস্টল করা আবশ্যক। সম্পন্ন বাটনে ক্লিক করলে টুলগুলি ইনস্টল করার জন্য টার্মিনাল খুলবে। ইনস্টল করতে, <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/"> এখানকার</a> নির্দেশাবলী অনুসরণ করুন।<br/><br/>অথবা <a href="https://androidide.com/docs/">ডকুমেন্টেশন</a>]]> পড়ুন।</string>
+  <string name="msg_install_tools">IDE কাজ করার জন্য ডেভেলপমেন্ট টুলগুলি ইনস্টল করা আবশ্যক। সম্পন্ন বাটনে ক্লিক করলে টুলগুলি ইনস্টল করার জন্য টার্মিনাল খুলবে। ইনস্টল করতে, <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html"> এখানকার</a> নির্দেশাবলী অনুসরণ করুন।<br/><br/>অথবা <a href="https://docs.androidide.com/">ডকুমেন্টেশন</a>]]> পড়ুন।</string>
   <string name="greeting_title">স্বাগতম</string>
   <string name="greeting_subtitle">শিখুন, তৈরি করুন, চালান। সব আপনার অ্যান্ড্রয়েডে।</string>
   <string name="title_grant">প্রদান করুন</string>

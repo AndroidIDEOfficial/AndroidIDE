@@ -444,7 +444,7 @@
   <string name="msg_files_being_saved">Uma operação de salvamento de arquivo já está em andamento!</string>
   <string name="title_install_tools">Instalação do SDK</string>
   <string name="subtitle_install_tools">Instalar as ferramentas de desenvolvimento</string>
-  <string name="msg_install_tools">As ferramentas de desenvolvimento devem ser instaladas para que o IDE funcione. Ao clicar no botão concluído, o terminal será aberto para instalar as ferramentas. Para instalar, siga as instruções <![CDATA[ <a href="https://androidide.com/blogs/getting-started/2023/03/15/getting-started-with-androidide/">aqui</a>.<br/><br/>Ou leia a documentação <a href="https://androidide.com/docs/"></a>]]>.</string>
+  <string name="msg_install_tools">As ferramentas de desenvolvimento devem ser instaladas para que o IDE funcione. Ao clicar no botão concluído, o terminal será aberto para instalar as ferramentas. Para instalar, siga as instruções <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">aqui</a>.<br/><br/>Ou leia a documentação <a href="https://docs.androidide.com/"></a>]]>.</string>
   <string name="greeting_title">Bem-vindo</string>
   <string name="greeting_subtitle">Aprenda, construa, lançe. Tudo no seu Android.</string>
   <string name="title_grant">Conceder</string>
