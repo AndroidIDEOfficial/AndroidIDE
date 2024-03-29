@@ -19,15 +19,14 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import androidx.preference.Preference
-import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
-import com.itsaky.androidide.preferences.internal.statOptIn
+import com.itsaky.androidide.preferences.internal.StatPreferences
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.stats.AndroidIDEStats
 import com.itsaky.androidide.stats.StatUploadWorker
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class StatPreferences(
+class StatPreferencesScreen(
   override val key: String = "idepref_stats",
   override val title: Int = R.string.title_androidide_statistics,
   override val summary: Int? = R.string.summary_anonymous_usage_stats,
@@ -42,11 +41,12 @@ class StatPreferences(
 
 @Parcelize
 class StatsCollection(
-  override val key: String = STAT_OPT_IN,
+  override val key: String = StatPreferences.STAT_OPT_IN,
   override val title: Int = R.string.idepref_stats_optIn_title,
   override val summary: Int? = R.string.idepref_stats_optIn_summary,
   override val icon: Int? = null
-) : SwitchPreference(setValue = ::statOptIn::set, getValue = ::statOptIn::get)
+) : SwitchPreference(setValue = StatPreferences::statOptIn::set,
+  getValue = StatPreferences::statOptIn::get)
 
 @Parcelize
 class PreviewDataPreferences(

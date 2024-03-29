@@ -24,21 +24,21 @@ import com.google.android.material.textfield.TextInputLayout
 import com.itsaky.androidide.R
 import com.itsaky.androidide.app.configuration.IJdkDistributionProvider
 import com.itsaky.androidide.models.JdkDistribution
-import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
-import com.itsaky.androidide.preferences.internal.GRADLE_CLEAR_CACHE
-import com.itsaky.androidide.preferences.internal.GRADLE_COMMANDS
-import com.itsaky.androidide.preferences.internal.LAUNCH_APP_AFTER_INSTALL
-import com.itsaky.androidide.preferences.internal.PREF_JAVA_HOME
-import com.itsaky.androidide.preferences.internal.gradleInstallationDir
-import com.itsaky.androidide.preferences.internal.isBuildCacheEnabled
-import com.itsaky.androidide.preferences.internal.isDebugEnabled
-import com.itsaky.androidide.preferences.internal.isInfoEnabled
-import com.itsaky.androidide.preferences.internal.isOfflineEnabled
-import com.itsaky.androidide.preferences.internal.isScanEnabled
-import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
-import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
-import com.itsaky.androidide.preferences.internal.javaHome
-import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
+import com.itsaky.androidide.preferences.internal.BuildPreferences.CUSTOM_GRADLE_INSTALLATION
+import com.itsaky.androidide.preferences.internal.BuildPreferences.GRADLE_CLEAR_CACHE
+import com.itsaky.androidide.preferences.internal.BuildPreferences.GRADLE_COMMANDS
+import com.itsaky.androidide.preferences.internal.BuildPreferences.LAUNCH_APP_AFTER_INSTALL
+import com.itsaky.androidide.preferences.internal.BuildPreferences.PREF_JAVA_HOME
+import com.itsaky.androidide.preferences.internal.BuildPreferences.gradleInstallationDir
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isBuildCacheEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isDebugEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isInfoEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isOfflineEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isScanEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isStacktraceEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.isWarningModeAllEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences.javaHome
+import com.itsaky.androidide.preferences.internal.BuildPreferences.launchAppAfterInstall
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsync
@@ -214,7 +214,8 @@ class GradleJDKVersionPreference(
     val javaVersion = jdkDistProvider.forJavaHome(javaHome)?.javaVersion
       ?: "<unknown>"
 
-    preference.summary = preference.context.getString(R.string.idepref_jdkVersion_summary, javaVersion)
+    preference.summary = preference.context.getString(R.string.idepref_jdkVersion_summary,
+      javaVersion)
     preference.isEnabled = jdkDistProvider.installedDistributions.size > 1
   }
 }

@@ -25,7 +25,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.itsaky.androidide.R
-import com.itsaky.androidide.preferences.logsenderEnabled
+import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import com.itsaky.androidide.services.log.ConnectionObserverParams
 import com.itsaky.androidide.services.log.LogReceiverImpl
 import com.itsaky.androidide.services.log.LogReceiverService
@@ -86,7 +86,7 @@ class AppLogFragment : LogViewFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    emptyStateViewModel.emptyMessage.value = if (logsenderEnabled) {
+    emptyStateViewModel.emptyMessage.value = if (DevOpsPreferences.logsenderEnabled) {
       getString(R.string.msg_emptyview_applogs)
     } else {
       getString(R.string.msg_logsender_disabled)
@@ -125,7 +125,7 @@ class AppLogFragment : LogViewFragment() {
 
   private fun bindToLogReceiver() {
     try {
-      if (!logsenderEnabled) {
+      if (!DevOpsPreferences.logsenderEnabled) {
         log.info("LogSender is disabled. LogReceiver service won't be started...")
 
         // release the connection listener
@@ -135,7 +135,7 @@ class AppLogFragment : LogViewFragment() {
 
       val context = context ?: return
       val intent = Intent(context, LogReceiverService::class.java).setAction(
-          LogReceiverService.ACTION_CONNECT_LOG_CONSUMER)
+        LogReceiverService.ACTION_CONNECT_LOG_CONSUMER)
 
       val serviceConnection = logServiceConnection ?: LogReceiverServiceConnection { binder ->
         logReceiverImpl = binder
@@ -155,7 +155,7 @@ class AppLogFragment : LogViewFragment() {
 
   private fun unbindFromLogReceiver() {
     try {
-      if (!logsenderEnabled) {
+      if (!DevOpsPreferences.logsenderEnabled) {
         return
       }
 

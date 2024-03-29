@@ -17,8 +17,7 @@
 
 package com.itsaky.androidide.preferences.utils
 
-import com.itsaky.androidide.preferences.internal.tabSize
-import com.itsaky.androidide.preferences.internal.useSoftTab
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 
 /** @author Akash Yadav */
 
@@ -27,11 +26,11 @@ import com.itsaky.androidide.preferences.internal.useSoftTab
  * '\t'.
  */
 val indentationChar: Char
-  get() = if (useSoftTab) ' ' else '\t'
+  get() = if (EditorPreferences.useSoftTab) ' ' else '\t'
 
 /** Get the string which should be used as indentation while generating code. */
 val indentationString: String
-  get() = if (useSoftTab) " ".repeat(tabSize) else "\t"
+  get() = if (EditorPreferences.useSoftTab) " ".repeat(EditorPreferences.tabSize) else "\t"
 
 /**
  * Creates the indentation string for the given number of spaces. The result is simply
@@ -42,6 +41,6 @@ val indentationString: String
  * @return The indentation string.
  */
 fun indentationString(spaceCount: Int): String {
-  val count = if (useSoftTab) spaceCount else spaceCount / tabSize
+  val count = if (EditorPreferences.useSoftTab) spaceCount else spaceCount / EditorPreferences.tabSize
   return indentationChar.toString().repeat(count)
 }

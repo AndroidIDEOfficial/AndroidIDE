@@ -24,45 +24,25 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
-import com.itsaky.androidide.preferences.internal.AUTO_SAVE
-import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
-import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
-import com.itsaky.androidide.preferences.internal.DEFAULT_COLOR_SCHEME
-import com.itsaky.androidide.preferences.internal.DELETE_EMPTY_LINES
-import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
-import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
-import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
-import com.itsaky.androidide.preferences.internal.FONT_SIZE
-import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
-import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
-import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
-import com.itsaky.androidide.preferences.internal.TAB_SIZE
-import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
-import com.itsaky.androidide.preferences.internal.USE_ICU
-import com.itsaky.androidide.preferences.internal.USE_MAGNIFER
-import com.itsaky.androidide.preferences.internal.USE_SOFT_TAB
-import com.itsaky.androidide.preferences.internal.WORD_WRAP
-import com.itsaky.androidide.preferences.internal.autoSave
-import com.itsaky.androidide.preferences.internal.colorScheme
-import com.itsaky.androidide.preferences.internal.completionsMatchLower
-import com.itsaky.androidide.preferences.internal.deleteEmptyLines
-import com.itsaky.androidide.preferences.internal.deleteTabsOnBackspace
-import com.itsaky.androidide.preferences.internal.drawEmptyLineWs
-import com.itsaky.androidide.preferences.internal.drawInnerWs
-import com.itsaky.androidide.preferences.internal.drawLeadingWs
-import com.itsaky.androidide.preferences.internal.drawLineBreak
-import com.itsaky.androidide.preferences.internal.drawTrailingWs
-import com.itsaky.androidide.preferences.internal.fontLigatures
-import com.itsaky.androidide.preferences.internal.fontSize
-import com.itsaky.androidide.preferences.internal.pinLineNumbers
-import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
-import com.itsaky.androidide.preferences.internal.tabSize
-import com.itsaky.androidide.preferences.internal.useCustomFont
-import com.itsaky.androidide.preferences.internal.useIcu
-import com.itsaky.androidide.preferences.internal.useMagnifier
-import com.itsaky.androidide.preferences.internal.useSoftTab
-import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
-import com.itsaky.androidide.preferences.internal.wordwrap
+import com.itsaky.androidide.preferences.internal.EditorPreferences
+import com.itsaky.androidide.preferences.internal.EditorPreferences.AUTO_SAVE
+import com.itsaky.androidide.preferences.internal.EditorPreferences.COLOR_SCHEME
+import com.itsaky.androidide.preferences.internal.EditorPreferences.COMPLETIONS_MATCH_LOWER
+import com.itsaky.androidide.preferences.internal.EditorPreferences.DEFAULT_COLOR_SCHEME
+import com.itsaky.androidide.preferences.internal.EditorPreferences.DELETE_EMPTY_LINES
+import com.itsaky.androidide.preferences.internal.EditorPreferences.DELETE_TABS_ON_BACKSPACE
+import com.itsaky.androidide.preferences.internal.EditorPreferences.FLAG_PASSWORD
+import com.itsaky.androidide.preferences.internal.EditorPreferences.FONT_LIGATURES
+import com.itsaky.androidide.preferences.internal.EditorPreferences.FONT_SIZE
+import com.itsaky.androidide.preferences.internal.EditorPreferences.PIN_LINE_NUMBERS
+import com.itsaky.androidide.preferences.internal.EditorPreferences.PRINTABLE_CHARS
+import com.itsaky.androidide.preferences.internal.EditorPreferences.STICKY_SCROLL_ENABLED
+import com.itsaky.androidide.preferences.internal.EditorPreferences.TAB_SIZE
+import com.itsaky.androidide.preferences.internal.EditorPreferences.USE_CUSTOM_FONT
+import com.itsaky.androidide.preferences.internal.EditorPreferences.USE_ICU
+import com.itsaky.androidide.preferences.internal.EditorPreferences.USE_MAGNIFER
+import com.itsaky.androidide.preferences.internal.EditorPreferences.USE_SOFT_TAB
+import com.itsaky.androidide.preferences.internal.EditorPreferences.WORD_WRAP
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.IgnoredOnParcel
@@ -70,7 +50,7 @@ import kotlinx.parcelize.Parcelize
 import kotlin.reflect.KMutableProperty0
 
 @Parcelize
-class EditorPreferences(
+class EditorPreferencesScreen(
   override val key: String = "idepref_editor",
   override val title: Int = string.idepref_editor_title,
   override val summary: Int? = string.idepref_editor_summary,
@@ -80,7 +60,7 @@ class EditorPreferences(
   init {
     addPreference(CommonConfigurations())
     addPreference(JavaCodeConfigurations())
-    addPreference(XMLPreferences())
+    addPreference(XMLPreferencesScreen())
   }
 }
 
@@ -124,7 +104,7 @@ private class TextSize(
 
   override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     val binding = LayoutTextSizeSliderBinding.inflate(LayoutInflater.from(preference.context))
-    var size = fontSize
+    var size = EditorPreferences.fontSize
     if (size < 6 || size > 32) {
       size = 14f
     }
@@ -144,7 +124,7 @@ private class TextSize(
   }
 
   private fun changeTextSize(binding: LayoutTextSizeSliderBinding, size: Float) {
-    fontSize = size
+    EditorPreferences.fontSize = size
     binding.slider.value = size
   }
 }
@@ -155,7 +135,8 @@ private class FontLigatures(
   override val title: Int = string.idepref_editor_ligatures_title,
   override val summary: Int? = string.idepref_editor_ligatures_summary,
   override val icon: Int? = drawable.ic_font_ligatures,
-) : SwitchPreference(setValue = ::fontLigatures::set, getValue = ::fontLigatures::get)
+) : SwitchPreference(setValue = EditorPreferences::fontLigatures::set,
+  getValue = EditorPreferences::fontLigatures::get)
 
 @Parcelize
 private class UseSoftTab(
@@ -163,7 +144,8 @@ private class UseSoftTab(
   override val title: Int = string.idepref_editor_useSoftTabs_title,
   override val summary: Int? = string.idepref_editor_useSoftTabs_summary,
   override val icon: Int? = drawable.ic_space,
-) : SwitchPreference(setValue = ::useSoftTab::set, getValue = ::useSoftTab::get)
+) : SwitchPreference(setValue = EditorPreferences::useSoftTab::set,
+  getValue = EditorPreferences::useSoftTab::get)
 
 @Parcelize
 private class TabSize(
@@ -180,7 +162,7 @@ private class TabSize(
   private val tabSizes = intArrayOf(2, 4, 6, 8)
 
   override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
-    val currentTabSize = tabSize
+    val currentTabSize = EditorPreferences.tabSize
     return Array(tabSizes.size) { index ->
       PreferenceChoices.Entry(
         label = tabSizes[index].toString(),
@@ -195,7 +177,7 @@ private class TabSize(
     entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    tabSize = (entry?.data as? Int?) ?: 4
+    EditorPreferences.tabSize = (entry?.data as? Int?) ?: 4
   }
 }
 
@@ -214,7 +196,7 @@ private class ColorSchemePreference(
   private val schemes = IDEColorSchemeProvider.list()
 
   override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
-    val currentColorScheme = colorScheme
+    val currentColorScheme = EditorPreferences.colorScheme
     return Array(schemes.size) { index ->
       PreferenceChoices.Entry(
         schemes[index].name,
@@ -229,7 +211,7 @@ private class ColorSchemePreference(
     entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    colorScheme = (entry?.data as? IDEColorScheme?)?.key ?: DEFAULT_COLOR_SCHEME
+    EditorPreferences.colorScheme = (entry?.data as? IDEColorScheme?)?.key ?: DEFAULT_COLOR_SCHEME
   }
 }
 
@@ -243,11 +225,11 @@ private class NonPrintablePaintingFlags(
 
   override fun getProperties(): Map<String, KMutableProperty0<Boolean>> {
     return linkedMapOf(
-      "Leading" to ::drawLeadingWs,
-      "Trailing" to ::drawTrailingWs,
-      "Inner" to ::drawInnerWs,
-      "Empty lines" to ::drawEmptyLineWs,
-      "Line breaks" to ::drawLineBreak
+      "Leading" to EditorPreferences::drawLeadingWs,
+      "Trailing" to EditorPreferences::drawTrailingWs,
+      "Inner" to EditorPreferences::drawInnerWs,
+      "Empty lines" to EditorPreferences::drawEmptyLineWs,
+      "Line breaks" to EditorPreferences::drawLineBreak
     )
   }
 }
@@ -258,7 +240,8 @@ private class WordWrap(
   override val title: Int = string.idepref_editor_word_wrap_title,
   override val summary: Int? = string.idepref_editor_word_wrap_summary,
   override val icon: Int? = drawable.ic_wrap_text,
-) : SwitchPreference(setValue = ::wordwrap::set, getValue = ::wordwrap::get)
+) : SwitchPreference(setValue = EditorPreferences::wordwrap::set,
+  getValue = EditorPreferences::wordwrap::get)
 
 @Parcelize
 private class UseMagnifier(
@@ -266,7 +249,8 @@ private class UseMagnifier(
   override val title: Int = string.idepref_editor_use_magnifier_title,
   override val summary: Int? = string.idepref_editor_use_magnifier_summary,
   override val icon: Int? = drawable.ic_loupe,
-) : SwitchPreference(setValue = ::useMagnifier::set, getValue = ::useMagnifier::get)
+) : SwitchPreference(setValue = EditorPreferences::useMagnifier::set,
+  getValue = EditorPreferences::useMagnifier::get)
 
 @Parcelize
 private class AutoSave(
@@ -274,7 +258,8 @@ private class AutoSave(
   override val title: Int = string.idepref_editor_autoSave_title,
   override val summary: Int? = string.idepref_editor_autoSave_summary,
   override val icon: Int? = drawable.ic_save,
-) : SwitchPreference(setValue = ::autoSave::set, getValue = ::autoSave::get)
+) : SwitchPreference(setValue = EditorPreferences::autoSave::set,
+  getValue = EditorPreferences::autoSave::get)
 
 @Parcelize
 private class CompletionsMatchLower(
@@ -283,8 +268,8 @@ private class CompletionsMatchLower(
   override val summary: Int? = string.idepref_java_matchLower_summary,
   override val icon: Int? = drawable.ic_text_lower,
 ) : SwitchPreference(
-  setValue = ::completionsMatchLower::set,
-  getValue = ::completionsMatchLower::get
+  setValue = EditorPreferences::completionsMatchLower::set,
+  getValue = EditorPreferences::completionsMatchLower::get
 )
 
 @Parcelize
@@ -293,7 +278,8 @@ private class VisibiblePasswordFlag(
   override val title: Int = string.idepref_visiblePassword_title,
   override val summary: Int? = string.idepref_visiblePassword_summary,
   override val icon: Int? = drawable.ic_password_input,
-) : SwitchPreference(setValue = ::visiblePasswordFlag::set, getValue = ::visiblePasswordFlag::get)
+) : SwitchPreference(setValue = EditorPreferences::visiblePasswordFlag::set,
+  getValue = EditorPreferences::visiblePasswordFlag::get)
 
 @Parcelize
 private class UseICU(
@@ -301,7 +287,8 @@ private class UseICU(
   override val title: Int = string.idepref_useIcu_title,
   override val summary: Int? = string.idepref_useIcu_summary,
   override val icon: Int? = drawable.ic_expand_selection,
-) : SwitchPreference(setValue = ::useIcu::set, getValue = ::useIcu::get)
+) : SwitchPreference(setValue = EditorPreferences::useIcu::set,
+  getValue = EditorPreferences::useIcu::get)
 
 @Parcelize
 private class UseCustomFont(
@@ -309,7 +296,8 @@ private class UseCustomFont(
   override val title: Int = string.idepref_customFont_title,
   override val summary: Int? = string.idepref_customFont_summary,
   override val icon: Int? = drawable.ic_custom_font,
-) : SwitchPreference(setValue = ::useCustomFont::set, getValue = ::useCustomFont::get)
+) : SwitchPreference(setValue = EditorPreferences::useCustomFont::set,
+  getValue = EditorPreferences::useCustomFont::get)
 
 @Parcelize
 private class DeleteEmptyLines(
@@ -317,7 +305,8 @@ private class DeleteEmptyLines(
   override val title: Int = R.string.idepref_deleteEmptyLines_title,
   override val summary: Int? = R.string.idepref_deleteEmptyLines_summary,
   override val icon: Int? = drawable.ic_backspace
-) : SwitchPreference(setValue = ::deleteEmptyLines::set, getValue = ::deleteEmptyLines::get)
+) : SwitchPreference(setValue = EditorPreferences::deleteEmptyLines::set,
+  getValue = EditorPreferences::deleteEmptyLines::get)
 
 @Parcelize
 private class DeleteTabs(
@@ -326,7 +315,8 @@ private class DeleteTabs(
   override val summary: Int? = R.string.idepref_deleteTabs_summary,
   override val icon: Int? = drawable.ic_backspace
 ) :
-  SwitchPreference(setValue = ::deleteTabsOnBackspace::set, getValue = ::deleteTabsOnBackspace::get)
+  SwitchPreference(setValue = EditorPreferences::deleteTabsOnBackspace::set,
+    getValue = EditorPreferences::deleteTabsOnBackspace::get)
 
 @Parcelize
 private class StickyScrollEnabled(
@@ -334,7 +324,8 @@ private class StickyScrollEnabled(
   override val title: Int = R.string.idepref_editor_stickScroll_title,
   override val summary: Int? = R.string.idepref_editor_stickyScroll_summary,
   override val icon: Int? = drawable.ic_sticky_scroll
-) : SwitchPreference(setValue = ::stickyScrollEnabled::set, getValue = ::stickyScrollEnabled::get)
+) : SwitchPreference(setValue = EditorPreferences::stickyScrollEnabled::set,
+  getValue = EditorPreferences::stickyScrollEnabled::get)
 
 @Parcelize
 private class PinLineNumbersEnabled(
@@ -342,4 +333,5 @@ private class PinLineNumbersEnabled(
   override val title: Int = R.string.idepref_editor_pinLineNumbers_title,
   override val summary: Int? = R.string.idepref_editor_pinLineNumbers_summary,
   override val icon: Int? = drawable.ic_pin
-) : SwitchPreference(setValue = ::pinLineNumbers::set, getValue = ::pinLineNumbers::get)
+) : SwitchPreference(setValue = EditorPreferences::pinLineNumbers::set,
+  getValue = EditorPreferences::pinLineNumbers::get)

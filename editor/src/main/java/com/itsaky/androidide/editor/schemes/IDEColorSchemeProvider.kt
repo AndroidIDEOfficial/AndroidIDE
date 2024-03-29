@@ -20,8 +20,7 @@ package com.itsaky.androidide.editor.schemes
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent
-import com.itsaky.androidide.preferences.internal.DEFAULT_COLOR_SCHEME
-import com.itsaky.androidide.preferences.internal.colorScheme
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.isSystemInDarkMode
@@ -61,7 +60,7 @@ object IDEColorSchemeProvider {
    */
   private var defaultScheme: IDEColorScheme? = null
     get() {
-      return field ?: getColorScheme(DEFAULT_COLOR_SCHEME).also { scheme ->
+      return field ?: getColorScheme(EditorPreferences.DEFAULT_COLOR_SCHEME).also { scheme ->
         field = scheme
         isDefaultSchemeLoaded = scheme != null
       }
@@ -75,7 +74,7 @@ object IDEColorSchemeProvider {
    */
   private var currentScheme: IDEColorScheme? = null
     get() {
-      return field ?: getColorScheme(colorScheme).also { scheme ->
+      return field ?: getColorScheme(EditorPreferences.colorScheme).also { scheme ->
         field = scheme
         isCurrentSchemeLoaded = scheme != null
       }
@@ -99,7 +98,8 @@ object IDEColorSchemeProvider {
       scheme.darkVariant?.load()
       scheme
     } catch (err: Exception) {
-      log.error("An error occurred while loading color scheme '{}'", colorScheme, err)
+      log.error("An error occurred while loading color scheme '{}'", EditorPreferences.colorScheme,
+        err)
       null
     }
   }

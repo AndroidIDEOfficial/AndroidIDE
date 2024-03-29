@@ -26,7 +26,7 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.snippets.ISnippet
-import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import io.github.rosemoe.sora.text.TextUtils
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -94,7 +94,8 @@ class SnippetCompletionProvider(
       }
       --start
     }
-    return TextUtils.countLeadingSpaceCount(charContent.substring(start, cursor.toInt()), tabSize)
+    return TextUtils.countLeadingSpaceCount(charContent.substring(start, cursor.toInt()),
+      EditorPreferences.tabSize)
   }
 
   private fun findSnippetScope(path: TreePath?): TreePath? {

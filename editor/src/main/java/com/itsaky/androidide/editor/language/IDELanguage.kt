@@ -21,8 +21,7 @@ import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.ui.IDECompletionPublisher
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ILanguageServer
-import com.itsaky.androidide.preferences.internal.tabSize
-import com.itsaky.androidide.preferences.internal.useSoftTab
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.progress.ICancelChecker
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
@@ -46,7 +45,7 @@ abstract class IDELanguage : Language {
     get() = null
 
   open fun getTabSize(): Int {
-    return tabSize
+    return EditorPreferences.tabSize
   }
 
   @Throws(CompletionCancelledException::class)
@@ -99,7 +98,7 @@ abstract class IDELanguage : Language {
   }
 
   override fun useTab(): Boolean {
-    return !useSoftTab
+    return !EditorPreferences.useSoftTab
   }
 
   override fun getFormatter(): Formatter {

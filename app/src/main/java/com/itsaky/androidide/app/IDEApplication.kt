@@ -43,13 +43,9 @@ import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
-import com.itsaky.androidide.preferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS
-import com.itsaky.androidide.preferences.dumpLogs
-import com.itsaky.androidide.preferences.internal.SELECTED_LOCALE
-import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
-import com.itsaky.androidide.preferences.internal.UI_MODE
-import com.itsaky.androidide.preferences.internal.statOptIn
-import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.preferences.internal.DevOpsPreferences
+import com.itsaky.androidide.preferences.internal.GeneralPreferences
+import com.itsaky.androidide.preferences.internal.StatPreferences
 import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.stats.AndroidIDEStats
 import com.itsaky.androidide.stats.StatUploadWorker
@@ -95,7 +91,7 @@ class IDEApplication : TermuxApplication() {
       StrictMode.setVmPolicy(
         StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build())
 
-      if (dumpLogs) {
+      if (DevOpsPreferences.dumpLogs) {
         startLogcatReader()
       }
     }
@@ -106,7 +102,7 @@ class IDEApplication : TermuxApplication() {
 
     EventBus.getDefault().register(this)
 
-    AppCompatDelegate.setDefaultNightMode(uiMode)
+    AppCompatDelegate.setDefaultNightMode(GeneralPreferences.uiMode)
 
     if (IThemeManager.getInstance().getCurrentTheme() == IDETheme.MATERIAL_YOU) {
       DynamicColors.applyToActivitiesIfAvailable(this)
@@ -155,21 +151,21 @@ class IDEApplication : TermuxApplication() {
 
   fun reportStatsIfNecessary() {
 
-    if (!statOptIn) {
+    if (!StatPreferences.statOptIn) {
       log.info("Stat collection is disabled.")
       return
     }
 
     val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
     val request = PeriodicWorkRequestBuilder<StatUploadWorker>(Duration.ofHours(24)).setInputData(
-        AndroidIDEStats.statData.toInputData()).setConstraints(constraints)
+      AndroidIDEStats.statData.toInputData()).setConstraints(constraints)
       .addTag(StatUploadWorker.WORKER_WORK_NAME).build()
 
     val workManager = WorkManager.getInstance(this)
 
     log.info("reportStatsIfNecessary: Enqueuing StatUploadWorker...")
     val operation = workManager.enqueueUniquePeriodicWork(StatUploadWorker.WORKER_WORK_NAME,
-        ExistingPeriodicWorkPolicy.UPDATE, request)
+      ExistingPeriodicWorkPolicy.UPDATE, request)
 
     operation.state.observeForever(object : Observer<Operation.State> {
       override fun onChanged(value: Operation.State) {
@@ -198,24 +194,24 @@ class IDEApplication : TermuxApplication() {
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onPrefChanged(event: PreferenceChangeEvent) {
     val enabled = event.value as? Boolean?
-    if (event.key == STAT_OPT_IN) {
+    if (event.key == StatPreferences.STAT_OPT_IN) {
       if (enabled == true) {
         reportStatsIfNecessary()
       } else {
         cancelStatUploadWorker()
       }
-    } else if (event.key == KEY_DEVOPTS_DEBUGGING_DUMPLOGS) {
+    } else if (event.key == DevOpsPreferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS) {
       if (enabled == true) {
         startLogcatReader()
       } else {
         stopLogcatReader()
       }
-    } else if (event.key == UI_MODE && uiMode != AppCompatDelegate.getDefaultNightMode()) {
-      AppCompatDelegate.setDefaultNightMode(uiMode)
-    } else if (event.key == SELECTED_LOCALE) {
+    } else if (event.key == GeneralPreferences.UI_MODE && GeneralPreferences.uiMode != AppCompatDelegate.getDefaultNightMode()) {
+      AppCompatDelegate.setDefaultNightMode(GeneralPreferences.uiMode)
+    } else if (event.key == GeneralPreferences.SELECTED_LOCALE) {
 
       // Use empty locale list if the locale has been reset to 'System Default'
-      val selectedLocale = com.itsaky.androidide.preferences.internal.selectedLocale
+      val selectedLocale = GeneralPreferences.selectedLocale
       val localeListCompat = selectedLocale?.let {
         LocaleListCompat.create(LocaleProvider.getLocale(selectedLocale))
       } ?: LocaleListCompat.getEmptyLocaleList()

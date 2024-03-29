@@ -29,7 +29,7 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 import java.util.List;
 import org.eclipse.lemminx.dom.DOMComment;
 
@@ -111,7 +111,7 @@ public class DOMCommentFormatter {
   }
 
   private int getTabSize() {
-    return EditorPreferencesKt.getTabSize();
+    return EditorPreferences.INSTANCE.getTabSize();
   }
 
   private int getMaxLineWidth() {

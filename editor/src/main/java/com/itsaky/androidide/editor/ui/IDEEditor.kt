@@ -63,8 +63,7 @@ import com.itsaky.androidide.lsp.models.SignatureHelp
 import com.itsaky.androidide.lsp.models.SignatureHelpParams
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.preferences.internal.tabSize
-import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
@@ -187,7 +186,7 @@ open class IDEEditor @JvmOverloads constructor(
      */
     fun createInputTypeFlags(): Int {
       var flags = EditorInfo.TYPE_CLASS_TEXT or EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-      if (visiblePasswordFlag) {
+      if (EditorPreferences.visiblePasswordFlag) {
         flags = flags or EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
       }
       return flags
@@ -438,7 +437,7 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun getTabWidth(): Int {
-    return tabSize
+    return EditorPreferences.tabSize
   }
 
   override fun beginSearchMode() {

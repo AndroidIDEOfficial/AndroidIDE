@@ -25,7 +25,7 @@ import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -88,7 +88,8 @@ public class GenerateRecordConstructor extends Rewrite {
               .append(initializers)
               .append("\n}");
           String string = buf.toString();
-          int indent = EditHelper.indent(task.task, task.root(), typeTree) + EditorPreferencesKt.getTabSize();
+          int indent = EditHelper.indent(task.task, task.root(), typeTree)
+              + EditorPreferences.INSTANCE.getTabSize();
           string = string.replaceAll("\n", "\n" + EditorUtilKt.indentationString(indent));
           string = string + "\n\n";
           Position insert = insertPoint(task, typeTree);
@@ -100,12 +101,20 @@ public class GenerateRecordConstructor extends Rewrite {
   private List<VariableTree> fieldsNeedingInitialization(ClassTree typeTree) {
     List<VariableTree> fields = new ArrayList<>();
     for (Tree member : typeTree.getMembers()) {
-      if (!(member instanceof VariableTree)) continue;
+      if (!(member instanceof VariableTree)) {
+        continue;
+      }
       VariableTree field = (VariableTree) member;
-      if (field.getInitializer() != null) continue;
+      if (field.getInitializer() != null) {
+        continue;
+      }
       Set<Modifier> flags = field.getModifiers().getFlags();
-      if (flags.contains(Modifier.STATIC)) continue;
-      if (!flags.contains(Modifier.FINAL)) continue;
+      if (flags.contains(Modifier.STATIC)) {
+        continue;
+      }
+      if (!flags.contains(Modifier.FINAL)) {
+        continue;
+      }
       fields.add(field);
     }
 
@@ -152,7 +161,9 @@ public class GenerateRecordConstructor extends Rewrite {
     for (Tree member : typeTree.getMembers()) {
       if (member.getKind() == Tree.Kind.METHOD) {
         MethodTree method = (MethodTree) member;
-        if (method.getReturnType() == null) continue;
+        if (method.getReturnType() == null) {
+          continue;
+        }
         LOG.info("...insert constructor before {}", method.getName());
         return EditHelper.insertBefore(task.task, task.root(), method);
       }

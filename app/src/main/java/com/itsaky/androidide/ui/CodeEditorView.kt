@@ -41,37 +41,7 @@ import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.preferences.internal.DELETE_EMPTY_LINES
-import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
-import com.itsaky.androidide.preferences.internal.FLAG_LINE_BREAK
-import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
-import com.itsaky.androidide.preferences.internal.FLAG_WS_EMPTY_LINE
-import com.itsaky.androidide.preferences.internal.FLAG_WS_INNER
-import com.itsaky.androidide.preferences.internal.FLAG_WS_LEADING
-import com.itsaky.androidide.preferences.internal.FLAG_WS_TRAILING
-import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
-import com.itsaky.androidide.preferences.internal.FONT_SIZE
-import com.itsaky.androidide.preferences.internal.PIN_LINE_NUMBERS
-import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
-import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
-import com.itsaky.androidide.preferences.internal.USE_ICU
-import com.itsaky.androidide.preferences.internal.USE_MAGNIFER
-import com.itsaky.androidide.preferences.internal.WORD_WRAP
-import com.itsaky.androidide.preferences.internal.deleteEmptyLines
-import com.itsaky.androidide.preferences.internal.deleteTabsOnBackspace
-import com.itsaky.androidide.preferences.internal.drawEmptyLineWs
-import com.itsaky.androidide.preferences.internal.drawInnerWs
-import com.itsaky.androidide.preferences.internal.drawLeadingWs
-import com.itsaky.androidide.preferences.internal.drawLineBreak
-import com.itsaky.androidide.preferences.internal.drawTrailingWs
-import com.itsaky.androidide.preferences.internal.fontLigatures
-import com.itsaky.androidide.preferences.internal.fontSize
-import com.itsaky.androidide.preferences.internal.pinLineNumbers
-import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
-import com.itsaky.androidide.preferences.internal.useCustomFont
-import com.itsaky.androidide.preferences.internal.useIcu
-import com.itsaky.androidide.preferences.internal.useMagnifier
-import com.itsaky.androidide.preferences.internal.wordwrap
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.tasks.runOnUiThread
@@ -376,11 +346,11 @@ class CodeEditorView(
   }
 
   private fun onMagnifierPrefChanged() {
-    binding.editor.getComponent(Magnifier::class.java).isEnabled = useMagnifier
+    binding.editor.getComponent(Magnifier::class.java).isEnabled = EditorPreferences.useMagnifier
   }
 
   private fun onWordwrapPrefChanged() {
-    val enabled = wordwrap
+    val enabled = EditorPreferences.wordwrap
     binding.editor.isWordwrap = enabled
   }
 
@@ -390,31 +360,31 @@ class CodeEditorView(
 
   private fun onPrintingFlagsPrefChanged() {
     var flags = 0
-    if (drawLeadingWs) {
+    if (EditorPreferences.drawLeadingWs) {
       flags = flags or CodeEditor.FLAG_DRAW_WHITESPACE_LEADING
     }
-    if (drawTrailingWs) {
+    if (EditorPreferences.drawTrailingWs) {
       flags = flags or CodeEditor.FLAG_DRAW_WHITESPACE_TRAILING
     }
-    if (drawInnerWs) {
+    if (EditorPreferences.drawInnerWs) {
       flags = flags or CodeEditor.FLAG_DRAW_WHITESPACE_INNER
     }
-    if (drawEmptyLineWs) {
+    if (EditorPreferences.drawEmptyLineWs) {
       flags = flags or CodeEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE
     }
-    if (drawLineBreak) {
+    if (EditorPreferences.drawLineBreak) {
       flags = flags or CodeEditor.FLAG_DRAW_LINE_SEPARATOR
     }
     binding.editor.nonPrintablePaintingFlags = flags
   }
 
   private fun onFontLigaturesPrefChanged() {
-    val enabled = fontLigatures
+    val enabled = EditorPreferences.fontLigatures
     binding.editor.isLigatureEnabled = enabled
   }
 
   private fun onFontSizePrefChanged() {
-    var textSize = fontSize
+    var textSize = EditorPreferences.fontSize
     if (textSize < 6 || textSize > 32) {
       textSize = 14f
     }
@@ -422,29 +392,29 @@ class CodeEditorView(
   }
 
   private fun onUseIcuPrefChanged() {
-    binding.editor.props.useICULibToSelectWords = useIcu
+    binding.editor.props.useICULibToSelectWords = EditorPreferences.useIcu
   }
 
   private fun onCustomFontPrefChanged() {
-    val state = useCustomFont
+    val state = EditorPreferences.useCustomFont
     binding.editor.typefaceText = customOrJBMono(state)
     binding.editor.typefaceLineNumber = customOrJBMono(state)
   }
 
   private fun onDeleteEmptyLinesPrefChanged() {
-    binding.editor.props.deleteEmptyLineFast = deleteEmptyLines
+    binding.editor.props.deleteEmptyLineFast = EditorPreferences.deleteEmptyLines
   }
 
   private fun onDeleteTabsPrefChanged() {
-    binding.editor.props.deleteMultiSpaces = if (deleteTabsOnBackspace) -1 else 1
+    binding.editor.props.deleteMultiSpaces = if (EditorPreferences.deleteTabsOnBackspace) -1 else 1
   }
 
   private fun onStickyScrollEnabeldPrefChanged() {
-    binding.editor.props.stickyScroll = stickyScrollEnabled
+    binding.editor.props.stickyScroll = EditorPreferences.stickyScrollEnabled
   }
 
   private fun onPinLineNumbersPrefChanged() {
-    binding.editor.setPinLineNumber(pinLineNumbers)
+    binding.editor.setPinLineNumber(EditorPreferences.pinLineNumbers)
   }
 
   /**
@@ -476,24 +446,24 @@ class CodeEditorView(
 
     BaseApplication.getBaseInstance().prefManager
     when (event.key) {
-      FONT_SIZE -> onFontSizePrefChanged()
-      FONT_LIGATURES -> onFontLigaturesPrefChanged()
+      EditorPreferences.FONT_SIZE -> onFontSizePrefChanged()
+      EditorPreferences.FONT_LIGATURES -> onFontLigaturesPrefChanged()
 
-      FLAG_LINE_BREAK,
-      FLAG_WS_INNER,
-      FLAG_WS_EMPTY_LINE,
-      FLAG_WS_LEADING,
-      FLAG_WS_TRAILING -> onPrintingFlagsPrefChanged()
+      EditorPreferences.FLAG_LINE_BREAK,
+      EditorPreferences.FLAG_WS_INNER,
+      EditorPreferences.FLAG_WS_EMPTY_LINE,
+      EditorPreferences.FLAG_WS_LEADING,
+      EditorPreferences.FLAG_WS_TRAILING -> onPrintingFlagsPrefChanged()
 
-      FLAG_PASSWORD -> onInputTypePrefChanged()
-      WORD_WRAP -> onWordwrapPrefChanged()
-      USE_MAGNIFER -> onMagnifierPrefChanged()
-      USE_ICU -> onUseIcuPrefChanged()
-      USE_CUSTOM_FONT -> onCustomFontPrefChanged()
-      DELETE_EMPTY_LINES -> onDeleteEmptyLinesPrefChanged()
-      DELETE_TABS_ON_BACKSPACE -> onDeleteTabsPrefChanged()
-      STICKY_SCROLL_ENABLED -> onStickyScrollEnabeldPrefChanged()
-      PIN_LINE_NUMBERS -> onPinLineNumbersPrefChanged()
+      EditorPreferences.FLAG_PASSWORD -> onInputTypePrefChanged()
+      EditorPreferences.WORD_WRAP -> onWordwrapPrefChanged()
+      EditorPreferences.USE_MAGNIFER -> onMagnifierPrefChanged()
+      EditorPreferences.USE_ICU -> onUseIcuPrefChanged()
+      EditorPreferences.USE_CUSTOM_FONT -> onCustomFontPrefChanged()
+      EditorPreferences.DELETE_EMPTY_LINES -> onDeleteEmptyLinesPrefChanged()
+      EditorPreferences.DELETE_TABS_ON_BACKSPACE -> onDeleteTabsPrefChanged()
+      EditorPreferences.STICKY_SCROLL_ENABLED -> onStickyScrollEnabeldPrefChanged()
+      EditorPreferences.PIN_LINE_NUMBERS -> onPinLineNumbersPrefChanged()
     }
   }
 

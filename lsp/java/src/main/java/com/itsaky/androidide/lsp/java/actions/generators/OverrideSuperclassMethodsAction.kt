@@ -36,7 +36,7 @@ import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
@@ -215,7 +215,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
       val typeFinder = FindTypeDeclarationAt(task.task)
       val classTree = typeFinder.scan(task.root(), position)
       val thisClass = trees.getElement(typeFinder.path) as TypeElement
-      val indent = EditHelper.indent(task.task, task.root(), classTree) + tabSize
+      val indent = EditHelper.indent(task.task, task.root(), classTree) + EditorPreferences.tabSize
       val fileImports = task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
       val filePackage = task.root(file).`package`.packageName.toString()
 

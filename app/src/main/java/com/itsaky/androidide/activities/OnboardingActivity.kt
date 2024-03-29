@@ -35,8 +35,8 @@ import com.itsaky.androidide.fragments.onboarding.OnboardingInfoFragment
 import com.itsaky.androidide.fragments.onboarding.PermissionsFragment
 import com.itsaky.androidide.fragments.onboarding.StatisticsFragment
 import com.itsaky.androidide.models.JdkDistribution
+import com.itsaky.androidide.preferences.internal.StatPreferences
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.ui.themes.IThemeManager
 import com.itsaky.androidide.utils.Environment
@@ -119,9 +119,9 @@ class OnboardingActivity : AppIntro2() {
       return
     }
 
-    if (!statConsentDialogShown) {
+    if (!StatPreferences.statConsentDialogShown) {
       addSlide(StatisticsFragment.newInstance(this))
-      statConsentDialogShown = true
+      StatPreferences.statConsentDialogShown = true
     }
 
     if (!PermissionsFragment.areAllPermissionsGranted(this)) {
@@ -178,7 +178,7 @@ class OnboardingActivity : AppIntro2() {
 
   private fun isSetupCompleted(): Boolean {
     return checkToolsIsInstalled()
-        && statConsentDialogShown
+        && StatPreferences.statConsentDialogShown
         && PermissionsFragment.areAllPermissionsGranted(this)
   }
 

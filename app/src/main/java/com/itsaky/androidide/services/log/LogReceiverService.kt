@@ -24,7 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
-import com.itsaky.androidide.preferences.logsenderEnabled
+import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -65,7 +65,7 @@ class LogReceiverService : Service() {
   override fun onBind(intent: Intent?): IBinder? {
     log.debug("Received bind request: {}", intent)
 
-    if (!logsenderEnabled) {
+    if (!DevOpsPreferences.logsenderEnabled) {
       log.debug("Rejecting bind request. LogReceiver is disabled.")
       return null
     }

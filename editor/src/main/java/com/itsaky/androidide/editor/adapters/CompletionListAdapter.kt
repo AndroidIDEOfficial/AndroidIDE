@@ -37,7 +37,7 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
-import com.itsaky.androidide.preferences.internal.useCustomFont
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
 import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
@@ -85,7 +85,8 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionLabel.text = label
     binding.completionType.text = type
     binding.completionDetail.text = desc
-    binding.completionIconText.setTypeface(customOrJBMono(useCustomFont), Typeface.BOLD)
+    binding.completionIconText.setTypeface(customOrJBMono(EditorPreferences.useCustomFont),
+      Typeface.BOLD)
     if (desc.isEmpty()) {
       binding.completionDetail.visibility = View.GONE
     }

@@ -19,7 +19,7 @@ package com.itsaky.androidide.ui.themes
 
 import android.app.Activity
 import com.google.auto.service.AutoService
-import com.itsaky.androidide.preferences.internal.selectedTheme
+import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.utils.isSystemInDarkMode
 
 /**
@@ -55,6 +55,6 @@ class ThemeManager : IThemeManager {
    * Get the currently selected theme.
    */
   override fun getCurrentTheme(): IDETheme {
-    return selectedTheme?.let { IDETheme.valueOf(it) } ?: IDETheme.DEFAULT
+    return GeneralPreferences.selectedTheme?.let { IDETheme.valueOf(it) } ?: IDETheme.DEFAULT
   }
 }

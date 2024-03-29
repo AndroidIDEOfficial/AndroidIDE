@@ -25,7 +25,7 @@ import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.editor.language.treesitter.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
-import com.itsaky.androidide.preferences.internal.fontSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.uidesigner.databinding.ActivityShowXmlBinding
 import com.itsaky.androidide.utils.flashInfo
@@ -67,7 +67,7 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.typefaceText = jetbrainsMono()
       editor.typefaceLineNumber = jetbrainsMono()
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
-      editor.setTextSize(fontSize)
+      editor.setTextSize(EditorPreferences.fontSize)
 
       IDEColorSchemeProvider.readSchemeAsync(
         context = this,

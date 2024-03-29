@@ -32,7 +32,7 @@ import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.lsp.xml.utils.XMLBuilder;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.lemminx.commons.BadLocationException;
@@ -59,6 +59,7 @@ import org.eclipse.lemminx.dom.builder.EmptyElements;
  * @author Angelo ZERR
  */
 public class XMLFormatterDocument {
+
   private final TextDocument textDocument;
   private final Range range;
   private final XMLServerSettings sharedSettings = XMLServerSettings.INSTANCE;
@@ -73,7 +74,9 @@ public class XMLFormatterDocument {
   private boolean linefeedOnNextWrite;
   private boolean withinDTDContent;
 
-  /** XML formatter document. */
+  /**
+   * XML formatter document.
+   */
   public XMLFormatterDocument(TextDocument textDocument, Range range) {
     this.textDocument = textDocument;
     this.range = range;
@@ -217,8 +220,8 @@ public class XMLFormatterDocument {
 
     int spaceOrTab = getSpaceOrTabStartOfString(textBeforeNode);
 
-    if (EditorPreferencesKt.getUseSoftTab()) {
-      return (spaceOrTab / EditorPreferencesKt.getTabSize());
+    if (EditorPreferences.INSTANCE.getUseSoftTab()) {
+      return (spaceOrTab / EditorPreferences.INSTANCE.getTabSize());
     }
     return spaceOrTab;
   }
@@ -290,7 +293,7 @@ public class XMLFormatterDocument {
           !node.getOwnerDocument().isDTD()
               && !(node.isComment() && ((DOMComment) node).isCommentSameLineEndTag())
               && (!node.isText()
-                  || (!((DOMText) node).isWhitespace() && ((DOMText) node).hasSiblings()));
+              || (!((DOMText) node).isWhitespace() && ((DOMText) node).hasSiblings()));
 
       if (this.indentLevel > 0 && doLineFeed) {
         // add new line + indent
@@ -395,7 +398,9 @@ public class XMLFormatterDocument {
     }
   }
 
-  /** Format the given DOM ProcessingIntsruction. */
+  /**
+   * Format the given DOM ProcessingIntsruction.
+   */
   private void formatProcessingInstruction(DOMNode node) {
     addPIToXMLBuilder(node, this.xmlBuilder);
     if (this.indentLevel == 0) {
@@ -403,7 +408,9 @@ public class XMLFormatterDocument {
     }
   }
 
-  /** Format the given DOM Comment */
+  /**
+   * Format the given DOM Comment
+   */
   private void formatComment(DOMComment comment) {
     this.xmlBuilder.startComment(comment);
     this.xmlBuilder.addContentComment(comment.getData());
@@ -416,7 +423,9 @@ public class XMLFormatterDocument {
     }
   }
 
-  /** Format the given DOM CDATA */
+  /**
+   * Format the given DOM CDATA
+   */
   private void formatCDATA(DOMCDATASection cdata) {
     this.xmlBuilder.startCDATA();
     this.xmlBuilder.addContentCDATA(cdata.getData());
@@ -492,8 +501,8 @@ public class XMLFormatterDocument {
   }
 
   /**
-   * Formats the start tag's closing bracket (>) according to {@code
-   * XMLFormattingOptions#isPreserveAttrLineBreaks()}
+   * Formats the start tag's closing bracket (>) according to
+   * {@code XMLFormattingOptions#isPreserveAttrLineBreaks()}
    *
    * <p>{@code XMLFormattingOptions#isPreserveAttrLineBreaks()}: If true, must add a newline +
    * indent before the closing bracket if the last attribute of the element and the closing bracket
@@ -513,8 +522,8 @@ public class XMLFormatterDocument {
   }
 
   /**
-   * Formats the self-closing tag (/>) according to {@code
-   * XMLFormattingOptions#isPreserveAttrLineBreaks()}
+   * Formats the self-closing tag (/>) according to
+   * {@code XMLFormattingOptions#isPreserveAttrLineBreaks()}
    *
    * <p>{@code XMLFormattingOptions#isPreserveAttrLineBreaks()}: If true, must add a newline +
    * indent before the self-closing tag if the last attribute of the element and the closing bracket
@@ -549,7 +558,7 @@ public class XMLFormatterDocument {
       prevOffset = attr.getEnd();
     }
     if ((this.sharedSettings.getFormattingOptions().isClosingBracketNewLine()
-            && this.sharedSettings.getFormattingOptions().isSplitAttributes())
+        && this.sharedSettings.getFormattingOptions().isSplitAttributes())
         && !isSingleAttribute) {
       xmlBuilder.linefeed();
       // Indent by tag + splitAttributesIndentSize to match with attribute indent
@@ -581,7 +590,7 @@ public class XMLFormatterDocument {
    * <p>If current formatting is range formatting, the provided offsets must be ranged offsets
    * (offsets relative to the formatting range)
    *
-   * @param first the first offset
+   * @param first  the first offset
    * @param second the second offset
    * @return true if first offset and second offset belong in the same line of the document
    * @throws BadLocationException
@@ -613,7 +622,7 @@ public class XMLFormatterDocument {
    *
    * @param element
    * @return true if the provided element has one attribute in the fullDomDocument (not the
-   *     rangeDomDocument)
+   * rangeDomDocument)
    */
   private boolean hasSingleAttributeInFullDoc(DOMElement element) {
     DOMElement fullElement = getFullDocElemFromRangeElem(element);
@@ -632,17 +641,16 @@ public class XMLFormatterDocument {
         // Element is empty and closed
         switch (this.emptyElements) {
           case Expand:
-          case Collapse:
-            {
-              if (this.sharedSettings.getFormattingOptions().isPreserveEmptyContent()) {
-                // preserve content
-                if (element.hasChildNodes()) {
-                  // The element is empty and contains somes spaces which must be preserved
-                  return EmptyElements.Ignore;
-                }
+          case Collapse: {
+            if (this.sharedSettings.getFormattingOptions().isPreserveEmptyContent()) {
+              // preserve content
+              if (element.hasChildNodes()) {
+                // The element is empty and contains somes spaces which must be preserved
+                return EmptyElements.Ignore;
               }
-              return this.emptyElements;
             }
+            return this.emptyElements;
+          }
           default:
             return this.emptyElements;
         }
@@ -787,7 +795,9 @@ public class XMLFormatterDocument {
     xml.endPrologOrPI();
   }
 
-  /** Will add all attributes, to the given builder, on a single line */
+  /**
+   * Will add all attributes, to the given builder, on a single line
+   */
   private static void addPrologAttributes(DOMNode node, XMLBuilder xmlBuilder) {
     List<DOMAttr> attrs = node.getAttributeNodes();
     if (attrs == null) {

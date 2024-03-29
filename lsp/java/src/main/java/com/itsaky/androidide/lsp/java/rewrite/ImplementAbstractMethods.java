@@ -30,7 +30,7 @@ import com.itsaky.androidide.lsp.models.Command;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import com.squareup.javapoet.MethodSpec;
 import java.nio.file.Path;
@@ -105,7 +105,8 @@ public class ImplementAbstractMethods extends Rewrite {
           }
 
           final Set<String> imports = new TreeSet<>();
-          int indent = EditHelper.indent(task.task, task.root(), thisTree) + EditorPreferencesKt.getTabSize();
+          int indent = EditHelper.indent(task.task, task.root(), thisTree)
+              + EditorPreferences.INSTANCE.getTabSize();
           for (Element member : elements.getAllMembers(thisClass)) {
             if (member.getKind() == ElementKind.METHOD
                 && member.getModifiers().contains(Modifier.ABSTRACT)) {

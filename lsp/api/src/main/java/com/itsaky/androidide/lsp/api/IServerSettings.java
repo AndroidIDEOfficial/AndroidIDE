@@ -17,9 +17,8 @@
 
 package com.itsaky.androidide.lsp.api;
 
-import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.COMPLETIONS_MATCH_LOWER;
-
 import com.itsaky.androidide.lsp.models.CompletionsKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 
 /**
  * Settings contain preferences for the language server. Clients can use settings to enable/disable
@@ -29,7 +28,7 @@ import com.itsaky.androidide.lsp.models.CompletionsKt;
  */
 public interface IServerSettings {
 
-  String KEY_COMPLETIONS_MATCH_LOWER = COMPLETIONS_MATCH_LOWER;
+  String KEY_COMPLETIONS_MATCH_LOWER = EditorPreferences.COMPLETIONS_MATCH_LOWER;
 
   /**
    * Called by language server to check if the completions are enabled. If not enabled, the server
@@ -38,9 +37,10 @@ public interface IServerSettings {
    * @return {@code true} if enabled, {@code false} otherwise.
    */
   boolean completionsEnabled();
-  
+
   /**
    * Called by the language server to check if the source code analysis is enabled or not.
+   *
    * @return {@code true} if enabled, {@code false} otherwise.
    */
   default boolean diagnosticsEnabled() {

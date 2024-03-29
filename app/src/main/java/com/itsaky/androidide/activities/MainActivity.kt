@@ -31,10 +31,7 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
-import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
-import com.itsaky.androidide.preferences.internal.autoOpenProjects
-import com.itsaky.androidide.preferences.internal.confirmProjectOpen
-import com.itsaky.androidide.preferences.internal.lastOpenedProject
+import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
@@ -158,12 +155,12 @@ class MainActivity : LimitlessIDEActivity() {
   }
 
   private fun tryOpenLastProject() {
-    if (!autoOpenProjects) {
+    if (!GeneralPreferences.autoOpenProjects) {
       return
     }
 
-    val openedProject = lastOpenedProject
-    if (NO_OPENED_PROJECT == openedProject) {
+    val openedProject = GeneralPreferences.lastOpenedProject
+    if (GeneralPreferences.NO_OPENED_PROJECT == openedProject) {
       return
     }
 
@@ -179,7 +176,7 @@ class MainActivity : LimitlessIDEActivity() {
       return
     }
 
-    if (confirmProjectOpen) {
+    if (GeneralPreferences.confirmProjectOpen) {
       askProjectOpenPermission(project)
       return
     }

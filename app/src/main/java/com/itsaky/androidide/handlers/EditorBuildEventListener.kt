@@ -19,7 +19,7 @@ package com.itsaky.androidide.handlers
 
 import com.itsaky.androidide.R
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity
-import com.itsaky.androidide.preferences.internal.isFirstBuild
+import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
@@ -63,7 +63,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   override fun prepareBuild(buildInfo: BuildInfo) {
     checkActivity("prepareBuild") ?: return
 
-    val isFirstBuild = isFirstBuild
+    val isFirstBuild = GeneralPreferences.isFirstBuild
     activity
       .setStatus(
         activity.getString(if (isFirstBuild) string.preparing_first else string.preparing)
@@ -87,7 +87,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
     analyzeCurrentFile()
 
-    isFirstBuild = false
+    GeneralPreferences.isFirstBuild = false
     activity.editorViewModel.isBuildInProgress = false
 
     activity.flashSuccess(R.string.build_status_sucess)
@@ -106,7 +106,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
     analyzeCurrentFile()
 
-    isFirstBuild = false
+    GeneralPreferences.isFirstBuild = false
     activity.editorViewModel.isBuildInProgress = false
 
     activity.flashError(R.string.build_status_failed)

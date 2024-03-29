@@ -65,7 +65,7 @@ import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
-import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
+import com.itsaky.androidide.preferences.internal.BuildPreferences
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tasks.cancelIfActive
@@ -203,7 +203,7 @@ abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListen
 
     val packageName = onResult(this, intent) ?: return
 
-    if (launchAppAfterInstall) {
+    if (BuildPreferences.launchAppAfterInstall) {
       IntentUtils.launchApp(this, packageName)
       return
     }
@@ -400,7 +400,8 @@ abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListen
 
   private fun handleUiDesignerResult(result: ActivityResult) {
     if (result.resultCode != RESULT_OK || result.data == null) {
-      log.warn("UI Designer returned invalid result: resultCode={}, data={}", result.resultCode, result.data)
+      log.warn("UI Designer returned invalid result: resultCode={}, data={}", result.resultCode,
+        result.data)
       return
     }
     val generated = result.data!!.getStringExtra(UIDesignerActivity.RESULT_GENERATED_XML)

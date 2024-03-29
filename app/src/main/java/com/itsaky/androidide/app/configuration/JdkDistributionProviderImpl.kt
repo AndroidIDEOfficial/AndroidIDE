@@ -19,7 +19,7 @@ package com.itsaky.androidide.app.configuration
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.models.JdkDistribution
-import com.itsaky.androidide.preferences.internal.javaHome
+import com.itsaky.androidide.preferences.internal.BuildPreferences
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.JdkUtils
 import org.slf4j.LoggerFactory
@@ -49,7 +49,7 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
     return JdkUtils.findJavaInstallations().also { distributions ->
 
       // set the default value for the 'javaHome' preference
-      if (javaHome.isBlank() && distributions.isNotEmpty()) {
+      if (BuildPreferences.javaHome.isBlank() && distributions.isNotEmpty()) {
         var defaultDist = distributions.find {
           it.javaVersion.startsWith(IJdkDistributionProvider.DEFAULT_JAVA_VERSION)
         }
@@ -59,10 +59,10 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
           defaultDist = distributions[0]
         }
 
-        javaHome = defaultDist.javaHome
+        BuildPreferences.javaHome = defaultDist.javaHome
       }
 
-      val home = File(javaHome)
+      val home = File(BuildPreferences.javaHome)
       val java = File(home, "bin/java")
 
       // the previously selected JDK distribution does not exist
@@ -71,7 +71,7 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
         if (distributions.isNotEmpty()) {
           log.warn(
             "Previously selected java.home does not exists! Falling back to ${distributions[0]}...")
-          javaHome = distributions[0].javaHome
+          BuildPreferences.javaHome = distributions[0].javaHome
         }
       }
 
@@ -79,9 +79,9 @@ class JdkDistributionProviderImpl : IJdkDistributionProvider {
         java.setExecutable(true)
       }
 
-      log.debug("Setting Environment.JAVA_HOME to {}", javaHome)
+      log.debug("Setting Environment.JAVA_HOME to {}", BuildPreferences.javaHome)
 
-      Environment.JAVA_HOME = File(javaHome)
+      Environment.JAVA_HOME = File(BuildPreferences.javaHome)
       Environment.JAVA = Environment.JAVA_HOME.resolve("bin/java")
     }
   }

@@ -22,18 +22,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import com.itsaky.androidide.R
-import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
-import com.itsaky.androidide.preferences.internal.OPEN_PROJECTS
-import com.itsaky.androidide.preferences.internal.SELECTED_LOCALE
-import com.itsaky.androidide.preferences.internal.SELECTED_THEME
-import com.itsaky.androidide.preferences.internal.TERMINAL_USE_SYSTEM_SHELL
-import com.itsaky.androidide.preferences.internal.UI_MODE
-import com.itsaky.androidide.preferences.internal.autoOpenProjects
-import com.itsaky.androidide.preferences.internal.confirmProjectOpen
-import com.itsaky.androidide.preferences.internal.selectedLocale
-import com.itsaky.androidide.preferences.internal.selectedTheme
-import com.itsaky.androidide.preferences.internal.uiMode
-import com.itsaky.androidide.preferences.internal.useSystemShell
+import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.localization.LocaleProvider
@@ -43,7 +32,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class GeneralPreferences(
+class GeneralPreferencesScreen(
   override val key: String = "idepref_general",
   override val title: Int = string.title_general,
   override val summary: Int? = string.idepref_general_summary,
@@ -98,7 +87,7 @@ class TerminalConfig(
 
 @Parcelize
 class UiMode(
-  override val key: String = UI_MODE,
+  override val key: String = GeneralPreferences.UI_MODE,
   override val title: Int = R.string.idepref_general_uiMode,
   override val summary: Int? = R.string.idepref_general_uiMode_summary,
   override val icon: Int? = R.drawable.ic_ui_mode
@@ -109,7 +98,7 @@ class UiMode(
 
   override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
     val context = preference.context
-    val currentUiMode = uiMode
+    val currentUiMode = GeneralPreferences.uiMode
 
     return Array(3) { index ->
       val (label, mode) = when (index) {
@@ -128,13 +117,13 @@ class UiMode(
     entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    uiMode = (entry?.data as? Int?) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    GeneralPreferences.uiMode = (entry?.data as? Int?) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
   }
 }
 
 @Parcelize
 class ThemeSelector(
-  override val key: String = SELECTED_THEME,
+  override val key: String = GeneralPreferences.SELECTED_THEME,
   override val title: Int = R.string.idepref_general_themeSelector_title,
   override val summary: Int? = R.string.idepref_general_themeSelector_summary,
   override val icon: Int? = R.drawable.ic_color_scheme
@@ -161,13 +150,13 @@ class ThemeSelector(
     entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    selectedTheme = (entry?.data as? IDETheme?)?.name ?: IDETheme.DEFAULT.name
+    GeneralPreferences.selectedTheme = (entry?.data as? IDETheme?)?.name ?: IDETheme.DEFAULT.name
   }
 }
 
 @Parcelize
 class LocaleSelector(
-  override val key: String = SELECTED_LOCALE,
+  override val key: String = GeneralPreferences.SELECTED_LOCALE,
   override val title: Int = R.string.idepref_general_localeSelector_title,
   override val summary: Int? = R.string.idepref_general_localeSelector_summary,
   override val icon: Int? = R.drawable.ic_translate
@@ -175,13 +164,13 @@ class LocaleSelector(
 
   override fun getEntries(preference: Preference): Array<PreferenceChoices.Entry> {
     val context = preference.context
-    val currentLocale = selectedLocale
+    val currentLocale = GeneralPreferences.selectedLocale
     val supportedLocales = LocaleProvider.SUPPORTED_LOCALES.keys.toList()
     return Array(supportedLocales.size + 1) { index ->
       if (index == 0) {
         PreferenceChoices.Entry(
           label = ContextCompat.getString(context, R.string.locale_system_default),
-          _isChecked = selectedLocale == null,
+          _isChecked = GeneralPreferences.selectedLocale == null,
           data = 0
         )
       } else {
@@ -201,7 +190,7 @@ class LocaleSelector(
     entry: PreferenceChoices.Entry?,
     position: Int
   ) {
-    selectedLocale = entry?.data?.let { localeKey ->
+    GeneralPreferences.selectedLocale = entry?.data?.let { localeKey ->
       if (localeKey is Int) null else localeKey as String
     }
   }
@@ -209,7 +198,7 @@ class LocaleSelector(
 
 @Parcelize
 class OpenLastProject(
-  override val key: String = OPEN_PROJECTS,
+  override val key: String = GeneralPreferences.OPEN_PROJECTS,
   override val title: Int = string.title_open_projects,
   override val summary: Int? = string.msg_open_projects,
   override val icon: Int? = drawable.ic_open_project
@@ -217,19 +206,20 @@ class OpenLastProject(
 
   override fun onCreatePreference(context: Context): Preference {
     val pref = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    pref.isChecked = autoOpenProjects
+    pref.isChecked = GeneralPreferences.autoOpenProjects
     return pref
   }
 
   override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
-    autoOpenProjects = newValue as Boolean? ?: autoOpenProjects
+    GeneralPreferences.autoOpenProjects = newValue as Boolean?
+      ?: GeneralPreferences.autoOpenProjects
     return true
   }
 }
 
 @Parcelize
 class ConfirmProjectOpen(
-  override val key: String = CONFIRM_PROJECT_OPEN,
+  override val key: String = GeneralPreferences.CONFIRM_PROJECT_OPEN,
   override val title: Int = string.title_confirm_project_open,
   override val summary: Int? = string.msg_confirm_project_open,
   override val icon: Int? = drawable.ic_open_project
@@ -237,19 +227,20 @@ class ConfirmProjectOpen(
 
   override fun onCreatePreference(context: Context): Preference {
     val pref = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    pref.isChecked = confirmProjectOpen
+    pref.isChecked = GeneralPreferences.confirmProjectOpen
     return pref
   }
 
   override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
-    confirmProjectOpen = newValue as Boolean? ?: confirmProjectOpen
+    GeneralPreferences.confirmProjectOpen = newValue as Boolean?
+      ?: GeneralPreferences.confirmProjectOpen
     return true
   }
 }
 
 @Parcelize
 class UseSytemShell(
-  override val key: String = TERMINAL_USE_SYSTEM_SHELL,
+  override val key: String = GeneralPreferences.TERMINAL_USE_SYSTEM_SHELL,
   override val title: Int = string.title_default_shell,
   override val summary: Int? = string.msg_default_shell,
   override val icon: Int? = drawable.ic_bash_commands
@@ -257,12 +248,12 @@ class UseSytemShell(
 
   override fun onCreatePreference(context: Context): Preference {
     val pref = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    pref.isChecked = useSystemShell
+    pref.isChecked = GeneralPreferences.useSystemShell
     return pref
   }
 
   override fun onPreferenceChanged(preference: Preference, newValue: Any?): Boolean {
-    useSystemShell = newValue as Boolean? ?: useSystemShell
+    GeneralPreferences.useSystemShell = newValue as Boolean? ?: GeneralPreferences.useSystemShell
     return true
   }
 }

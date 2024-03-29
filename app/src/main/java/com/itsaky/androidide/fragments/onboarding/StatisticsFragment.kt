@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import com.itsaky.androidide.R
 import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.databinding.LayoutOnboardingStatisticsBinding
-import com.itsaky.androidide.preferences.internal.statOptIn
 
 class StatisticsFragment : OnboardingFragment() {
 
@@ -15,12 +14,15 @@ class StatisticsFragment : OnboardingFragment() {
     get() = checkNotNull(_content) { "Fragment has been destroyed" }
 
   companion object {
+
     @JvmStatic
-    fun newInstance(context: Context) : StatisticsFragment {
+    fun newInstance(context: Context): StatisticsFragment {
       return StatisticsFragment().apply {
         arguments = Bundle().apply {
-          putCharSequence(KEY_ONBOARDING_TITLE, context.getString(R.string.title_androidide_statistics))
-          putCharSequence(KEY_ONBOARDING_SUBTITLE, context.getString(R.string.idepref_stats_optIn_summary))
+          putCharSequence(KEY_ONBOARDING_TITLE,
+            context.getString(R.string.title_androidide_statistics))
+          putCharSequence(KEY_ONBOARDING_SUBTITLE,
+            context.getString(R.string.idepref_stats_optIn_summary))
         }
       }
     }
@@ -37,7 +39,9 @@ class StatisticsFragment : OnboardingFragment() {
   }
 
   fun updateStatOptInStatus() {
-    statOptIn = _content?.statOptIn?.isChecked ?: false
+    com.itsaky.androidide.preferences.internal.StatPreferences.statOptIn =
+      _content?.statOptIn?.isChecked ?: false
+
     IDEApplication.instance.reportStatsIfNecessary()
   }
 }

@@ -30,7 +30,7 @@ import com.itsaky.androidide.lsp.java.visitors.FindMethodCallAt;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferences;
 import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -121,7 +121,7 @@ public class CreateMissingMethod extends Rewrite {
       }
 
       final int indentSpaces =
-        indent(task.task, compilationUnit, enclosingClass) + EditorPreferencesKt.getTabSize();
+        indent(task.task, compilationUnit, enclosingClass) + EditorPreferences.INSTANCE.getTabSize();
       insertText = insertText.replaceAll("\n", "\n" + EditorUtilKt.indentationString(indentSpaces));
       insertText += "\n";
 

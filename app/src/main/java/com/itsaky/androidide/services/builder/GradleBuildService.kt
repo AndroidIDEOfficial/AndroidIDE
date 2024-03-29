@@ -32,14 +32,8 @@ import com.itsaky.androidide.R.*
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.managers.ToolsManager
-import com.itsaky.androidide.preferences.internal.isBuildCacheEnabled
-import com.itsaky.androidide.preferences.internal.isDebugEnabled
-import com.itsaky.androidide.preferences.internal.isInfoEnabled
-import com.itsaky.androidide.preferences.internal.isOfflineEnabled
-import com.itsaky.androidide.preferences.internal.isScanEnabled
-import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
-import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
-import com.itsaky.androidide.preferences.logsenderEnabled
+import com.itsaky.androidide.preferences.internal.BuildPreferences
+import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
@@ -292,27 +286,27 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     // Override AAPT2 binary
     // The one downloaded from Maven is not built for Android
     extraArgs.add("-Pandroid.aapt2FromMavenOverride=" + Environment.AAPT2.absolutePath)
-    extraArgs.add("-P${PROPERTY_LOGSENDER_ENABLED}=${logsenderEnabled}")
-    if (isStacktraceEnabled) {
+    extraArgs.add("-P${PROPERTY_LOGSENDER_ENABLED}=${DevOpsPreferences.logsenderEnabled}")
+    if (BuildPreferences.isStacktraceEnabled) {
       extraArgs.add("--stacktrace")
     }
-    if (isInfoEnabled) {
+    if (BuildPreferences.isInfoEnabled) {
       extraArgs.add("--info")
     }
-    if (isDebugEnabled) {
+    if (BuildPreferences.isDebugEnabled) {
       extraArgs.add("--debug")
     }
-    if (isScanEnabled) {
+    if (BuildPreferences.isScanEnabled) {
       extraArgs.add("--scan")
     }
-    if (isWarningModeAllEnabled) {
+    if (BuildPreferences.isWarningModeAllEnabled) {
       extraArgs.add("--warning-mode")
       extraArgs.add("all")
     }
-    if (isBuildCacheEnabled) {
+    if (BuildPreferences.isBuildCacheEnabled) {
       extraArgs.add("--build-cache")
     }
-    if (isOfflineEnabled) {
+    if (BuildPreferences.isOfflineEnabled) {
       extraArgs.add("--offline")
     }
     return CompletableFuture.completedFuture(extraArgs)
