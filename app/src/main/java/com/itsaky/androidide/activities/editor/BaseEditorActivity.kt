@@ -563,8 +563,10 @@ abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListen
   }
 
   private fun onSoftInputChanged() {
-    invalidateOptionsMenu()
-    binding.bottomSheet.onSoftInputChanged()
+    if (!isDestroying) {
+      invalidateOptionsMenu()
+      binding.bottomSheet.onSoftInputChanged()
+    }
   }
 
   private fun showNeedHelpDialog() {
