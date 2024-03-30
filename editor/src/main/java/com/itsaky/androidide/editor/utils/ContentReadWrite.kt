@@ -50,7 +50,7 @@ object ContentReadWrite {
       try {
         for (lineIdx in 0..lastLine) {
           val line = getLine(lineIdx)
-          writer.write(line.value, 0, line.length)
+          writer.write(line.backingCharArray, 0, line.length)
 
           val separatorChars = line.lineSeparator.chars
           writer.write(separatorChars)

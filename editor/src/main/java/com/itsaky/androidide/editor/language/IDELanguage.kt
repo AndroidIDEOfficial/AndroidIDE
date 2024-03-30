@@ -105,8 +105,11 @@ abstract class IDELanguage : Language {
     return formatter ?: LSPFormatter(languageServer).also { formatter = it }
   }
 
-  override fun getIndentAdvance(content: ContentReference, line: Int,
-    column: Int): Int {
+  override fun getIndentAdvance(
+    content: ContentReference,
+    line: Int,
+    column: Int
+  ): Int {
     return getIndentAdvance(content.getLine(line).substring(0, column))
   }
 

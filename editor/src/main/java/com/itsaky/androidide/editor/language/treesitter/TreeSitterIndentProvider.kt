@@ -32,12 +32,11 @@ import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.treesitter.getNodeAt
 import com.itsaky.androidide.treesitter.predicate.SetDirectiveHandler
+import com.itsaky.androidide.utils.IntPair
 import io.github.rosemoe.sora.editor.ts.TsAnalyzeWorker
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.TextUtils
-import io.github.rosemoe.sora.util.IntPair
 import org.slf4j.LoggerFactory
 import kotlin.math.max
 
@@ -69,17 +68,25 @@ class TreeSitterIndentProvider(
     private const val IDENT_TYP_COUNT = 8 // increment this when adding a new indent type above
 
     private val log = LoggerFactory.getLogger(TreeSitterIndentProvider::class.java)
-    internal const val DEF_IDENT_ADV = Int.MIN_VALUE
+    internal const val INDENTATION_ERR = Int.MIN_VALUE
     internal const val INDENT_ALIGN_ZERO = Int.MIN_VALUE
     internal const val INDENT_AUTO = Int.MAX_VALUE
+
+    private val DELIMITER_REGEX = Regex("""[\-.+\[\]()$^\\?*]""")
   }
 
-  fun getIndent(content: Content, line: Int, default: Int = DEF_IDENT_ADV): Int {
-    log.trace("getIndent(Content({}),{})", content.length, line)
+  fun getIndentsForLines(
+    content: Content,
+    positions: LongArray,
+    default: Int = INDENTATION_ERR
+  ): IntArray {
+    log.debug("getIndentsForLine(Content({}),{})", content.length,
+      positions.joinToString(",") { "${IntPair.getFirst(it)}:${IntPair.getSecond(it)}" })
+    val defaultIndents = IntArray(positions.size) { default }
 
     // not really needed, but just in case
-    if (content.isEmpty() || line < 0 || line >= content.lineCount) {
-      return default
+    if (content.isEmpty() || positions.isEmpty()) {
+      return defaultIndents
     }
 
     val document = analyzer.document
@@ -99,20 +106,20 @@ class TreeSitterIndentProvider(
           content.documentVersion
         )
 
-        (document.tree?.copy() ?: return default).use { copiedTree ->
+        (document.tree?.copy() ?: return defaultIndents).use { copiedTree ->
           parser.parseString(copiedTree, content.toString())
         }
       }
 
       if (tree == null) {
         log.info("Parsed tree is null, returning default indent: {}", default)
-        return default
+        return defaultIndents
       }
 
       try {
-        return max(0, computeIndent(tree, content, line))
-          .also { indent ->
-            log.debug("Computed indent: {}", indent)
+        return computeIndents(tree, content, positions, defaultIndents)
+          .also { indents ->
+            log.debug("Computed indents: {}", indents.joinToString(","))
           }
       } finally {
         if (closeTree) {
@@ -122,265 +129,280 @@ class TreeSitterIndentProvider(
     }
   }
 
-  private fun computeIndent(
+  private fun computeIndents(
     tree: TSTree,
     content: Content,
-    line: Int,
-    default: Int = DEF_IDENT_ADV
-  ): Int {
-    log.trace("computeIndent({})", line)
+    positions: LongArray,
+    defaultIndents: IntArray
+  ): IntArray {
     val indentsQuery = languageSpec.indentsQuery ?: run {
       log.info("Cannot compute indents. Indents query is null.")
-      return default
+      return defaultIndents
     }
 
     val rootNode = tree.rootNode ?: run {
       log.info("Cannot compute indents. Root node is null.")
-      return default
+      return defaultIndents
     }
 
-    TSQueryCursor.create().use { cursor ->
+    return TSQueryCursor.create().use { cursor ->
       cursor.addPredicateHandler(SetDirectiveHandler())
       cursor.exec(indentsQuery, tree.rootNode)
 
       val indents = getIndents(languageSpec.indentsQuery, cursor)
-      val isEmptyLine = content.getLine(line).trimmedLength() == 0
-      var node: TSNode?
+      return@use IntArray(positions.size) { index ->
+        val line = IntPair.getFirst(positions[index])
+        val column = IntPair.getSecond(positions[index])
+        computeIndentForLine(content, line, column, defaultIndents[index], rootNode, indents)
+      }
+    }
+  }
 
-      if (isEmptyLine) {
-        val prevlnum = content.previousNonBlankLine(line)
-        if (prevlnum == -1) {
-          log.error("Cannot compute indents. Unable to get previous non-blank line.")
-          return default
-        } else {
-          log.debug("Previous non-blank line: {}", prevlnum)
-        }
+  private fun computeIndentForLine(
+    content: Content,
+    line: Int,
+    column: Int,
+    default: Int,
+    rootNode: TSNode,
+    indents: IndentsContainer
+  ): Int {
+    val isEmptyLine = content.getLine(line).trimmedLength() == 0
+    var node: TSNode?
 
-        var prevline = content.getLine(line).trim()
-        val indent = TextUtils.countLeadingSpacesAndTabs(prevline).let {
-          (IntPair.getFirst(it) + IntPair.getSecond(it)) shl 1
-        }
-
-        // The final position can be trailing spaces, which should not affect indentation
-        node = content.getLastNodeAtLine(rootNode, prevlnum) ?: run {
-          log.error("Unable to get last node at line: {}", prevlnum)
-          return default
-        }
-
-        // TODO(itsaky): Make this an API
-        //    Language defs must be able to specify captures which represent a comment
-        if (node.type == "comment") {
-          // The final node we capture of the previous line can be a comment node, which should also be ignored
-          // Unless the last line is an entire line of comment, ignore the comment range and find the last node again
-          val firstNode = rootNode.getNodeAt(line, indent)
-          val scol = node.startPoint.column
-          if (firstNode?.nodeId != node.nodeId) {
-            // In case the last captured node is a trailing comment node, re-trim the string
-            prevline = prevline.subSequence(0, (scol shr 1) - (indent shr 1)).trim()
-            val col = indent + ((prevline.length - 1) shl 1)
-
-            node = rootNode.getNodeAt(prevlnum, col)
-          }
-        }
-
-        if (indents[IDENT_END]!![node?.nodeId ?: 0] != null) {
-          node = content.getFirstNodeAtLine(rootNode, line)
-        }
+    if (isEmptyLine) {
+      val prevlnum = content.previousNonBlankLine(line)
+      if (prevlnum == -1) {
+        log.error("Cannot compute indents. Unable to get previous non-blank line.")
+        return default
       } else {
-        node = content.getFirstNodeAtLine(rootNode, line)
+        log.debug("Previous non-blank line: {}", prevlnum)
       }
 
-      if (node == null || !node.canAccess()) {
-        log.error(
-          "Cannot compute indents. Unable to get node at line: {}. node={} node.canAccess={}", line,
-          node, node?.canAccess())
+      var prevline: CharSequence = content.getLine(prevlnum)
+      val indentBytes = TextUtils.countLeadingSpaceCount(prevline, indentSize) shl 1
+      prevline = prevline.trim()
+
+      // The final position can be trailing spaces, which should not affect indentation
+      node = content.getLastNodeAtLine(rootNode, prevlnum,
+        (indentBytes + prevline.length shl 1) - 2
+      ) ?: run {
+        log.error("Unable to get last node at line: {}", prevlnum)
         return default
       }
 
-      var indent = 0
+      // TODO(itsaky): Make this an API
+      //    Language defs must be able to specify captures which represent a comment
+      if (node.type == "comment") {
+        // The final node we capture of the previous line can be a comment node, which should also be ignored
+        // Unless the last line is an entire line of comment, ignore the comment range and find the last node again
+        val firstNode = content.getFirstNodeAtLine(rootNode, prevlnum, indentBytes)
+        val scol = node.startPoint.column
+        if (firstNode?.nodeId != node.nodeId) {
+          // In case the last captured node is a trailing comment node, re-trim the string
+          prevline = prevline.subSequence(0, (scol shr 1) - (indentBytes shr 1)).trim()
+          val col = indentBytes + ((prevline.length - 1) shl 1)
 
-      if (indents[IDENT_ZERO]?.containsKey(node.nodeId) == true) {
-        // indent.zero: align the node to the start of the line
-        log.debug("Zero indent for node: {}", node)
-        return INDENT_ALIGN_ZERO
+          node = content.getLastNodeAtLine(rootNode, prevlnum, col)
+        }
       }
 
-      // map to store whether a given line is already processed
-      // this is to ensure that we do not accidentally apply multiple indent levels to the same line
-      val processedLines = mutableIntObjectMapOf<Boolean>()
+      if (indents[IDENT_END]!![node?.nodeId ?: 0] != null) {
+        node = content.getFirstNodeAtLine(rootNode, line)
+      }
+    } else {
+      node = content.getFirstNodeAtLine(rootNode, line, column shl 1)
+    }
 
-      while (node != null && node.canAccess()) {
+    if (node == null || !node.canAccess()) {
+      log.error(
+        "Cannot compute indents. Unable to get node at line: {}. node={} node.canAccess={}", line,
+        node, node?.canAccess())
+      return default
+    }
 
-        val srow = node.startPoint.line
-        val erow = node.endPoint.line
+    var indent = 0
 
-        // do 'auto indent' if not marked as '@indent'
-        if (!indents.hasNode(IDENT_BEGIN, node)
-          && !indents.hasNode(IDENT_ALIGN, node)
-          && indents.hasNode(IDENT_AUTO, node)
-          && srow < line
-          && line <= erow
-        ) {
-          log.debug("Auto indent for node: {}", node)
-          return INDENT_AUTO
-        }
+    if (indents[IDENT_ZERO]?.containsKey(node.nodeId) == true) {
+      // indent.zero: align the node to the start of the line
+      log.debug("Zero indent for node: {}", node)
+      return INDENT_ALIGN_ZERO
+    }
 
-        // Do not indent if we are inside an @ignore block.
-        // If a node spans from L1,C1 to L2,C2, we know that lines where L1 < line <= L2 would
-        // have their indentations contained by the node.
-        if (!indents.hasNode(IDENT_BEGIN, node)
-          && indents.hasNode(IDENT_IGNORE, node)
-          && srow < line
-          && line <= erow
-        ) {
-          log.debug("Ignore indent for node: {}", node)
-          return default
-        }
+    // map to store whether a given line is already processed
+    // this is to ensure that we do not accidentally apply multiple indent levels to the same line
+    val processedLines = mutableIntObjectMapOf<Boolean>()
 
-        var isProcessed = false
+    while (node != null && node.canAccess()) {
 
-        if (!processedLines.containsKey(srow)
-          && ((indents.hasNode(IDENT_BRANCH, node) && srow == line)
-              || (indents.hasNode(IDENT_DEDENT, node) && srow != line))
-        ) {
-          indent -= indentSize
-          isProcessed = true
-        }
+      val srow = node.startPoint.line
+      val erow = node.endPoint.line
 
-        // do not indent for nodes that starts-and-ends on same line and starts on target line (lnum)
-        val shouldProcess = !processedLines.containsKey(srow)
-        var isInError = false
-        if (shouldProcess) {
-          isInError = node.parent?.let { it.canAccess() && it.hasErrors() } == true
-        }
+      // do 'auto indent' if not marked as '@indent'
+      if (!indents.hasNode(IDENT_BEGIN, node)
+        && !indents.hasNode(IDENT_ALIGN, node)
+        && indents.hasNode(IDENT_AUTO, node)
+        && srow < line
+        && line <= erow
+      ) {
+        log.debug("Auto indent for node: {}", node)
+        return INDENT_AUTO
+      }
 
-        if (shouldProcess &&
-          (indents.hasNode(IDENT_BEGIN, node)
-              && (srow != erow || isInError || indents.hasMeta(IDENT_BEGIN, node,
-            "indent.immediate"))
-              && (srow != line || indents.hasMeta(IDENT_BEGIN, node, "indent.start_at_same_line")))
-        ) {
-          indent += indentSize
-          isProcessed = true
-        }
+      // Do not indent if we are inside an @ignore block.
+      // If a node spans from L1,C1 to L2,C2, we know that lines where L1 < line <= L2 would
+      // have their indentations contained by the node.
+      if (!indents.hasNode(IDENT_BEGIN, node)
+        && indents.hasNode(IDENT_IGNORE, node)
+        && srow < line
+        && line <= erow
+      ) {
+        log.debug("Ignore indent for node: {}", node)
+        return default
+      }
 
-        if (isInError && !indents.hasNode(IDENT_ALIGN, node)) {
-          // only when the node is in error, promote the
-          // first child's aligned indent to the error node
-          // to work around ((ERROR "X" . (_)) @aligned_indent (#set! "delimiter" "AB"))
-          // matching for all X, instead set do
-          // (ERROR "X" @aligned_indent (#set! "delimiter" "AB") . (_))
-          // and we will fish it out here.
+      var isProcessed = false
 
-          for (i in 0 until node.childCount) {
-            val child = node.getChild(i)
-            if (indents.hasNode(IDENT_ALIGN, child)) {
-              indents[IDENT_ALIGN]!![node.nodeId] = indents[IDENT_ALIGN]!![child.nodeId]!!
-              break
-            }
+      if (!processedLines.containsKey(srow)
+        && ((indents.hasNode(IDENT_BRANCH, node) && srow == line)
+            || (indents.hasNode(IDENT_DEDENT, node) && srow != line))
+      ) {
+        indent -= indentSize
+        isProcessed = true
+      }
+
+      // do not indent for nodes that starts-and-ends on same line and starts on target line (lnum)
+      val shouldProcess = !processedLines.containsKey(srow)
+      var isInError = false
+      if (shouldProcess) {
+        isInError = node.parent?.let { it.canAccess() && it.hasErrors() } == true
+      }
+
+      if (shouldProcess &&
+        (indents.hasNode(IDENT_BEGIN, node)
+            && (srow != erow || isInError || indents.hasMeta(IDENT_BEGIN, node,
+          "indent.immediate"))
+            && (srow != line || indents.hasMeta(IDENT_BEGIN, node, "indent.start_at_same_line")))
+      ) {
+        indent += indentSize
+        isProcessed = true
+      }
+
+      if (isInError && !indents.hasNode(IDENT_ALIGN, node)) {
+        // only when the node is in error, promote the
+        // first child's aligned indent to the error node
+        // to work around ((ERROR "X" . (_)) @aligned_indent (#set! "delimiter" "AB"))
+        // matching for all X, instead set do
+        // (ERROR "X" @aligned_indent (#set! "delimiter" "AB") . (_))
+        // and we will fish it out here.
+
+        for (i in 0 until node.childCount) {
+          val child = node.getChild(i)
+          if (indents.hasNode(IDENT_ALIGN, child)) {
+            indents[IDENT_ALIGN]!![node.nodeId] = indents[IDENT_ALIGN]!![child.nodeId]!!
+            break
           }
         }
+      }
 
-        // do not indent for nodes that starts-and-ends on same line and starts on target line (lnum)
-        if (shouldProcess
-          && indents.hasNode(IDENT_ALIGN, node)
-          && (srow != erow || isInError)
-          && (srow != line)
-        ) {
-          val meta = indents.getMeta(IDENT_ALIGN, node)!!
-          var oDelimNode: TSNode?
-          var oIsLastInLine = false
-          var cDelimNode: TSNode?
-          var cIsLastInLine = false
-          var indentIsAbsolute = false
+      // do not indent for nodes that starts-and-ends on same line and starts on target line (lnum)
+      if (shouldProcess
+        && indents.hasNode(IDENT_ALIGN, node)
+        && (srow != erow || isInError)
+        && (srow != line)
+      ) {
+        val meta = indents.getMeta(IDENT_ALIGN, node)!!
+        var oDelimNode: TSNode?
+        var oIsLastInLine = false
+        var cDelimNode: TSNode?
+        var cIsLastInLine = false
+        var indentIsAbsolute = false
 
-          if (meta.containsKey("indent.open_delimiter")) {
-            val r = findDelimiter(content, node, meta["indent.open_delimiter"]!!)
-            oDelimNode = r.first
-            oIsLastInLine = r.second
-          } else {
-            oDelimNode = node
+        if (meta.containsKey("indent.open_delimiter")) {
+          val r = findDelimiter(content, node, meta["indent.open_delimiter"]!!)
+          oDelimNode = r.first
+          oIsLastInLine = r.second
+        } else {
+          oDelimNode = node
+        }
+
+        if (meta.containsKey("indent.close_delimiter")) {
+          val r = findDelimiter(content, node, meta["indent.close_delimiter"]!!)
+          cDelimNode = r.first
+          cIsLastInLine = r.second
+        } else {
+          cDelimNode = node
+        }
+
+        if (oDelimNode != null) {
+          val osrow = oDelimNode.startPoint.row
+          val oscol = oDelimNode.startPoint.column
+          var csrow: Int? = null
+          if (cDelimNode != null) {
+            csrow = cDelimNode.startPoint.row
           }
 
-          if (meta.containsKey("indent.close_delimiter")) {
-            val r = findDelimiter(content, node, meta["indent.close_delimiter"]!!)
-            cDelimNode = r.first
-            cIsLastInLine = r.second
-          } else {
-            cDelimNode = node
-          }
-
-          if (oDelimNode != null) {
-            val osrow = oDelimNode.startPoint.row
-            val oscol = oDelimNode.startPoint.column
-            var csrow: Int? = null
-            if (cDelimNode != null) {
-              csrow = cDelimNode.startPoint.row
-            }
-
-            if (oIsLastInLine) {
-              // hanging indent (previous line ended with starting delimiter)
-              // should be processed like indent
-              if (shouldProcess) {
-                indent += indentSize
-                if (cIsLastInLine) {
-                  // If current line is outside the range of a node marked with `@aligned_indent`
-                  // Then its indent level shouldn't be affected by `@aligned_indent` node
-                  if (csrow != null && csrow < line) {
-                    indent = max(indent - indentSize, 0)
-                  }
-                }
-              }
-            } else {
-              // aligned indent
-              if (cIsLastInLine && csrow != null && osrow != csrow && csrow < line) {
+          if (oIsLastInLine) {
+            // hanging indent (previous line ended with starting delimiter)
+            // should be processed like indent
+            if (shouldProcess) {
+              indent += indentSize
+              if (cIsLastInLine) {
                 // If current line is outside the range of a node marked with `@aligned_indent`
                 // Then its indent level shouldn't be affected by `@aligned_indent` node
-                indent = max(indent - indentSize, 0)
-              } else {
-                indent = oscol + (meta.getInt("indent.increment") ?: 1)
-                indentIsAbsolute = true
+                if (csrow != null && csrow < line) {
+                  indent = max(indent - indentSize, 0)
+                }
               }
             }
-
-            // deal with final line
-            var avoidLastMatchingNext = false
-            if (csrow != null && csrow != osrow && csrow == line) {
-              // delims end on current line, and are not open and closed same line.
-              // then this last line may need additional indent to avoid clashes
-              // with the next. `indent.avoid_last_matching_next` controls this behavior,
-              // for example this is needed for function parameters.
-
-              avoidLastMatchingNext = meta.getBolean("indent.avoid_last_matching_next")
-                ?: false
-            }
-
-            if (avoidLastMatchingNext) {
-              // last line must be indented more in cases where
-              // it would be same indent as next line (we determine this as one
-              // width more than the open indent to avoid confusing with any
-              // hanging indents)
-              val osrowIndent = TextUtils.countLeadingSpaceCount(content.getLine(osrow), indentSize)
-              if (indent <= osrowIndent + indentSize) {
-                indent += indentSize
-              }
-            }
-
-            isProcessed = true
-            if (indentIsAbsolute) {
-              // don't allow further indenting by parent nodes, this is an absolute position
-              return indent
+          } else {
+            // aligned indent
+            if (cIsLastInLine && csrow != null && osrow != csrow && csrow < line) {
+              // If current line is outside the range of a node marked with `@aligned_indent`
+              // Then its indent level shouldn't be affected by `@aligned_indent` node
+              indent = max(indent - indentSize, 0)
+            } else {
+              indent = oscol + (meta.getInt("indent.increment") ?: 1)
+              indentIsAbsolute = true
             }
           }
+
+          // deal with final line
+          var avoidLastMatchingNext = false
+          if (csrow != null && csrow != osrow && csrow == line) {
+            // delims end on current line, and are not open and closed same line.
+            // then this last line may need additional indent to avoid clashes
+            // with the next. `indent.avoid_last_matching_next` controls this behavior,
+            // for example this is needed for function parameters.
+
+            avoidLastMatchingNext = meta.getBolean("indent.avoid_last_matching_next")
+              ?: false
+          }
+
+          if (avoidLastMatchingNext) {
+            // last line must be indented more in cases where
+            // it would be same indent as next line (we determine this as one
+            // width more than the open indent to avoid confusing with any
+            // hanging indents)
+            val osrowIndent = TextUtils.countLeadingSpaceCount(content.getLine(osrow), indentSize)
+            if (indent <= osrowIndent + indentSize) {
+              indent += indentSize
+            }
+          }
+
+          isProcessed = true
+          if (indentIsAbsolute) {
+            // don't allow further indenting by parent nodes, this is an absolute position
+            return indent
+          }
         }
-
-        processedLines[srow] = processedLines.getOrDefault(srow, isProcessed)
-
-        node = node.parent
       }
 
-      return indent
+      processedLines[srow] = processedLines.getOrDefault(srow, isProcessed)
+
+      node = node.parent
     }
+
+    return indent
   }
 
   private fun findDelimiter(content: Content, node: TSNode,
@@ -394,7 +416,7 @@ class TreeSitterIndentProvider(
       val start = node.startPoint
       val end = node.endPoint
       val line = content.getLine(start.line)
-      val escapedDelim = delimiter.replace(Regex("""[\-.+\[\]()$^\\?*]"""), "\\\\$0")
+      val escapedDelim = delimiter.replace(DELIMITER_REGEX, "\\\\$0")
       val trimmedAfterDelim = line.substring((end.column shr 1) + 1)
         .replace(Regex("""[\s$escapedDelim]*"""), "")
       return child to trimmedAfterDelim.isEmpty()

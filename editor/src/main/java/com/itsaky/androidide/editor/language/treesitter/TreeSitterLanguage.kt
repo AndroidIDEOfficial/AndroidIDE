@@ -25,13 +25,13 @@ import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
+import com.itsaky.androidide.editor.utils.isNonBlankLine
 import com.itsaky.androidide.treesitter.TSLanguage
+import com.itsaky.androidide.utils.IntPair
 import io.github.rosemoe.sora.editor.ts.TsTheme
 import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
 import io.github.rosemoe.sora.text.ContentReference
-import io.github.rosemoe.sora.text.TextUtils
-import io.github.rosemoe.sora.util.IntPair
 import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.slf4j.LoggerFactory
 
@@ -70,7 +70,7 @@ abstract class TreeSitterLanguage(
   companion object {
 
     private val log = LoggerFactory.getLogger(TreeSitterLanguage::class.java)
-    private const val DEF_IDENT_ADV = TreeSitterIndentProvider.DEF_IDENT_ADV
+    private const val DEF_IDENT_ADV = 0
   }
 
   init {
@@ -105,7 +105,13 @@ abstract class TreeSitterLanguage(
     return INTERRUPTION_LEVEL_STRONG
   }
 
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
+  override fun getIndentAdvance(
+    content: ContentReference,
+    line: Int,
+    column: Int,
+    spaceCountOnLine: Int,
+    tabCountOnLine: Int
+  ): Int {
     return try {
       if (line == content.reference.lineCount - 1) {
         // line + 1 does not exist
@@ -113,21 +119,43 @@ abstract class TreeSitterLanguage(
         return DEF_IDENT_ADV
       }
 
-      val indentOnLine = TextUtils.countLeadingSpacesAndTabs(content.getLine(line)).let { count ->
-        IntPair.getFirst(count) + (getTabSize() * IntPair.getSecond(count))
+      var linesToReq = LongArray(1)
+      linesToReq[0] = IntPair.pack(line, column)
+
+      if (content.reference.isNonBlankLine(line + 1)) {
+        // consider the indentation of the next line only if it is non-blank
+        linesToReq += IntPair.pack(line + 1, 0)
       }
 
-      val indent = this.indentProvider.getIndent(
+      val indents = this.indentProvider.getIndentsForLines(
         content = content.reference,
-        line = line + 1, // "line" is the current line index, indentation is applied on the next line
-        default = DEF_IDENT_ADV,
+        positions = linesToReq,
       )
 
-      indent - indentOnLine
+      if (indents.size == 1) {
+        val indent = indents[0]
+        if (indent == TreeSitterIndentProvider.INDENTATION_ERR) {
+          return DEF_IDENT_ADV
+        }
+
+        return indent - (spaceCountOnLine + (tabCountOnLine * getTabSize()))
+      }
+
+      val (indentLine, indentNxtLine) = indents
+      if (indentLine == TreeSitterIndentProvider.INDENTATION_ERR
+        || indentNxtLine == TreeSitterIndentProvider.INDENTATION_ERR) {
+        log.debug(
+          "expectedIndent[{}]={}, expectedIndentNextLine[{}]={}, returning default indent advance",
+          line, indentLine, line + 1, indentNxtLine)
+        return DEF_IDENT_ADV
+      }
+
+      return indentNxtLine - indentLine
     } catch (e: Exception) {
       log.error("An error occurred computing indentation at line:column::{}:{}", line, column, e)
       DEF_IDENT_ADV
-    }.let { if (it == Int.MIN_VALUE) 0 else it }
+    }
+
   }
 
   override fun destroy() {
