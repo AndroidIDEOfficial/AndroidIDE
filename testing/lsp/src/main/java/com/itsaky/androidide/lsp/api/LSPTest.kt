@@ -29,7 +29,7 @@ import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
@@ -84,8 +84,8 @@ abstract class LSPTest {
       return
     }
 
-    mockkStatic(::tabSize)
-    every { tabSize } returns 4
+    mockkStatic(EditorPreferences::tabSize)
+    every { EditorPreferences.tabSize } returns 4
 
     ToolingApiTestLauncher.launchServer {
 
