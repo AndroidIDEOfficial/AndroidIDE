@@ -26,6 +26,9 @@ import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.FileUtils
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.OpenedFilesCache
+import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings
+import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
+import com.itsaky.androidide.models.workspace.WorkspaceSettings
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
@@ -52,6 +55,7 @@ class EditorViewModel : ViewModel() {
   internal val _filesSaving = MutableLiveData(false)
 
   private val _openedFiles = MutableLiveData<OpenedFilesCache>()
+  private val _editorWorkspaceSettings = MutableLiveData<EditorWorkspaceSettings>()
   private val _isBoundToBuildService = MutableLiveData(false)
   private val _files = MutableLiveData<MutableList<File>>(ArrayList())
 
@@ -77,6 +81,12 @@ class EditorViewModel : ViewModel() {
     get() = _openedFiles.value
     set(value) {
       this._openedFiles.value = value
+    }
+
+  var editorWorkspaceSettings: EditorWorkspaceSettings?
+    get() = _editorWorkspaceSettings.value
+    set(value) {
+      this._editorWorkspaceSettings.value = value
     }
 
   var isBoundToBuildSerice: Boolean
@@ -251,10 +261,42 @@ class EditorViewModel : ViewModel() {
     }
   }
 
+  inline fun getOrReadEditorWorkspaceSettings(
+    crossinline result: (EditorWorkspaceSettings?) -> Unit) {
+    return editorWorkspaceSettings?.let(result) ?: run {
+      viewModelScope.launch(Dispatchers.IO) {
+        val workspaceSettings = try {
+          val workspaceSettingsFile = getWorkspaceSettingsFile(false)
+          if (workspaceSettingsFile.exists() && workspaceSettingsFile.length() > 0L) {
+            workspaceSettingsFile.bufferedReader().use(EditorWorkspaceSettings::parse)
+          } else null
+        } catch (err: IOException) {
+          // ignore exception
+          null
+        }
+
+        withContext(Dispatchers.Main) {
+          result(workspaceSettings)
+        }
+      }.also {
+        handleWorkspaceSettingsJobCompletion(it, "read")
+      }
+      Unit
+    }
+  }
+
   fun handleOpenedFilesCacheJobCompletion(it: Job, operation: String) {
     it.invokeOnCompletion { err ->
       if (err != null) {
         ILogger.ROOT.error("[EditorViewModel] Failed to {} opened files cache", operation, err)
+      }
+    }
+  }
+
+  fun handleWorkspaceSettingsJobCompletion(it: Job, operation: String) {
+    it.invokeOnCompletion { err ->
+      if (err != null) {
+        ILogger.ROOT.error("[EditorViewModel] Failed to {} workspace settings", operation, err)
       }
     }
   }
@@ -290,6 +332,28 @@ class EditorViewModel : ViewModel() {
     }
 
     file.createNewFile()
+
+    return file
+  }
+
+  @PublishedApi
+  internal fun getWorkspaceSettingsFile(forWrite: Boolean = false): File {
+    var file = Environment.getProjectCacheDir(IProjectManager.getInstance().projectDir)
+    file = File(file, WorkspaceSettings.SETTINGS_FILE_NAME)
+    if (file.exists() && forWrite) {
+      FileUtils.rename(file, "${file.name}.bak")
+    }
+
+    if (file.parentFile?.exists() == false) {
+      file.parentFile?.mkdirs()
+    }
+
+    file.createNewFile()
+
+    if (file.readText().isEmpty()) {
+      file.writeText(GsonBuilder().setPrettyPrinting().create().toJson(
+        EditorWorkspaceSettingsWrapper()))
+    }
 
     return file
   }
