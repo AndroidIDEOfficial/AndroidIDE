@@ -53,8 +53,8 @@ import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings
-import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
 import com.itsaky.androidide.models.workspace.WorkspaceSettings
+import com.itsaky.androidide.models.workspace.WorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
 import com.itsaky.androidide.preferences.internal.EditorPreferences.autoSave
 import com.itsaky.androidide.preferences.internal.EditorPreferences.completionsMatchLower
 import com.itsaky.androidide.preferences.internal.EditorPreferences.deleteTabsOnBackspace

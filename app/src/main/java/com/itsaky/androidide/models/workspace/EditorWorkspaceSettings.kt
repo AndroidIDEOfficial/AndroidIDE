@@ -20,6 +20,7 @@ package com.itsaky.androidide.models.workspace
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import com.itsaky.androidide.models.workspace.WorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
 import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.utils.flashError
 import org.slf4j.LoggerFactory
@@ -62,8 +63,6 @@ data class EditorWorkspaceSettings(
 
   companion object {
 
-    private const val EDITOR_SETTINGS_PREFIX = "editor_"
-
     private val log = LoggerFactory.getLogger(EditorWorkspaceSettings::class.java)
 
     const val KEY_COMPLETIONS_MATCH_LOWER = "matchCompletionsInLowercase"
@@ -94,15 +93,10 @@ data class EditorWorkspaceSettings(
         ThreadUtils.runOnUiThread {
           flashError("$SETTINGS_FILE_NAME: ${err.message}")
         }.also {
-          log.error("Error parsing workspace settings ${err.message}", err)
+          log.error("Error parsing workspace settings: ${err.message}", err)
         }
         null
       }
     }
-
-    class EditorWorkspaceSettingsWrapper(
-      @SerializedName("editor")
-      val editorWorkspaceSettings: EditorWorkspaceSettings = EditorWorkspaceSettings()
-    )
   }
 }

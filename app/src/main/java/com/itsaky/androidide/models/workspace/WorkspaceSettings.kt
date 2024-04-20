@@ -17,12 +17,17 @@
 
 package com.itsaky.androidide.models.workspace
 
-import java.io.Reader
+import com.google.gson.annotations.SerializedName
 
-abstract class WorkspaceSettings {
+open class WorkspaceSettings {
   companion object {
 
-    private const val IDE_PREF_EDITOR_PREFIX = "idepref_editor_"
+    const val IDE_PREF_EDITOR_PREFIX = "idepref_editor_"
     const val SETTINGS_FILE_NAME = "settings.json"
+
+    class EditorWorkspaceSettingsWrapper(
+      @SerializedName("editor")
+      val editorWorkspaceSettings: EditorWorkspaceSettings = EditorWorkspaceSettings()
+    )
   }
 }

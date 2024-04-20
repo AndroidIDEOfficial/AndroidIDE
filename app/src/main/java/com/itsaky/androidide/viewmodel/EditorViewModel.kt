@@ -27,8 +27,8 @@ import com.blankj.utilcode.util.FileUtils
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings
-import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
 import com.itsaky.androidide.models.workspace.WorkspaceSettings
+import com.itsaky.androidide.models.workspace.WorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
