@@ -255,7 +255,7 @@ class EditorViewModel : ViewModel() {
           result(cache)
         }
       }.also { job ->
-        handleOpenedFilesCacheJobCompletion(job, "read")
+        handleJobCompletion(job, "read", "opened files cache")
       }
       Unit
     }
@@ -278,25 +278,17 @@ class EditorViewModel : ViewModel() {
         withContext(Dispatchers.Main) {
           result(workspaceSettings)
         }
-      }.also {
-        handleWorkspaceSettingsJobCompletion(it, "read")
+      }.also { job ->
+        handleJobCompletion(job, "load", "workspace settings")
       }
       Unit
     }
   }
 
-  fun handleOpenedFilesCacheJobCompletion(it: Job, operation: String) {
+  fun handleJobCompletion(it: Job, operation: String, jobName: String) {
     it.invokeOnCompletion { err ->
       if (err != null) {
-        ILogger.ROOT.error("[EditorViewModel] Failed to {} opened files cache", operation, err)
-      }
-    }
-  }
-
-  fun handleWorkspaceSettingsJobCompletion(it: Job, operation: String) {
-    it.invokeOnCompletion { err ->
-      if (err != null) {
-        ILogger.ROOT.error("[EditorViewModel] Failed to {} workspace settings", operation, err)
+        ILogger.ROOT.error("[EditorViewModel] Failed to $operation $jobName", err)
       }
     }
   }
@@ -315,7 +307,7 @@ class EditorViewModel : ViewModel() {
       file.createNewFile()
       file.writeText(string)
     }.also { job ->
-      handleOpenedFilesCacheJobCompletion(job, "write")
+      handleJobCompletion(job, "write", "opened files cache")
     }
   }
 

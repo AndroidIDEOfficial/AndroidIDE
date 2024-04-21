@@ -409,16 +409,25 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     return -1
   }
 
-  override fun saveAllAsync(notify: Boolean, requestSync: Boolean, processResources: Boolean,
-    progressConsumer: ((Int, Int) -> Unit)?, runAfter: (() -> Unit)?) {
+  override fun saveAllAsync(
+    notify: Boolean,
+    requestSync: Boolean,
+    processResources: Boolean,
+    progressConsumer: ((Int, Int) -> Unit)?,
+    runAfter: (() -> Unit)?
+  ) {
     editorActivityScope.launch {
       saveAll(notify, requestSync, processResources, progressConsumer)
       runAfter?.invoke()
     }
   }
 
-  override suspend fun saveAll(notify: Boolean, requestSync: Boolean, processResources: Boolean,
-    progressConsumer: ((Int, Int) -> Unit)?): Boolean {
+  override suspend fun saveAll(
+    notify: Boolean,
+    requestSync: Boolean,
+    processResources: Boolean,
+    progressConsumer: ((Int, Int) -> Unit)?
+  ): Boolean {
     val result = saveAllResult(progressConsumer)
 
     // don't bother to switch the context if we don't need to
@@ -492,9 +501,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     withContext(Dispatchers.Main) {
 
       if (fileName == WorkspaceSettings.SETTINGS_FILE_NAME) {
-        if (file.readText().isEmpty()) {
-          file.writeText(GsonBuilder().setPrettyPrinting().create().toJson(
-            EditorWorkspaceSettingsWrapper()))
+        withContext(Dispatchers.IO) {
+          if (file.readText().isEmpty()) {
+            file.writeText(GsonBuilder().setPrettyPrinting().create().toJson(
+              EditorWorkspaceSettingsWrapper()))
+          }
         }
         onReadOrUpdateEditorWorkspaceSettings(
           file.bufferedReader().use(EditorWorkspaceSettings::parse)
