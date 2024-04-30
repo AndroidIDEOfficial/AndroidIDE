@@ -16,17 +16,21 @@
   -->
 
 <configuration>
-  <appender name="LOGCAT" class="com.itsaky.androidide.logging.LogcatAppender">
+  <!-- From Logback docs: -->
+  <!-- Recommendation: place status listeners towards the the top of the configuration file -->
+  <statuslistener class="com.itsaky.androidide.tooling.impl.util.LogbackStatusListener" />
+
+  <appender class="com.itsaky.androidide.logging.LogcatAppender" name="LOGCAT">
     <checkLoggable>false</checkLoggable>
     <encoder class="com.itsaky.androidide.logging.encoder.IDELogFormatEncoder" />
   </appender>
-  <appender name="JVM_STDERR" class="com.itsaky.androidide.logging.JvmStdErrAppender">
+  <appender class="com.itsaky.androidide.logging.JvmStdErrAppender" name="JVM_STDERR">
     <encoder class="com.itsaky.androidide.logging.encoder.IDELogFormatEncoder" />
   </appender>
-
+  <appender class="com.itsaky.androidide.tooling.impl.logging.ToolingApiAppender" name="TOOLING" />
   <root level="DEBUG">
     <appender-ref ref="LOGCAT" />
     <appender-ref ref="JVM_STDERR" />
+    <appender-ref ref="TOOLING" />
   </root>
-
 </configuration>

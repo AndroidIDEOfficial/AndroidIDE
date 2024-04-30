@@ -22,7 +22,6 @@ import com.itsaky.androidide.logging.JvmStdErrAppender;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
-import com.itsaky.androidide.tooling.impl.logging.ToolingApiAppender;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.tooling.impl.util.LogbackStatusListener;
 import java.io.ByteArrayInputStream;
@@ -44,14 +43,10 @@ public class Main {
   public static IToolingApiClient client;
   public static Future<Void> future;
 
-  private static ToolingApiAppender toolingApiLogAppender;
-
   public static void main(String[] args) {
 
     // disable the JVM std.err appender
     System.setProperty(JvmStdErrAppender.PROP_JVM_STDERR_APPENDER_ENABLED, "false");
-    System.setProperty(CoreConstants.STATUS_LISTENER_CLASS_KEY,
-        LogbackStatusListener.class.getName());
 
     LOG.debug("Starting Tooling API server...");
     final var project = new ProjectImpl();
@@ -61,9 +56,6 @@ public class Main {
     Main.future = launcher.startListening();
     Main.client = (IToolingApiClient) launcher.getRemoteProxy();
     server.connect(client);
-
-    Main.toolingApiLogAppender = new ToolingApiAppender(client);
-    Main.toolingApiLogAppender.attachToRoot();
 
     LOG.debug("Server started. Will run until shutdown message is received...");
     LOG.debug("Running on Java version: {}", System.getProperty("java.version", "<unknown>"));
@@ -89,13 +81,10 @@ public class Main {
           server.shutdown().get();
         }
       } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
+        LOG.error("An error occurred while shutting down tooling API server", e);
       } finally {
         Main.future = null;
         Main.client = null;
-
-        Main.toolingApiLogAppender.detachFromRoot();
-        Main.toolingApiLogAppender = null;
 
         LOG.info("Tooling API server shutdown complete");
       }

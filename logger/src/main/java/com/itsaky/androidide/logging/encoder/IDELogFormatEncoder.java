@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.logging.encoder;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 
 /**
@@ -24,6 +25,10 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
  *
  * @author Akash Yadav
  */
-public class IDELogFormatEncoder extends LayoutWrappingEncoder<IDELogFormatLayout> {
+public class IDELogFormatEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
 
+  public IDELogFormatEncoder() {
+    super();
+    setLayout(new IDELogFormatLayout());
+  }
 }

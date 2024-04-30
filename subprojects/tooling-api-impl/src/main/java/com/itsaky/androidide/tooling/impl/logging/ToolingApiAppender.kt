@@ -17,44 +17,24 @@
 
 package com.itsaky.androidide.tooling.impl.logging
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
-import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.messages.LogMessageParams
-import org.slf4j.LoggerFactory
+import com.itsaky.androidide.tooling.impl.Main
 
 /**
  * [AppenderBase] implementation which forwards all logs to the tooling API client.
  *
  * @author Akash Yadav
  */
-class ToolingApiAppender(
-  private val client: IToolingApiClient
-) : AppenderBase<ILoggingEvent>() {
-
-  fun attachToRoot() {
-    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-    setContext(LoggerFactory.getILoggerFactory() as LoggerContext)
-    start()
-
-    rootLogger.addAppender(this)
-  }
-
-  fun detachFromRoot() {
-    stop()
-
-    val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-    rootLogger.detachAppender(this)
-  }
+class ToolingApiAppender : AppenderBase<ILoggingEvent>() {
 
   override fun append(eventObject: ILoggingEvent?) {
     if (eventObject == null || !isStarted) {
       return
     }
 
-    client.logMessage(
+    Main.client?.logMessage(
       LogMessageParams(
         eventObject.level.levelStr[0],
         eventObject.loggerName,

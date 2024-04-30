@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.testing.tooling
 
-import com.google.common.truth.Truth.assertThat
+import ch.qos.logback.core.CoreConstants
 import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
 import com.itsaky.androidide.testing.tooling.models.ToolingApiTestScope
 import com.itsaky.androidide.tooling.api.IProject
@@ -33,6 +33,7 @@ import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.tooling.events.ProgressEvent
+import com.itsaky.androidide.tooling.impl.util.LogbackStatusListener
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import org.slf4j.Logger
@@ -181,6 +182,9 @@ object ToolingApiTestLauncher {
     sysProps.forEach { (key, value) ->
       cmd.add("-D$key=$value")
     }
+
+    cmd.add(
+      "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=${LogbackStatusListener::class.java.name}")
 
     Collections.addAll(cmd, "-jar", jar)
 
