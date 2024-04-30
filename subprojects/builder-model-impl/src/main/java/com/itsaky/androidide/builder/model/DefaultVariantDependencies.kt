@@ -16,16 +16,22 @@
  */
 package com.itsaky.androidide.builder.model
 
+import com.android.builder.model.v2.ide.ArtifactDependencies
 import com.android.builder.model.v2.models.VariantDependencies
 import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultVariantDependencies : VariantDependencies, Serializable {
+
   private val serialVersionUID = 1L
+  @Deprecated("Contained in deviceTestArtifacts")
   override var androidTestArtifact: DefaultArtifactDependencies? = null
   override var libraries: Map<String, DefaultLibrary> = emptyMap()
   override var mainArtifact: DefaultArtifactDependencies = DefaultArtifactDependencies()
   override var name: String = ""
   override var testFixturesArtifact: DefaultArtifactDependencies? = null
+  @Deprecated("Contained in hostTestArtifacts")
   override var unitTestArtifact: DefaultArtifactDependencies? = null
+  override val deviceTestArtifacts: Map<String, ArtifactDependencies> = emptyMap()
+  override val hostTestArtifacts: Map<String, ArtifactDependencies> = emptyMap()
 }
