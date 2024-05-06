@@ -33,7 +33,6 @@ import com.itsaky.androidide.tooling.api.messages.toLogLine
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.api.util.ToolingProps
 import com.itsaky.androidide.tooling.events.ProgressEvent
-import com.itsaky.androidide.tooling.impl.util.LogbackStatusListener
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import org.slf4j.Logger
@@ -184,7 +183,7 @@ object ToolingApiTestLauncher {
     }
 
     cmd.add(
-      "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=${LogbackStatusListener::class.java.name}")
+      "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=com.itsaky.androidide.tooling.impl.util.LogbackStatusListener")
 
     Collections.addAll(cmd, "-jar", jar)
 
@@ -304,7 +303,7 @@ object ToolingApiTestLauncher {
       val contents = StringBuilder().append(comment)
         .append(" ")
         .append(GENERATED_FILE_WARNING)
-        .append(System.getProperty("line.separator").repeat(2))
+        .append(System.lineSeparator().repeat(2))
 
       bufferedReader().use { reader ->
         reader.readText().also { text ->
