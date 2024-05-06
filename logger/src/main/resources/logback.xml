@@ -16,10 +16,6 @@
   -->
 
 <configuration>
-  <!-- From Logback docs: -->
-  <!-- Recommendation: place status listeners towards the the top of the configuration file -->
-  <statuslistener class="com.itsaky.androidide.tooling.impl.util.LogbackStatusListener" />
-
   <appender class="com.itsaky.androidide.logging.LogcatAppender" name="LOGCAT">
     <checkLoggable>false</checkLoggable>
     <encoder class="com.itsaky.androidide.logging.encoder.IDELogFormatEncoder" />
