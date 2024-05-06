@@ -27,9 +27,11 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.EditorPreferences
+import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
@@ -83,6 +85,9 @@ abstract class LSPTest {
     if (isInitialized) {
       return
     }
+
+    mockkStatic(::prefManager)
+    every { prefManager } returns PreferenceManager(RuntimeEnvironment.getApplication())
 
     mockkStatic(EditorPreferences::tabSize)
     every { EditorPreferences.tabSize } returns 4
