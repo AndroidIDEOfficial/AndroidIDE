@@ -19,16 +19,20 @@ package com.itsaky.androidide.ui
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.TransitionManager
@@ -54,6 +58,7 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.getInsets
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -63,6 +68,7 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption.CREATE_NEW
 import java.nio.file.StandardOpenOption.WRITE
 import java.util.concurrent.Callable
+import kotlin.math.roundToInt
 
 /**
  * Bottom sheet shown in editor activity.
@@ -84,12 +90,14 @@ constructor(
 
   @JvmField
   var binding: LayoutEditorBottomSheetBinding
-
   val pagerAdapter: EditorBottomSheetTabAdapter
+
+  private var windowInsets: Rect? = null
 
   companion object {
 
     private val log = LoggerFactory.getLogger(EditorBottomSheet::class.java)
+    private const val COLLAPSE_HEADER_AT_OFFSET = 0.5f
 
     const val CHILD_HEADER = 0
     const val CHILD_SYMBOL_INPUT = 1
@@ -160,6 +168,11 @@ constructor(
         sheet.state = BottomSheetBehavior.STATE_EXPANDED
       }
     }
+
+    ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+      this.windowInsets = getInsets(view)
+      insets
+    }
   }
 
   init {
@@ -184,23 +197,52 @@ constructor(
         override fun onGlobalLayout() {
           val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
           val offset = view.height + SizeUtils.dp2px(1f)
+          val collapsedHeight = collapsedHeight
+
           sheet.isFitToContents = false
-          sheet.halfExpandedRatio = 0.3f
+          sheet.skipCollapsed = true
           sheet.isGestureInsetBottomIgnored = false
-          sheet.peekHeight = binding.headerContainer.height
+          sheet.peekHeight = collapsedHeight.roundToInt()
           sheet.expandedOffset = offset
           view.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-          binding.root.updatePadding(bottom = offset + SizeUtils.dp2px(16f))
+          val insetBottom = windowInsets?.bottom ?: 0
+          binding.root.updatePadding(bottom = offset + insetBottom)
+          binding.headerContainer.apply {
+            updatePaddingRelative(bottom = paddingBottom + insetBottom)
+            updateLayoutParams<ViewGroup.LayoutParams> {
+              height = (collapsedHeight + insetBottom).roundToInt()
+            }
+          }
         }
       }
+
     view.viewTreeObserver.addOnGlobalLayoutListener(listener)
   }
 
-  fun onSlide(offset: Float) {
-    if (offset >= 0.5f) {
-      updateCollapsedHeight(((0.5f - offset) + 0.5f) * 2f)
-    } else updateCollapsedHeight(1f)
+  fun onSlide(sheetOffset: Float) {
+    val heightScale = if (sheetOffset >= COLLAPSE_HEADER_AT_OFFSET) {
+      ((COLLAPSE_HEADER_AT_OFFSET - sheetOffset) + COLLAPSE_HEADER_AT_OFFSET) * 2f
+    } else {
+      1f
+    }
+
+    val paddingScale = if (sheetOffset <= COLLAPSE_HEADER_AT_OFFSET) {
+      ((1f - sheetOffset) * 2f) - 1f
+    } else {
+      0f
+    }
+
+    val insetBottom = windowInsets?.bottom ?: 0
+    val padding = insetBottom * paddingScale
+    binding.headerContainer.apply {
+      updateLayoutParams<ViewGroup.LayoutParams> {
+        height = ((collapsedHeight + padding) * heightScale).roundToInt()
+      }
+      updatePaddingRelative(
+        bottom = padding.roundToInt()
+      )
+    }
   }
 
   fun showChild(index: Int) {
@@ -273,12 +315,6 @@ constructor(
         it.statusText.gravity = gravity
         it.statusText.text = text
       }
-    }
-  }
-
-  private fun updateCollapsedHeight(offset: Float) {
-    binding.headerContainer.updateLayoutParams<android.view.ViewGroup.LayoutParams> {
-      height = (collapsedHeight * offset).toInt()
     }
   }
 

@@ -89,10 +89,6 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     val dialog = object : BottomSheetDialog(requireContext(), theme) {
       override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        window?.apply {
-          WindowCompat.setDecorFitsSystemWindows(this, false)
-          updateSystemBarColors(navigationBarColor = Color.TRANSPARENT)
-        }
         findViewById<View>(com.google.android.material.R.id.container)?.apply {
           doOnApplyWindowInsets { view, insets, _, margins ->
             insets.getInsets(statusBars() or navigationBars()).apply {

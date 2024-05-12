@@ -17,8 +17,16 @@
 
 package com.itsaky.androidide.fragments.sidebar
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMarginsRelative
+import androidx.core.view.updatePadding
+import androidx.core.view.updatePaddingRelative
 import com.itsaky.androidide.databinding.FragmentEditorSidebarBinding
 import com.itsaky.androidide.fragments.FragmentWithBinding
 import com.itsaky.androidide.utils.EditorSidebarActions
@@ -32,14 +40,33 @@ class EditorSidebarFragment : FragmentWithBinding<FragmentEditorSidebarBinding>(
   FragmentEditorSidebarBinding::inflate
 ) {
 
+  internal fun onApplyWindowInsets(insets: Rect) {
+    _binding?.apply {
+      title.updateLayoutParams<MarginLayoutParams> {
+        updateMarginsRelative(
+          top = title.marginTop + insets.top,
+        )
+      }
+      fragmentContainer.updateLayoutParams<MarginLayoutParams> {
+        updateMarginsRelative(
+          bottom = fragmentContainer.marginBottom + insets.bottom,
+        )
+      }
+      navigation.updatePadding(
+        top = navigation.paddingTop + insets.top,
+        bottom = navigation.paddingBottom + insets.bottom,
+        left = navigation.paddingLeft + insets.left,
+      )
+    }
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-
     EditorSidebarActions.setup(this)
   }
 
   /**
-   * Performs the action only if the binding is not null.
+   * Get the (nullable) binding object for this fragment.
    */
   internal fun getBinding() = _binding
 }

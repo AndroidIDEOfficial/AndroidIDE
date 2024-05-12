@@ -42,6 +42,7 @@ fun getInsets(view: View): Rect {
       val typeMask = WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
       rootWindowInsets.getInsetsIgnoringVisibility(typeMask)
     } else {
+      @Suppress("DEPRECATION")
       view.rootWindowInsets.stableInsets
     }
 
@@ -52,6 +53,7 @@ fun getInsets(view: View): Rect {
       receivedInsets.bottom
     )
   } else {
+    @Suppress("DEPRECATION")
     insets = Rect(
       rootWindowInsets.stableInsetLeft,
       rootWindowInsets.stableInsetTop,

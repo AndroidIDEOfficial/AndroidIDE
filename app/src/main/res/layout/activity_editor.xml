@@ -6,8 +6,8 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:animateLayoutChanges="true"
-  tools:ignore="DuplicateIncludedIds"
-  tools:openDrawer="start">
+  android:background="?attr/colorSurface"
+  tools:ignore="DuplicateIncludedIds">
 
   <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:id="@+id/realContainer"
@@ -19,6 +19,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:background="?attr/colorSurface"
+      android:fitsSystemWindows="true"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
       <com.itsaky.androidide.ui.ExtendedMenuToolbar
@@ -47,7 +48,6 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_marginBottom="16dp"
-      android:background="?attr/colorSurface"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
       <!--Views in this flipper are dynamically added and must be instances of CodeEditorView-->
@@ -55,8 +55,7 @@
         android:id="@+id/editor_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/editor_sheet_peek_height"
-        android:background="?attr/colorSurface" />
+        android:layout_marginBottom="@dimen/editor_sheet_peek_height" />
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

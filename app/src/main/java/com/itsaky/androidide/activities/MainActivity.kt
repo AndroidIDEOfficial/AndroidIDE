@@ -29,7 +29,7 @@ import androidx.transition.TransitionManager
 import androidx.transition.doOnEnd
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
-import com.itsaky.androidide.app.LimitlessIDEActivity
+import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.projects.ProjectManagerImpl
@@ -43,7 +43,7 @@ import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_D
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_LIST
 import java.io.File
 
-class MainActivity : LimitlessIDEActivity() {
+class MainActivity : EdgeToEdgeIDEActivity() {
 
   private val viewModel by viewModels<MainViewModel>()
   private var _binding: ActivityMainBinding? = null

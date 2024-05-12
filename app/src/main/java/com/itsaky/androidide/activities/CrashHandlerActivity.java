@@ -19,6 +19,7 @@ package com.itsaky.androidide.activities;
 
 import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.NonNull;
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityCrashHandlerBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
@@ -50,14 +51,10 @@ public class CrashHandlerActivity extends IDEActivity {
   }
 
   @Override
+  @NonNull
   protected View bindLayout() {
     binding = ActivityCrashHandlerBinding.inflate(getLayoutInflater());
     return binding.getRoot();
-  }
-
-  @Override
-  public void onBackPressed() {
-    finishAffinity();
   }
 
   @Override

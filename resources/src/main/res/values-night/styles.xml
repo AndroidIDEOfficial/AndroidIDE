@@ -20,9 +20,6 @@
   <style name="Theme.AndroidIDE.Material3" parent="Theme.Material3.Dark.NoActionBar"/>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
-    <item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
-
     <!-- Left drawer. -->
     <item name="buttonBarButtonStyle">@style/TermuxActivity.Drawer.ButtonBarStyle.Dark</item>
     <item name="termuxActivityDrawerBackground">@color/black</item>

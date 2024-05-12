@@ -20,6 +20,7 @@ package com.itsaky.androidide.activities.editor
 import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -28,6 +29,7 @@ import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
@@ -38,6 +40,8 @@ import androidx.annotation.GravityInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePaddingRelative
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils
@@ -50,11 +54,12 @@ import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
-import com.itsaky.androidide.app.IDEActivity
+import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
 import com.itsaky.androidide.databinding.ActivityEditorBinding
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
 import com.itsaky.androidide.fragments.SearchResultFragment
+import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
 import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
@@ -96,7 +101,7 @@ import java.io.File
  * @author Akash Yadav
  */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListener,
+abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSelectedListener,
   DiagnosticClickListener {
 
   protected val mLifecycleObserver = EditorActivityLifecyclerObserver()
@@ -192,6 +197,19 @@ abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListen
     this._binding = ActivityEditorBinding.inflate(layoutInflater)
     this.diagnosticInfoBinding = this.binding.diagnosticInfo
     return this.binding.root
+  }
+
+  override fun onInsetsUpdated(insets: Rect) {
+    super.onInsetsUpdated(insets)
+    this._binding?.apply {
+      drawerSidebar.getFragment<EditorSidebarFragment>()
+        .onApplyWindowInsets(insets)
+
+      editorToolbar.updatePaddingRelative(
+        start = editorToolbar.paddingStart + insets.left,
+        end = editorToolbar.paddingEnd + insets.right
+      )
+    }
   }
 
   @Subscribe(threadMode = MAIN)
@@ -544,7 +562,7 @@ abstract class BaseEditorActivity : IDEActivity(), TabLayout.OnTabSelectedListen
 
     binding.apply {
       viewContainer.viewTreeObserver.addOnGlobalLayoutListener(observer)
-      bottomSheet.setOffsetAnchor(editorToolbar)
+      bottomSheet.setOffsetAnchor(editorAppBarLayout)
     }
   }
 

@@ -32,6 +32,8 @@ abstract class BaseIDEActivity : AppCompatActivity() {
 
   open val subscribeToEvents: Boolean = false
 
+  open var enableSystemBarTheming: Boolean = true
+
   open val navigationBarColor: Int
     get() = resolveAttr(R.attr.colorSurface)
 
@@ -44,9 +46,11 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   val activityScope = CoroutineScope(Dispatchers.Default)
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    window?.apply {
-      navigationBarColor = this@BaseIDEActivity.navigationBarColor
-      statusBarColor = this@BaseIDEActivity.statusBarColor
+    if (enableSystemBarTheming) {
+      window?.apply {
+        navigationBarColor = this@BaseIDEActivity.navigationBarColor
+        statusBarColor = this@BaseIDEActivity.statusBarColor
+      }
     }
     IThemeManager.getInstance().applyTheme(this)
     super.onCreate(savedInstanceState)

@@ -25,7 +25,8 @@ import android.os.Parcelable
  *
  * @author Akash Yadav
  */
-object IDEPreferences : BaseIDEPreferences(){
+data object IDEPreferences : BaseIDEPreferences() {
+
   override val children: List<IPreference> = mutableListOf()
   override fun describeContents(): Int = 0
   override fun writeToParcel(dest: Parcel, flags: Int) {}

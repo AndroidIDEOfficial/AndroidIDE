@@ -34,7 +34,7 @@ import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.SimpleIconTitleDescriptionAdapter
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.app.LimitlessIDEActivity
+import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.databinding.ActivityAboutBinding
@@ -44,7 +44,7 @@ import com.itsaky.androidide.utils.BuildInfoUtils
 import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.utils.resolveAttr
 
-class AboutActivity : LimitlessIDEActivity() {
+class AboutActivity : EdgeToEdgeIDEActivity() {
 
   private var _binding: ActivityAboutBinding? = null
   private val binding: ActivityAboutBinding
@@ -76,7 +76,7 @@ class AboutActivity : LimitlessIDEActivity() {
       setSupportActionBar(toolbar)
       supportActionBar!!.setDisplayHomeAsUpEnabled(true)
       supportActionBar!!.setTitle(R.string.about)
-      toolbar.setNavigationOnClickListener { finish() }
+      toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
       aboutHeader.apply {
         ideVersion.text = createVersionText()

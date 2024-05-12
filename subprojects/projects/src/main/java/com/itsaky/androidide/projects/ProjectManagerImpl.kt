@@ -119,7 +119,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     withStopWatch("Setup project") {
       val indexerScope = CoroutineScope(Dispatchers.Default)
       val modulesFlow = flow {
-        rootProject.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
+        rootProject.subProjects.filterIsInstance<ModuleProject>().forEach {
           emit(it)
         }
       }
