@@ -86,7 +86,7 @@ androidx-vectors = { module = "androidx.vectordrawable:vectordrawable", version.
 androidx-animated_vectors = { module = "androidx.vectordrawable:vectordrawable-animated", version.ref = "androidx-vectordrawable" }
 androidx-core = { module = "androidx.core:core", version = "1.13.1" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
-androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.7.0" }
+androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.6.2" }
 androidx-libDesugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 androidx-transition = { module = "androidx.transition:transition-ktx", version = "1.5.0" }
