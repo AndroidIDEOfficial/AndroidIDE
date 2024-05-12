@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.services.builder
 
+import ch.qos.logback.core.CoreConstants
 import com.itsaky.androidide.shell.executeProcessAsync
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.tasks.ifCancelledOrInterrupted
@@ -89,6 +90,7 @@ internal class ToolingServerRunner(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens",
         "java.base/java.util=ALL-UNNAMED", "--add-opens",
         "java.base/java.io=ALL-UNNAMED", // The JAR file to run
+        "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=com.itsaky.androidide.tooling.impl.util.LogbackStatusListener",
         "-jar", Environment.TOOLING_API_JAR.absolutePath
       )
 

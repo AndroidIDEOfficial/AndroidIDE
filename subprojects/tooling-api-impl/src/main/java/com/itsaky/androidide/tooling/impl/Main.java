@@ -17,13 +17,11 @@
 
 package com.itsaky.androidide.tooling.impl;
 
-import ch.qos.logback.core.CoreConstants;
 import com.itsaky.androidide.logging.JvmStdErrAppender;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
-import com.itsaky.androidide.tooling.impl.util.LogbackStatusListener;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -124,8 +122,6 @@ public class Main {
         args.removeIf(String::isBlank);
 
         LOG.debug("Arguments from tooling client: {}", args);
-        launcher.addJvmArguments("-D" + CoreConstants.STATUS_LISTENER_CLASS_KEY + "="
-            + LogbackStatusListener.class.getName());
         launcher.addArguments(args);
       } catch (Throwable e) {
         LOG.error("Unable to get build arguments from tooling client", e);
