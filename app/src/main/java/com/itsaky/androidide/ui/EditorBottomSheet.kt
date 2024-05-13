@@ -19,7 +19,6 @@ package com.itsaky.androidide.ui
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Rect
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -29,7 +28,9 @@ import android.view.ViewTreeObserver
 import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
@@ -58,7 +59,6 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
 import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.getInsets
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -92,7 +92,7 @@ constructor(
   var binding: LayoutEditorBottomSheetBinding
   val pagerAdapter: EditorBottomSheetTabAdapter
 
-  private var windowInsets: Rect? = null
+  private var windowInsets: Insets? = null
 
   companion object {
 
@@ -169,8 +169,8 @@ constructor(
       }
     }
 
-    ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-      this.windowInsets = getInsets(view)
+    ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+      this.windowInsets = insets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures())
       insets
     }
   }

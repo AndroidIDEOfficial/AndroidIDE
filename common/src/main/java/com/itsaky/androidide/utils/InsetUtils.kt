@@ -32,7 +32,7 @@ import android.view.WindowInsets
  *
  * @author Smooth E
  */
-fun getInsets(view: View): Rect {
+fun getSystemBarInsets(view: View): Rect {
   val insets: Rect
   val rootWindowInsets = view.rootWindowInsets
 

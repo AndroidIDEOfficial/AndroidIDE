@@ -23,7 +23,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.doOnAttach
 import androidx.core.view.updateLayoutParams
-import com.itsaky.androidide.utils.getInsets
+import com.itsaky.androidide.utils.getSystemBarInsets
 
 /**
  * This view will set its height to the value of a bottom screen inset as soon
@@ -55,7 +55,7 @@ class BottomInsetHeightDistributor : FrameLayout {
   private fun applyLayoutParameters() {
     doOnAttach { view ->
       updateLayoutParams<ViewGroup.LayoutParams> {
-        height = getInsets(view).bottom
+        height = getSystemBarInsets(view).bottom
       }
     }
   }

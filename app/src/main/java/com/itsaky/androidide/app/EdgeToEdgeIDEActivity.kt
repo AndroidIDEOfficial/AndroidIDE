@@ -28,9 +28,8 @@ import android.view.WindowManager
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnAttach
-import androidx.core.view.setPadding
 import com.itsaky.androidide.utils.EdgeToEdgeUtils
-import com.itsaky.androidide.utils.getInsets
+import com.itsaky.androidide.utils.getSystemBarInsets
 import org.slf4j.LoggerFactory
 
 /**
@@ -141,7 +140,7 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
       this.onApplyWindowInsetsListener
     )
 
-    this.window.decorView.doOnAttach { decorView -> onInsetsUpdated(getInsets(decorView)) }
+    this.window.decorView.doOnAttach { decorView -> onInsetsUpdated(getSystemBarInsets(decorView)) }
   }
 
   /** Called whenever insets are updated */
