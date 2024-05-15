@@ -18,9 +18,15 @@
 @Suppress("JavaPluginLanguageLevel")
 plugins {
   id("java-library")
+  id("kotlin-kapt")
   id("org.jetbrains.kotlin.jvm")
 }
 
 dependencies {
+  implementation(project(":subprojects:tooling-api-impl"))
+  kapt(libs.google.auto.service)
+  implementation(libs.google.auto.service.annotations)
+
   api(libs.tests.junit)
+  api(projects.logger)
 }

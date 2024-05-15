@@ -21,6 +21,7 @@ import com.itsaky.androidide.build.config.BuildConfig
 plugins {
   id("com.github.johnrengelman.shadow") version "8.1.1"
   id("java-library")
+  id("kotlin-kapt")
   id("org.jetbrains.kotlin.jvm")
 }
 
@@ -57,12 +58,15 @@ project.tasks.getByName("shadowJar") {
 }
 
 dependencies {
+  kapt(libs.google.auto.service)
+
   api(projects.subprojects.toolingApi)
 
   implementation(projects.buildInfo)
   implementation(projects.shared)
 
   implementation(libs.common.jkotlin)
+  implementation(libs.google.auto.service.annotations)
   implementation(libs.xml.xercesImpl)
   implementation(libs.xml.apis)
   implementation(libs.tooling.gradleApi)

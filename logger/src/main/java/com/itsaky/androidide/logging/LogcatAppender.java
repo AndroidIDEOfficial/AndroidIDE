@@ -18,6 +18,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
+import com.itsaky.androidide.logging.encoder.IDELogFormatEncoder;
 import com.itsaky.androidide.logging.utils.LogUtils;
 
 /**
@@ -38,7 +39,7 @@ import com.itsaky.androidide.logging.utils.LogUtils;
  */
 public class LogcatAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
-  private PatternLayoutEncoder encoder = null;
+  private IDELogFormatEncoder encoder = null;
   private boolean checkLoggable = false;
 
   // AndroidIDE Changed: Appender is enabled only when running on Android.
@@ -132,7 +133,7 @@ public class LogcatAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
    *
    * @return the pattern-layout encoder
    */
-  public PatternLayoutEncoder getEncoder() {
+  public IDELogFormatEncoder getEncoder() {
     return this.encoder;
   }
 
@@ -141,7 +142,7 @@ public class LogcatAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
    *
    * @param encoder the pattern-layout encoder
    */
-  public void setEncoder(PatternLayoutEncoder encoder) {
+  public void setEncoder(IDELogFormatEncoder encoder) {
     this.encoder = encoder;
   }
 

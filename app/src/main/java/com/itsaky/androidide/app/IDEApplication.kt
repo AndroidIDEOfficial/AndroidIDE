@@ -30,6 +30,7 @@ import androidx.work.NetworkType
 import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ch.qos.logback.classic.Logger
 import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
@@ -43,6 +44,8 @@ import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.logging.LogcatAppender
+import com.itsaky.androidide.logging.encoder.IDELogFormatEncoder
 import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.preferences.internal.StatPreferences
@@ -50,7 +53,6 @@ import com.itsaky.androidide.resources.localization.LocaleProvider
 import com.itsaky.androidide.stats.AndroidIDEStats
 import com.itsaky.androidide.stats.StatUploadWorker
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
-import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.ui.themes.IDETheme
 import com.itsaky.androidide.ui.themes.IThemeManager
@@ -59,6 +61,9 @@ import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import com.termux.app.TermuxApplication
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -80,17 +85,17 @@ class IDEApplication : TermuxApplication() {
     RecyclableObjectPool.DEBUG = BuildConfig.DEBUG
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun onCreate() {
     instance = this
     uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-
     Thread.setDefaultUncaughtExceptionHandler { thread, th -> handleCrash(thread, th) }
+
     super.onCreate()
 
     if (BuildConfig.DEBUG) {
       StrictMode.setVmPolicy(
         StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build())
-
       if (DevOpsPreferences.dumpLogs) {
         startLogcatReader()
       }
@@ -110,7 +115,9 @@ class IDEApplication : TermuxApplication() {
 
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
 
-    executeAsync { IDEColorSchemeProvider.init() }
+    GlobalScope.launch {
+      IDEColorSchemeProvider.init()
+    }
   }
 
   private fun handleCrash(thread: Thread, th: Throwable) {
