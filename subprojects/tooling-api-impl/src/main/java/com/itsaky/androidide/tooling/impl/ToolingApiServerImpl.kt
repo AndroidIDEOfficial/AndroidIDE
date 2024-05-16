@@ -43,6 +43,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
+import com.itsaky.androidide.tooling.api.models.ToolingServerMetadata
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
 import com.itsaky.androidide.tooling.impl.sync.ModelBuilderException
 import com.itsaky.androidide.tooling.impl.sync.RootModelBuilder
@@ -113,6 +114,12 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
      * that the server's process is not kept alive for longer duration.
      */
     const val DELAY_BEFORE_EXIT_MS = 1000L
+  }
+
+  override fun metadata(): CompletableFuture<ToolingServerMetadata> {
+    return CompletableFuture.supplyAsync {
+      ToolingServerMetadata(ProcessHandle.current().pid().toInt())
+    }
   }
 
   override fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult> {

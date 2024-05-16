@@ -98,10 +98,6 @@ class MainActivity : EdgeToEdgeIDEActivity() {
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
   }
 
-  private fun openOnboarding() {
-    startActivity(Intent(this, OnboardingActivity::class.java))
-  }
-
   override fun onInsetsUpdated(insets: Rect) {
     super.onInsetsUpdated(insets)
     binding.fragmentContainersParent.setPadding(insets.left, 0, insets.right, insets.bottom)

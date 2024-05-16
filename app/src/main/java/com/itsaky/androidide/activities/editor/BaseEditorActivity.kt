@@ -23,13 +23,13 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Process
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
@@ -39,17 +39,25 @@ import androidx.activity.viewModels
 import androidx.annotation.GravityInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.collection.MutableIntIntMap
 import androidx.core.view.GravityCompat
-import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePaddingRelative
+import com.blankj.utilcode.constant.MemoryConstants
+import com.blankj.utilcode.util.ConvertUtils.byte2MemorySize
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
+import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
@@ -82,7 +90,9 @@ import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.IntentUtils
+import com.itsaky.androidide.utils.MemoryUsageWatcher
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -94,6 +104,7 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import kotlin.math.roundToLong
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -108,6 +119,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   protected var diagnosticInfoBinding: LayoutDiagnosticInfoBinding? = null
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
+  protected val memoryUsageWatcher = MemoryUsageWatcher()
+  protected val pidToDatasetIdxMap = MutableIntIntMap(initialCapacity = 3)
 
   var isDestroying = false
     protected set
@@ -141,9 +154,33 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     }
   }
 
+  private val memoryUsageListener = MemoryUsageWatcher.MemoryUsageListener { memoryUsage ->
+    memoryUsage.forEachValue { proc ->
+      _binding?.memUsageView?.chart?.apply {
+        val dataset = (data.getDataSetByIndex(pidToDatasetIdxMap[proc.pid]) as LineDataSet?) ?: run {
+          log.error("No dataset found for process: {}: {}", proc.pid, proc.pname)
+          return@forEachValue
+        }
+
+        dataset.entries.mapIndexed { index, entry ->
+          entry.y = byte2MemorySize(proc.usageHistory[index], MemoryConstants.MB).toFloat()
+        }
+
+        dataset.label = "%s - %.2fMB".format(proc.pname, dataset.entries.last().y)
+        dataset.notifyDataSetChanged()
+        data.notifyDataChanged()
+        notifyDataSetChanged()
+        invalidate()
+      }
+    }
+  }
+
   private var optionsMenuInvalidator: Runnable? = null
 
   companion object {
+    @JvmStatic protected val PROC_IDE = "IDE"
+    @JvmStatic protected val PROC_GRADLE_TOOLING = "Gradle Tooling"
+    @JvmStatic protected val PROC_GRADLE_DAEMON = "Gradle Daemon"
 
     @JvmStatic
     protected val log: Logger = LoggerFactory.getLogger(BaseEditorActivity::class.java)
@@ -180,6 +217,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     installationCallback = null
 
     if (isDestroying) {
+      memoryUsageWatcher.stopWatching(true)
+      memoryUsageWatcher.listener = null
       editorActivityScope.cancelIfActive("Activity is being destroyed")
     }
   }
@@ -258,10 +297,81 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     uiDesignerResultLauncher = registerForActivityResult(StartActivityForResult(),
       this::handleUiDesignerResult)
+
+    setupMemUsageChart()
+    watchMemory()
+  }
+
+  private fun setupMemUsageChart() {
+    binding.memUsageView.chart.apply {
+      val colorAccent = resolveAttr(R.attr.colorAccent)
+
+      isDragEnabled = false
+      description.isEnabled = false
+      xAxis.axisLineColor = colorAccent
+      axisRight.axisLineColor = colorAccent
+
+      setPinchZoom(false)
+      setBackgroundColor(resolveAttr(R.attr.colorSurfaceContainer))
+      setDrawGridBackground(true)
+      setScaleEnabled(true)
+
+      axisLeft.isEnabled = false
+      axisRight.valueFormatter = object :
+        IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase?): String {
+          return "%dMB".format(value.roundToLong())
+        }
+      }
+    }
+  }
+
+  private fun watchMemory() {
+    memoryUsageWatcher.listener = memoryUsageListener
+    memoryUsageWatcher.watchProcess(Process.myPid(), PROC_IDE)
+    resetMemUsageChart()
+  }
+
+  protected fun resetMemUsageChart() {
+    val processes = memoryUsageWatcher.getMemoryUsages()
+    val datasets = Array(processes.size) { index ->
+      LineDataSet(List(MemoryUsageWatcher.MAX_USAGE_ENTRIES) { Entry(it.toFloat(), 0f) }, processes[index].pname)
+    }
+
+    for ((index, proc) in processes.withIndex()) {
+      val dataset = datasets[index]
+      dataset.color = getMemUsageLineColorFor(proc)
+      dataset.setDrawIcons(false)
+      dataset.setDrawCircles(false)
+      dataset.setDrawCircleHole(false)
+      dataset.setDrawValues(false)
+      dataset.formLineWidth = 1f
+      dataset.formSize = 15f
+      dataset.isHighlightEnabled = false
+      pidToDatasetIdxMap[proc.pid] = index
+    }
+
+    binding.memUsageView.chart.apply {
+      data = LineData(*datasets)
+      notifyDataSetChanged()
+      invalidate()
+    }
+  }
+
+  private fun getMemUsageLineColorFor(proc: MemoryUsageWatcher.ProcessMemoryInfo): Int {
+    return when (proc.pname) {
+      PROC_IDE -> Color.BLUE
+      PROC_GRADLE_TOOLING -> Color.RED
+      PROC_GRADLE_DAEMON -> Color.GREEN
+      else -> throw IllegalArgumentException("Unknown process: $proc")
+    }
   }
 
   override fun onPause() {
     super.onPause()
+    memoryUsageWatcher.listener = null
+    memoryUsageWatcher.stopWatching(false)
+
     this.isDestroying = isFinishing
     getFileTreeFragment()?.saveTreeState()
   }
@@ -269,6 +379,9 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   override fun onResume() {
     super.onResume()
     invalidateOptionsMenu()
+
+    memoryUsageWatcher.listener = memoryUsageListener
+    memoryUsageWatcher.startWatching()
 
     try {
       getFileTreeFragment()?.listProjectFiles()
@@ -280,7 +393,6 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
   override fun onStop() {
     super.onStop()
-
     checkIsDestroying()
   }
 

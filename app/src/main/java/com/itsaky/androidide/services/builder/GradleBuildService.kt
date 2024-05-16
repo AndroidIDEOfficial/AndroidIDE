@@ -55,6 +55,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.models.ToolingServerMetadata
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.Environment
 import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
@@ -361,6 +362,11 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
       buildNotification(message, isProgress))
   }
 
+  override fun metadata(): CompletableFuture<ToolingServerMetadata> {
+    checkServerStarted()
+    return server!!.metadata()
+  }
+
   override fun initializeProject(
     params: InitializeProjectParams): CompletableFuture<InitializeResult> {
     checkServerStarted()
@@ -428,7 +434,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     }
 
     if (toolingServerRunner!!.isStarted && listener != null) {
-      listener.onServerStarted()
+      listener.onServerStarted(toolingServerRunner!!.pid!!)
     } else {
       setServerListener(listener)
     }

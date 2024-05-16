@@ -26,6 +26,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.Environment
+import com.termux.shared.reflection.ReflectionUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +48,7 @@ internal class ToolingServerRunner(
   private var observer: Observer?,
 ) {
 
+  internal var pid: Int? = null
   private var _job: Job? = null
   private var _isStarted = AtomicBoolean(false)
 
@@ -104,6 +106,9 @@ internal class ToolingServerRunner(
         this.environment = envs
       }
 
+      pid = ReflectionUtils.getDeclaredField(process::class.java, "pid")?.get(process) as Int?
+      pid ?: throw IllegalStateException("Unable to get process ID")
+
       val inputStream = process.inputStream
       val outputStream = process.outputStream
       val errorStream = process.errorStream
@@ -134,7 +139,7 @@ internal class ToolingServerRunner(
 
       isStarted = true
 
-      listener?.onServerStarted()
+      listener?.onServerStarted(pid!!)
 
       // we don't need the listener anymore
       // also, this might be a reference to the activity
@@ -190,6 +195,6 @@ internal class ToolingServerRunner(
   fun interface OnServerStartListener {
 
     /** Called when the tooling API server has been successfully started.  */
-    fun onServerStarted()
+    fun onServerStarted(pid: Int)
   }
 }

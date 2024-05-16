@@ -60,6 +60,7 @@ import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import com.termux.app.TermuxApplication
+import com.termux.shared.reflection.ReflectionUtils
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -67,6 +68,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 import org.slf4j.LoggerFactory
 import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
@@ -115,6 +117,7 @@ class IDEApplication : TermuxApplication() {
 
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
 
+    ReflectionUtils.bypassHiddenAPIReflectionRestrictions()
     GlobalScope.launch {
       IDEColorSchemeProvider.init()
     }

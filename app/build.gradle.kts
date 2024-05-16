@@ -87,6 +87,8 @@ dependencies {
   implementation(libs.common.kotlin.coroutines.android)
   implementation(libs.common.retrofit)
   implementation(libs.common.retrofit.gson)
+  implementation(libs.common.charts)
+  implementation(libs.common.hiddenApiBypass)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)

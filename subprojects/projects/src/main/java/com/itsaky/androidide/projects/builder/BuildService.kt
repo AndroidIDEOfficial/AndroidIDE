@@ -24,6 +24,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.models.ToolingServerMetadata
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -37,13 +38,15 @@ interface BuildService {
   companion object {
 
     /** Key that can be used to retrieve the [BuildService] instance using the [Lookup] API. */
-    @JvmField val KEY_BUILD_SERVICE = Key<BuildService>()
+    @JvmField
+    val KEY_BUILD_SERVICE = Key<BuildService>()
 
     /**
      * Key that can be used to retrieve the instance of Tooling API's [IProject] model using the
      * [Lookup] API.
      */
-    @JvmField val KEY_PROJECT_PROXY = Key<IProject>()
+    @JvmField
+    val KEY_PROJECT_PROXY = Key<IProject>()
   }
 
   /** Whether a build is in progress or not. */
@@ -51,6 +54,11 @@ interface BuildService {
 
   /** Returns `true` if and only if the tooling API server has been started, `false` otherwise. */
   fun isToolingServerStarted(): Boolean
+
+  /**
+   * Returns the [ToolingServerMetadata] of the tooling API server.
+   */
+  fun metadata(): CompletableFuture<ToolingServerMetadata>
 
   /**
    * Initialize the project.
