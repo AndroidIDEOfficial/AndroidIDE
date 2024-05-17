@@ -15,19 +15,6 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="@dimen/editor_mem_usage_view_height">
-
-  <!--  Need to wrap this in a layout so that we can apply margins at runtime-->
-  <com.github.mikephil.charting.charts.LineChart
-    android:id="@+id/chart"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+<resources>
+  <dimen name="editor_mem_usage_view_height">200dp</dimen>
+</resources>

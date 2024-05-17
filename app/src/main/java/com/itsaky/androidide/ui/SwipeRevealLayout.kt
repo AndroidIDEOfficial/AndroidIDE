@@ -19,20 +19,24 @@ package com.itsaky.androidide.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnLayoutChangeListener
-import android.widget.RelativeLayout
+import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
-import androidx.annotation.IntRange
 import androidx.customview.widget.ViewDragHelper
+import com.blankj.utilcode.util.SizeUtils
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.itsaky.androidide.R
+import com.itsaky.androidide.utils.resolveAttr
+import org.slf4j.LoggerFactory
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 /**
  * A layout which can be dragged vertically to reveal a hidden content.
@@ -44,7 +48,7 @@ open class SwipeRevealLayout @JvmOverloads constructor(
   attrs: AttributeSet? = null,
   defStyleAttr: Int = 0,
   defStyleRes: Int = 0,
-) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
+) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
   /**
    * Interface for listening to drag events.
@@ -62,40 +66,26 @@ open class SwipeRevealLayout @JvmOverloads constructor(
     fun onDragProgress(swipeRevealLayout: SwipeRevealLayout, progress: Float)
   }
 
-  private val onLayoutChangeListener = OnLayoutChangeListener { v, _, _, _, _, oldLeft, oldTop, oldRight, oldBottom ->
-    if (isDragging) {
-      v.left = oldLeft
-      v.top = oldTop
-      v.right = oldRight
-      v.bottom = oldBottom
-    }
-  }
-
   private val dragHelperCallback = object : ViewDragHelper.Callback() {
     override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-      return true
-    }
-
-    override fun getOrderedChildIndex(index: Int): Int {
-      val idx = dragHandleContainerView?.let(this@SwipeRevealLayout::indexOfChild) ?: index
-      if (idx > index) {
-        return idx
-      }
-
-      return index
+      return child === overlappingContent
     }
 
     override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
       draggingViewTop = top
-      onDragProgress(min(0f, max(1f, top.toFloat() / dragRangeVertical.toFloat())))
+      onDragProgress(min(1f, top.toFloat() / dragHeightMax.toFloat()))
     }
 
     override fun getViewVerticalDragRange(child: View): Int {
-      return dragRangeVertical
+      return dragHeightMax
+    }
+
+    override fun getOrderedChildIndex(index: Int): Int {
+      return OVERLAPPING_CONTENT_INDEX
     }
 
     override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
-      return min(max(top, paddingTop), dragRangeVertical)
+      return min(max(top, paddingTop), dragHeightMax)
     }
 
     override fun onViewDragStateChanged(state: Int) {
@@ -103,12 +93,11 @@ open class SwipeRevealLayout @JvmOverloads constructor(
         return
       }
 
-      if (isDragging && state == ViewDragHelper.STATE_IDLE && draggingViewTop == dragRangeVertical) {
-          isOpen = false
+      if (isDragging && state == ViewDragHelper.STATE_IDLE) {
+        isOpen = draggingViewTop >= dragHeightMax
       }
 
-      draggingState = state
-      onDragStateChanged(draggingState)
+      onDragStateChanged(state)
     }
 
     override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
@@ -117,20 +106,19 @@ open class SwipeRevealLayout @JvmOverloads constructor(
         return
       }
 
-      if (draggingViewTop == dragRangeVertical) {
+      if (draggingViewTop >= dragHeightMax) {
         isOpen = true
         return
       }
 
       // whether the view should settle to open or close
-      val settleDestY = if (yvel > AUTO_OPEN_VELOCITY_LIM || draggingViewTop > dragRangeVertical / 2) {
-        dragRangeVertical
+      val settleDestY = if (yvel > AUTO_OPEN_VELOCITY_LIM || draggingViewTop > dragHeightMax / 2) {
+        dragHeightMax
       } else {
-        dragLowerLimit
+        paddingTop
       }
 
       if (dragHelper.settleCapturedViewAt(0, settleDestY)) {
-        left = 0
         this@SwipeRevealLayout.postInvalidateOnAnimation()
       }
     }
@@ -144,36 +132,18 @@ open class SwipeRevealLayout @JvmOverloads constructor(
       return field
     }
 
-  private var dragHandleContainerView: View? = null
-    get() {
-      if (field == null) {
-        field = findViewById<View?>(dragHandleContainerViewId)?.also {
-          it.removeOnLayoutChangeListener(onLayoutChangeListener)
-          it.addOnLayoutChangeListener(onLayoutChangeListener)
-        }
-      }
+  private val hiddenContent: View
+    get() = getChildAt(HIDDEN_CONTENT_INDEX)!!
 
-      if (field == null) {
-        field = dragHandleView
-      }
+  private val overlappingContent: View
+    get() = getChildAt(OVERLAPPING_CONTENT_INDEX)!!
 
-      return field
-    }
-
-  private var dragHiddenContent: View? = null
-    get() {
-      if (field == null) {
-        field = findViewById(dragHiddenContentId)
-      }
-      return field
-    }
-
-  private var isOpen = false
-
+  private var initialDragX = 0f
+  private var initialDragY = 0f
   private var draggingState = -1
   private var draggingViewTop = 0
-  private var dragRangeVertical = 0
-    get() = dragHiddenContent?.height ?: maxDragHeight.takeIf { it >= 0 } ?: field
+  private val dragHeightMax
+    get() = hiddenContent.height
 
   private lateinit var dragHelper: ViewDragHelper
 
@@ -191,52 +161,44 @@ open class SwipeRevealLayout @JvmOverloads constructor(
   var dragHandleViewId = 0
 
   /**
-   * The ID of the outermost view containing [dragHandleViewId] which will be dragged.
-   */
-  @IdRes
-  var dragHandleContainerViewId = 0
-
-  /**
-   * The ID of the view which is shown when the view is open.
-   */
-  @IdRes
-  var dragHiddenContentId = 0
-
-  /**
-   * The % of this view's height at which the dragged view will be settled after open.
+   * The current drag progress.
    */
   @FloatRange(from = 0.0, to = 1.0)
-  var draggedViewSettleRatio = 0.0
-
-  /**
-   * The maximum height of the drag container view when it is open.
-   */
-  @IntRange(from = -1)
-  var maxDragHeight = -1
-
-  /**
-   * The minimum height of the drag container view when it is closed.
-   */
-  @IntRange(from = 0)
-  var dragLowerLimit = 0
+  var dragProgress = 0.0f
+    private set
 
   /**
    * Listener for drag events.
    */
   var dragListener: OnDragListener? = null
 
+  /**
+   * Whether the view is open.
+   */
+  var isOpen = false
+    protected set
+
+  /**
+   * The corner radius of the overlapping content.
+   */
+  var overlappingContentCorners = SizeUtils.dp2px(28f).toFloat()
+
   companion object {
+
+    private const val HIDDEN_CONTENT_INDEX = 0
+    private const val OVERLAPPING_CONTENT_INDEX = 1
+    private val log = LoggerFactory.getLogger(SwipeRevealLayout::class.java)
+
     @Suppress("UNUSED")
     const val STATE_IDLE = ViewDragHelper.STATE_IDLE
+
     @Suppress("UNUSED")
     const val STATE_DRAGGING = ViewDragHelper.STATE_DRAGGING
+
     @Suppress("UNUSED")
     const val STATE_SETTLING = ViewDragHelper.STATE_SETTLING
 
     const val AUTO_OPEN_VELOCITY_LIM = 800.0
-
-    @FloatRange(from = 0.0, to = 1.0)
-    const val DEFAULT_DRAGGED_VIEW_SETTLE_RATIO = 0.5
   }
 
   init {
@@ -245,10 +207,6 @@ open class SwipeRevealLayout @JvmOverloads constructor(
         defStyleAttr, defStyleRes)
       dragHandleViewId = typedArray.getResourceId(R.styleable.SwipeRevealLayout_dragHandle,
         dragHandleViewId)
-      dragHandleContainerViewId = typedArray.getResourceId(
-        R.styleable.SwipeRevealLayout_dragHandleContainer, dragHandleContainerViewId)
-      dragHiddenContentId = typedArray.getResourceId(
-        R.styleable.SwipeRevealLayout_dragHiddenContentLayout, dragHiddenContentId)
       typedArray.recycle()
     }
   }
@@ -258,30 +216,69 @@ open class SwipeRevealLayout @JvmOverloads constructor(
     this.dragHelper = ViewDragHelper.create(this, dragHelperCallback)
     this.isOpen = false
 
-    // call the getter to initialize the view and set the listener
-    dragHandleContainerView
+    check(childCount == 2) {
+      "SwipeRevealLayout must have exactly two children; the hidden content and the overlapping content"
+    }
+
+    val shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
+      setAllCorners(CornerFamily.ROUNDED, overlappingContentCorners)
+    }.build()
+
+    val realBg = MaterialShapeDrawable(shapeAppearanceModel)
+    realBg.fillColor = ColorStateList.valueOf(context.resolveAttr(R.attr.colorSurface))
+    realBg.interpolation = 0f
+    overlappingContent.background = realBg
   }
 
-  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-    dragRangeVertical = (h * draggedViewSettleRatio).roundToInt()
-    if (dragRangeVertical <= 0) {
-      dragRangeVertical = (h * DEFAULT_DRAGGED_VIEW_SETTLE_RATIO).roundToInt()
-    }
-    super.onSizeChanged(w, h, oldw, oldh)
+  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    measureChildren(widthMeasureSpec, heightMeasureSpec)
+
+    val maxWidth = MeasureSpec.getSize(widthMeasureSpec)
+    val maxHeight = MeasureSpec.getSize(heightMeasureSpec)
+
+    setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, 0),
+      resolveSizeAndState(maxHeight, heightMeasureSpec, 0))
+  }
+
+  override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    hiddenContent.layout(0, paddingTop, r, paddingTop + hiddenContent.measuredHeight)
+
+    val olapTop = paddingTop + (hiddenContent.height * dragProgress).toInt()
+    overlappingContent.layout(0, olapTop, r, b)
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-    return isInTargetView(ev) && dragHelper.shouldInterceptTouchEvent(ev)
+    return isViewHit(dragHandleView!!, ev.x.toInt(), ev.y.toInt()) && dragHelper.shouldInterceptTouchEvent(ev)
   }
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    if (isInTargetView(event) || isDragging) {
-      dragHelper.processTouchEvent(event)
-      return true
+    dragHelper.processTouchEvent(event)
+
+    val x = event.x
+    val xInt = x.toInt()
+    val y = event.y
+    val yInt = y.toInt()
+    val isInHandle = dragHelper.isViewUnder(dragHandleView, xInt, yInt)
+
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        initialDragX = x
+        initialDragY = y
+      }
+
+      MotionEvent.ACTION_UP -> {
+        val dx = x - initialDragX
+        val dy = y - initialDragY
+        val slop = dragHelper.touchSlop
+        if (dx * dx + dy * dy < slop * slop && isInHandle) {
+          smoothSlideTo(if (dragProgress == 0f) 0f else 1f)
+        }
+      }
     }
 
-    return super.onTouchEvent(event)
+    return isInHandle && isViewHit(hiddenContent, xInt, yInt) || isViewHit(overlappingContent, xInt,
+      yInt)
   }
 
   override fun computeScroll() {
@@ -295,6 +292,7 @@ open class SwipeRevealLayout @JvmOverloads constructor(
    */
   @CallSuper
   protected open fun onDragStateChanged(state: Int) {
+    draggingState = state
     dragListener?.onDragStateChanged(this, state)
   }
 
@@ -303,18 +301,78 @@ open class SwipeRevealLayout @JvmOverloads constructor(
    */
   @CallSuper
   protected open fun onDragProgress(progress: Float) {
+    if (dragProgress == progress) {
+      return
+    }
+
+    dragProgress = progress
+    applyDragProgress(progress)
     dragListener?.onDragProgress(this, progress)
+  }
+
+  /**
+   * Applies the drag progress to the content.
+   */
+  protected open fun applyDragProgress(progress: Float) {
+    val min = 0.97f
+    val max = 1f
+    val scale = min + (max - min) * (1 - progress)
+    overlappingContent.scaleX = scale
+    overlappingContent.scaleY = scale
+    (overlappingContent.background as? MaterialShapeDrawable?)?.interpolation = progress
+  }
+
+  /**
+   * Toggles the state of the view.
+   */
+  fun toggleState(isOpen: Boolean) {
+    if (isOpen) {
+      open()
+    } else {
+      close()
+    }
+  }
+
+  /**
+   * Opens the view.
+   */
+  fun open() {
+    if (isOpen) {
+      return
+    }
+    smoothSlideTo(1f)
+  }
+
+  /**
+   * Closes the view.
+   */
+  fun close() {
+    if (!isOpen) {
+      return
+    }
+
+    smoothSlideTo(0f)
+  }
+
+  private fun smoothSlideTo(offset: Float) {
+    val y = paddingTop + offset * dragHeightMax
+    if (dragHelper.smoothSlideViewTo(overlappingContent, overlappingContent.left, y.toInt())) {
+      postInvalidateOnAnimation()
+    }
   }
 
   /**
    * Whether the given motion event lies within the target view.
    */
-  private fun isInTargetView(ev: MotionEvent): Boolean {
-    val queenLocation = IntArray(2)
-    dragHandleView!!.getLocationOnScreen(queenLocation)
-    val upperLimit: Int = queenLocation[1] + dragHandleView!!.measuredHeight
-    val lowerLimit = queenLocation[1]
-    val y = ev.rawY.toInt()
-    return y in (lowerLimit + 1)..<upperLimit
+  private fun isViewHit(view: View, x: Int, y: Int): Boolean {
+    val viewLoc = IntArray(2)
+    view.getLocationOnScreen(viewLoc)
+    val parentLoc = IntArray(2)
+    getLocationOnScreen(parentLoc)
+
+    val scrX = parentLoc[0] + x
+    val scrY = parentLoc[1] + y
+    return scrX >= viewLoc[0] && scrX < viewLoc[0] + view.width &&
+        scrY >= viewLoc[1] && scrY < viewLoc[1] + view.height
   }
 }

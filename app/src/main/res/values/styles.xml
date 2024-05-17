@@ -18,7 +18,5 @@
 <resources>
   <declare-styleable name="SwipeRevealLayout">
     <attr name="dragHandle" format="reference"/>
-    <attr name="dragHandleContainer" format="reference"/>
-    <attr name="dragHiddenContentLayout" format="reference"/>
   </declare-styleable>
 </resources>

@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.annotation.CallSuper
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnAttach
@@ -65,6 +66,11 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
    * Original padding of the window's decor view.
    */
   protected open var decorViewPadding: Rect? = null
+
+  /**
+   * Last window insets.
+   */
+  protected open var lastWindowInsets: Rect? = null
 
   override var enableSystemBarTheming: Boolean
     get() = false
@@ -144,5 +150,8 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
   }
 
   /** Called whenever insets are updated */
-  protected open fun onInsetsUpdated(insets: Rect) {}
+  @CallSuper
+  protected open fun onInsetsUpdated(insets: Rect) {
+    this.lastWindowInsets = insets
+  }
 }

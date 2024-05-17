@@ -35,8 +35,7 @@
     android:id="@+id/header_container"
     android:layout_width="match_parent"
     android:layout_below="@id/border"
-    android:layout_height="@dimen/editor_sheet_collapsed_height"
-    android:background="?attr/colorSurface">
+    android:layout_height="@dimen/editor_sheet_collapsed_height">
 
     <include
       layout="@layout/layout_editor_build_status"
@@ -65,7 +64,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:background="?attr/colorSurface"
     tools:layout_height="56dp" />
 
   <androidx.viewpager2.widget.ViewPager2
@@ -75,8 +73,7 @@
     android:layout_above="@id/space_bottom"
     android:layout_below="@id/tabs"
     android:clickable="true"
-    android:focusable="false"
-    android:background="?attr/colorSurface" />
+    android:focusable="false" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/clear_fab"
