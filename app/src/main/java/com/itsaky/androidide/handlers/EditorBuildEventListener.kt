@@ -74,10 +74,10 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
 
     activity.editorViewModel.isBuildInProgress = true
-    activity.binding.bottomSheet.clearBuildOutput()
+    activity.content.bottomSheet.clearBuildOutput()
 
     if (buildInfo.tasks.isNotEmpty()) {
-      activity.binding.bottomSheet.appendBuildOut(
+      activity.content.bottomSheet.appendBuildOut(
         activity.getString(R.string.title_run_tasks) + " : " + buildInfo.tasks)
     }
   }

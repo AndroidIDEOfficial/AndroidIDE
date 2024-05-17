@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/realContainer"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:animateLayoutChanges="true">
+
+  <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/editor_appBarLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:fitsSystemWindows="false"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+
+    <com.itsaky.androidide.ui.ExtendedMenuToolbar
+      android:id="@+id/editor_toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:elevation="10dp" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+      android:id="@+id/progress_indicator"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:indeterminate="true" />
+
+    <com.google.android.material.tabs.TabLayout
+      android:id="@+id/tabs"
+      style="@style/AppTheme.TabLayout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:tabGravity="start" />
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <ViewFlipper
+    android:id="@+id/view_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="16dp"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+    <!--Views in this flipper are dynamically added and must be instances of CodeEditorView-->
+    <ViewFlipper
+      android:id="@+id/editor_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="@dimen/editor_sheet_peek_height" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <TextView
+        android:id="@+id/no_editor_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+      <TextView
+        android:id="@+id/no_editor_summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="?attr/colorSecondaryVariant"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/no_editor_title"
+        app:layout_constraintStart_toStartOf="@id/no_editor_title"
+        app:layout_constraintTop_toBottomOf="@+id/no_editor_title"
+        tools:text="Open right drawer for files\nSwipe from bottom for build output" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+  </ViewFlipper>
+
+  <com.itsaky.androidide.ui.EditorBottomSheet
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="@dimen/editor_sheet_peek_height"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
+
+  <include
+    android:id="@+id/diagnosticInfo"
+    layout="@layout/layout_diagnostic_info" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

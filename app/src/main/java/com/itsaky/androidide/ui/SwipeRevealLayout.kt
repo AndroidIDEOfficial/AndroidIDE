@@ -19,7 +19,6 @@ package com.itsaky.androidide.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -28,13 +27,8 @@ import androidx.annotation.CallSuper
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.customview.widget.ViewDragHelper
-import com.blankj.utilcode.util.SizeUtils
-import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.itsaky.androidide.R
-import com.itsaky.androidide.utils.resolveAttr
-import org.slf4j.LoggerFactory
 import kotlin.math.max
 import kotlin.math.min
 
@@ -178,16 +172,10 @@ open class SwipeRevealLayout @JvmOverloads constructor(
   var isOpen = false
     protected set
 
-  /**
-   * The corner radius of the overlapping content.
-   */
-  var overlappingContentCorners = SizeUtils.dp2px(28f).toFloat()
-
   companion object {
 
     private const val HIDDEN_CONTENT_INDEX = 0
     private const val OVERLAPPING_CONTENT_INDEX = 1
-    private val log = LoggerFactory.getLogger(SwipeRevealLayout::class.java)
 
     @Suppress("UNUSED")
     const val STATE_IDLE = ViewDragHelper.STATE_IDLE
@@ -219,15 +207,6 @@ open class SwipeRevealLayout @JvmOverloads constructor(
     check(childCount == 2) {
       "SwipeRevealLayout must have exactly two children; the hidden content and the overlapping content"
     }
-
-    val shapeAppearanceModel = ShapeAppearanceModel.Builder().apply {
-      setAllCorners(CornerFamily.ROUNDED, overlappingContentCorners)
-    }.build()
-
-    val realBg = MaterialShapeDrawable(shapeAppearanceModel)
-    realBg.fillColor = ColorStateList.valueOf(context.resolveAttr(R.attr.colorSurface))
-    realBg.interpolation = 0f
-    overlappingContent.background = realBg
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -248,7 +227,8 @@ open class SwipeRevealLayout @JvmOverloads constructor(
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-    return isViewHit(dragHandleView!!, ev.x.toInt(), ev.y.toInt()) && dragHelper.shouldInterceptTouchEvent(ev)
+    return isViewHit(dragHandleView!!, ev.x.toInt(),
+      ev.y.toInt()) && dragHelper.shouldInterceptTouchEvent(ev)
   }
 
   @SuppressLint("ClickableViewAccessibility")

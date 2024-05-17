@@ -103,7 +103,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     super.onCreate(savedInstanceState)
 
     editorViewModel._displayedFile.observe(
-      this) { this.binding.editorContainer.displayedChild = it }
+      this) { this.content.editorContainer.displayedChild = it }
     editorViewModel._startDrawerOpened.observe(this) { opened ->
       this.binding.editorDrawerLayout.apply {
         if (opened) openDrawer(GravityCompat.START) else closeDrawer(GravityCompat.START)
@@ -245,7 +245,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         action.createActionView(data)?.let { item.actionView = it }
       }
     }
-    binding.editorToolbar.updateMenuDisplay()
+    content.editorToolbar.updateMenuDisplay()
   }
 
   private fun createToolbarActionData(): ActionData {
@@ -269,7 +269,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getEditorAtIndex(index: Int): CodeEditorView? {
-    return _binding?.editorContainer?.getChildAt(index) as CodeEditorView?
+    return _binding?.content?.editorContainer?.getChildAt(index) as CodeEditorView?
   }
 
   override fun openFileAndSelect(file: File, selection: Range?) {
@@ -296,7 +296,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val index = openFileAndGetIndex(file, range)
-    val tab = binding.tabs.getTabAt(index)
+    val tab = content.tabs.getTabAt(index)
     if (tab != null && index >= 0 && !tab.isSelected) {
       tab.select()
     }
@@ -329,8 +329,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     val editor = CodeEditorView(this, file, selection!!)
     editor.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
-    binding.editorContainer.addView(editor)
-    binding.tabs.addTab(binding.tabs.newTab())
+    content.editorContainer.addView(editor)
+    content.tabs.addTab(content.tabs.newTab())
 
     editorViewModel.addFile(file)
     editorViewModel.setCurrentFile(position, file)
@@ -342,7 +342,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun getEditorForFile(file: File): CodeEditorView? {
     for (i in 0 until editorViewModel.getOpenedFileCount()) {
-      val editor = binding.editorContainer.getChildAt(i) as? CodeEditorView
+      val editor = content.editorContainer.getChildAt(i) as? CodeEditorView
       if (file == editor?.file) return editor
     }
     return null
@@ -460,7 +460,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       editorViewModel.areFilesModified = hasUnsaved
 
       // set tab as unmodified
-      val tab = binding.tabs.getTabAt(index) ?: return@withContext
+      val tab = content.tabs.getTabAt(index) ?: return@withContext
       if (tab.text!!.startsWith('*')) {
         tab.text = tab.text!!.substring(startIndex = 1)
       }
@@ -519,7 +519,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     editorViewModel.removeFile(index)
-    binding.apply {
+    content.apply {
       tabs.removeTabAt(index)
       editorContainer.removeViewAt(index)
     }
@@ -587,7 +587,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     editorViewModel.removeAllFiles()
-    binding.apply {
+    content.apply {
       tabs.removeAllTabs()
       tabs.requestLayout()
       editorContainer.removeAllViews()
@@ -637,7 +637,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onFileRenamed(event: FileRenameEvent) {
     val index = findIndexOfEditorByFile(event.file)
-    if (index < 0 || index >= binding.tabs.tabCount) {
+    if (index < 0 || index >= content.tabs.tabCount) {
       return
     }
 
@@ -658,7 +658,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return
     }
 
-    val tab = binding.tabs.getTabAt(index)!!
+    val tab = content.tabs.getTabAt(index)!!
     if (tab.text?.startsWith('*') == true) {
       return
     }
@@ -680,7 +680,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         nameBuilder.addPath(it, it.path)
       }
 
-      for (index in 0 until binding.tabs.tabCount) {
+      for (index in 0 until content.tabs.tabCount) {
         val file = files.getOrNull(index) ?: continue
         val count = dupliCount[file.name] ?: 0
 
@@ -695,7 +695,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
       withContext(Dispatchers.Main) {
         names.forEach { index, (name, iconId) ->
-          val tab = binding.tabs.getTabAt(index) ?: return@forEach
+          val tab = content.tabs.getTabAt(index) ?: return@forEach
           tab.icon = ResourcesCompat.getDrawable(resources, iconId, theme)
           tab.text = name
         }

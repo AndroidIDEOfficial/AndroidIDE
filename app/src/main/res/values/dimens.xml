@@ -17,4 +17,5 @@
 
 <resources>
   <dimen name="editor_mem_usage_view_height">200dp</dimen>
+  <dimen name="editor_container_corners">28dp</dimen>
 </resources>

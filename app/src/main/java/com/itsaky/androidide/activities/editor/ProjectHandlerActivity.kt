@@ -226,7 +226,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   fun appendBuildOutput(str: String) {
-    binding.bottomSheet.appendBuildOut(str)
+    content.bottomSheet.appendBuildOut(str)
   }
 
   fun notifySyncNeeded() {

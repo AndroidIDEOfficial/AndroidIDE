@@ -19,6 +19,7 @@ package com.itsaky.androidide.ui
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -59,6 +60,7 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.resolveAttr
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -236,6 +238,10 @@ constructor(
     val insetBottom = windowInsets?.bottom ?: 0
     val padding = insetBottom * paddingScale
     binding.headerContainer.apply {
+      var color = Color.valueOf(context.resolveAttr(R.attr.colorSurface))
+      color = Color.valueOf(color.red(), color.green(), color.blue(), (1f - paddingScale))
+      setBackgroundColor(color.toArgb())
+
       updateLayoutParams<ViewGroup.LayoutParams> {
         height = ((collapsedHeight + padding) * heightScale).roundToInt()
       }

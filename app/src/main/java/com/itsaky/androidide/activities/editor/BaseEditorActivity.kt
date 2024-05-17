@@ -19,7 +19,6 @@ package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
@@ -58,9 +57,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
@@ -71,6 +67,7 @@ import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
 import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
 import com.itsaky.androidide.databinding.ActivityEditorBinding
+import com.itsaky.androidide.databinding.ContentEditorBinding
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
 import com.itsaky.androidide.fragments.SearchResultFragment
@@ -147,6 +144,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   internal var _binding: ActivityEditorBinding? = null
   val binding: ActivityEditorBinding
     get() = checkNotNull(_binding) { "Activity has been destroyed" }
+  val content: ContentEditorBinding
+    get() = binding.content
 
   override val subscribeToEvents: Boolean
     get() = true
@@ -184,9 +183,12 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       }
     }
   }
-  
+
   private val editorSurfaceContainerBackground by lazy {
     resolveAttr(R.attr.colorSurfaceDim)
+  }
+  private val editorLayoutCorners by lazy {
+    resources.getDimensionPixelSize(R.dimen.editor_container_corners).toFloat()
   }
 
   private var optionsMenuInvalidator: Runnable? = null
@@ -195,8 +197,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     @JvmStatic
     protected val PROC_IDE = "IDE"
+
     @JvmStatic
     protected val PROC_GRADLE_TOOLING = "Gradle Tooling"
+
     @JvmStatic
     protected val PROC_GRADLE_DAEMON = "Gradle Daemon"
 
@@ -252,7 +256,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
   override fun bindLayout(): View {
     this._binding = ActivityEditorBinding.inflate(layoutInflater)
-    this.diagnosticInfoBinding = this.binding.diagnosticInfo
+    this.diagnosticInfoBinding = this.content.diagnosticInfo
     return this.binding.root
   }
 
@@ -262,13 +266,15 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       drawerSidebar.getFragment<EditorSidebarFragment>()
         .onApplyWindowInsets(insets)
 
-      editorAppBarLayout.updatePadding(
-        top = insets.top
-      )
-      editorToolbar.updatePaddingRelative(
-        start = editorToolbar.paddingStart + insets.left,
-        end = editorToolbar.paddingEnd + insets.right
-      )
+      content.apply {
+        editorAppBarLayout.updatePadding(
+          top = insets.top
+        )
+        editorToolbar.updatePaddingRelative(
+          start = editorToolbar.paddingStart + insets.left,
+          end = editorToolbar.paddingEnd + insets.right
+        )
+      }
     }
   }
 
@@ -286,7 +292,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       return
     }
 
-    Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
+    Snackbar.make(content.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
       .setAction(string.yes) { IntentUtils.launchApp(this, packageName) }.show()
   }
 
@@ -305,10 +311,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     lifecycle.addObserver(mLifecycleObserver)
 
-    setSupportActionBar(binding.editorToolbar)
+    setSupportActionBar(content.editorToolbar)
 
     setupDrawers()
-    binding.tabs.addOnTabSelectedListener(this)
+    content.tabs.addOnTabSelectedListener(this)
 
     setupViews()
 
@@ -325,8 +331,9 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
   private fun onSwipeRevealDragProgress(progress: Float) {
     _binding?.apply {
+      contentCard.progress = progress
       val insetsTop = lastWindowInsets?.top ?: 0
-      editorAppBarLayout.updatePadding(
+      content.editorAppBarLayout.updatePadding(
         top = (insetsTop * (1f - progress)).roundToInt()
       )
       memUsageView.chart.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -507,11 +514,11 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   open fun setSearchResultAdapter(adapter: SearchListAdapter) {
-    binding.bottomSheet.setSearchResultAdapter(adapter)
+    content.bottomSheet.setSearchResultAdapter(adapter)
   }
 
   open fun setDiagnosticsAdapter(adapter: DiagnosticsAdapter) {
-    binding.bottomSheet.setDiagnosticsAdapter(adapter)
+    content.bottomSheet.setDiagnosticsAdapter(adapter)
   }
 
   open fun hideBottomSheet() {
@@ -525,20 +532,20 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    val index = binding.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(
+    val index = content.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(
       SearchResultFragment::class.java)
 
-    if (index >= 0 && index < binding.bottomSheet.binding.tabs.tabCount) {
-      binding.bottomSheet.binding.tabs.getTabAt(index)?.select()
+    if (index >= 0 && index < content.bottomSheet.binding.tabs.tabCount) {
+      content.bottomSheet.binding.tabs.getTabAt(index)?.select()
     }
   }
 
   open fun handleDiagnosticsResultVisibility(errorVisible: Boolean) {
-    binding.bottomSheet.handleDiagnosticsResultVisibility(errorVisible)
+    content.bottomSheet.handleDiagnosticsResultVisibility(errorVisible)
   }
 
   open fun handleSearchResultVisibility(errorVisible: Boolean) {
-    binding.bottomSheet.handleSearchResultVisibility(errorVisible)
+    content.bottomSheet.handleSearchResultVisibility(errorVisible)
   }
 
   open fun showFirstBuildNotice() {
@@ -565,7 +572,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   fun refreshSymbolInput(editor: CodeEditorView) {
-    binding.bottomSheet.refreshSymbolInput(editor)
+    content.bottomSheet.refreshSymbolInput(editor)
   }
 
   private fun checkIsDestroying() {
@@ -595,14 +602,14 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   private fun setupDrawers() {
-    val toggle = ActionBarDrawerToggle(this, binding.editorDrawerLayout, binding.editorToolbar,
+    val toggle = ActionBarDrawerToggle(this, binding.editorDrawerLayout, content.editorToolbar,
       string.app_name, string.app_name)
 
     binding.editorDrawerLayout.addDrawerListener(toggle)
     toggle.syncState()
     binding.apply {
       editorDrawerLayout.apply {
-        childId = binding.realContainer.id
+        childId = content.realContainer.id
         translationBehaviorStart = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
         translationBehaviorEnd = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
         setScrimColor(Color.TRANSPARENT)
@@ -614,17 +621,17 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     log.debug(
       "onBuildStatusChanged: isInitializing: ${editorViewModel.isInitializing}, isBuildInProgress: ${editorViewModel.isBuildInProgress}")
     val visible = editorViewModel.isBuildInProgress || editorViewModel.isInitializing
-    binding.progressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
+    content.progressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()
   }
 
   private fun setupViews() {
     editorViewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
     editorViewModel._isInitializing.observe(this) { onBuildStatusChanged() }
-    editorViewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
+    editorViewModel._statusText.observe(this) { content.bottomSheet.setStatus(it.first, it.second) }
 
     editorViewModel.observeFiles(this) { files ->
-      binding.apply {
+      content.apply {
         if (files.isNullOrEmpty()) {
           tabs.visibility = View.GONE
           viewContainer.displayedChild = 1
@@ -650,6 +657,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       }, 1500)
     }
 
+    binding.contentCard.progress = 0f
     binding.swipeReveal.dragListener = object : SwipeRevealLayout.OnDragListener {
       override fun onDragStateChanged(swipeRevealLayout: SwipeRevealLayout, state: Int) {}
       override fun onDragProgress(swipeRevealLayout: SwipeRevealLayout, progress: Float) {
@@ -659,7 +667,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   private fun setupNoEditorView() {
-    binding.noEditorSummary.movementMethod = LinkMovementMethod()
+    content.noEditorSummary.movementMethod = LinkMovementMethod()
     val filesSpan: ClickableSpan = object : ClickableSpan() {
       override fun onClick(widget: View) {
         binding.root.openDrawer(GravityCompat.START)
@@ -673,7 +681,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     val sb = SpannableStringBuilder()
     appendClickableSpan(sb, string.msg_drawer_for_files, filesSpan)
     appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan)
-    binding.noEditorSummary.text = sb
+    content.noEditorSummary.text = sb
   }
 
   private fun appendClickableSpan(
@@ -696,7 +704,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   private fun setupBottomSheet() {
-    editorBottomSheet = BottomSheetBehavior.from<View>(binding.bottomSheet)
+    editorBottomSheet = BottomSheetBehavior.from<View>(content.bottomSheet)
     editorBottomSheet?.addBottomSheetCallback(object : BottomSheetCallback() {
       override fun onStateChanged(bottomSheet: View, newState: Int) {
         if (newState == BottomSheetBehavior.STATE_EXPANDED) {
@@ -706,7 +714,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       }
 
       override fun onSlide(bottomSheet: View, slideOffset: Float) {
-        binding.apply {
+        content.apply {
           val editorScale = 1 - slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR)
           this.bottomSheet.onSlide(slideOffset)
           this.viewContainer.scaleX = editorScale
@@ -717,7 +725,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     val observer: OnGlobalLayoutListener = object : OnGlobalLayoutListener {
       override fun onGlobalLayout() {
-        binding.also {
+        content.also {
           it.realContainer.pivotX = it.realContainer.width.toFloat() / 2f
           it.realContainer.pivotY = (it.realContainer.height.toFloat() / 2f) + (lastWindowInsets?.height()
             ?: 0)
@@ -726,7 +734,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
       }
     }
 
-    binding.apply {
+    content.apply {
       viewContainer.viewTreeObserver.addOnGlobalLayoutListener(observer)
       bottomSheet.setOffsetAnchor(editorAppBarLayout)
     }
@@ -750,7 +758,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   private fun onSoftInputChanged() {
     if (!isDestroying) {
       invalidateOptionsMenu()
-      binding.bottomSheet.onSoftInputChanged()
+      content.bottomSheet.onSoftInputChanged()
     }
   }
 

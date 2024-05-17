@@ -38,7 +38,7 @@ class CloseFileAction(context: Context, override val order: Int) : FileTabAction
   }
 
   override fun EditorHandlerActivity.doAction(data: ActionData): Boolean {
-    binding.tabs.selectedTabPosition.let { index ->
+    content.tabs.selectedTabPosition.let { index ->
       closeFile(index) {
         invalidateOptionsMenu()
       }

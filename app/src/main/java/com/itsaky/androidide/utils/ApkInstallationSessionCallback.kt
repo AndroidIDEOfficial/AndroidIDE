@@ -35,7 +35,7 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
   override fun onCreated(sessionId: Int) {
     this.sessionId = sessionId
     log.debug("Created package installation session: {}", sessionId)
-    activity?._binding?.apply {
+    activity?._binding?.content?.apply {
       bottomSheet.setActionText(activity!!.getString(string.msg_installing_apk))
       bottomSheet.setActionProgress(0)
       bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION)
@@ -43,11 +43,11 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
   }
 
   override fun onProgressChanged(sessionId: Int, progress: Float) {
-    activity?._binding?.bottomSheet?.setActionProgress((progress * 100f).toInt())
+    activity?._binding?.content?.bottomSheet?.setActionProgress((progress * 100f).toInt())
   }
 
   override fun onFinished(sessionId: Int, success: Boolean) {
-    activity?._binding?.apply {
+    activity?._binding?.content?.apply {
       bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER)
       bottomSheet.setActionProgress(0)
       if (!success) {

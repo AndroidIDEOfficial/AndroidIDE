@@ -279,7 +279,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
       if (file.exists() && file.isFile() && FileUtils.isUtf8(file)) {
         final var range = params.getSelection();
         var frag =
-            activity.getEditorAtIndex(activity.getBinding().tabs.getSelectedTabPosition());
+            activity.getEditorAtIndex(activity.getContent().tabs.getSelectedTabPosition());
         if (frag != null
             && frag.getFile() != null
             && frag.getEditor() != null
