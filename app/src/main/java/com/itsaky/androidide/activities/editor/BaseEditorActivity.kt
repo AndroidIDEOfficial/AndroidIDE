@@ -156,6 +156,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
         binding.root.closeDrawer(GravityCompat.START)
       } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
         editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
+      } else if (binding.swipeReveal.isOpen) {
+        binding.swipeReveal.close()
       } else {
         doConfirmProjectClose()
       }
