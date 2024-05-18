@@ -611,7 +611,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     toggle.syncState()
     binding.apply {
       editorDrawerLayout.apply {
-        childId = content.realContainer.id
+        childId = contentCard.id
         translationBehaviorStart = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
         translationBehaviorEnd = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
         setScrimColor(Color.TRANSPARENT)
