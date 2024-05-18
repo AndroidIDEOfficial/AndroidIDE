@@ -24,7 +24,8 @@
       android:layout_height="match_parent"
       app:cardBackgroundColor="?attr/colorSurface"
       app:cardCornerRadius="@dimen/editor_container_corners"
-      app:cardElevation="0dp">
+      app:cardElevation="0dp"
+      app:strokeWidth="0dp">
 
       <include
         android:id="@+id/content"
