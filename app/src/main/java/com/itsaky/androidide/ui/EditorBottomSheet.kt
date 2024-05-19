@@ -19,7 +19,6 @@ package com.itsaky.androidide.ui
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -60,7 +59,6 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
 import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.resolveAttr
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -89,12 +87,23 @@ constructor(
     val localContext = getContext() ?: return@lazy 0f
     localContext.resources.getDimension(R.dimen.editor_sheet_collapsed_height)
   }
+  private val behavior: BottomSheetBehavior<EditorBottomSheet> by lazy {
+    BottomSheetBehavior.from(this).apply {
+      isFitToContents = false
+      skipCollapsed = true
+    }
+  }
 
   @JvmField
   var binding: LayoutEditorBottomSheetBinding
   val pagerAdapter: EditorBottomSheetTabAdapter
 
+  private var anchorOffset = 0
+  private var isImeVisible = false
   private var windowInsets: Insets? = null
+
+  private val insetBottom: Int
+    get() = if (isImeVisible) 0 else windowInsets?.bottom ?: 0
 
   companion object {
 
@@ -165,9 +174,8 @@ constructor(
     }
 
     binding.headerContainer.setOnClickListener {
-      val sheet = BottomSheetBehavior.from(this)
-      if (sheet.state != BottomSheetBehavior.STATE_EXPANDED) {
-        sheet.state = BottomSheetBehavior.STATE_EXPANDED
+      if (behavior.state != BottomSheetBehavior.STATE_EXPANDED) {
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
       }
     }
 
@@ -193,23 +201,26 @@ constructor(
     initialize(context)
   }
 
+  /**
+   * Set whether the input method is visible.
+   */
+  fun setImeVisible(isVisible: Boolean) {
+    isImeVisible = isVisible
+    behavior.isGestureInsetBottomIgnored = isVisible
+  }
+
   fun setOffsetAnchor(view: View) {
     val listener =
       object : ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
-          val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
-          val offset = view.height + SizeUtils.dp2px(1f)
-          val collapsedHeight = collapsedHeight
-
-          sheet.isFitToContents = false
-          sheet.skipCollapsed = true
-          sheet.isGestureInsetBottomIgnored = false
-          sheet.peekHeight = collapsedHeight.roundToInt()
-          sheet.expandedOffset = offset
           view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+          anchorOffset = view.height + SizeUtils.dp2px(1f)
 
-          val insetBottom = windowInsets?.bottom ?: 0
-          binding.root.updatePadding(bottom = offset + insetBottom)
+          behavior.peekHeight = collapsedHeight.roundToInt()
+          behavior.expandedOffset = anchorOffset
+          behavior.isGestureInsetBottomIgnored = isImeVisible
+
+          binding.root.updatePadding(bottom = anchorOffset + insetBottom)
           binding.headerContainer.apply {
             updatePaddingRelative(bottom = paddingBottom + insetBottom)
             updateLayoutParams<ViewGroup.LayoutParams> {
@@ -229,19 +240,14 @@ constructor(
       1f
     }
 
-    val paddingScale = if (sheetOffset <= COLLAPSE_HEADER_AT_OFFSET) {
+    val paddingScale = if (!isImeVisible && sheetOffset <= COLLAPSE_HEADER_AT_OFFSET) {
       ((1f - sheetOffset) * 2f) - 1f
     } else {
       0f
     }
-
-    val insetBottom = windowInsets?.bottom ?: 0
+    
     val padding = insetBottom * paddingScale
     binding.headerContainer.apply {
-      var color = Color.valueOf(context.resolveAttr(R.attr.colorSurface))
-      color = Color.valueOf(color.red(), color.green(), color.blue(), (1f - paddingScale))
-      setBackgroundColor(color.toArgb())
-
       updateLayoutParams<ViewGroup.LayoutParams> {
         height = ((collapsedHeight + padding) * heightScale).roundToInt()
       }

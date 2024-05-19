@@ -17,16 +17,15 @@
 
 package com.itsaky.androidide.fragments.sidebar
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.graphics.Insets
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.core.view.updatePadding
-import androidx.core.view.updatePaddingRelative
 import com.itsaky.androidide.databinding.FragmentEditorSidebarBinding
 import com.itsaky.androidide.fragments.FragmentWithBinding
 import com.itsaky.androidide.utils.EditorSidebarActions
@@ -40,7 +39,7 @@ class EditorSidebarFragment : FragmentWithBinding<FragmentEditorSidebarBinding>(
   FragmentEditorSidebarBinding::inflate
 ) {
 
-  internal fun onApplyWindowInsets(insets: Rect) {
+  internal fun onApplyWindowInsets(insets: Insets) {
     _binding?.apply {
       title.updateLayoutParams<MarginLayoutParams> {
         updateMarginsRelative(

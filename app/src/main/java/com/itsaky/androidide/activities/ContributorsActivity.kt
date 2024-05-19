@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.activities
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.graphics.Insets
 import androidx.core.view.isVisible
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.ContributorsGridAdapter
@@ -92,8 +92,8 @@ class ContributorsActivity : EdgeToEdgeIDEActivity() {
     }
   }
 
-  override fun onInsetsUpdated(insets: Rect) {
-    super.onInsetsUpdated(insets)
+  override fun onApplySystemBarInsets(insets: Insets) {
+    super.onApplySystemBarInsets(insets)
     binding.toolbar.apply {
       setPaddingRelative(
         paddingStart + insets.left,

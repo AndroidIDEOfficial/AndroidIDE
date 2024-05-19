@@ -18,7 +18,6 @@ package com.itsaky.androidide.activities
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -27,6 +26,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.Insets
 import androidx.core.view.updatePaddingRelative
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.SizeUtils
@@ -101,8 +101,7 @@ class AboutActivity : EdgeToEdgeIDEActivity() {
     }
   }
 
-  override fun onInsetsUpdated(insets: Rect) {
-    super.onInsetsUpdated(insets)
+  override fun onApplySystemBarInsets(insets: Insets) {
     binding.toolbar.apply {
       setPaddingRelative(
         paddingStart + insets.left,
@@ -126,53 +125,65 @@ class AboutActivity : EdgeToEdgeIDEActivity() {
 
   private fun createSocialItems(): List<IconTitleDescriptionItem> {
     return mutableListOf<IconTitleDescriptionItem>().apply {
-      add(createSimpleIconTextItem(
-        this@AboutActivity,
-        ACTION_WEBSITE,
-        R.drawable.ic_website,
-        R.string.about_option_website,
-        BuildInfo.PROJECT_SITE
-      ))
-      add(createSimpleIconTextItem(
-        this@AboutActivity,
-        ACTION_EMAIL,
-        R.drawable.ic_email,
-        R.string.about_option_email,
-        BaseApplication.EMAIL
-      ))
-      add(createSimpleIconTextItem(
-        this@AboutActivity,
-        ACTION_TG_GROUP,
-        R.drawable.ic_telegram,
-        R.string.discussions_on_telegram,
-        BaseApplication.TELEGRAM_GROUP_URL
-      ))
-      add(createSimpleIconTextItem(
-        this@AboutActivity,
-        ACTION_TG_CHANNEL,
-        R.drawable.ic_telegram,
-        R.string.official_tg_channel,
-        BaseApplication.TELEGRAM_CHANNEL_URL
-      ))
+      add(
+        createSimpleIconTextItem(
+          this@AboutActivity,
+          ACTION_WEBSITE,
+          R.drawable.ic_website,
+          R.string.about_option_website,
+          BuildInfo.PROJECT_SITE
+        )
+      )
+      add(
+        createSimpleIconTextItem(
+          this@AboutActivity,
+          ACTION_EMAIL,
+          R.drawable.ic_email,
+          R.string.about_option_email,
+          BaseApplication.EMAIL
+        )
+      )
+      add(
+        createSimpleIconTextItem(
+          this@AboutActivity,
+          ACTION_TG_GROUP,
+          R.drawable.ic_telegram,
+          R.string.discussions_on_telegram,
+          BaseApplication.TELEGRAM_GROUP_URL
+        )
+      )
+      add(
+        createSimpleIconTextItem(
+          this@AboutActivity,
+          ACTION_TG_CHANNEL,
+          R.drawable.ic_telegram,
+          R.string.official_tg_channel,
+          BaseApplication.TELEGRAM_CHANNEL_URL
+        )
+      )
     }
   }
 
   private fun createMiscItems(): List<IconTitleDescriptionItem> {
     return mutableListOf<IconTitleDescriptionItem>().apply {
-      add(SimpleIconTitleDescriptionItem.create(
-        this@AboutActivity,
-        ACTION_CONTRIBUTE,
-        R.drawable.ic_code,
-        R.string.title_contribute,
-        R.string.summary_contribute
-      ))
-      add(SimpleIconTitleDescriptionItem.create(
-        this@AboutActivity,
-        ACTION_CONTRIBUTORS,
-        R.drawable.ic_heart_outline,
-        R.string.title_contributors,
-        R.string.summary_contributors
-      ))
+      add(
+        SimpleIconTitleDescriptionItem.create(
+          this@AboutActivity,
+          ACTION_CONTRIBUTE,
+          R.drawable.ic_code,
+          R.string.title_contribute,
+          R.string.summary_contribute
+        )
+      )
+      add(
+        SimpleIconTitleDescriptionItem.create(
+          this@AboutActivity,
+          ACTION_CONTRIBUTORS,
+          R.drawable.ic_heart_outline,
+          R.string.title_contributors,
+          R.string.summary_contributors
+        )
+      )
     }
   }
 
@@ -244,7 +255,8 @@ class AboutActivity : EdgeToEdgeIDEActivity() {
     appendForegroundSpan(
       builder,
       BuildInfoUtils.getBuildType(this).lowercase(),
-      color)
+      color
+    )
 
     builder.append(")")
   }
@@ -254,7 +266,8 @@ class AboutActivity : EdgeToEdgeIDEActivity() {
     text: CharSequence,
     color: Int
   ) {
-    builder.append(text,
+    builder.append(
+      text,
       ForegroundColorSpan(color),
       SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
     )

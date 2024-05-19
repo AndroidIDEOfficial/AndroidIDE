@@ -16,9 +16,9 @@
  */
 package com.itsaky.androidide.activities
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import androidx.core.graphics.Insets
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.R
 import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
@@ -64,9 +64,7 @@ class PreferencesActivity : EdgeToEdgeIDEActivity() {
     loadFragment(rootFragment)
   }
 
-  override fun onInsetsUpdated(insets: Rect) {
-    super.onInsetsUpdated(insets)
-
+  override fun onApplySystemBarInsets(insets: Insets) {
     val toolbar: View = binding.toolbar
     toolbar.setPadding(
       toolbar.paddingLeft + insets.left,
@@ -86,7 +84,8 @@ class PreferencesActivity : EdgeToEdgeIDEActivity() {
 
   override fun bindLayout(): View {
     _binding = ActivityPreferencesBinding.inflate(
-      layoutInflater)
+      layoutInflater
+    )
     return binding.root
   }
 

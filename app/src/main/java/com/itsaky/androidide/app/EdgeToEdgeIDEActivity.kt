@@ -26,8 +26,10 @@ import android.os.PersistableBundle
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.annotation.CallSuper
+import androidx.core.graphics.Insets
 import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import com.itsaky.androidide.utils.EdgeToEdgeUtils
 import com.itsaky.androidide.utils.getSystemBarInsets
@@ -70,7 +72,7 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
   /**
    * Last window insets.
    */
-  protected open var lastWindowInsets: Rect? = null
+  protected open var systemBarInsets: Insets? = null
 
   override var enableSystemBarTheming: Boolean
     get() = false
@@ -82,9 +84,10 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
 
   @SuppressLint("WrongConstant")
   private val onApplyWindowInsetsListener = OnApplyWindowInsetsListener { v, insets ->
+    onApplyWindowInsets(insets)
     if (!eteUpdateDecorViewPaddingInLandscape ||
-        v.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-      ) {
+      v.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+    ) {
       decorViewPadding?.also { p ->
         // when switching from landscape to portrait, restore the original padding
         v.setPadding(p.left, p.top, p.right, p.bottom)
@@ -104,18 +107,21 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      val systemBarInsets = insets.getInsets(WindowInsets.Type.systemBars())
       v.setPadding(
-        insets.getInsets(WindowInsets.Type.systemBars()).left,
+        systemBarInsets.left,
         0,
-        insets.getInsets(WindowInsets.Type.systemBars()).right,
-        insets.getInsets(WindowInsets.Type.systemBars()).bottom)
+        systemBarInsets.right,
+        systemBarInsets.bottom
+      )
     } else {
       @Suppress("DEPRECATION")
       v.setPadding(
         insets.stableInsetLeft,
         0,
         insets.stableInsetRight,
-        insets.stableInsetBottom)
+        insets.stableInsetBottom
+      )
     }
 
     insets
@@ -146,12 +152,21 @@ abstract class EdgeToEdgeIDEActivity : IDEActivity() {
       this.onApplyWindowInsetsListener
     )
 
-    this.window.decorView.doOnAttach { decorView -> onInsetsUpdated(getSystemBarInsets(decorView)) }
+    this.window.decorView.doOnAttach { onApplySystemBarInsets(getSystemBarInsets(it)) }
   }
 
-  /** Called whenever insets are updated */
+  /**
+   * Called when the window insets change.
+   *
+   * @param insets The window insets. These insets are not expected to be consumed.
+   */
   @CallSuper
-  protected open fun onInsetsUpdated(insets: Rect) {
-    this.lastWindowInsets = insets
+  protected open fun onApplyWindowInsets(insets: WindowInsetsCompat) {
+    this.systemBarInsets = getSystemBarInsets(insets)
   }
+
+  /**
+   * Called with the system bar insets when the decor view is attached to the window.
+   */
+  protected open fun onApplySystemBarInsets(insets: Insets) {}
 }

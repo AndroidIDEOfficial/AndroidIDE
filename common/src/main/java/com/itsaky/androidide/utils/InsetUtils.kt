@@ -17,50 +17,43 @@
 
 package com.itsaky.androidide.utils
 
-import android.graphics.Insets
-import android.graphics.Rect
 import android.os.Build
 import android.view.View
 import android.view.WindowInsets
+import androidx.core.graphics.Insets
+import androidx.core.view.WindowInsetsCompat
 
 /**
- * Acquires screen insets
+ * Acquires screen insets.
  *
- * @param view Any View that is currently attached to a Window
- *
- * @return [Rect] containing acquired insets
- *
+ * @param view Any View that is currently attached to a Window.
+ * @return [Insets] containing acquired insets.
  * @author Smooth E
  */
-fun getSystemBarInsets(view: View): Rect {
-  val insets: Rect
+fun getSystemBarInsets(view: View): Insets {
   val rootWindowInsets = view.rootWindowInsets
+  return getSystemBarInsets(WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets))
+}
 
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-    val receivedInsets: Insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      val typeMask = WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
-      rootWindowInsets.getInsetsIgnoringVisibility(typeMask)
-    } else {
-      @Suppress("DEPRECATION")
-      view.rootWindowInsets.stableInsets
-    }
-
-    insets = Rect(
-      receivedInsets.left,
-      receivedInsets.top,
-      receivedInsets.right,
-      receivedInsets.bottom
-    )
-  } else {
+/**
+ * Acquires system bar and display cutout insets.
+ *
+ * @param insets The window insets.
+ * @return [Insets] containing acquired insets.
+ */
+fun getSystemBarInsets(insets: WindowInsetsCompat): Insets {
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
     @Suppress("DEPRECATION")
-    insets = Rect(
-      rootWindowInsets.stableInsetLeft,
-      rootWindowInsets.stableInsetTop,
-      rootWindowInsets.stableInsetRight,
-      rootWindowInsets.stableInsetBottom
-    )
+    return insets.stableInsets
   }
 
-  return insets
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+    @Suppress("DEPRECATION")
+    return insets.stableInsets
+  }
+
+  val typeMask = WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
+
+  // noinspection WrongConstant
+  return insets.getInsetsIgnoringVisibility(typeMask)
 }

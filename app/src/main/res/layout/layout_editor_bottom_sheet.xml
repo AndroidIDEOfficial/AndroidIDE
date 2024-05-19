@@ -36,7 +36,8 @@
     android:id="@+id/header_container"
     android:layout_width="match_parent"
     android:layout_below="@id/border"
-    android:layout_height="@dimen/editor_sheet_collapsed_height">
+    android:layout_height="@dimen/editor_sheet_collapsed_height"
+    android:background="?attr/colorSurface">
 
     <include
       layout="@layout/layout_editor_build_status"

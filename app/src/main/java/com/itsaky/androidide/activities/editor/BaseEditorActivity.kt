@@ -20,7 +20,6 @@ package com.itsaky.androidide.activities.editor
 import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Process
@@ -41,7 +40,9 @@ import androidx.annotation.GravityInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.collection.MutableIntIntMap
+import androidx.core.graphics.Insets
 import androidx.core.view.GravityCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
@@ -186,6 +187,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     }
   }
 
+  private var contentCardRealHeight: Int? = null
   private val editorSurfaceContainerBackground by lazy {
     resolveAttr(R.attr.colorSurfaceDim)
   }
@@ -262,8 +264,18 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     return this.binding.root
   }
 
-  override fun onInsetsUpdated(insets: Rect) {
-    super.onInsetsUpdated(insets)
+  override fun onApplyWindowInsets(insets: WindowInsetsCompat) {
+    super.onApplyWindowInsets(insets)
+    val height = contentCardRealHeight ?: return
+    val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+    _binding?.content?.bottomSheet?.setImeVisible(imeInsets.bottom > 0)
+    _binding?.contentCard?.updateLayoutParams<ViewGroup.LayoutParams> {
+      this.height = height - imeInsets.bottom
+    }
+  }
+
+  override fun onApplySystemBarInsets(insets: Insets) {
+    super.onApplySystemBarInsets(insets)
     this._binding?.apply {
       drawerSidebar.getFragment<EditorSidebarFragment>()
         .onApplyWindowInsets(insets)
@@ -307,7 +319,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       ProjectManagerImpl.getInstance().projectPath = savedInstanceState.getString(
-        KEY_PROJECT_PATH)!!
+        KEY_PROJECT_PATH
+      )!!
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -324,8 +337,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     setupContainers()
     setupDiagnosticInfo()
 
-    uiDesignerResultLauncher = registerForActivityResult(StartActivityForResult(),
-      this::handleUiDesignerResult)
+    uiDesignerResultLauncher = registerForActivityResult(
+      StartActivityForResult(),
+      this::handleUiDesignerResult
+    )
 
     setupMemUsageChart()
     watchMemory()
@@ -334,7 +349,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   private fun onSwipeRevealDragProgress(progress: Float) {
     _binding?.apply {
       contentCard.progress = progress
-      val insetsTop = lastWindowInsets?.top ?: 0
+      val insetsTop = systemBarInsets?.top ?: 0
       content.editorAppBarLayout.updatePadding(
         top = (insetsTop * (1f - progress)).roundToInt()
       )
@@ -377,8 +392,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   protected fun resetMemUsageChart() {
     val processes = memoryUsageWatcher.getMemoryUsages()
     val datasets = Array(processes.size) { index ->
-      LineDataSet(List(MemoryUsageWatcher.MAX_USAGE_ENTRIES) { Entry(it.toFloat(), 0f) },
-        processes[index].pname)
+      LineDataSet(
+        List(MemoryUsageWatcher.MAX_USAGE_ENTRIES) { Entry(it.toFloat(), 0f) },
+        processes[index].pname
+      )
     }
 
     val bgColor = editorSurfaceContainerBackground
@@ -535,7 +552,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     }
 
     val index = content.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(
-      SearchResultFragment::class.java)
+      SearchResultFragment::class.java
+    )
 
     if (index >= 0 && index < content.bottomSheet.binding.tabs.tabCount) {
       content.bottomSheet.binding.tabs.getTabAt(index)?.select()
@@ -559,7 +577,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   open fun getFileTreeFragment(): FileTreeFragment? {
     if (filesTreeFragment == null) {
       filesTreeFragment = supportFragmentManager.findFragmentByTag(
-        FileTreeFragment.TAG) as FileTreeFragment?
+        FileTreeFragment.TAG
+      ) as FileTreeFragment?
     }
     return filesTreeFragment
   }
@@ -585,8 +604,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
   private fun handleUiDesignerResult(result: ActivityResult) {
     if (result.resultCode != RESULT_OK || result.data == null) {
-      log.warn("UI Designer returned invalid result: resultCode={}, data={}", result.resultCode,
-        result.data)
+      log.warn(
+        "UI Designer returned invalid result: resultCode={}, data={}", result.resultCode,
+        result.data
+      )
       return
     }
     val generated = result.data!!.getStringExtra(UIDesignerActivity.RESULT_GENERATED_XML)
@@ -604,8 +625,10 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
   }
 
   private fun setupDrawers() {
-    val toggle = ActionBarDrawerToggle(this, binding.editorDrawerLayout, content.editorToolbar,
-      string.app_name, string.app_name)
+    val toggle = ActionBarDrawerToggle(
+      this, binding.editorDrawerLayout, content.editorToolbar,
+      string.app_name, string.app_name
+    )
 
     binding.editorDrawerLayout.addDrawerListener(toggle)
     toggle.syncState()
@@ -621,7 +644,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
   private fun onBuildStatusChanged() {
     log.debug(
-      "onBuildStatusChanged: isInitializing: ${editorViewModel.isInitializing}, isBuildInProgress: ${editorViewModel.isBuildInProgress}")
+      "onBuildStatusChanged: isInitializing: ${editorViewModel.isInitializing}, isBuildInProgress: ${editorViewModel.isBuildInProgress}"
+    )
     val visible = editorViewModel.isBuildInProgress || editorViewModel.isInitializing
     content.progressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()
@@ -650,7 +674,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     setupBottomSheet()
 
     if (!app.prefManager.getBoolean(
-        KEY_BOTTOM_SHEET_SHOWN) && editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
+        KEY_BOTTOM_SHEET_SHOWN
+      ) && editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
     ) {
       editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
       ThreadUtils.runOnUiThreadDelayed({
@@ -727,10 +752,12 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     val observer: OnGlobalLayoutListener = object : OnGlobalLayoutListener {
       override fun onGlobalLayout() {
+        contentCardRealHeight = binding.contentCard.height
         content.also {
           it.realContainer.pivotX = it.realContainer.width.toFloat() / 2f
-          it.realContainer.pivotY = (it.realContainer.height.toFloat() / 2f) + (lastWindowInsets?.height()
-            ?: 0)
+          it.realContainer.pivotY =
+            (it.realContainer.height.toFloat() / 2f) + (systemBarInsets?.run { bottom - top }
+              ?: 0)
           it.viewContainer.viewTreeObserver.removeOnGlobalLayoutListener(this)
         }
       }
