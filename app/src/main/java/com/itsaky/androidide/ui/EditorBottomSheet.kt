@@ -303,6 +303,7 @@ constructor(
 
   fun onSoftInputChanged() {
     if (context !is Activity) {
+      log.error("Bottom sheet is not attached to an activity!")
       return
     }
 

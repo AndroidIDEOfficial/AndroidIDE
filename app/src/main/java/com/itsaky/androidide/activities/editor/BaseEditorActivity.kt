@@ -187,6 +187,7 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     }
   }
 
+  private var isImeVisible = false
   private var contentCardRealHeight: Int? = null
   private val editorSurfaceContainerBackground by lazy {
     resolveAttr(R.attr.colorSurfaceDim)
@@ -268,9 +269,16 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     super.onApplyWindowInsets(insets)
     val height = contentCardRealHeight ?: return
     val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
     _binding?.content?.bottomSheet?.setImeVisible(imeInsets.bottom > 0)
     _binding?.contentCard?.updateLayoutParams<ViewGroup.LayoutParams> {
       this.height = height - imeInsets.bottom
+    }
+
+    val isImeVisible = imeInsets.bottom > 0
+    if (this.isImeVisible != isImeVisible) {
+      this.isImeVisible = isImeVisible
+      onSoftInputChanged()
     }
   }
 
@@ -333,7 +341,6 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
 
     setupViews()
 
-    KeyboardUtils.registerSoftInputChangedListener(this) { onSoftInputChanged() }
     setupContainers()
     setupDiagnosticInfo()
 
