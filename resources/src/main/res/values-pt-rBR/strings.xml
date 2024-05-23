@@ -123,7 +123,7 @@
   <string name="save_failed">Falha ao salvar arquivos</string>
   <string name="msg_newfile_dest">Destino: %s/</string>
   <string name="restype_drawable">Desenhável</string>
-  <string name="restype_layout">Layout</string>
+  <string name="restype_layout">Aparência</string>
   <string name="restype_menu">Menu</string>
   <string name="restype_other">Outro</string>
   <string name="classtype_class">Classe</string>
@@ -481,6 +481,6 @@
   <string name="msg_app_unavailable_for_intent">Nenhum aplicativo disponível para lidar com a intenção.</string>
   <string name="title_open_source_licenses">Licenças de código aberto</string>
   <string name="summary_open_source_licenses">Ver licenças de código aberto.</string>
-  <string name="idepref_jdkVersion_title">JDK version</string>
+  <string name="idepref_jdkVersion_title">Versão do JDK</string>
   <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
 </resources>
