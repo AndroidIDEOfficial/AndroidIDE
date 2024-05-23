@@ -19,11 +19,11 @@
   <!-- Termux Bootstrap Packages Installation -->
   <string name="bootstrap_installer_body">Instalando pacotes de inicialização…</string>
   <string name="bootstrap_error_title">Não foi possível instalar os arquivos de inicialização</string>
-  <string name="bootstrap_error_body">AndroidIDE was unable to install the bootstrap packages.</string>
+  <string name="bootstrap_error_body">O AndroidIDE não conseguiu instalar os pacotes de bootstrap.</string>
   <string name="bootstrap_error_abort">Cancelar</string>
   <string name="bootstrap_error_try_again">Tente novamente</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE só pode ser executado como usuário principal.\nbinários do Bootstrap compilados para AndroidIDE têm o caminho $PREFIX codificado e não podem ser instalados sob nenhum outro caminho:\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE não pode ser instalado no cartão SD/externo/removível no seu dispositivo.\nbinários do Bootstrap compilados para AndroidIDE têm o caminho $PREFIX codificado e não podem ser instalados sob nenhum outro caminho:\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Nova sessão</string>
   <string name="action_new_session_failsafe">À prova de falhas</string>
@@ -50,7 +50,7 @@
   <string name="action_autofill_password">Preenchimento automático</string>
   <string name="action_reset_terminal">Redefinir</string>
   <string name="msg_terminal_reset">Redefinir Terminal</string>
-  <string name="action_kill_process">Matar processo (%d)</string>
+  <string name="action_kill_process">Encerrar processo (%d)</string>
   <string name="title_confirm_kill_process">Quer mesmo encerrar esta sessão?</string>
   <string name="action_toggle_keep_screen_on">Manter a tela ligada</string>
   <string name="action_open_help">Ajuda</string>
