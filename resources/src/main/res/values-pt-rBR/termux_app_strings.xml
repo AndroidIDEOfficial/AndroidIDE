@@ -59,8 +59,8 @@
   <string name="msg_generating_report">Criando relatório</string>
   <string name="msg_add_termux_debug_info">Adicionar informações de depuração do Termux ao relatório?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_wake_lock">Adquirir wakelock</string>
-  <string name="notification_action_wake_unlock">Liberar wakelock</string>
+  <string name="notification_action_wake_lock">Manter ativo</string>
+  <string name="notification_action_wake_unlock">Não manter ativo</string>
   <!-- TermuxService -->
   <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10. Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
   <!-- Termux File Receiver -->
