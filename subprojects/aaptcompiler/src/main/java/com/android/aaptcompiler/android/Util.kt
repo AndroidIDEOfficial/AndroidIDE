@@ -16,6 +16,7 @@
 
 package com.android.aaptcompiler.android
 
+import androidx.collection.mutableIntIntMapOf
 import java.nio.ByteOrder
 
 private val littleEndian = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN

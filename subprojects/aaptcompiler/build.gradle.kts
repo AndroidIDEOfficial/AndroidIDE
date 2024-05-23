@@ -15,11 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.google.protobuf.gradle.id
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("com.google.protobuf")
 }
 
 android {
@@ -32,15 +34,32 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.27.0"
+    }
+
+    generateProtoTasks {
+        all().forEach {
+            it.builtins {
+                id("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     implementation(libs.common.kotlin)
     implementation(libs.androidx.collection)
-    implementation(projects.logger)
     implementation(libs.composite.jaxp)
+
+    implementation(projects.logger)
+    implementation(projects.shared)
 
     api(libs.aapt2.annotations)
     api(libs.aapt2.common)
-    api(libs.aapt2.proto)
     api(libs.google.protobuf)
     api(libs.composite.layoutlibApi)
     

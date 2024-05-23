@@ -23,6 +23,7 @@ plugins {
 
 dependencies {
     implementation(libs.androidx.annotation)
+    implementation(libs.androidx.collection)
     implementation(libs.google.guava)
     implementation(libs.google.gson)
     implementation(projects.logger)

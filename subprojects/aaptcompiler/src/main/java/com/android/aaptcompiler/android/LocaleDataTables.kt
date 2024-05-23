@@ -1,5 +1,7 @@
 package com.android.aaptcompiler.android
 
+import com.itsaky.androidide.utils.intByteMapOf
+
 internal val SCRIPT_CODES = arrayOf(
   /* 0  */ byteArrayOf('A'.code.toByte(), 'h'.code.toByte(), 'o'.code.toByte(), 'm'.code.toByte()),
   /* 1  */ byteArrayOf('A'.code.toByte(), 'r'.code.toByte(), 'a'.code.toByte(), 'b'.code.toByte()),
@@ -91,7 +93,7 @@ internal val SCRIPT_CODES = arrayOf(
   /* 87 */ byteArrayOf('~'.code.toByte(), '~'.code.toByte(), '~'.code.toByte(), 'A'.code.toByte()),
   /* 88 */ byteArrayOf('~'.code.toByte(), '~'.code.toByte(), '~'.code.toByte(), 'B'.code.toByte()))
 
-internal val LIKELY_SCRIPTS = mapOf<Int, Byte>(
+internal val LIKELY_SCRIPTS = intByteMapOf(
   0x61610000         to 40, // aa -> Latn
   0xa0000000.toInt() to 40, // aai -> Latn
   0xa8000000.toInt() to 40, // aak -> Latn

@@ -1,6 +1,6 @@
 package com.android.aaptcompiler.proto
 
-import androidx.collection.MutableIntObjectMap
+import androidx.collection.mutableIntObjectMapOf
 import com.android.aapt.ConfigurationOuterClass
 import com.android.aapt.Resources
 import com.android.aaptcompiler.AllowNew
@@ -45,7 +45,8 @@ import com.android.utils.ILogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 
 fun deserializeConfigFromPb(
-  config: ConfigurationOuterClass.Configuration, logger: ILogger?): ConfigDescription? {
+  config: ConfigurationOuterClass.Configuration, logger: ILogger?
+): ConfigDescription? {
 
   val mcc = config.getMcc().toShort()
   val mnc = config.getMnc().toShort()
@@ -62,8 +63,10 @@ fun deserializeConfigFromPb(
   val screenLayoutDir = when (config.getLayoutDirection()) {
     ConfigurationOuterClass.Configuration.LayoutDirection.LAYOUT_DIRECTION_LTR ->
       ResTableConfig.SCREEN_LAYOUT.DIR_LTR
+
     ConfigurationOuterClass.Configuration.LayoutDirection.LAYOUT_DIRECTION_RTL ->
       ResTableConfig.SCREEN_LAYOUT.DIR_RTL
+
     else -> ResTableConfig.SCREEN_LAYOUT.DIR_ANY
   }
 
@@ -74,36 +77,46 @@ fun deserializeConfigFromPb(
   val screenLayoutSize = when (config.getScreenLayoutSize()) {
     ConfigurationOuterClass.Configuration.ScreenLayoutSize.SCREEN_LAYOUT_SIZE_SMALL ->
       ResTableConfig.SCREEN_LAYOUT.SIZE_SMALL
+
     ConfigurationOuterClass.Configuration.ScreenLayoutSize.SCREEN_LAYOUT_SIZE_NORMAL ->
       ResTableConfig.SCREEN_LAYOUT.SIZE_NORMAL
+
     ConfigurationOuterClass.Configuration.ScreenLayoutSize.SCREEN_LAYOUT_SIZE_LARGE ->
       ResTableConfig.SCREEN_LAYOUT.SIZE_LARGE
+
     ConfigurationOuterClass.Configuration.ScreenLayoutSize.SCREEN_LAYOUT_SIZE_XLARGE ->
       ResTableConfig.SCREEN_LAYOUT.SIZE_XLARGE
+
     else -> ResTableConfig.SCREEN_LAYOUT.SIZE_ANY
   }
 
   val screenLayoutLong = when (config.getScreenLayoutLong()) {
     ConfigurationOuterClass.Configuration.ScreenLayoutLong.SCREEN_LAYOUT_LONG_LONG ->
       ResTableConfig.SCREEN_LAYOUT.SCREENLONG_YES
+
     ConfigurationOuterClass.Configuration.ScreenLayoutLong.SCREEN_LAYOUT_LONG_NOTLONG ->
       ResTableConfig.SCREEN_LAYOUT.SCREENLONG_NO
+
     else -> ResTableConfig.SCREEN_LAYOUT.SCREENLONG_ANY
   }
 
   val screenRound = when (config.getScreenRound()) {
     ConfigurationOuterClass.Configuration.ScreenRound.SCREEN_ROUND_ROUND ->
       ResTableConfig.SCREEN_LAYOUT2.SCREENROUND_YES
+
     ConfigurationOuterClass.Configuration.ScreenRound.SCREEN_ROUND_NOTROUND ->
       ResTableConfig.SCREEN_LAYOUT2.SCREENROUND_NO
+
     else -> ResTableConfig.SCREEN_LAYOUT2.SCREENROUND_ANY
   }
 
   val wideGamutColor = when (config.getWideColorGamut()) {
     ConfigurationOuterClass.Configuration.WideColorGamut.WIDE_COLOR_GAMUT_WIDECG ->
       ResTableConfig.COLOR_MODE.WIDE_GAMUT_YES
+
     ConfigurationOuterClass.Configuration.WideColorGamut.WIDE_COLOR_GAMUT_NOWIDECG ->
       ResTableConfig.COLOR_MODE.WIDE_GAMUT_NO
+
     else -> ResTableConfig.COLOR_MODE.WIDE_GAMUT_ANY
   }
 
@@ -116,36 +129,48 @@ fun deserializeConfigFromPb(
   val orientation = when (config.getOrientation()) {
     ConfigurationOuterClass.Configuration.Orientation.ORIENTATION_PORT ->
       ResTableConfig.ORIENTATION.PORT
+
     ConfigurationOuterClass.Configuration.Orientation.ORIENTATION_LAND ->
       ResTableConfig.ORIENTATION.LAND
+
     ConfigurationOuterClass.Configuration.Orientation.ORIENTATION_SQUARE ->
       ResTableConfig.ORIENTATION.SQUARE
+
     else -> ResTableConfig.ORIENTATION.ANY
   }
 
   val uiModeType = when (config.getUiModeType()) {
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_NORMAL ->
       ResTableConfig.UI_MODE.TYPE_NORMAL
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_DESK ->
       ResTableConfig.UI_MODE.TYPE_DESK
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_CAR ->
       ResTableConfig.UI_MODE.TYPE_CAR
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_TELEVISION ->
       ResTableConfig.UI_MODE.TYPE_TELEVISION
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_APPLIANCE ->
       ResTableConfig.UI_MODE.TYPE_APPLIANCE
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_WATCH ->
       ResTableConfig.UI_MODE.TYPE_WATCH
+
     ConfigurationOuterClass.Configuration.UiModeType.UI_MODE_TYPE_VRHEADSET ->
       ResTableConfig.UI_MODE.TYPE_VR_HEADSET
+
     else -> ResTableConfig.UI_MODE.TYPE_ANY
   }
 
   val uiModeNight = when (config.getUiModeNight()) {
     ConfigurationOuterClass.Configuration.UiModeNight.UI_MODE_NIGHT_NIGHT ->
       ResTableConfig.UI_MODE.NIGHT_YES
+
     ConfigurationOuterClass.Configuration.UiModeNight.UI_MODE_NIGHT_NOTNIGHT ->
       ResTableConfig.UI_MODE.NIGHT_NO
+
     else -> ResTableConfig.UI_MODE.NIGHT_ANY
   }
 
@@ -154,51 +179,79 @@ fun deserializeConfigFromPb(
   val touchscreen = when (config.getTouchscreen()) {
     ConfigurationOuterClass.Configuration.Touchscreen.TOUCHSCREEN_NOTOUCH ->
       ResTableConfig.TOUCHSCREEN.NOTOUCH
+
     ConfigurationOuterClass.Configuration.Touchscreen.TOUCHSCREEN_STYLUS ->
       ResTableConfig.TOUCHSCREEN.STYLUS
+
     ConfigurationOuterClass.Configuration.Touchscreen.TOUCHSCREEN_FINGER ->
       ResTableConfig.TOUCHSCREEN.FINGER
+
     else -> ResTableConfig.TOUCHSCREEN.ANY
   }
 
   val keysHidden = when (config.getKeysHidden()) {
     ConfigurationOuterClass.Configuration.KeysHidden.KEYS_HIDDEN_KEYSEXPOSED ->
       ResTableConfig.INPUT_FLAGS.KEYSHIDDEN_NO
+
     ConfigurationOuterClass.Configuration.KeysHidden.KEYS_HIDDEN_KEYSHIDDEN ->
       ResTableConfig.INPUT_FLAGS.KEYSHIDDEN_YES
+
     ConfigurationOuterClass.Configuration.KeysHidden.KEYS_HIDDEN_KEYSSOFT ->
       ResTableConfig.INPUT_FLAGS.KEYSHIDDEN_SOFT
+
     else -> ResTableConfig.INPUT_FLAGS.KEYSHIDDEN_ANY
   }
 
   val keyboard = when (config.getKeyboard()) {
     ConfigurationOuterClass.Configuration.Keyboard.KEYBOARD_NOKEYS ->
       ResTableConfig.KEYBOARD.NOKEYS
+
     ConfigurationOuterClass.Configuration.Keyboard.KEYBOARD_QWERTY ->
       ResTableConfig.KEYBOARD.QWERTY
+
     ConfigurationOuterClass.Configuration.Keyboard.KEYBOARD_TWELVEKEY ->
       ResTableConfig.KEYBOARD.TWELVEKEY
+
     else -> ResTableConfig.KEYBOARD.ANY
   }
 
   val navHidden = when (config.getNavHidden()) {
     ConfigurationOuterClass.Configuration.NavHidden.NAV_HIDDEN_NAVHIDDEN ->
       ResTableConfig.INPUT_FLAGS.NAVHIDDEN_YES
+
     ConfigurationOuterClass.Configuration.NavHidden.NAV_HIDDEN_NAVEXPOSED ->
       ResTableConfig.INPUT_FLAGS.NAVHIDDEN_NO
+
     else -> ResTableConfig.INPUT_FLAGS.NAVHIDDEN_ANY
   }
 
   val navigation = when (config.getNavigation()) {
     ConfigurationOuterClass.Configuration.Navigation.NAVIGATION_NONAV ->
       ResTableConfig.NAVIGATION.NONAV
+
     ConfigurationOuterClass.Configuration.Navigation.NAVIGATION_DPAD ->
       ResTableConfig.NAVIGATION.DPAD
+
     ConfigurationOuterClass.Configuration.Navigation.NAVIGATION_TRACKBALL ->
       ResTableConfig.NAVIGATION.TRACKBALL
+
     ConfigurationOuterClass.Configuration.Navigation.NAVIGATION_WHEEL ->
       ResTableConfig.NAVIGATION.WHEEL
+
     else -> ResTableConfig.NAVIGATION.ANY
+  }
+
+  val grammaticalGender = when (config.grammaticalGender) {
+    ConfigurationOuterClass.Configuration.GrammaticalGender.GRAM_GENDER_NEUTER ->
+      ResTableConfig.GRAMMATICAL_GENDER.NEUTER
+
+    ConfigurationOuterClass.Configuration.GrammaticalGender.GRAM_GENDER_FEMININE ->
+      ResTableConfig.GRAMMATICAL_GENDER.FEMININE
+
+    ConfigurationOuterClass.Configuration.GrammaticalGender.GRAM_GENDER_MASCULINE ->
+      ResTableConfig.GRAMMATICAL_GENDER.MASCULINE
+
+    else -> ResTableConfig.GRAMMATICAL_GENDER.ANY
   }
 
   val screenWidth = config.getScreenWidth()
@@ -214,6 +267,7 @@ fun deserializeConfigFromPb(
       density = density,
       keyboard = keyboard,
       navigation = navigation,
+      grammaticalInflection = grammaticalGender,
       inputFlags = (keysHidden.toInt() or navHidden.toInt()).toByte(),
       screenWidth = screenWidth,
       screenHeight = screenHeight,
@@ -226,7 +280,9 @@ fun deserializeConfigFromPb(
       screenWidthDp = screenWidthDp,
       screenHeightDp = screenHeightDp,
       screenLayout2 = screenRound,
-      colorMode = (wideGamutColor.toInt() or hdr.toInt()).toByte()))
+      colorMode = (wideGamutColor.toInt() or hdr.toInt()).toByte()
+    )
+  )
   localeValue.writeTo(configDescription)
 
   return configDescription
@@ -250,7 +306,7 @@ fun deserializeSourceFromPb(source: Resources.Source, sourcePool: ResStringPool)
   return Source(path, line)
 }
 
-fun deserializeVisibilityFromPb(level: Resources.Visibility.Level) = when(level) {
+fun deserializeVisibilityFromPb(level: Resources.Visibility.Level) = when (level) {
   Resources.Visibility.Level.PRIVATE -> ResourceVisibility.PRIVATE
   Resources.Visibility.Level.PUBLIC -> ResourceVisibility.PUBLIC
   else -> ResourceVisibility.UNDEFINED
@@ -260,7 +316,8 @@ fun deserializeOverlayableFromPb(
   item: Resources.OverlayableItem,
   overlayable: Overlayable,
   sourcePool: ResStringPool,
-  logger: ILogger?): OverlayableItem? {
+  logger: ILogger?
+): OverlayableItem? {
 
   var policies = 0
   for (policy in item.getPolicyList()) {
@@ -289,45 +346,60 @@ fun deserializeOverlayableFromPb(
 }
 
 fun deserializeBinPrimitiveFromPb(
-  primitive: Resources.Primitive, logger: ILogger?): BinaryPrimitive? {
+  primitive: Resources.Primitive, logger: ILogger?
+): BinaryPrimitive? {
 
-  val (type, deviceValue) = when(primitive.getOneofValueCase()) {
+  val (type, deviceValue) = when (primitive.getOneofValueCase()) {
     Resources.Primitive.OneofValueCase.NULL_VALUE ->
       Pair(ResValue.DataType.NULL, ResValue.NullFormat.UNDEFINED)
+
     Resources.Primitive.OneofValueCase.EMPTY_VALUE ->
       Pair(ResValue.DataType.NULL, ResValue.NullFormat.EMPTY)
+
     Resources.Primitive.OneofValueCase.FLOAT_VALUE -> {
       val float = primitive.getFloatValue()
       Pair(ResValue.DataType.FLOAT, float.toRawBits())
     }
+
     Resources.Primitive.OneofValueCase.DIMENSION_VALUE ->
       Pair(ResValue.DataType.DIMENSION, primitive.getDimensionValue())
+
     Resources.Primitive.OneofValueCase.FRACTION_VALUE ->
       Pair(ResValue.DataType.FRACTION, primitive.getFractionValue())
+
     Resources.Primitive.OneofValueCase.INT_DECIMAL_VALUE ->
       Pair(ResValue.DataType.INT_DEC, primitive.getIntDecimalValue())
+
     Resources.Primitive.OneofValueCase.INT_HEXADECIMAL_VALUE ->
       Pair(ResValue.DataType.INT_HEX, primitive.getIntHexadecimalValue())
+
     Resources.Primitive.OneofValueCase.BOOLEAN_VALUE -> {
       val boolValue = if (primitive.getBooleanValue()) 0xffffffff.toInt() else 0
       Pair(ResValue.DataType.INT_BOOLEAN, boolValue)
     }
+
     Resources.Primitive.OneofValueCase.COLOR_ARGB8_VALUE ->
       Pair(ResValue.DataType.INT_COLOR_ARGB8, primitive.getColorArgb8Value())
+
     Resources.Primitive.OneofValueCase.COLOR_RGB8_VALUE ->
       Pair(ResValue.DataType.INT_COLOR_RGB8, primitive.getColorRgb8Value())
+
     Resources.Primitive.OneofValueCase.COLOR_ARGB4_VALUE ->
       Pair(ResValue.DataType.INT_COLOR_ARGB4, primitive.getColorArgb4Value())
+
     Resources.Primitive.OneofValueCase.COLOR_RGB4_VALUE ->
       Pair(ResValue.DataType.INT_COLOR_RGB4, primitive.getColorRgb4Value())
+
     Resources.Primitive.OneofValueCase.DIMENSION_VALUE_DEPRECATED -> {
       val float = primitive.getDimensionValueDeprecated()
       Pair(ResValue.DataType.DIMENSION, float.toRawBits())
     }
+
     Resources.Primitive.OneofValueCase.FRACTION_VALUE_DEPRECATED -> {
       val float = primitive.getFractionValueDeprecated()
       Pair(ResValue.DataType.FRACTION, float.toRawBits())
     }
+
     else -> {
       val errorMsg = "Value case unrecognized for Primitive proto: %s"
       logger?.error(null, errorMsg, primitive.oneofValueCase)
@@ -344,7 +416,8 @@ fun deserializeRawFromPb(string: Resources.RawString, valuePool: StringPool) =
   RawString(valuePool.makeRef(string.getValue()))
 
 fun deserializeStyledStrFromPb(
-  string: Resources.StyledString, valuePool: StringPool): StyledString {
+  string: Resources.StyledString, valuePool: StringPool
+): StyledString {
 
   val spans = mutableListOf<Span>()
   for (span in string.getSpanList()) {
@@ -376,19 +449,23 @@ fun deserializeReferenceFromPb(ref: Resources.Reference, logger: ILogger?): Refe
 }
 
 fun deserializeFileRefFromPb(
-  file: Resources.FileReference, valuePool: StringPool, config: ConfigDescription): FileReference {
+  file: Resources.FileReference, valuePool: StringPool, config: ConfigDescription
+): FileReference {
 
   val fileRef = FileReference(
     valuePool.makeRef(
       file.getPath(),
-      StringPool.Context(StringPool.Context.Priority.HIGH.priority, config)))
+      StringPool.Context(StringPool.Context.Priority.HIGH.priority, config)
+    )
+  )
   fileRef.type = deserializeFileTypeFromPb(file.getType())
 
   return fileRef
 }
 
 fun deserializeAttrFromPb(
-  attr: Resources.Attribute, sourcePool: ResStringPool, logger: ILogger?): AttributeResource? {
+  attr: Resources.Attribute, sourcePool: ResStringPool, logger: ILogger?
+): AttributeResource? {
 
   val attrResource = AttributeResource(attr.getFormatFlags())
   attrResource.minInt = attr.getMinInt()
@@ -404,7 +481,8 @@ fun deserializeAttrFromPb(
     reference.comment = symbol.getComment()
 
     attrResource.symbols.add(
-      AttributeResource.Symbol(reference, symbol.getValue(), symbol.getType().toByte()))
+      AttributeResource.Symbol(reference, symbol.getValue(), symbol.getType().toByte())
+    )
   }
 
   return attrResource
@@ -415,7 +493,8 @@ fun deserializeStyleFromPb(
   valuePool: StringPool,
   config: ConfigDescription,
   sourcePool: ResStringPool,
-  logger: ILogger?): Style? {
+  logger: ILogger?
+): Style? {
 
   val styleResource = Style()
   if (style.hasParent()) {
@@ -449,12 +528,13 @@ fun deserializeStyleFromPb(
 }
 
 fun deserializeStyleableFromPb(
-  styleable: Resources.Styleable, sourcePool: ResStringPool, logger: ILogger?): Styleable? {
+  styleable: Resources.Styleable, sourcePool: ResStringPool, logger: ILogger?
+): Styleable? {
 
   val styleableResource = Styleable()
   for (entry in styleable.getEntryList()) {
     val reference = deserializeReferenceFromPb(entry.getAttr(), logger)
-    reference?: return null
+    reference ?: return null
     if (entry.hasSource()) {
       reference.source = deserializeSourceFromPb(entry.getSource(), sourcePool)
     }
@@ -469,7 +549,8 @@ fun deserializeArrayFromPb(
   valuePool: StringPool,
   config: ConfigDescription,
   sourcePool: ResStringPool,
-  logger: ILogger?): ArrayResource? {
+  logger: ILogger?
+): ArrayResource? {
 
   val arrayResource = ArrayResource()
   for (entry in array.getElementList()) {
@@ -499,7 +580,8 @@ fun deserializePluralFromPb(
   valuePool: StringPool,
   config: ConfigDescription,
   sourcePool: ResStringPool,
-  logger: ILogger?): Plural? {
+  logger: ILogger?
+): Plural? {
 
   val pluralResource = Plural()
   for (entry in plural.getEntryList()) {
@@ -526,32 +608,34 @@ fun deserializeMacroFromPb(
   valuePool: StringPool,
   config: ConfigDescription,
   sourcePool: ResStringPool,
-  logger: ILogger?): Macro {
+  logger: ILogger?
+): Macro {
 
   val macro = Macro()
   macro.rawValue = pbMacro.rawString
 
   if (pbMacro.hasStyleString()) {
-      val spans = ArrayList<Span>()
-      for (span in pbMacro.styleString.spansList) {
-        spans.add(Span(span.name, span.startIndex, span.endIndex))
-      }
-      macro.styleString = StyleString(pbMacro.styleString.str, spans)
+    val spans = ArrayList<Span>()
+    for (span in pbMacro.styleString.spansList) {
+      spans.add(Span(span.name, span.startIndex, span.endIndex))
+    }
+    macro.styleString = StyleString(pbMacro.styleString.str, spans)
   }
 
   val untranslatableList = ArrayList<UntranslatableSection>()
   for (untranslatable in pbMacro.untranslatableSectionsList) {
-      untranslatableList.add(
-              UntranslatableSection(
-                      untranslatable.startIndex.toInt(), untranslatable.endIndex.toInt())
+    untranslatableList.add(
+      UntranslatableSection(
+        untranslatable.startIndex.toInt(), untranslatable.endIndex.toInt()
       )
+    )
   }
   macro.untranslatables = untranslatableList
 
   val aliasNamespaces = ArrayList<Macro.Namespace>()
   for (namespace in pbMacro.namespaceStackList) {
     aliasNamespaces.add(
-            Macro.Namespace(namespace.prefix, namespace.packageName, namespace.isPrivate)
+      Macro.Namespace(namespace.prefix, namespace.packageName, namespace.isPrivate)
     )
   }
   macro.aliasNamespaces = aliasNamespaces
@@ -563,13 +647,15 @@ fun deserializeItemFromPb(
   item: Resources.Item,
   valuePool: StringPool,
   config: ConfigDescription,
-  logger: ILogger?): Item? = when (item.getValueCase()) {
+  logger: ILogger?
+): Item? = when (item.getValueCase()) {
 
   Resources.Item.ValueCase.REF -> deserializeReferenceFromPb(item.getRef(), logger)
   Resources.Item.ValueCase.STR -> deserializeStringFromPb(item.getStr(), valuePool)
   Resources.Item.ValueCase.RAW_STR -> deserializeRawFromPb(item.getRawStr(), valuePool)
   Resources.Item.ValueCase.STYLED_STR ->
     deserializeStyledStrFromPb(item.getStyledStr(), valuePool)
+
   Resources.Item.ValueCase.FILE -> deserializeFileRefFromPb(item.getFile(), valuePool, config)
   Resources.Item.ValueCase.ID -> Id()
   Resources.Item.ValueCase.PRIM -> deserializeBinPrimitiveFromPb(item.getPrim(), logger)
@@ -585,7 +671,8 @@ fun deserializeValueFromPb(
   valuePool: StringPool,
   config: ConfigDescription,
   sourcePool: ResStringPool,
-  logger: ILogger?): Value? {
+  logger: ILogger?
+): Value? {
 
   val valueResource = when {
     value.hasItem() -> deserializeItemFromPb(value.getItem(), valuePool, config, logger)
@@ -595,16 +682,22 @@ fun deserializeValueFromPb(
       when (compoundValue.getValueCase()) {
         Resources.CompoundValue.ValueCase.ATTR ->
           deserializeAttrFromPb(compoundValue.getAttr(), sourcePool, logger)
+
         Resources.CompoundValue.ValueCase.STYLE ->
           deserializeStyleFromPb(compoundValue.getStyle(), valuePool, config, sourcePool, logger)
+
         Resources.CompoundValue.ValueCase.STYLEABLE ->
           deserializeStyleableFromPb(compoundValue.getStyleable(), sourcePool, logger)
+
         Resources.CompoundValue.ValueCase.ARRAY ->
           deserializeArrayFromPb(compoundValue.getArray(), valuePool, config, sourcePool, logger)
+
         Resources.CompoundValue.ValueCase.PLURAL ->
           deserializePluralFromPb(compoundValue.getPlural(), valuePool, config, sourcePool, logger)
+
         Resources.CompoundValue.ValueCase.MACRO ->
           deserializeMacroFromPb(compoundValue.getMacro(), valuePool, config, sourcePool, logger)
+
         else -> {
           val errorMsg = "Unrecognized compoundValue value case %s"
           logger?.error(null, errorMsg, compoundValue.valueCase)
@@ -612,6 +705,7 @@ fun deserializeValueFromPb(
         }
       }
     }
+
     else -> {
       val errorMsg = "Unrecognized case for serialized value %s"
       logger?.error(null, errorMsg, value.valueCase)
@@ -634,12 +728,13 @@ fun deserializePackageFromPb(
   sourcePool: ResStringPool,
   overlayables: List<Overlayable>,
   logger: ILogger?,
-  table: ResourceTable): Boolean {
+  table: ResourceTable
+): Boolean {
 
   val packageId =
     if (original.hasPackageId()) original.getPackageId().getId().toByte() else 0.toByte()
 
-  val idIndex = MutableIntObjectMap<ResourceName>()
+  val idIndex = mutableIntObjectMapOf<ResourceName>()
 
   val resourcePackage =
     table.createPackageAllowingDuplicateNames(original.getPackageName(), packageId)
@@ -672,11 +767,12 @@ fun deserializePackageFromPb(
           // Propagate the visibility up to the type group.
           ResourceVisibility.PUBLIC -> resourceGroup.visibility = ResourceVisibility.PUBLIC
           // Propagate private, only if previously undefined.
-          ResourceVisibility.PRIVATE-> {
+          ResourceVisibility.PRIVATE -> {
             if (resourceGroup.visibility == ResourceVisibility.UNDEFINED) {
               resourceGroup.visibility = ResourceVisibility.PRIVATE
             }
           }
+
           else -> {}
         }
 
@@ -706,7 +802,7 @@ fun deserializePackageFromPb(
         val overlayableItem = entry.getOverlayableItem()
         if (overlayableItem.getOverlayableIdx() >= overlayables.size) {
           val errorMsg = "Illegal value for overlayable id '%s'. Because only '%s' overlayables" +
-                  "exist in proto."
+            "exist in proto."
           logger?.error(null, errorMsg, overlayableItem.overlayableIdx, overlayables.size)
           return false
         }
@@ -715,7 +811,8 @@ fun deserializePackageFromPb(
             overlayableItem,
             overlayables[overlayableItem.getOverlayableIdx()],
             sourcePool,
-            logger)
+            logger
+          )
         resourceOverlayable ?: return false
 
         resourceEntry.overlayable = resourceOverlayable
@@ -724,9 +821,11 @@ fun deserializePackageFromPb(
       val resourceId = resourceIdFromParts(
         original.getPackageId().getId().toByte(),
         group.getTypeId().getId().toByte(),
-        entry.getEntryId().getId().toShort())
+        entry.getEntryId().getId().toShort()
+      )
       if (resourceId.isValidId()) {
-        idIndex.put(resourceId, ResourceName(resourcePackage.name, resourceGroup.type, resourceEntry.name))
+        idIndex[resourceId] =
+          ResourceName(resourcePackage.name, resourceGroup.type, resourceEntry.name)
       }
 
       for (configValue in entry.getConfigValueList()) {
@@ -744,13 +843,15 @@ fun deserializePackageFromPb(
             errorMsg,
             ResourceName(resourcePackage.name, resourceGroup.type, resourceEntry.name),
             resourceConfig,
-            config.product)
+            config.product
+          )
           return false
         }
 
         resourceConfigValue.value =
           deserializeValueFromPb(
-            configValue.getValue(), table.stringPool, resourceConfig, sourcePool, logger)
+            configValue.getValue(), table.stringPool, resourceConfig, sourcePool, logger
+          )
 
         resourceConfigValue.value ?: return false
       }
@@ -780,11 +881,13 @@ fun deserializePackageFromPb(
 }
 
 fun deserializeTableFromPb(
-  table: Resources.ResourceTable, outTable: ResourceTable, logger: ILogger?): Boolean {
+  table: Resources.ResourceTable, outTable: ResourceTable, logger: ILogger?
+): Boolean {
 
   val sourcePool = ResStringPool.get(
     table.getSourcePool().getData().asReadOnlyByteBuffer(),
-    table.getSourcePool().getSerializedSize())
+    table.getSourcePool().getSerializedSize()
+  )
 
   // Deserialize the overlayable groups of a table
   val overlayables = mutableListOf<Overlayable>()
