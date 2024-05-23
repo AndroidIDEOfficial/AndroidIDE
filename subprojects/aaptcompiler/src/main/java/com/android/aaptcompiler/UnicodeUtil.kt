@@ -675,14 +675,15 @@ fun isJavaIdentifier(string: String): Boolean {
 
   val firstCodePoint = string.codePointAt(0)
   if (!isXidStart(firstCodePoint) &&
-    firstCodePoint != '_'.toInt() &&
-    firstCodePoint != '$'.toInt()) {
+    firstCodePoint != '_'.code &&
+    firstCodePoint != '$'.code
+  ) {
     return false
   }
 
   for (i in 1.until(string.codePointCount(0, string.length))) {
     val codePoint = string.codePointAt(i)
-    if (!isXidContinue(codePoint) && codePoint != '$'.toInt()) {
+    if (!isXidContinue(codePoint) && codePoint != '$'.code) {
       return false
     }
   }
@@ -700,13 +701,13 @@ fun isValidResourceEntryName(string: String): Boolean {
 
   // Resources can start with '_'.
   val firstCodePoint = string.codePointAt(0)
-  if (!isXidStart(firstCodePoint) && firstCodePoint != '_'.toInt()) {
+  if (!isXidStart(firstCodePoint) && firstCodePoint != '_'.code) {
     return false
   }
 
   for (i in 1.until(string.codePointCount(0, string.length))) {
     val codePoint = string.codePointAt(i)
-    if (!isXidContinue(codePoint) && codePoint != '.'.toInt() && codePoint != '-'.toInt()) {
+    if (!isXidContinue(codePoint) && codePoint != '.'.code && codePoint != '-'.code) {
       return false
     }
   }

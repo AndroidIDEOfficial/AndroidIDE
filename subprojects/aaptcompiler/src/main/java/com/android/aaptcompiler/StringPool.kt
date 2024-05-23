@@ -175,9 +175,7 @@ class StringPool {
     reAssignIndices()
   }
 
-  private fun flatten(out: BigBuffer, utf8: Boolean, logger: ILogger?): Boolean {
-    var error = false
-
+  private fun flatten(out: BigBuffer, utf8: Boolean, logger: ILogger?) {
     val header = ResStringPoolHeader(
       ResChunkHeader(
         ChunkType.STRING_POOL_TYPE.id.hostToDevice(),
@@ -208,18 +206,14 @@ class StringPool {
         stringIndexBlock
           .writeInt((out.size - beginStringsIndex).hostToDevice(), currentStringIndex)
         currentStringIndex += 4
-
-        val stringError = !encodeString(entry.value, utf8, out, logger)
-        error = stringError || error
+        encodeString(entry.value, utf8, out)
       }
 
       // Strings come next
       for (entry in strings) {
         stringIndexBlock.writeInt((out.size - beginStringsIndex).hostToDevice(), currentStringIndex)
         currentStringIndex += 4
-
-        val stringError = !encodeString(entry.value, utf8, out, logger)
-        error = stringError || error
+        encodeString(entry.value, utf8, out)
       }
 
       out.align4()
@@ -261,7 +255,6 @@ class StringPool {
     // now we can set the size of the output in the header
     header.header.size = (out.size - headerStart).hostToDevice()
     encodeHeader(header, headerBlock)
-    return !error
   }
 
   private fun encodeHeader(resHeader: ResStringPoolHeader, out: BigBuffer.BlockRef) {
@@ -283,21 +276,18 @@ class StringPool {
     return 12
   }
 
-  private fun encodeString(
-    str: String, utf8: Boolean, out: BigBuffer, logger: ILogger?): Boolean {
-
-    if (utf8) {
+  private fun encodeString(str: String, utf8: Boolean, out: BigBuffer) {
+      if (utf8) {
       val utf16Length = str.length
       val utf8Str = str.toByteArray()
       val utf8Length = utf8Str.size
 
       // Make sure the lengths to be encoded do not exceed the maximum length that can be encoded
       // using chars
-      if (utf8Length > UTF8_ENCODE_LENGTH_MAX || utf16Length > UTF16_ENCODE_LENGTH_MAX) {
-        val errorMsg = "String too large to encode using UTF-8. Writing the string instead as '%s'."
-        logger?.error(null, errorMsg, STRING_TOO_LARGE)
-        encodeString(STRING_TOO_LARGE, utf8, out, logger)
-        return false
+      if (utf8Length > UTF8_ENCODE_LENGTH_MAX ) {
+        error("String of size $utf8Length bytes is too large to encode using UTF-8 " +
+                "($UTF8_ENCODE_LENGTH_MAX bytes). " +
+                "Affected string begins with: '${str.take(STRING_PREFIX_LENGTH_FOR_ERRORS)}'...")
       }
 
       val blockSize = getLengthUtf8(utf8Length) + getLengthUtf8(utf16Length) + utf8Length + 1
@@ -319,20 +309,15 @@ class StringPool {
 
       // Now write null terminator
       stringBlock.writeByte(0x00, locationToWrite)
-
-      return true
     } else {
       val utf16Length = str.length
 
       // Make sure the length to be encoded does not exceed the maximum possible length that can be
       // encoded
       if (utf16Length > UTF16_ENCODE_LENGTH_MAX) {
-        val errorMsg =
-          "String too large to encode using UTF-16. Writing the string instead as '%s'."
-        logger?.error(null, errorMsg, STRING_TOO_LARGE)
-
-        encodeString(STRING_TOO_LARGE, utf8, out, logger)
-        return false
+        error("String of size ${str.toByteArray().size} is too large to encode using " +
+                "UTF-16 ($UTF16_ENCODE_LENGTH_MAX bytes). " +
+                "Affected string begins with: '${str.take(STRING_PREFIX_LENGTH_FOR_ERRORS)}'...")
       }
 
       val blockSize = getLengthUtf16(utf16Length) + utf16Length*2 + 2
@@ -351,7 +336,6 @@ class StringPool {
 
       // now write null terminator
       stringBlock.writeShort(0x0000.toShort(), locationToWrite)
-      return true
     }
   }
 
@@ -422,7 +406,9 @@ class StringPool {
     const val TWO_CHAR_UTF16_LENGTH_SIGNIFIER = 0x8000
     const val ONE_CHAR_UTF16_ENCODE_LENGTH_MAX = 0x7fff
 
-    private const val STRING_TOO_LARGE = "STRING_TOO_LARGE"
+    // The maximum number of chars that will be presented to the user if the size of the string
+    // exceeds the maximum permitted utf-8 or utf-16 byte size.
+    const val STRING_PREFIX_LENGTH_FOR_ERRORS = 42
 
     val ENTRY_ON_VALUE = compareBy<Entry> {it.value}
     val STYLE_ON_VALUE = compareBy<StyleEntry> {it.value}

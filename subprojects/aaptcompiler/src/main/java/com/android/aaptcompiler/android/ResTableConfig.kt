@@ -2,6 +2,7 @@ package com.android.aaptcompiler.android
 
 import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_COLOR_MODE
 import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_DENSITY
+import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_GRAMMATICAL_GENDER
 import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_KEYBOARD
 import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_KEYBOARD_HIDDEN
 import com.android.aaptcompiler.android.AConfiguration.ACONFIGURATION_LAYOUTDIR
@@ -52,6 +53,7 @@ open class ResTableConfig(
   var keyboard: Byte = 0,
   var navigation: Byte = 0,
   var inputFlags: Byte = 0,
+  var grammaticalInflection: Byte = 0,
   // padding: Byte,
   // screenSize block
   var screenWidth: Int = 0,
@@ -84,6 +86,7 @@ open class ResTableConfig(
     locale: Int,
     screenType: Int,
     input: Int,
+    grammaticalInflection: Int,
     screenSize: Int,
     version: Int,
     screenConfig: Int,
@@ -104,6 +107,7 @@ open class ResTableConfig(
     keyboardFromInput(input),
     navigationFromInput(input),
     inputFlagsFromInput(input),
+    grammaticalInflection.deviceToHost().toByte(),
     screenWidthFromScreenSize(screenSize),
     screenHeightFromScreenSize(screenSize),
     sdkVersionFromVersion(version),
@@ -132,6 +136,7 @@ open class ResTableConfig(
     other.keyboard,
     other.navigation,
     other.inputFlags,
+    other.grammaticalInflection,
     other.screenWidth,
     other.screenHeight,
     other.sdkVersion,
@@ -230,6 +235,17 @@ open class ResTableConfig(
     }
 
     appendDirLocale(result)
+
+    if (grammaticalInflection != GRAMMATICAL_GENDER.ANY) {
+      result.append(
+        when (grammaticalInflection) {
+          GRAMMATICAL_GENDER.NEUTER -> "neuter"
+          GRAMMATICAL_GENDER.FEMININE -> "feminine"
+          GRAMMATICAL_GENDER.MASCULINE -> "masculine"
+          else -> "grammaticalInflection=$grammaticalInflection"
+        })
+      result.append("-")
+    }
 
     val layoutDir = (screenLayout.toInt() and SCREEN_LAYOUT.DIR_MASK).toByte()
     if (layoutDir != SCREEN_LAYOUT.DIR_ANY) {
@@ -570,6 +586,9 @@ open class ResTableConfig(
     if (compareLocales(other) != 0) {
       result = result or CONFIG_LOCALE
     }
+    if (grammaticalInflection != other.grammaticalInflection) {
+      result = result or CONFIG_GRAMMATICAL_GENDER
+    }
     return result
   }
 
@@ -584,6 +603,11 @@ open class ResTableConfig(
     val localeDiff = compareLocales(other)
     if (localeDiff != 0) {
       return localeDiff
+    }
+
+    when {
+      grammaticalInflection > other.grammaticalInflection -> return 1
+      grammaticalInflection < other.grammaticalInflection -> return -1
     }
 
     val screenType = getScreenType().deviceToHost()
@@ -648,7 +672,7 @@ open class ResTableConfig(
 
     return 0
   }
-  
+
   fun compareLocales(other: ResTableConfig): Int {
     val locale = getLocale().deviceToHost()
     val oLocale = other.getLocale().deviceToHost()
@@ -659,7 +683,7 @@ open class ResTableConfig(
       locale > oLocale -> return 1
       oLocale > locale -> return -1
     }
-    
+
     // The language & region are equal, so compare the scripts, variants and numbering systems in
     // that order. Comparison of variants and numbering systems should happen very infrequently (if
     // at all.)
@@ -670,12 +694,12 @@ open class ResTableConfig(
     if (scriptDiff != 0) {
       return scriptDiff
     }
-    
+
     val variantDiff = compareArrays(localeVariant, other.localeVariant)
     if (variantDiff != 0) {
       return variantDiff
     }
-  
+
     return compareArrays(localeNumberSystem, other.localeNumberSystem)
   }
 
@@ -697,6 +721,10 @@ open class ResTableConfig(
     when {
       localeDiff < 0 -> return false
       localeDiff > 0 -> return true
+    }
+
+    if (grammaticalInflection.isTruthy() || other.grammaticalInflection.isTruthy()) {
+      if (grammaticalInflection != other.grammaticalInflection) return grammaticalInflection.isTruthy()
     }
 
     if (screenLayout.isTruthy() || other.screenLayout.isTruthy()) {
@@ -879,6 +907,10 @@ open class ResTableConfig(
 
     if (isLocaleBetterThan(other, requested)) {
       return true
+    }
+
+    if (grammaticalInflection != other.grammaticalInflection && requested.grammaticalInflection.isTruthy()) {
+      return grammaticalInflection.isTruthy()
     }
 
     if (screenLayout.isTruthy() || other.screenLayout.isTruthy()) {
@@ -1258,6 +1290,10 @@ open class ResTableConfig(
       }
     }
 
+    if (grammaticalInflection.isTruthy() && grammaticalInflection != settings.grammaticalInflection) {
+      return false
+    }
+
     if (getScreenConfig().isTruthy()) {
       val layoutDir = screenLayout.toInt() and SCREEN_LAYOUT.DIR_MASK
       val setLayoutDir = settings.screenLayout.toInt() and SCREEN_LAYOUT.DIR_MASK
@@ -1478,6 +1514,7 @@ open class ResTableConfig(
     const val CONFIG_LAYOUTDIR = ACONFIGURATION_LAYOUTDIR
     const val CONFIG_SCREEN_ROUND = ACONFIGURATION_SCREEN_ROUND
     const val CONFIG_COLOR_MODE = ACONFIGURATION_COLOR_MODE
+    const val CONFIG_GRAMMATICAL_GENDER = ACONFIGURATION_GRAMMATICAL_GENDER
 
     const val SCREEN_CONFIG_MIN_SIZE = 32
     const val SCREEN_DP_MIN_SIZE = 36
@@ -1552,6 +1589,7 @@ open class ResTableConfig(
       val locale = buffer.int
       val screenType = buffer.int
       val input = buffer.int
+      val grammaticalInflection = buffer.int
       val screenSize = buffer.int
       val version = buffer.int
 
@@ -1587,6 +1625,7 @@ open class ResTableConfig(
         locale,
         screenType,
         input,
+        grammaticalInflection,
         screenSize,
         version,
         screenConfig,
@@ -1660,12 +1699,14 @@ open class ResTableConfig(
     const val ANY = AConfiguration.ACONFIGURATION_ORIENTATION_ANY
     const val PORT = AConfiguration.ACONFIGURATION_ORIENTATION_PORT
     const val LAND = AConfiguration.ACONFIGURATION_ORIENTATION_LAND
+    @Suppress("DEPRECATION") // Legacy support
     const val SQUARE = AConfiguration.ACONFIGURATION_ORIENTATION_SQUARE
   }
 
   object TOUCHSCREEN {
     const val ANY = AConfiguration.ACONFIGURATION_TOUCHSCREEN_ANY
     const val NOTOUCH = AConfiguration.ACONFIGURATION_TOUCHSCREEN_NOTOUCH
+    @Suppress("DEPRECATION") // Legacy support
     const val STYLUS = AConfiguration.ACONFIGURATION_TOUCHSCREEN_STYLUS
     const val FINGER = AConfiguration.ACONFIGURATION_TOUCHSCREEN_FINGER
   }
@@ -1715,6 +1756,13 @@ open class ResTableConfig(
       (AConfiguration.ACONFIGURATION_NAVHIDDEN_NO.toInt() shl NAVHIDDEN_SHIFT).toByte()
     const val NAVHIDDEN_YES =
       (AConfiguration.ACONFIGURATION_NAVHIDDEN_YES.toInt() shl NAVHIDDEN_SHIFT).toByte()
+  }
+
+  object GRAMMATICAL_GENDER {
+    const val ANY = AConfiguration.ACONFIGURATION_GRAMMATICAL_GENDER_ANY
+    const val NEUTER = AConfiguration.ACONFIGURATION_GRAMMATICAL_GENDER_NEUTER
+    const val FEMININE = AConfiguration.ACONFIGURATION_GRAMMATICAL_GENDER_FEMININE
+    const val MASCULINE = AConfiguration.ACONFIGURATION_GRAMMATICAL_GENDER_MASCULINE
   }
 
   // Screensize values

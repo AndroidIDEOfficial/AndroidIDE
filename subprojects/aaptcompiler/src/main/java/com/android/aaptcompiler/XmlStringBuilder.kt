@@ -107,11 +107,11 @@ class XmlStringBuilder(private val preserveSpaces: Boolean = false) {
       str: String
   ): Boolean {
     when (codePoint) {
-      't'.toInt() -> textBuilder.append('\t')
-      'n'.toInt() -> textBuilder.append('\n')
-      '#'.toInt(), '@'.toInt(), '?'.toInt(), '"'.toInt(), '\''.toInt(), '\\'.toInt() ->
+      't'.code -> textBuilder.append('\t')
+      'n'.code -> textBuilder.append('\n')
+      '#'.code, '@'.code, '?'.code, '"'.code, '\''.code, '\\'.code ->
           textBuilder.appendCodePoint(codePoint)
-      'u'.toInt() -> {
+      'u'.code -> {
           if (!appendUnicodeEscapeSequence(codePoints, textBuilder)) {
               error = "Invalid unicode escape sequence in string\n\"$str\""
               return false
@@ -160,7 +160,7 @@ class XmlStringBuilder(private val preserveSpaces: Boolean = false) {
           lastChar = textBuilder.length
           lastCodepointWasBackslash = false
         }
-        codePoint == '\\'.toInt() -> {
+        codePoint == '\\'.code -> {
             if (codePoints.hasNext()) {
                 codePoint = codePoints.nextInt()
                 if (!handleEscape(codePoint, textBuilder, codePoints, str)) {
@@ -171,7 +171,7 @@ class XmlStringBuilder(private val preserveSpaces: Boolean = false) {
                 lastCodepointWasBackslash = true
             }
         }
-        codePoint == '\"'.toInt() && !preserveSpaces -> {
+        codePoint == '\"'.code && !preserveSpaces -> {
           // only toggle quote when we are not preserving spaces.
           inQuote = !inQuote
           if (firstQuote == -1) {
@@ -180,7 +180,7 @@ class XmlStringBuilder(private val preserveSpaces: Boolean = false) {
           lastQuote = textBuilder.length
           lastChar = textBuilder.length
         }
-        codePoint == '\''.toInt() && !preserveSpaces && !inQuote -> {
+        codePoint == '\''.code && !preserveSpaces && !inQuote -> {
           // this should be escaped when we are not preserving spaces
           error = "Invalid unicode escape sequence in string\n\"{str}\""
           return this

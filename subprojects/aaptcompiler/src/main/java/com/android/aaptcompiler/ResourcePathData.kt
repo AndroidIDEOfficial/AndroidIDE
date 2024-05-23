@@ -60,17 +60,17 @@ fun extractPathData(file: File, sourcePath: String = file.absolutePath) : Resour
     else file.name
   val source = Source(sourcePath)
   // TODO(b/142481190): think about obfuscation
-  val parentName = file.parentFile!!.name
+  val parentName = file.parentFile.name
   val type = parentName.substringBefore("-")
   val config = if (type != parentName) {
-    file.parentFile!!.name.substringAfter(type).substring(1)
+    file.parentFile.name.substringAfter(type).substring(1)
   } else {
     ""
   }
   val configDescription = parse(config)
 
   return ResourcePathData(
-    source, extension.lowercase(), resName, type, config, file, configDescription)
+    source, extension.toLowerCase(), resName, type, config, file, configDescription)
 }
 
 /**

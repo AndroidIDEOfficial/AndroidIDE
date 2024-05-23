@@ -63,6 +63,13 @@ fun parse(config: String): ConfigDescription {
         return configDescription
     }
 
+    if (parseGrammaticalInflection(parts[index], configDescription)) {
+      index++
+      if (index == parts.size) {
+        return applyVersionForCompatibility(configDescription)
+      }
+    }
+
     if(parseLayoutDirection(parts[index], configDescription)) {
         index++
         if (index == parts.size) {
@@ -221,6 +228,7 @@ private fun applyVersionForCompatibility(config: ConfigDescription): ConfigDescr
         config.layoutSize() != ResTableConfig.SCREEN_LAYOUT.SIZE_ANY ||
             config.layoutLong() != ResTableConfig.SCREEN_LAYOUT.SCREENLONG_ANY ||
             config.density != ResTableConfig.DENSITY.DEFAULT -> SDKConstants.SDK_DONUT
+        config.grammaticalInflection != ResTableConfig.GRAMMATICAL_GENDER.ANY -> SDKConstants.SDK_U
         else -> 0
     }
 

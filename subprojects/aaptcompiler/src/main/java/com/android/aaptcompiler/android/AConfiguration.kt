@@ -179,6 +179,26 @@ object AConfiguration {
    * resource qualifier.
    */
   const val ACONFIGURATION_NAVHIDDEN_YES : Byte = 0x0002
+  /** Grammatical gender: not specified.  */
+  const val ACONFIGURATION_GRAMMATICAL_GENDER_ANY : Byte = 0x00
+  /**
+   * Grammatical gender: const value corresponding to the
+   * [neuter](@dacRoot/guide/topics/resources/providing-resources.html#GrammaticalInflectionQualifier)
+   * resource qualifier.
+   */
+  const val ACONFIGURATION_GRAMMATICAL_GENDER_NEUTER : Byte = 0x01
+  /**
+   * Grammatical gender: const value corresponding to the
+   * [feminine](@dacRoot/guide/topics/resources/providing-resources.html#GrammaticalInflectionQualifier)
+   * resource qualifier.
+   */
+  const val ACONFIGURATION_GRAMMATICAL_GENDER_FEMININE : Byte = 0x02
+  /**
+   * Grammatical gender: const value corresponding to the
+   * [masculine](@dacRoot/guide/topics/resources/providing-resources.html#GrammaticalInflectionQualifier)
+   * resource qualifier.
+   */
+  const val ACONFIGURATION_GRAMMATICAL_GENDER_MASCULINE : Byte = 0x03
   /** Screen size: not specified.  */
   const val ACONFIGURATION_SCREENSIZE_ANY : Byte = 0x00
   /**
@@ -440,5 +460,11 @@ object AConfiguration {
    * 0 cannot be used, since it is used to represent an undefined MNC.
    */
   const val ACONFIGURATION_MNC_ZERO : Int = 0xffff
+  /**
+   * Bit mask for
+   * [grammatical gender](@dacRoot/guide/topics/resources/providing-resources.html#GrammaticalInflectionQualifier)
+   * configuration.
+   */
+  const val ACONFIGURATION_GRAMMATICAL_GENDER : Int = 0x20000
 }
 

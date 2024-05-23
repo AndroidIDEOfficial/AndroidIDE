@@ -7,4 +7,5 @@ internal object SDKConstants {
   const val SDK_LOLLIPOP = 21.toShort()
   const val SDK_MARSHMALLOW = 23.toShort()
   const val SDK_O = 26.toShort()
+  const val SDK_U = 34.toShort()
 }
