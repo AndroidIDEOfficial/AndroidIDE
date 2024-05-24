@@ -152,7 +152,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       dirs.addAll(mainSourceSet.sourceProvider.resDirectories!!)
     }
 
-    val dependencies = getCompileModuleProjects().filterIsInstance(AndroidModule::class.java)
+    val dependencies = getCompileModuleProjects().filterIsInstance<AndroidModule>()
 
     for (dependency in dependencies) {
       dirs.addAll(dependency.getResourceDirectories())

@@ -12,6 +12,7 @@ plugins {
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
+  id("realm-android")
   id("androidx.navigation.safeargs.kotlin")
   id("com.itsaky.androidide.desugaring")
 }
@@ -51,7 +52,11 @@ android {
   }
 }
 
-kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex") } }
+kapt {
+  arguments {
+    arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex")
+  }
+}
 
 desugaring {
   replacements {
@@ -142,6 +147,7 @@ dependencies {
   implementation(projects.gradlePluginConfig)
   implementation(projects.idestats)
   implementation(projects.subprojects.aaptcompiler)
+  implementation(projects.subprojects.indexing)
   implementation(projects.subprojects.javacServices)
   implementation(projects.subprojects.xmlUtils)
   implementation(projects.subprojects.projects)

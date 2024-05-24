@@ -22,7 +22,6 @@ import com.itsaky.androidide.lsp.api.LSPTest
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.junit.Before
 import org.junit.Ignore
