@@ -17,13 +17,17 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SuppressLint("SdCardPath")
 public final class Environment {
@@ -47,6 +51,7 @@ public final class Environment {
   public static File BIN_DIR;
   public static File LIB_DIR;
   public static File PROJECTS_DIR;
+  public static File REALM_DB_DIR;
 
   /**
    * Used by Java LSP until the project is initialized.
@@ -64,8 +69,8 @@ public final class Environment {
 
   public static void init() {
     ROOT = mkdirIfNotExits(new File(DEFAULT_ROOT));
-    PREFIX = mkdirIfNotExits(new File(ROOT, "usr"));
-    HOME = mkdirIfNotExits(new File(ROOT, "home"));
+    PREFIX = mkdirIfNotExits(new File(DEFAULT_PREFIX));
+    HOME = mkdirIfNotExits(new File(DEFAULT_HOME));
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
     TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
     BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
@@ -73,9 +78,10 @@ public final class Environment {
     PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
     ANDROID_JAR = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "android.jar"));
     TOOLING_API_JAR = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")),
-        "tooling-api-all.jar");
+      "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
     ANDROIDIDE_UI = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "ui"));
+    REALM_DB_DIR = mkdirIfNotExits(new File(ROOT, "realm-dbs"));
 
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
     GRADLE_USER_HOME = new File(HOME, ".gradle");

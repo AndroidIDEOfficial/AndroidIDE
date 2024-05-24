@@ -30,7 +30,6 @@ import androidx.work.NetworkType
 import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import ch.qos.logback.classic.Logger
 import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
@@ -44,8 +43,6 @@ import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
-import com.itsaky.androidide.logging.LogcatAppender
-import com.itsaky.androidide.logging.encoder.IDELogFormatEncoder
 import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.preferences.internal.StatPreferences
@@ -62,17 +59,18 @@ import com.itsaky.androidide.utils.flashError
 import com.termux.app.TermuxApplication
 import com.termux.shared.reflection.ReflectionUtils
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import io.realm.Realm
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import org.slf4j.LoggerFactory
 import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
 import kotlin.system.exitProcess
+
 
 class IDEApplication : TermuxApplication() {
 
@@ -97,7 +95,8 @@ class IDEApplication : TermuxApplication() {
 
     if (BuildConfig.DEBUG) {
       StrictMode.setVmPolicy(
-        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build())
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build()
+      )
       if (DevOpsPreferences.dumpLogs) {
         startLogcatReader()
       }
@@ -108,6 +107,8 @@ class IDEApplication : TermuxApplication() {
       .addIndex(LspJavaEventsIndex()).installDefaultEventBus(true)
 
     EventBus.getDefault().register(this)
+
+    Realm.init(this)
 
     AppCompatDelegate.setDefaultNightMode(GeneralPreferences.uiMode)
 
@@ -120,26 +121,6 @@ class IDEApplication : TermuxApplication() {
     ReflectionUtils.bypassHiddenAPIReflectionRestrictions()
     GlobalScope.launch {
       IDEColorSchemeProvider.init()
-    }
-  }
-
-  private fun handleCrash(thread: Thread, th: Throwable) {
-    writeException(th)
-
-    try {
-
-      val intent = Intent()
-      intent.action = CrashHandlerActivity.REPORT_ACTION
-      intent.putExtra(CrashHandlerActivity.TRACE_KEY, getFullStackTrace(th))
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      startActivity(intent)
-      if (uncaughtExceptionHandler != null) {
-        uncaughtExceptionHandler!!.uncaughtException(thread, th)
-      }
-
-      exitProcess(1)
-    } catch (error: Throwable) {
-      log.error("Unable to show crash handler activity", error)
     }
   }
 
@@ -168,14 +149,17 @@ class IDEApplication : TermuxApplication() {
 
     val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
     val request = PeriodicWorkRequestBuilder<StatUploadWorker>(Duration.ofHours(24)).setInputData(
-      AndroidIDEStats.statData.toInputData()).setConstraints(constraints)
+      AndroidIDEStats.statData.toInputData()
+    ).setConstraints(constraints)
       .addTag(StatUploadWorker.WORKER_WORK_NAME).build()
 
     val workManager = WorkManager.getInstance(this)
 
     log.info("reportStatsIfNecessary: Enqueuing StatUploadWorker...")
-    val operation = workManager.enqueueUniquePeriodicWork(StatUploadWorker.WORKER_WORK_NAME,
-      ExistingPeriodicWorkPolicy.UPDATE, request)
+    val operation = workManager.enqueueUniquePeriodicWork(
+      StatUploadWorker.WORKER_WORK_NAME,
+      ExistingPeriodicWorkPolicy.UPDATE, request
+    )
 
     operation.state.observeForever(object : Observer<Operation.State> {
       override fun onChanged(value: Operation.State) {
@@ -183,22 +167,6 @@ class IDEApplication : TermuxApplication() {
         log.debug("reportStatsIfNecessary: WorkManager enqueue result: {}", value)
       }
     })
-  }
-
-  private fun startLogcatReader() {
-    if (ideLogcatReader != null) {
-      // already started
-      return
-    }
-
-    log.info("Starting logcat reader...")
-    ideLogcatReader = IDELogcatReader().also { it.start() }
-  }
-
-  private fun stopLogcatReader() {
-    log.info("Stopping logcat reader...")
-    ideLogcatReader?.stop()
-    ideLogcatReader = null
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -230,6 +198,26 @@ class IDEApplication : TermuxApplication() {
     }
   }
 
+  private fun handleCrash(thread: Thread, th: Throwable) {
+    writeException(th)
+
+    try {
+
+      val intent = Intent()
+      intent.action = CrashHandlerActivity.REPORT_ACTION
+      intent.putExtra(CrashHandlerActivity.TRACE_KEY, getFullStackTrace(th))
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      startActivity(intent)
+      if (uncaughtExceptionHandler != null) {
+        uncaughtExceptionHandler!!.uncaughtException(thread, th)
+      }
+
+      exitProcess(1)
+    } catch (error: Throwable) {
+      log.error("Unable to show crash handler activity", error)
+    }
+  }
+
   private fun cancelStatUploadWorker() {
     log.info("Opted-out of stat collection. Cancelling StatUploadWorker if enqueued...")
     val operation = WorkManager.getInstance(this)
@@ -240,6 +228,22 @@ class IDEApplication : TermuxApplication() {
         log.info("StatUploadWorker: Cancellation result state: {}", value)
       }
     })
+  }
+
+  private fun startLogcatReader() {
+    if (ideLogcatReader != null) {
+      // already started
+      return
+    }
+
+    log.info("Starting logcat reader...")
+    ideLogcatReader = IDELogcatReader().also { it.start() }
+  }
+
+  private fun stopLogcatReader() {
+    log.info("Stopping logcat reader...")
+    ideLogcatReader?.stop()
+    ideLogcatReader = null
   }
 
   companion object {

@@ -18,25 +18,27 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+  id("com.android.library")
+  id("kotlin-android")
 }
 
 android {
-    namespace = "${BuildConfig.packageName}.lsp.testing"
+  namespace = "${BuildConfig.packageName}.lsp.testing"
 }
 
 dependencies {
-    api(libs.androidx.core.ktx)
-    api(libs.common.editor)
-    api(libs.common.kotlin)
+  api(libs.androidx.core.ktx)
+  api(libs.common.editor)
+  api(libs.common.kotlin)
 
-    api(projects.actions)
-    api(projects.common)
-    api(projects.eventbusAndroid)
-    api(projects.lsp.api)
+  api(libs.tests.mockito.kotlin)
 
-    api(projects.testing.common)
-    api(projects.testing.tooling)
-    api(projects.testing.unit)
+  api(projects.actions)
+  api(projects.common)
+  api(projects.eventbusAndroid)
+  api(projects.lsp.api)
+
+  api(projects.testing.common)
+  api(projects.testing.tooling)
+  api(projects.testing.unit)
 }

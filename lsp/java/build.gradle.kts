@@ -21,10 +21,17 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("kotlin-kapt")
+    id("realm-android")
 }
 
 android {
     namespace = "${BuildConfig.packageName}.lsp.java"
+
+    sourceSets {
+        getByName("androidTest") {
+            assets.srcDirs(rootProject.file("subprojects/framework-stubs/libs"))
+        }
+    }
 }
 
 kapt {
@@ -54,9 +61,11 @@ dependencies {
     implementation(projects.editorApi)
     implementation(projects.resources)
     implementation(projects.lsp.api)
+    implementation(projects.subprojects.indexing)
     implementation(projects.subprojects.javacServices)
 
     implementation(libs.composite.javac)
+    implementation(libs.composite.jdkJdeps)
     implementation(libs.composite.javapoet)
     implementation(libs.composite.googleJavaFormat)
 
@@ -64,4 +73,5 @@ dependencies {
     implementation(libs.common.kotlin)
 
     testImplementation(projects.testing.lsp)
+    androidTestImplementation(projects.testing.android)
 }
