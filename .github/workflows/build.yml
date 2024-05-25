@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "dev", "main", "release/**" ]
+    branches: [ "dev", "main", "indexing", "release/**" ]
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
@@ -179,7 +179,6 @@ jobs:
   run_connected_checks:
     name: Run connected checks
     runs-on: macos-latest
-    if: false
     strategy:
       matrix:
         api-level: [ 26, 32 ]
