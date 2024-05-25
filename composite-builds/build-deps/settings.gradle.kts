@@ -54,6 +54,7 @@ include(
   ":jdk-jdeps",
   ":jdt",
   ":layoutlib-api",
+  ":logback-core",
 )
 
 rootProject.name = "build-deps"

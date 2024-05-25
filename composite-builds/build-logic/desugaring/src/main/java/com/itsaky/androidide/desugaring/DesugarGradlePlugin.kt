@@ -44,7 +44,8 @@ class DesugarGradlePlugin : Plugin<Project> {
 
         variant.instrumentation.apply {
           transformClassesWith(
-            DesugarClassVisitorFactory::class.java, ALL) { params ->
+            DesugarClassVisitorFactory::class.java, ALL
+          ) { params ->
             params.setFrom(extension)
           }
 

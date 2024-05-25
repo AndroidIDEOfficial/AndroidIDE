@@ -27,7 +27,11 @@ dependencies {
     compileOnly(projects.subprojects.frameworkStubs)
 
     api(libs.logging.logback.core)
-    api(libs.logging.logback.classic)
+    api(libs.logging.logback.classic) {
+        // logback classic depends on upstream logback-core
+        // we exclude it and use our own from logback-android
+        exclude(group = "ch.qos.logback", module = "logback-core")
+    }
 
     implementation(projects.buildInfo)
 
