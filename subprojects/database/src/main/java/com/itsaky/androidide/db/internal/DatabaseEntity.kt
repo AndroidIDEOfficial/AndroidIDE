@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing
+package com.itsaky.androidide.db.internal
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -27,7 +27,7 @@ import io.realm.annotations.Required
  *
  * @author Akash Yadav
  */
-data class DatabaseEntity(
+open class DatabaseEntity(
   @Required
   @PrimaryKey
   @RealmField("path")
@@ -40,4 +40,27 @@ data class DatabaseEntity(
   @Required
   @RealmField("directory")
   var directory: String = "",
-) : RealmObject()
+) : RealmObject() {
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is DatabaseEntity) return false
+
+    if (path != other.path) return false
+    if (name != other.name) return false
+    if (directory != other.directory) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = path.hashCode()
+    result = 31 * result + name.hashCode()
+    result = 31 * result + directory.hashCode()
+    return result
+  }
+
+  override fun toString(): String {
+    return "DatabaseEntity(path='$path', name='$name', directory='$directory')"
+  }
+}

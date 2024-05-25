@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.indexing
 
-import com.itsaky.androidide.indexing.IRealmProvider.Companion.PATH_SEPARATOR
+import com.itsaky.androidide.db.IRealmProvider
+import com.itsaky.androidide.db.IRealmProvider.Companion.PATH_SEPARATOR
 import com.itsaky.androidide.indexing.internal.DefaultIndex
 import io.realm.RealmConfiguration
 

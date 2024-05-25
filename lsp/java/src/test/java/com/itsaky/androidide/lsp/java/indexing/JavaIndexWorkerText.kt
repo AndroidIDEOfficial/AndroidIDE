@@ -22,9 +22,11 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.indexing.models.AnnotationElement
 import com.itsaky.androidide.lsp.java.indexing.models.IAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.models.IJavaType
+import com.itsaky.androidide.lsp.java.indexing.models.JavaAnnotation
 import com.itsaky.androidide.lsp.java.indexing.models.JavaClass
 import com.itsaky.androidide.lsp.java.indexing.models.JavaEnum
 import com.itsaky.androidide.lsp.java.indexing.models.JavaField
+import com.itsaky.androidide.lsp.java.indexing.models.JavaInterface
 import com.itsaky.androidide.lsp.java.indexing.models.JavaMethod
 import com.itsaky.androidide.lsp.java.indexing.models.JavaType
 import com.itsaky.androidide.lsp.java.indexing.models.PrimitiveAnnotationElementValue
@@ -40,11 +42,11 @@ import java.lang.reflect.Modifier
  * @author Akash Yadav
  */
 @RunWith(RobolectricTestRunner::class)
-class JavaIndexWorkerTest {
+class JavaIndexModelBuilderTest {
 
   @Rule
   @JvmField
-  val indexRule = AndroidJarIndexingRule()
+  val indexRule = AndroidJarModelingRule()
 
   private val types: List<IJavaType<*, *>>
     get() = indexRule.types
@@ -405,7 +407,7 @@ class JavaIndexWorkerTest {
   }
 
   @Test
-  fun `test annotation methods with default integer value`() {
+  fun `test annotation methods with default values`() {
     types.firstOrNull { it.fqn == "java/lang/Deprecated" }.also { annotation ->
       assertThat(annotation?.methods).isNotEmpty()
 
@@ -470,6 +472,54 @@ class JavaIndexWorkerTest {
 
       val defValue = value.defaultValue
       assertThat(defValue).isNull()
+    }
+  }
+
+  @Test
+  fun `test class type classification`() {
+    types.firstOrNull { it.fqn == "android/view/View" }.also {
+      assertThat(it).isNotNull()
+      assertThat(it?.isClass).isTrue()
+      assertThat(it?.isInterface).isFalse()
+      assertThat(it?.isAnnotation).isFalse()
+      assertThat(it?.isEnum).isFalse()
+      assertThat(it).isInstanceOf(JavaClass::class.java)
+    }
+  }
+
+  @Test
+  fun `test interface type classification`() {
+    types.firstOrNull { it.fqn == "android/view/View\$OnClickListener" }.also {
+      assertThat(it).isNotNull()
+      assertThat(it?.isClass).isFalse()
+      assertThat(it?.isInterface).isTrue()
+      assertThat(it?.isAnnotation).isFalse()
+      assertThat(it?.isEnum).isFalse()
+      assertThat(it).isInstanceOf(JavaInterface::class.java)
+    }
+  }
+
+  @Test
+  fun `test annotation type classification`() {
+    types.firstOrNull { it.fqn == "java/lang/Deprecated" }.also {
+      assertThat(it).isNotNull()
+      assertThat(it?.isClass).isFalse()
+      assertThat(it?.isInterface).isTrue()
+      assertThat(it?.isAnnotation).isTrue()
+      assertThat(it?.isEnum).isFalse()
+      assertThat(it).isInstanceOf(JavaAnnotation::class.java)
+    }
+  }
+
+  @Test
+  fun `test enum type classification`() {
+    types.firstOrNull { it.fqn == "android/icu/text/DisplayContext" }.also {
+      assertThat(it).isNotNull()
+      assertThat(it?.isClass).isFalse()
+      assertThat(it?.isInterface).isFalse()
+      assertThat(it?.isAnnotation).isFalse()
+      assertThat(it?.isEnum).isTrue()
+      assertThat(it).isInstanceOf(JavaEnum::class.java)
     }
   }
 }

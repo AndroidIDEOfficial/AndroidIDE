@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *  along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 import com.itsaky.androidide.build.config.BuildConfig
@@ -25,15 +25,14 @@ plugins {
 }
 
 android {
-  namespace = "${BuildConfig.packageName}.indexing"
+  namespace = "${BuildConfig.packageName}.database"
 }
 
 dependencies {
   kapt(libs.google.auto.service)
   implementation(libs.google.auto.service.annotations)
 
-  api(projects.logger)
-  api(projects.common)
-  api(projects.shared)
-  api(projects.subprojects.database)
+  implementation(projects.logger)
+  implementation(projects.common)
+  implementation(projects.shared)
 }

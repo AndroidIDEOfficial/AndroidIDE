@@ -18,60 +18,61 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id("realm-android")
+  id("com.android.library")
+  id("kotlin-android")
+  id("kotlin-kapt")
+  id("realm-android")
 }
 
 android {
-    namespace = "${BuildConfig.packageName}.lsp.java"
+  namespace = "${BuildConfig.packageName}.lsp.java"
 
-    sourceSets {
-        getByName("androidTest") {
-            assets.srcDirs(rootProject.file("subprojects/framework-stubs/libs"))
-        }
+  sourceSets {
+    getByName("androidTest") {
+      assets.srcDirs(rootProject.file("subprojects/framework-stubs/libs"))
     }
+  }
 }
 
 kapt {
-    arguments {
-        arg ("eventBusIndex", "${BuildConfig.packageName}.events.LspJavaEventsIndex")
-    }
+  arguments {
+    arg("eventBusIndex", "${BuildConfig.packageName}.events.LspJavaEventsIndex")
+  }
 }
 
 dependencies {
-    
-    kapt(projects.annotationProcessors)
-    
-    implementation(libs.androidide.ts)
-    implementation(libs.androidide.ts.java)
-    implementation(libs.common.editor)
-    implementation(libs.common.javaparser)
-    implementation(libs.common.utilcode)
-    implementation(libs.androidx.annotation)
-    implementation(libs.google.guava)
-    implementation(libs.google.gson)
-    
-    compileOnly(libs.androidx.appcompat)
-    compileOnly(libs.google.material)
-    compileOnly(projects.actions)
-    compileOnly(projects.common)
-    
-    implementation(projects.editorApi)
-    implementation(projects.resources)
-    implementation(projects.lsp.api)
-    implementation(projects.subprojects.indexing)
-    implementation(projects.subprojects.javacServices)
+  kapt(projects.annotationProcessors)
 
-    implementation(libs.composite.javac)
-    implementation(libs.composite.jdkJdeps)
-    implementation(libs.composite.javapoet)
-    implementation(libs.composite.googleJavaFormat)
+  implementation(libs.androidide.ts)
+  implementation(libs.androidide.ts.java)
+  implementation(libs.common.editor)
+  implementation(libs.common.javaparser)
+  implementation(libs.common.utilcode)
+  implementation(libs.androidx.annotation)
+  implementation(libs.google.guava)
+  implementation(libs.google.gson)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.common.kotlin)
+  compileOnly(libs.androidx.appcompat)
+  compileOnly(libs.google.material)
+  compileOnly(projects.actions)
+  compileOnly(projects.common)
 
-    testImplementation(projects.testing.lsp)
-    androidTestImplementation(projects.testing.android)
+  implementation(projects.editorApi)
+  implementation(projects.resources)
+  implementation(projects.lsp.api)
+  implementation(projects.subprojects.indexing)
+  implementation(projects.subprojects.javacServices)
+
+  implementation(libs.composite.javac)
+  implementation(libs.composite.jdkJdeps)
+  implementation(libs.composite.javapoet)
+  implementation(libs.composite.googleJavaFormat)
+
+  implementation(libs.androidx.core.ktx)
+  implementation(libs.common.kotlin)
+
+  testImplementation(projects.testing.lsp)
+  androidTestImplementation(projects.testing.android)
+  androidTestImplementation(projects.common)
+  androidTestImplementation(projects.shared)
 }

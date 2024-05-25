@@ -38,11 +38,6 @@ open class AnnotationElement : IJavaSymbol {
 
   @Index
   @Required
-  @RealmField("methodId")
-  var methodId: String? = null
-
-  @Index
-  @Required
   @RealmField("name")
   var name: String? = null
 

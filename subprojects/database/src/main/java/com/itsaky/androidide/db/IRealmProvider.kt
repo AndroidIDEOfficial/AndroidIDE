@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing
+package com.itsaky.androidide.db
 
 import com.itsaky.androidide.utils.ServiceLoader
 import io.realm.Realm

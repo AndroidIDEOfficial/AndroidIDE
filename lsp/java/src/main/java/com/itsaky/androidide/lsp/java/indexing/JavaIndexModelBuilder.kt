@@ -60,12 +60,16 @@ import java.io.File
 import java.util.zip.ZipFile
 
 /**
+ * [JavaIndexModelBuilder] builds models for Java classes in a JAR file.
+ *
  * @author Akash Yadav
  */
-class JavaIndexWorker(
+class JavaIndexModelBuilder(
   private val jar: File
 ) {
 
+  // for testing purposes
+  // prefer using consumeTypes(Function)
   fun buildTypes(): List<IJavaType<*, *>> {
     val types = mutableListOf<IJavaType<*, *>>()
     consumeTypes { types.add(it) }
@@ -278,7 +282,8 @@ class JavaIndexWorker(
     if (value == null) {
       value = when (char) {
         's' -> PrimitiveAnnotationElementValue.newInstance(
-          kind = IAnnotationElementValue.KIND_STRING, value = toPrimitiveConstant(
+          kind = IAnnotationElementValue.KIND_STRING,
+          value = toPrimitiveConstant(
             classFile.constant_pool,
             JavaType.KIND_REF,
             char,

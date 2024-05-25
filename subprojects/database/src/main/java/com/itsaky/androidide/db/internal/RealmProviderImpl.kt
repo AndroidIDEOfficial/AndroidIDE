@@ -15,9 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing
+package com.itsaky.androidide.db.internal
 
 import com.google.auto.service.AutoService
+import com.itsaky.androidide.db.IRealmProvider
 import com.itsaky.androidide.utils.Environment
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory
  */
 @AutoService(IRealmProvider::class)
 @Suppress("unused")
-class RealmProviderImpl : IRealmProvider {
+internal class RealmProviderImpl : IRealmProvider {
 
   companion object {
     private val log = LoggerFactory.getLogger(RealmProviderImpl::class.java)
@@ -38,10 +39,12 @@ class RealmProviderImpl : IRealmProvider {
     // must be a relative path, with no special characters except '_' '-' and '/' (path sep)
     private val dbNameRegex = Regex("^[a-zA-Z0-9_\\-/]+$")
     private const val MASTER_DB_NAME = "master"
-    private const val MASTER_DB_PATH = "/${MASTER_DB_NAME}"
+    private const val MASTER_DB_PATH = "/$MASTER_DB_NAME"
   }
 
-  private val masterDb = createDb(MASTER_DB_PATH, null)
+  private val masterDb: Realm by lazy {
+    createDb(MASTER_DB_PATH, null)
+  }
 
   override fun get(path: String, config: (RealmConfiguration.Builder.() -> Unit)?): Realm {
     require(path != MASTER_DB_PATH) {
@@ -73,24 +76,30 @@ class RealmProviderImpl : IRealmProvider {
 
     log.info("Creating DB at $dbDir/$dbName")
 
-    masterDb.executeTransactionAsync { realm ->
-      realm.insertOrUpdate(DatabaseEntity(name = name, path = path, directory = dbDir.absolutePath))
+    if (parentPath.isEmpty() && name != MASTER_DB_NAME) {
+      masterDb.executeTransactionAsync { realm ->
+        realm.insertOrUpdate(DatabaseEntity(name = name, path = path, directory = dbDir.absolutePath))
+      }
     }
 
     return Realm.getInstance(config)
   }
 
   private fun validateDbPath(path: String): Pair<String, String> {
-    require(path.matches(dbNameRegex)) {
-      "Invalid DB path: $path"
-    }
-
     val idx = path.indexOfLast { it == IRealmProvider.PATH_SEPARATOR }
-    require(idx > 0) {
+    require(
+      path.matches(dbNameRegex)
+        && path[0] == IRealmProvider.PATH_SEPARATOR
+        && idx >= 0
+        && path.indexOf("//") == -1
+    ) {
       "Invalid DB path: $path"
     }
 
-    val parentPath = path.substring(0, idx)
+    val parentPath = if (idx > 1) {
+      path.substring(1, idx)
+    } else ""
+
     val name = path.substring(idx + 1)
 
     if (name == MASTER_DB_NAME) {
