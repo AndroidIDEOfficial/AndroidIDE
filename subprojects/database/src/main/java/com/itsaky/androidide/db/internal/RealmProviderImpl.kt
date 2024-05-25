@@ -43,7 +43,9 @@ internal class RealmProviderImpl : IRealmProvider {
   }
 
   private val masterDb: Realm by lazy {
-    createDb(MASTER_DB_PATH, null)
+    createDb(MASTER_DB_PATH) {
+      modules(InternalDBRealmModule())
+    }
   }
 
   override fun get(path: String, config: (RealmConfiguration.Builder.() -> Unit)?): Realm {
