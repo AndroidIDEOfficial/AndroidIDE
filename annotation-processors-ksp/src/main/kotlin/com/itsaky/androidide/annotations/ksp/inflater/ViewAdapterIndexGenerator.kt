@@ -27,6 +27,7 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.ksp.getKSAnnotationsByType
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.CodeBlock

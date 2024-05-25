@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.annotations.ksp.inflater
 
+import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
@@ -27,6 +28,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
  *
  * @author Akash Yadav
  */
+@AutoService(SymbolProcessorProvider::class)
 class ViewAdapterSymbolProcessorProvider : SymbolProcessorProvider {
 
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
