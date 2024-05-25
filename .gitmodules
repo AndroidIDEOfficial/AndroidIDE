@@ -1,0 +1,3 @@
+[submodule "composite-builds/external/logback-android"]
+	path = composite-builds/external/logback-android
+	url = https://github.com/AndroidIDEOfficial/logback-android

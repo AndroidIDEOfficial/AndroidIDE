@@ -121,7 +121,9 @@ aapt2-annotations = { module = "com.android.tools:annotations", version = "31.2.
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.1.0" }
 aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.3.0-10880808" }
 
-logging-logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+# use logback-core from logback-android instead
+#logging-logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+logging-logback-core = { module = "com.itsaky.androidide.build:logback-core" }
 logging-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 # XML
