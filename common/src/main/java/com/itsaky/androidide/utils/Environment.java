@@ -17,6 +17,7 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -33,12 +34,6 @@ import java.util.UUID;
 public final class Environment {
 
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
-  public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
-  public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
-  private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
-  public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
-  public static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
-  private static final String ANDROIDIDE_PROJECT_CACHE_DIR = ".androidide";
   private static final Logger LOG = LoggerFactory.getLogger(Environment.class);
   public static File ROOT;
   public static File PREFIX;
@@ -67,10 +62,10 @@ public final class Environment {
   public static File BASH_SHELL;
   public static File LOGIN_SHELL;
 
-  public static void init() {
-    ROOT = mkdirIfNotExits(new File(DEFAULT_ROOT));
-    PREFIX = mkdirIfNotExits(new File(DEFAULT_PREFIX));
-    HOME = mkdirIfNotExits(new File(DEFAULT_HOME));
+  public static void init(Context context) {
+    ROOT = context.getFilesDir();
+    PREFIX = mkdirIfNotExits(new File(ROOT, "usr"));
+    HOME = mkdirIfNotExits(new File(ROOT, "home"));
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
     TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
     BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
@@ -86,8 +81,8 @@ public final class Environment {
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
 
-    ANDROID_HOME = new File(DEFAULT_ANDROID_HOME);
-    JAVA_HOME = new File(DEFAULT_JAVA_HOME);
+    ANDROID_HOME = new File(HOME, "android-sdk");
+    JAVA_HOME = new File(PREFIX, "opt/openjdk");
 
     JAVA = new File(JAVA_HOME, "bin/java");
     BASH_SHELL = new File(BIN_DIR, "bash");
@@ -109,7 +104,7 @@ public final class Environment {
 
   public static void setExecutable(@NonNull final File file) {
     if (!file.setExecutable(true)) {
-      LOG.error("Unable to set executable permissions to file", file);
+      LOG.error("Unable to set executable permissions to file: {}", file);
     }
   }
 
@@ -136,7 +131,7 @@ public final class Environment {
   }
 
   public static File getProjectCacheDir(File projectDir) {
-    return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
+    return new File(projectDir, ".androidide");
   }
 
   @NonNull

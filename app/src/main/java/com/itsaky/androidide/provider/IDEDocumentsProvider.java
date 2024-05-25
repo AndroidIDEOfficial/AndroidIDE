@@ -57,7 +57,6 @@ public class IDEDocumentsProvider extends DocumentsProvider {
 
   private static final String ALL_MIME_TYPES = "*/*";
   private static final Logger LOG = LoggerFactory.getLogger(IDEDocumentsProvider.class);
-  private static final File BASE_DIR = getBaseDir();
   // The default columns to return information about a root if no specific
   // columns are requested in a query.
   private static final String[] DEFAULT_ROOT_PROJECTION =
@@ -84,12 +83,12 @@ public class IDEDocumentsProvider extends DocumentsProvider {
       };
 
   @NonNull
-  private static File getBaseDir() {
-    if (Environment.HOME != null) {
-      return Environment.HOME;
+  private File getBaseDir() {
+    if (Environment.HOME == null) {
+      Environment.init(getContext());
     }
 
-    return new File(Environment.DEFAULT_HOME);
+    return Environment.HOME;
   }
 
   @Override
@@ -142,9 +141,9 @@ public class IDEDocumentsProvider extends DocumentsProvider {
 
     final MatrixCursor.RowBuilder row = result.newRow();
     LOG.debug("queryRoots() before all add");
-    row.add(Root.COLUMN_ROOT_ID, getDocIdForFile(BASE_DIR));
+    row.add(Root.COLUMN_ROOT_ID, getDocIdForFile(getBaseDir()));
     LOG.debug("queryRoots() before all add, 1");
-    row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(BASE_DIR));
+    row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(getBaseDir()));
     LOG.debug("queryRoots() before all add, 2");
     row.add(Root.COLUMN_SUMMARY, null);
     LOG.debug("queryRoots() before all add, 3");
@@ -156,7 +155,7 @@ public class IDEDocumentsProvider extends DocumentsProvider {
     LOG.debug("queryRoots() before all add, 5");
     row.add(Root.COLUMN_MIME_TYPES, ALL_MIME_TYPES);
     LOG.debug("queryRoots() before all add, 6");
-    row.add(Root.COLUMN_AVAILABLE_BYTES, BASE_DIR.getFreeSpace());
+    row.add(Root.COLUMN_AVAILABLE_BYTES, getBaseDir().getFreeSpace());
     LOG.debug("queryRoots() before all add, 7");
     row.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
     LOG.debug("queryRoots() before all add");
