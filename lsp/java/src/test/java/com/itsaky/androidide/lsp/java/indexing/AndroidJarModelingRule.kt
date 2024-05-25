@@ -28,7 +28,7 @@ import java.io.File
 /**
  * @author Akash Yadav
  */
-class AndroidJarIndexingRule : TestRule {
+class AndroidJarModelingRule : TestRule {
 
   private val androidJar: File by lazy {
     FileProvider.projectRoot()
@@ -39,9 +39,9 @@ class AndroidJarIndexingRule : TestRule {
       .toFile()
   }
 
-  private val androidJarIndexer: JavaIndexWorker by lazy {
+  private val androidJarIndexer: JavaIndexModelBuilder by lazy {
     assertThat(androidJar.exists()).isTrue()
-    JavaIndexWorker(androidJar)
+    JavaIndexModelBuilder(androidJar)
   }
 
   val types: List<IJavaType<*, *>> by lazy {

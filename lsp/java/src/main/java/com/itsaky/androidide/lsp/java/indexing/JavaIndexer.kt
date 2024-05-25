@@ -45,7 +45,7 @@ class JavaIndexer(
   override fun index(index: IIndex<IJavaIndexable>, params: Params): Collection<Deferred<Unit>> {
     return jarPaths.map { jar ->
       coroutineScope.async {
-        val worker = JavaIndexWorker(jar)
+        val worker = JavaIndexModelBuilder(jar)
 //        worker.index(index)
       }
     }

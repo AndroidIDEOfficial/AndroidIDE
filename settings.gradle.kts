@@ -141,6 +141,7 @@ include(
   ":subprojects:builder-model-impl",
   ":subprojects:flashbar",
   ":subprojects:framework-stubs",
+  ":subprojects:database",
   ":subprojects:indexing",
   ":subprojects:javac-services",
   ":subprojects:projects",

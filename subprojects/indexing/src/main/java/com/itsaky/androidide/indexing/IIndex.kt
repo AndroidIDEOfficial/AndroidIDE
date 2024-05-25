@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.indexing
 
+import com.itsaky.androidide.db.IRealmProvider
 import com.itsaky.androidide.indexing.internal.DefaultIndex
 
 /**

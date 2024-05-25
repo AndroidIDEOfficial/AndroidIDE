@@ -18,16 +18,10 @@
 package com.itsaky.androidide.lsp.java.indexing
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.truth.Truth.assertThat
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import com.blankj.utilcode.util.ConvertUtils
 import io.realm.RealmModel
-import io.realm.log.LogLevel
-import io.realm.log.RealmLog
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 /**
  * @author Akash Yadav
@@ -36,50 +30,26 @@ import java.io.File
 class JavaIndexerTest {
 
   @Test
-  fun testSimpleRealmInit() {
-    val context = InstrumentationRegistry.getInstrumentation().context
-    Realm.init(context.applicationContext)
+  fun testSimpleAndroidJarIndexingDurationCheck() {
+    val helper = IndexingHelper("android-jar-classes.realm")
+    val worker = JavaIndexModelBuilder(helper.androidJar)
+    val batches = mutableMapOf<Class<*>, MutableList<RealmModel>>()
 
-    val file = File.createTempFile("ajar", null, context.cacheDir)
-    context.assets.open("android.jar").use { asset ->
-      assertThat(asset).isNotNull()
-      file.outputStream().buffered().use { out ->
-        asset.copyTo(out)
-        out.flush()
-      }
-    }
+    val totalDuration = 0L
+    var dbWriteDuration = 0L
 
-    val dbDir = context.cacheDir.resolve("realm-db")
-    if (dbDir.exists()) {
-      if (dbDir.isDirectory) {
-        dbDir.deleteRecursively()
-      } else {
-        dbDir.delete()
-      }
-    }
-
-    RealmLog.setLevel(LogLevel.ALL)
-    val realm = Realm.getInstance(
-      RealmConfiguration.Builder()
-        .directory(dbDir)
-        .name("android-jar-classes.realm")
-        .deleteRealmIfMigrationNeeded()
-        .build()
-    )
-
-    try {
-      val start = System.currentTimeMillis()
-      val worker = JavaIndexWorker(file)
-      val batches = mutableMapOf<Class<*>, MutableList<RealmModel>>()
-
+    helper.doWithRealm {
+      val totalStart = System.currentTimeMillis()
       worker.consumeTypes { type ->
         val batched = batches.computeIfAbsent(type.javaClass) { mutableListOf() }
         batched.add(type)
 
         if (batched.size >= 100) {
-          realm.executeTransaction {
-            realm.insertOrUpdate(batched)
+          val start = System.currentTimeMillis()
+          executeTransaction {
+            insertOrUpdate(batched)
           }
+          dbWriteDuration += System.currentTimeMillis() - start
 
           batched.clear()
         }
@@ -87,16 +57,22 @@ class JavaIndexerTest {
 
       for ((_, batched) in batches) {
         if (batched.isNotEmpty()) {
-          realm.executeTransaction {
-            realm.insertOrUpdate(batched)
+          val start = System.currentTimeMillis()
+          executeTransaction {
+            insertOrUpdate(batched)
           }
+          dbWriteDuration += System.currentTimeMillis() - start
         }
       }
 
-      println("Took ${System.currentTimeMillis() - start}ms")
-    } finally {
-      realm.close()
-      file.delete()
+      println(
+        "Took ${dbWriteDuration}ms to write android.jar (${
+          ConvertUtils.byte2FitMemorySize(
+            helper.androidJar.length()
+          )
+        }) classes to Realm"
+      )
+      println("Total time: ${System.currentTimeMillis() - totalStart}ms")
     }
   }
 }
