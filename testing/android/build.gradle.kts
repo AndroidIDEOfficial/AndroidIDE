@@ -18,8 +18,8 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-  id("com.android.library")
-  kotlin("android")
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -38,6 +38,12 @@ configurations.api {
 }
 
 dependencies {
+
+  // compileOnly so that we can provide the APIs for the related test rules
+  // if a module needs to use those APIs, it needs to explicitly add the database module as a
+  // dependency
+  compileOnly(projects.subprojects.database)
+
   api(libs.google.protobuf)
   api(libs.tests.androidx.espresso.core)
   api(libs.tests.androidx.espresso.contrib)
@@ -52,9 +58,8 @@ dependencies {
     exclude("org.jetbrains.kotlin")
   }
 
-  api(projects.testing.common)
-
   api(projects.buildInfo)
   api(projects.common)
   api(projects.shared)
+  api(projects.testing.common)
 }

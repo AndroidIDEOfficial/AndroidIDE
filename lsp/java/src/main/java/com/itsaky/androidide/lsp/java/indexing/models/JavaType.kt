@@ -29,7 +29,7 @@ import io.realm.annotations.Required
  */
 
 @RealmClass
-open class JavaType : ISharedJavaIndexable {
+open class JavaType : ISharedJavaIndexable, ICloneable {
 
   @Required
   @PrimaryKey
@@ -113,6 +113,10 @@ open class JavaType : ISharedJavaIndexable {
    */
   fun isClassType(): Boolean {
     return name == CLASS.name
+  }
+
+  override fun clone(): JavaType {
+    return newInstance(name = name, kind = kind, arrayDims = arrayDims)
   }
 
   override fun computeId() {

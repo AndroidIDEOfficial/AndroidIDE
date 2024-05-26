@@ -113,6 +113,7 @@
       <module name="AndroidIDE.lsp.testing" target="17" />
       <module name="AndroidIDE.sdk-info" target="11" />
       <module name="AndroidIDE.subprojects.appintro" target="17" />
+      <module name="AndroidIDE.subprojects.benchmark" target="17" />
       <module name="AndroidIDE.subprojects.classfile" target="11" />
       <module name="AndroidIDE.subprojects.classfile.main" target="11" />
       <module name="AndroidIDE.subprojects.classfile.test" target="11" />

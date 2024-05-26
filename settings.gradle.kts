@@ -156,6 +156,7 @@ include(
   ":termux:termux-shared",
   ":termux:termux-view",
   ":testing:android",
+  ":testing:benchmark",
   ":testing:common",
   ":testing:lsp",
   ":testing:tooling",

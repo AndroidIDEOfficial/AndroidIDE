@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.lsp.api.util
+package com.itsaky.androidide.lsp.testing.util
 
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Level

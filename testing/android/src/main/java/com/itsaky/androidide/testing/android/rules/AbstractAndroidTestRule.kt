@@ -15,19 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id("java-library")
-  id("kotlin-kapt")
-  id("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.testing.android.rules
 
-dependencies {
-  kapt(libs.google.auto.service)
-  implementation(libs.google.auto.service.annotations)
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.itsaky.androidide.utils.Environment
+import org.junit.rules.TestRule
 
-  api(libs.tests.junit)
-  api(projects.logger)
+/**
+ * Abstract class for Android testing rules.
+ *
+ * @author Akash Yadav
+ */
+abstract class AbstractAndroidTestRule : TestRule {
+  init {
+    Environment.init(ApplicationProvider.getApplicationContext())
+  }
 
-  implementation(projects.subprojects.toolingApiImpl)
+  protected val context: Context
+    get() = ApplicationProvider.getApplicationContext()
 }

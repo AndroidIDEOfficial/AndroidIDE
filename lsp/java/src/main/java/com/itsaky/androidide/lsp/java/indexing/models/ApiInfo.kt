@@ -31,7 +31,7 @@ import io.realm.annotations.Required
  */
 
 @RealmClass
-open class ApiInfo : ISharedJavaIndexable {
+open class ApiInfo : ISharedJavaIndexable, ICloneable {
 
   @Required
   @PrimaryKey
@@ -39,16 +39,68 @@ open class ApiInfo : ISharedJavaIndexable {
   override var id: Int? = null
 
   @RealmField("since")
-  var since: Int = 1
+  private var since: Int = 1
 
   @RealmField("deprecatedIn")
-  var deprecatedIn: Int = 0
+  private var deprecatedIn: Int = 0
 
   @RealmField("removedIn")
-  var removedIn: Int = 0
+  private var removedIn: Int = 0
 
   override fun computeId() {
     this.id = Objects.hashCode(this.since, this.removedIn, this.deprecatedIn)
+  }
+
+  /**
+   * Update the API information from the given [ApiInfo].
+   */
+  fun update(apiInfo: ApiInfo) = apply {
+    this.since = apiInfo.since
+    this.deprecatedIn = apiInfo.deprecatedIn
+    this.removedIn = apiInfo.removedIn
+    this.computeId()
+  }
+
+  /**
+   * Update the API information with the given parameters.
+   */
+  fun update(
+    since: Int = this.since,
+    deprecatedIn: Int = this.deprecatedIn,
+    removedIn: Int = this.removedIn
+  ) = apply {
+    this.since = since
+    this.deprecatedIn = deprecatedIn
+    this.removedIn = removedIn
+    this.computeId()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ApiInfo) return false
+
+    if (id != other.id) return false
+    if (since != other.since) return false
+    if (deprecatedIn != other.deprecatedIn) return false
+    if (removedIn != other.removedIn) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + since
+    result = 31 * result + deprecatedIn
+    result = 31 * result + removedIn
+    return result
+  }
+
+  override fun toString(): String {
+    return "ApiInfo(id=$id, since=$since, deprecatedIn=$deprecatedIn, removedIn=$removedIn)"
+  }
+
+  override fun clone(): ApiInfo {
+    return newInstance(since, deprecatedIn, removedIn)
   }
 
   companion object {

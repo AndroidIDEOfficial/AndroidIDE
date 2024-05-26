@@ -17,11 +17,18 @@
 
 package com.itsaky.androidide.lsp.java.indexing
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.blankj.utilcode.util.ConvertUtils
+import com.google.common.truth.Truth
+import com.itsaky.androidide.lsp.java.indexing.models.JavaIndexingRealmModule
+import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
 import io.realm.RealmModel
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 /**
  * @author Akash Yadav
@@ -29,16 +36,31 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class JavaIndexerTest {
 
+  @Rule
+  @JvmField
+  val dbTestRule = RealmDBTestRule(JavaIndexingRealmModule())
+
+  val androidJar: File by lazy {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val file = File.createTempFile("ajar", null, context.cacheDir)
+    context.assets.open("android.jar").use { asset ->
+      Truth.assertThat(asset).isNotNull()
+      file.outputStream().buffered().use { out ->
+        asset.copyTo(out)
+        out.flush()
+      }
+    }
+    file
+  }
+
   @Test
   fun testSimpleAndroidJarIndexingDurationCheck() {
-    val helper = IndexingHelper("android-jar-classes.realm")
-    val worker = JavaIndexModelBuilder(helper.androidJar)
+    val worker = JavaJarModelBuilder(androidJar)
     val batches = mutableMapOf<Class<*>, MutableList<RealmModel>>()
 
-    val totalDuration = 0L
     var dbWriteDuration = 0L
 
-    helper.doWithRealm {
+    dbTestRule.withDb("android-jar-classes") {
       val totalStart = System.currentTimeMillis()
       worker.consumeTypes { type ->
         val batched = batches.computeIfAbsent(type.javaClass) { mutableListOf() }
@@ -68,7 +90,7 @@ class JavaIndexerTest {
       println(
         "Took ${dbWriteDuration}ms to write android.jar (${
           ConvertUtils.byte2FitMemorySize(
-            helper.androidJar.length()
+            androidJar.length()
           )
         }) classes to Realm"
       )
