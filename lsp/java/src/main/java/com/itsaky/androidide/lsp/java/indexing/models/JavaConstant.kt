@@ -43,10 +43,10 @@ open class JavaConstant : ISharedJavaIndexable {
   override var id: Int? = null
 
   @RealmField("kind")
-  var kind: Short = JavaType.KIND_UNKNOWN
+  private var kind: Short = JavaType.KIND_UNKNOWN
 
   @RealmField("value")
-  var value: RealmAny? = null
+  private var value: RealmAny? = null
 
   companion object {
     fun newInstance(kind: Short, value: RealmAny): JavaConstant {
@@ -57,6 +57,19 @@ open class JavaConstant : ISharedJavaIndexable {
       }
     }
   }
+
+  fun update(kind: Short = this.kind, value: RealmAny? = this.value) {
+    this.kind = kind
+    this.value = value
+    this.computeId()
+  }
+
+  fun update(src: JavaConstant) {
+    this.kind = src.kind
+    this.value = src.value
+    this.computeId()
+  }
+
 
   override fun computeId() {
     this.id = Objects.hashCode(this.kind, this.kind, this.value)
@@ -110,5 +123,27 @@ open class JavaConstant : ISharedJavaIndexable {
         }
       } else null
     }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is JavaConstant) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (value != other.value) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + (value?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "JavaConstant(id=$id, kind=$kind, value=$value)"
   }
 }

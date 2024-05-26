@@ -20,12 +20,13 @@ package com.itsaky.androidide.lsp.java.indexing
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.indexing.models.JavaClass
-import com.itsaky.androidide.lsp.java.indexing.models.JavaField
-import com.itsaky.androidide.lsp.java.indexing.models.JavaMethod
+import com.itsaky.androidide.lsp.java.indexing.models.JavaIndexingRealmModule
 import com.itsaky.androidide.lsp.java.indexing.models.JavaType
+import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
 import io.realm.RealmList
 import io.realm.RealmObject
 import openjdk.tools.classfile.AccessFlags
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -35,33 +36,18 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class JavaClassCRUDTest {
 
+  @Rule
+  @JvmField
+  val dbTestRule = RealmDBTestRule(JavaIndexingRealmModule())
+
   @Test
   fun testSimpleJavaClassCRUD() {
-    IndexingHelper("java-class-create").doWithRealm {
-      val klass = JavaClass.newInstance(
-        fqn = "com/itsaky/androidide/indexing/TestClass",
-        name = "TestClass",
-        packageName = "com/itsaky/androidide/indexing",
-        accessFlags = AccessFlags.ACC_PUBLIC or AccessFlags.ACC_FINAL,
-        superClassFqn = "java/lang/Object",
-        superInterfacesFqn = RealmList(),
-        fields = RealmList<JavaField>().apply {
-          add(JavaField.newField("someString", JavaType.STRING, AccessFlags.ACC_PRIVATE))
-        },
-        methods = RealmList<JavaMethod>().apply {
-          add(
-            JavaMethod.newInstance(
-              name = "getSomeString",
-              paramsTypes = RealmList(),
-              returnType = JavaType.STRING,
-              accessFlags = AccessFlags.ACC_PUBLIC
-            )
-          )
-        })
+    dbTestRule.withDb("java-class-CRUD") {
+      val klass = ModelBuilder.createJavaClass()
 
       // CREATE
       executeTransaction {
-        insert(klass)
+        it.insert(klass)
       }
 
       var dbKlass: JavaClass? = null

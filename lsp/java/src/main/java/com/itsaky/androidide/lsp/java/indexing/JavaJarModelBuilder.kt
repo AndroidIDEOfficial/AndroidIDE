@@ -60,11 +60,11 @@ import java.io.File
 import java.util.zip.ZipFile
 
 /**
- * [JavaIndexModelBuilder] builds models for Java classes in a JAR file.
+ * [JavaJarModelBuilder] builds models for Java classes in a JAR file.
  *
  * @author Akash Yadav
  */
-class JavaIndexModelBuilder(
+class JavaJarModelBuilder(
   private val jar: File
 ) {
 

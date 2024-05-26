@@ -18,6 +18,8 @@
 package com.itsaky.androidide.lsp.java.indexing.models
 
 import com.google.common.base.Objects
+import com.itsaky.androidide.db.utils.isEqualTo
+import com.itsaky.androidide.db.utils.hash
 import io.realm.RealmAny
 import io.realm.RealmDictionary
 import io.realm.RealmList
@@ -66,6 +68,28 @@ open class PrimitiveAnnotationElementValue : IAnnotationElementValue {
     this.id = Objects.hashCode(this.kind, this.value)
   }
 
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is PrimitiveAnnotationElementValue) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (value != other.value) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + (value?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "PrimitiveAnnotationElementValue(id=$id, kind=$kind, value=$value)"
+  }
+
   companion object {
     @JvmStatic
     fun newInstance(kind: Byte, value: JavaConstant): PrimitiveAnnotationElementValue {
@@ -97,6 +121,30 @@ open class EnumAnnotationElementValue : IAnnotationElementValue {
 
   override fun computeId() {
     this.id = Objects.hashCode(this.kind, this.name, this.type)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is EnumAnnotationElementValue) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (name != other.name) return false
+    if (type != other.type) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + (name?.hashCode() ?: 0)
+    result = 31 * result + (type?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "EnumAnnotationElementValue(id=$id, kind=$kind, name=$name, type=$type)"
   }
 
   companion object {
@@ -136,6 +184,30 @@ open class ArrayAnnotationElementValue : IAnnotationElementValue {
     this.id = Objects.hashCode(this.kind, this.numValues, this.values)
   }
 
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ArrayAnnotationElementValue) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (numValues != other.numValues) return false
+    if (values != other.values) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + numValues
+    result = 31 * result + (values?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "ArrayAnnotationElementValue(id=$id, kind=$kind, numValues=$numValues, values=$values)"
+  }
+
   companion object {
     @JvmStatic
     fun newInstance(values: RealmList<RealmAny>): ArrayAnnotationElementValue {
@@ -165,6 +237,28 @@ open class ClassAnnotationElementValue : IAnnotationElementValue {
 
   override fun computeId() {
     this.id = Objects.hashCode(this.kind, this.type)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ClassAnnotationElementValue) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (type != other.type) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + (type?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "ClassAnnotationElementValue(id=$id, kind=$kind, type=$type)"
   }
 
   companion object {
@@ -201,7 +295,31 @@ open class AnnotationAnnotationElementValue : IAnnotationElementValue {
 
   override fun computeId() {
     // RealmDictionary seems to not override hashCode()
-    this.id = Objects.hashCode(this.kind, this.type, this.values?.toMap()?.hashCode())
+    this.id = Objects.hashCode(this.kind, this.type, this.values?.hash())
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is AnnotationAnnotationElementValue) return false
+
+    if (id != other.id) return false
+    if (kind != other.kind) return false
+    if (type != other.type) return false
+    if (!values.isEqualTo(other)) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = id ?: 0
+    result = 31 * result + kind
+    result = 31 * result + (type?.hashCode() ?: 0)
+    result = 31 * result + (values?.hashCode() ?: 0)
+    return result
+  }
+
+  override fun toString(): String {
+    return "AnnotationAnnotationElementValue(id=$id, kind=$kind, type=$type, values=$values)"
   }
 
   companion object {

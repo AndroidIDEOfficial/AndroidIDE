@@ -39,9 +39,9 @@ class AndroidJarModelingRule : TestRule {
       .toFile()
   }
 
-  private val androidJarIndexer: JavaIndexModelBuilder by lazy {
+  private val androidJarIndexer: JavaJarModelBuilder by lazy {
     assertThat(androidJar.exists()).isTrue()
-    JavaIndexModelBuilder(androidJar)
+    JavaJarModelBuilder(androidJar)
   }
 
   val types: List<IJavaType<*, *>> by lazy {

@@ -35,6 +35,7 @@ plugins {
   alias(libs.plugins.maven.publish) apply false
   alias(libs.plugins.gradle.publish) apply false
   alias(libs.plugins.protobuf) apply false
+  alias(libs.plugins.benchmark) apply false
 }
 
 buildscript {

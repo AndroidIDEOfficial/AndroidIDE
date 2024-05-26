@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.api
+package com.itsaky.androidide.lsp.testing
 
 import android.content.Context
 import com.google.common.truth.Truth.assertThat
@@ -27,6 +27,7 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range

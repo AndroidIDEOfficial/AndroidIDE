@@ -15,19 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id("java-library")
-  id("kotlin-kapt")
-  id("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.testing.android.util
 
-dependencies {
-  kapt(libs.google.auto.service)
-  implementation(libs.google.auto.service.annotations)
+import org.junit.runners.model.Statement
 
-  api(libs.tests.junit)
-  api(projects.logger)
-
-  implementation(projects.subprojects.toolingApiImpl)
+/**
+ * A no-op statement.
+ *
+ * @author Akash Yadav
+ */
+class NoOpStatement : Statement() {
+  override fun evaluate() {
+  }
 }

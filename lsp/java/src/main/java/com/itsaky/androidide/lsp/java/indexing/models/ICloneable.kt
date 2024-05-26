@@ -15,19 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id("java-library")
-  id("kotlin-kapt")
-  id("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.lsp.java.indexing.models
 
-dependencies {
-  kapt(libs.google.auto.service)
-  implementation(libs.google.auto.service.annotations)
-
-  api(libs.tests.junit)
-  api(projects.logger)
-
-  implementation(projects.subprojects.toolingApiImpl)
+/**
+ * Anything that can be cloned.
+ *
+ * @author Akash Yadav
+ */
+interface ICloneable {
+  fun clone(): ICloneable
 }

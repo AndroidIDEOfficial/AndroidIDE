@@ -19,6 +19,8 @@ markwon = "4.6.2"
 maven-publish-plugin = "0.27.0"
 logback = "1.5.3"
 realm = "10.18.0"
+benchmark = "1.2.4"
+benchmark-junit4 = "1.2.4"
 
 [libraries]
 
@@ -166,6 +168,7 @@ android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 nav-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation" }
 maven-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish-plugin" }
+androidx-benchmark-junit4 = { group = "androidx.benchmark", name = "benchmark-junit4", version.ref = "benchmark-junit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -175,3 +178,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish-plugin" }
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 protobuf = { id = "com.google.protobuf", version = "0.9.4" }
+benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }

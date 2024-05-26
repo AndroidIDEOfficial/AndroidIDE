@@ -15,32 +15,34 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing
+package com.itsaky.androidide.benchmark.lsp.java
 
 import android.content.Context
+import androidx.benchmark.junit4.BenchmarkRule
+import androidx.benchmark.junit4.measureRepeated
 import androidx.test.core.app.ApplicationProvider
-import com.google.common.truth.Truth
-import com.itsaky.androidide.db.IRealmProvider
-import com.itsaky.androidide.lsp.java.indexing.models.JavaIndexingRealmModule
-import com.itsaky.androidide.utils.Environment
-import io.realm.Realm
-import io.realm.log.LogLevel
-import io.realm.log.RealmLog
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.lsp.java.indexing.JavaJarModelBuilder
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.File
 
 /**
  * @author Akash Yadav
  */
-class IndexingHelper(
-  private val dbName: String
-) {
-  private val context: Context
-    get() = ApplicationProvider.getApplicationContext()
+@RunWith(AndroidJUnit4::class)
+class JavaIndexingWorkerBenchmark {
+
+  @get:Rule
+  val benchmarkRule = BenchmarkRule()
 
   val androidJar: File by lazy {
+    val context = ApplicationProvider.getApplicationContext<Context>()
     val file = File.createTempFile("ajar", null, context.cacheDir)
     context.assets.open("android.jar").use { asset ->
-      Truth.assertThat(asset).isNotNull()
+      assertThat(asset).isNotNull()
       file.outputStream().buffered().use { out ->
         asset.copyTo(out)
         out.flush()
@@ -49,24 +51,11 @@ class IndexingHelper(
     file
   }
 
-  fun doWithRealm(deleteDbAfterAction: Boolean = true, action: Realm.() -> Unit) {
-    Realm.init(context.applicationContext)
-    RealmLog.setLevel(LogLevel.ALL)
-
-    if (Environment.REALM_DB_DIR == null) {
-      Environment.init(context)
-    }
-
-    val dbName = dbName.replace(IRealmProvider.PATH_SEPARATOR, '-')
-    val realm = IRealmProvider.instance().get("/indexing/java/$dbName") {
-      modules(JavaIndexingRealmModule())
-    }
-    try {
-      realm.action()
-    } finally {
-      if (deleteDbAfterAction) {
-        realm.configuration.realmDirectory.deleteRecursively()
-      }
+  @Test
+  fun benchmarkJavaIndexingWorker() {
+    val worker = JavaJarModelBuilder(androidJar)
+    benchmarkRule.measureRepeated {
+      worker.buildTypes()
     }
   }
 }

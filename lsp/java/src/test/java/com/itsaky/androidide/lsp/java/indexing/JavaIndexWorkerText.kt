@@ -42,7 +42,7 @@ import java.lang.reflect.Modifier
  * @author Akash Yadav
  */
 @RunWith(RobolectricTestRunner::class)
-class JavaIndexModelBuilderTest {
+class JavaJarModelBuilderTest {
 
   @Rule
   @JvmField
