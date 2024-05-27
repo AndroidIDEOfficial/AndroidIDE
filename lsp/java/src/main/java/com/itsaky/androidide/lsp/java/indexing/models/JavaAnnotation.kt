@@ -52,6 +52,9 @@ open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
   @RealmField("pck")
   override var packageName: String? = null
 
+  @RealmField("isInner")
+  override var isInner: Boolean = false
+
   @RealmField("superClassFqn")
   override var superClassFqn: String? = null
 
@@ -83,6 +86,7 @@ open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
       name: String,
       packageName: String,
       accessFlags: Int,
+      isInner: Boolean = false,
       superInterfacesFqn: RealmList<String>? = null,
       apiInfo: ApiInfo? = null,
       fields: RealmList<JavaField>? = null,
@@ -92,6 +96,7 @@ open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
         this.fqn = fqn
         this.name = name
         this.packageName = packageName
+        this.isInner = isInner
         this.superClassFqn = superClassFqn
         this.superInterfacesFqn = superInterfacesFqn
         this.accessFlags = accessFlags

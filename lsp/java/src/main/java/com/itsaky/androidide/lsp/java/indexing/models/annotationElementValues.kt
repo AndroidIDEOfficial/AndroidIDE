@@ -29,23 +29,24 @@ import io.realm.annotations.RealmField
 import io.realm.annotations.Required
 
 sealed interface IAnnotationElementValue : ISharedJavaIndexable {
-  var kind: Byte
+  var kind: Int
 
   companion object {
-    const val KIND_UNKNOWN: Byte = -1
-    const val KIND_BOOLEAN: Byte = 0
-    const val KIND_BYTE: Byte = 1
-    const val KIND_CHAR: Byte = 2
-    const val KIND_DOUBLE: Byte = 3
-    const val KIND_FLOAT: Byte = 4
-    const val KIND_INT: Byte = 5
-    const val KIND_LONG: Byte = 6
-    const val KIND_SHORT: Byte = 7
-    const val KIND_STRING: Byte = 8
-    const val KIND_CLASS: Byte = 9
-    const val KIND_ENUM: Byte = 10
-    const val KIND_ANNOTATION: Byte = 11
-    const val KIND_ARRAY: Byte = 12
+    const val KIND_UNKNOWN = JavaType.KIND_UNKNOWN
+    const val KIND_BOOLEAN = JavaType.KIND_BOOLEAN
+    const val KIND_BYTE = JavaType.KIND_BYTE
+    const val KIND_CHAR = JavaType.KIND_CHAR
+    const val KIND_DOUBLE = JavaType.KIND_DOUBLE
+    const val KIND_FLOAT = JavaType.KIND_FLOAT
+    const val KIND_INT = JavaType.KIND_INT
+    const val KIND_LONG = JavaType.KIND_LONG
+    const val KIND_SHORT = JavaType.KIND_SHORT
+
+    const val KIND_STRING = JavaType.__KIND_STRING
+    const val KIND_CLASS = JavaType.__KIND_CLASS
+    const val KIND_ENUM = JavaType.__KIND_ENUM
+    const val KIND_ANNOTATION = JavaType.__KIND_ANNOTATION
+    const val KIND_ARRAY = JavaType.__KIND_ARRAY
   }
 }
 
@@ -59,7 +60,7 @@ open class PrimitiveAnnotationElementValue : IAnnotationElementValue {
   override var id: Int? = null
 
   @RealmField("kind")
-  override var kind: Byte = 0
+  override var kind: Int = 0
 
   @RealmField("value")
   var value: JavaConstant? = null
@@ -92,7 +93,7 @@ open class PrimitiveAnnotationElementValue : IAnnotationElementValue {
 
   companion object {
     @JvmStatic
-    fun newInstance(kind: Byte, value: JavaConstant): PrimitiveAnnotationElementValue {
+    fun newInstance(kind: Int, value: JavaConstant): PrimitiveAnnotationElementValue {
       return PrimitiveAnnotationElementValue().apply {
         this.kind = kind
         this.value = value
@@ -111,7 +112,7 @@ open class EnumAnnotationElementValue : IAnnotationElementValue {
   override var id: Int? = null
 
   @RealmField("kind")
-  override var kind: Byte = IAnnotationElementValue.KIND_ENUM
+  override var kind: Int = IAnnotationElementValue.KIND_ENUM
 
   @RealmField("name")
   var name: String? = null
@@ -169,7 +170,7 @@ open class ArrayAnnotationElementValue : IAnnotationElementValue {
   override var id: Int? = null
 
   @RealmField("kind")
-  override var kind: Byte = IAnnotationElementValue.KIND_ARRAY
+  override var kind: Int = IAnnotationElementValue.KIND_ARRAY
 
   @RealmField("numValues")
   var numValues: Int = 0
@@ -230,7 +231,7 @@ open class ClassAnnotationElementValue : IAnnotationElementValue {
   override var id: Int? = null
 
   @RealmField("kind")
-  override var kind: Byte = IAnnotationElementValue.KIND_CLASS
+  override var kind: Int = IAnnotationElementValue.KIND_CLASS
 
   @RealmField("type")
   var type: JavaType? = null
@@ -282,7 +283,7 @@ open class AnnotationAnnotationElementValue : IAnnotationElementValue {
   override var id: Int? = null
 
   @RealmField("kind")
-  override var kind: Byte = IAnnotationElementValue.KIND_ANNOTATION
+  override var kind: Int = IAnnotationElementValue.KIND_ANNOTATION
 
   @RealmField("type")
   var type: JavaType? = null

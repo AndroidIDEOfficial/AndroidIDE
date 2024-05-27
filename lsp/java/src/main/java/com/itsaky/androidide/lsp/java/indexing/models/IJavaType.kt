@@ -41,6 +41,7 @@ interface IJavaType<FieldT : IJavaSymbol, MethodT : IJavaSymbol> : IJavaSymbol {
   var fqn: String?
   var name: String?
   var packageName: String?
+  var isInner: Boolean
 
   /**
    * The fully qualified name of the superclass of the type.

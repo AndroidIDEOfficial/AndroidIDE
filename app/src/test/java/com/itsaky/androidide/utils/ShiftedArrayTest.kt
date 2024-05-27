@@ -17,19 +17,22 @@
 
 package com.itsaky.androidide.utils
 
+import android.app.Application
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * @author Akash Yadav
  */
 @RunWith(RobolectricTestRunner::class)
+@Config(application = Application::class)
 class ShiftedArrayTest {
 
   @Test
-  fun `test positive shift` () {
+  fun `test positive shift`() {
     val backing = LongArray(10) { it.toLong() }
     val array = MutableShiftedLongArray(backing)
     for (s in 0..<array.size) {
@@ -45,7 +48,7 @@ class ShiftedArrayTest {
   }
 
   @Test
-  fun `test negative shift` () {
+  fun `test negative shift`() {
     val backing = LongArray(10) { it.toLong() }
     val array = MutableShiftedLongArray(backing)
     array.shift(-1)
@@ -62,7 +65,7 @@ class ShiftedArrayTest {
   }
 
   @Test
-  fun `test negative shift - 2` () {
+  fun `test negative shift - 2`() {
     val backing = LongArray(10) { it.toLong() }
     val array = MutableShiftedLongArray(backing)
     array.shift(-2)

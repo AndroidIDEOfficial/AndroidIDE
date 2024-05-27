@@ -17,15 +17,18 @@
 
 package com.itsaky.androidide.utils
 
+import android.app.Application
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
  * @author Akash Yadav
  */
 @RunWith(RobolectricTestRunner::class)
+@Config(application = Application::class)
 class JdkUtilsTest {
 
   companion object {
@@ -154,7 +157,8 @@ OpenJDK 64-Bit Server VM (build 21.0.1-internal-adhoc.root.src, mixed mode)
     assertThat(dist).isNotNull()
     assertThat(dist!!.javaVersion).isEqualTo("17-internal")
     assertThat(dist.javaHome).isEqualTo(
-      "/data/data/com.itsaky.androidide/files/usr/opt/openjdk-17.0")
+      "/data/data/com.itsaky.androidide/files/usr/opt/openjdk-17.0"
+    )
   }
 
   @Test
@@ -163,7 +167,8 @@ OpenJDK 64-Bit Server VM (build 21.0.1-internal-adhoc.root.src, mixed mode)
     assertThat(dist).isNotNull()
     assertThat(dist!!.javaVersion).isEqualTo("21.0.1-internal")
     assertThat(dist.javaHome).isEqualTo(
-      "/data/data/com.itsaky.androidide/files/usr/opt/openjdk-21.0.1")
+      "/data/data/com.itsaky.androidide/files/usr/opt/openjdk-21.0.1"
+    )
   }
 
   @Test

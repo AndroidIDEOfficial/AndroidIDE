@@ -64,9 +64,7 @@ import java.util.zip.ZipFile
  *
  * @author Akash Yadav
  */
-class JavaJarModelBuilder(
-  private val jar: File
-) {
+class JavaJarModelBuilder(private val jar: File) {
 
   // for testing purposes
   // prefer using consumeTypes(Function)
@@ -78,15 +76,15 @@ class JavaJarModelBuilder(
 
   fun consumeTypes(consumer: (IJavaType<*, *>) -> Unit) {
     ZipFile(jar).use { jar ->
-      for (entry in jar.entries()) {
-        if (!entry.name.endsWith(".class")) {
-          continue
-        }
-
-        jar.getInputStream(entry).use { inputStream ->
+      jar.entries().asSequence().filter { it.name.endsWith(".class") }.forEach { entry ->
+        jar.getInputStream(entry).buffered().use { inputStream ->
           val classFile = ClassFile.read(inputStream)!!
-          val type = buildType(classFile)
-          consumer(type)
+
+          // build model only if the class is not an anonymous or local class
+          if (classFile.getAttribute(Attribute.EnclosingMethod) == null) {
+            val type = buildType(classFile)
+            consumer(type)
+          }
         }
       }
     }
@@ -95,27 +93,69 @@ class JavaJarModelBuilder(
   private fun buildType(classFile: ClassFile): IJavaType<*, *> {
     val classInfo = classFile.constant_pool.getClassInfo(classFile.this_class)
     val fqn = classInfo.baseName
-    val name = simpleName(fqn)
-    val pck = fqn.substring(0, fqn.length - name.length - 1)
-    return buildType(fqn, name, pck, classFile)
+    val (pck, name, isInner) = splitFqn(fqn)
+    return buildType(fqn, pck, name, isInner, classFile)
+  }
+
+  /**
+   * Split the given fully qualified name of a class and return the package name and the simple name
+   * of the class, along with whether the class is an inner class.
+   */
+  private fun splitFqn(fqn: String): Triple<String, String, Boolean> {
+    val dolIdx = fqn.lastIndexOf('$')
+
+    // start looking for '/' from the index of the last '$'
+    // a '/' will always appear before a '$'
+    val slaIdx = fqn.lastIndexOf('/', startIndex = if (dolIdx == -1) fqn.lastIndex else dolIdx - 1)
+
+    if (slaIdx == -1 && dolIdx != -1) {
+      // fqn == SomeClass$InnerClass (inner class of a class in the root package)
+      // pck is empty, but fqn is not the class's simple name
+      return Triple("", fqn.substring(dolIdx + 1), true)
+    }
+
+    if (slaIdx == -1) {
+      // fqn == SomeClass (class in the root package)
+      // pck is empty and fqn is class's simple name
+      return Triple("", fqn, false)
+    }
+
+    if (dolIdx == -1) {
+      // fqn == com/example/SomeClass
+      return Triple(fqn.substring(0, slaIdx), fqn.substring(slaIdx + 1), false)
+    }
+
+    // fqn == com/example/SomeClass$InnerClass
+    return Triple(fqn.substring(0, slaIdx), fqn.substring(dolIdx + 1), true)
   }
 
   private fun buildType(
-    fqn: String, name: String, pck: String, classFile: ClassFile
+    fqn: String,
+    pck: String,
+    name: String,
+    isInner: Boolean,
+    classFile: ClassFile
   ): IJavaType<*, *> {
-    if (classFile.access_flags.`is`(AccessFlags.ACC_ENUM)) {
-      return buildEnum(fqn, name, pck, classFile)
-    }
+    return when {
+      classFile.access_flags.`is`(AccessFlags.ACC_ENUM) -> buildEnum(fqn, name, pck, classFile)
+      classFile.access_flags.`is`(AccessFlags.ACC_ANNOTATION) -> buildAnnotation(
+        fqn,
+        name,
+        pck,
+        classFile
+      )
 
-    if (classFile.access_flags.`is`(AccessFlags.ACC_ANNOTATION)) {
-      return buildAnnotation(fqn, name, pck, classFile)
-    }
+      classFile.access_flags.`is`(AccessFlags.ACC_INTERFACE) -> buildInterface(
+        fqn,
+        name,
+        pck,
+        classFile
+      )
 
-    if (classFile.access_flags.`is`(AccessFlags.ACC_INTERFACE)) {
-      return buildInterface(fqn, name, pck, classFile)
+      else -> buildClass(fqn, name, pck, classFile)
+    }.also {
+      it.isInner = isInner
     }
-
-    return buildClass(fqn, name, pck, classFile)
   }
 
   private fun buildClass(fqn: String, name: String, pck: String, classFile: ClassFile): JavaClass {
@@ -182,7 +222,7 @@ class JavaJarModelBuilder(
 
   private fun IJavaType<*, JavaMethod>.setMethods(classFile: ClassFile) {
     methods = RealmList<JavaMethod>().apply {
-      addAll(classFile.methods.map { method ->
+      classFile.methods.forEach { method ->
         val descriptor = classFile.constant_pool.getUTF8Value(method.descriptor.index)
         val methodName = method.getName(classFile.constant_pool)
         val methodType = DescriptorUtils.returnType(descriptor)
@@ -190,18 +230,19 @@ class JavaJarModelBuilder(
           addAll(DescriptorUtils.paramTypes(descriptor))
         }
 
-        JavaMethod.newInstance(methodName, paramTypes, methodType, method.access_flags.flags)
-      })
+        add(JavaMethod.newInstance(methodName, paramTypes, methodType, method.access_flags.flags))
+      }
     }
   }
 
   private fun IJavaType<JavaField, *>.setFields(classFile: ClassFile) {
     fields = RealmList<JavaField>().apply {
-      addAll(classFile.fields.map { field ->
+      classFile.fields.forEach { field ->
         val descriptor = classFile.constant_pool.getUTF8Value(field.descriptor.index)
         val fieldName = field.getName(classFile.constant_pool)
         val fieldType = DescriptorUtils.type(descriptor)
-        JavaField.newField(fieldName, fieldType, field.access_flags.flags).apply {
+
+        add(JavaField.newField(fieldName, fieldType, field.access_flags.flags).apply {
           field.attributes.get(Attribute.ConstantValue)?.also { constAttr ->
             val constantValue = constAttr as ConstantValue_attribute
             val constant = classFile.constant_pool.get(constantValue.constantvalue_index)
@@ -214,19 +255,19 @@ class JavaJarModelBuilder(
 
             this.constantValue = javaConstant
           }
-        }
-      })
+        })
+      }
     }
   }
 
   private fun JavaAnnotation.setAnnotationElements(classFile: ClassFile) {
     methods = RealmList<AnnotationElement>().apply {
-      addAll(classFile.methods.map { method ->
+      classFile.methods.forEach { method ->
         val descriptor = classFile.constant_pool.getUTF8Value(method.descriptor.index)
         val methodName = method.getName(classFile.constant_pool)
         val methodType = DescriptorUtils.returnType(descriptor)
 
-        this@setAnnotationElements.newAnnotationElement(
+        add(this@setAnnotationElements.newAnnotationElement(
           methodName, methodType, method.access_flags.flags
         ).apply {
           val annotationDefault =
@@ -236,8 +277,8 @@ class JavaJarModelBuilder(
             val value = toAnnotationElementValue(defaultValue, classFile)
             this.defaultValue = value.let(RealmAny::valueOf) ?: RealmAny.nullValue()
           }
-        }
-      })
+        })
+      }
     }
   }
 
@@ -259,18 +300,8 @@ class JavaJarModelBuilder(
       JavaType.KIND_LONG,
       JavaType.KIND_FLOAT,
       JavaType.KIND_DOUBLE -> PrimitiveAnnotationElementValue.newInstance(
-        kind = when (kind) {
-          JavaType.KIND_BOOLEAN -> IAnnotationElementValue.KIND_BOOLEAN
-          JavaType.KIND_BYTE -> IAnnotationElementValue.KIND_BYTE
-          JavaType.KIND_CHAR -> IAnnotationElementValue.KIND_CHAR
-          JavaType.KIND_SHORT -> IAnnotationElementValue.KIND_SHORT
-          JavaType.KIND_INT -> IAnnotationElementValue.KIND_INT
-          JavaType.KIND_LONG -> IAnnotationElementValue.KIND_LONG
-          JavaType.KIND_FLOAT -> IAnnotationElementValue.KIND_FLOAT
-          JavaType.KIND_DOUBLE -> IAnnotationElementValue.KIND_DOUBLE
-          else -> throw IllegalArgumentException("Unknown value tag: $char")
-        },
-
+        // annotation value kinds are same as JavaType.KIND_*
+        kind = kind,
         value = toPrimitiveConstant(
           classFile.constant_pool, kind, char, defaultValue as Primitive_element_value
         )
@@ -300,15 +331,13 @@ class JavaJarModelBuilder(
         }
 
         'c' -> {
-          val clazz = defaultValue as Class_element_value
-
           // even though the name is given as "class_info_index", the constant at that index
           // is actually a CONSTANT_Utf8_info representing a return type descriptor (JLS $4.3.3)
           // this has been clearly mentioned in the Java Language Specification
           ClassAnnotationElementValue.newInstance(
             DescriptorUtils.type(
               classFile.constant_pool.getUTF8Value(
-                clazz.class_info_index
+                (defaultValue as Class_element_value).class_info_index
               )
             )
           )
@@ -332,13 +361,12 @@ class JavaJarModelBuilder(
         }
 
         '[' -> {
-          val arr = defaultValue as Array_element_value
           ArrayAnnotationElementValue.newInstance(values = RealmList<RealmAny>().apply {
-            addAll(arr.values.map { element ->
-              toAnnotationElementValue(element, classFile).let { elementValue ->
+            (defaultValue as Array_element_value).values.forEach { element ->
+              add(toAnnotationElementValue(element, classFile).let { elementValue ->
                 RealmAny.valueOf(elementValue)
-              }
-            })
+              })
+            }
           })
         }
 
@@ -349,7 +377,7 @@ class JavaJarModelBuilder(
   }
 
   private fun toPrimitiveConstant(
-    constantPool: ConstantPool, kind: Short, char: Char, prim: Primitive_element_value
+    constantPool: ConstantPool, kind: Int, char: Char, prim: Primitive_element_value
   ): JavaConstant {
     if (kind == JavaType.KIND_REF && char != 's') {
       throw IllegalArgumentException("Unknown value tag: $char")
@@ -360,7 +388,7 @@ class JavaJarModelBuilder(
   }
 
   private fun toJavaConstant(
-    kind: Short, constant: CPInfo, char: Char?
+    kind: Int, constant: CPInfo, char: Char?
   ): JavaConstant {
     val realmAny = when (kind) {
       JavaType.KIND_BOOLEAN,
@@ -389,11 +417,5 @@ class JavaJarModelBuilder(
       kind = kind,
       value = realmAny
     )
-  }
-
-  private fun simpleName(fqn: String): String {
-    var idx = fqn.lastIndexOf('$')
-    idx = if (idx == -1) fqn.lastIndexOf('/') else idx
-    return fqn.substring(idx + 1)
   }
 }
