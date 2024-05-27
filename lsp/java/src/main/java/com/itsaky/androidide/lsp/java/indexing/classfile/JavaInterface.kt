@@ -15,8 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.classfile
 
+import com.itsaky.androidide.lsp.java.indexing.IJavaType
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmList
 import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
@@ -25,13 +27,13 @@ import io.realm.annotations.RealmField
 import io.realm.annotations.Required
 
 /**
- * A Java class type.
+ * A Java interface type.
  *
  * @author Akash Yadav
  */
 
 @RealmClass
-open class JavaClass : IJavaType<JavaField, JavaMethod> {
+open class JavaInterface : IJavaType<JavaField, JavaMethod> {
 
   @Index
   @PrimaryKey
@@ -68,7 +70,7 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
   @RealmField("methods")
   override var methods: RealmList<JavaMethod>? = null
 
-  override val isClass: Boolean
+  override val isInterface: Boolean
     get() = true
 
   companion object {
@@ -79,18 +81,16 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
       packageName: String,
       accessFlags: Int,
       isInner: Boolean = false,
-      superClassFqn: String? = null,
       superInterfacesFqn: RealmList<String>? = null,
       apiInfo: ApiInfo? = null,
       fields: RealmList<JavaField>? = null,
       methods: RealmList<JavaMethod>? = null
-    ): JavaClass {
-      return JavaClass().apply {
+    ): JavaInterface {
+      return JavaInterface().apply {
         this.fqn = fqn
         this.name = name
         this.packageName = packageName
         this.isInner = isInner
-        this.superClassFqn = superClassFqn
         this.superInterfacesFqn = superInterfacesFqn
         this.accessFlags = accessFlags
         this.apiInfo = apiInfo

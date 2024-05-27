@@ -15,13 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing
+
+import com.itsaky.androidide.indexing.IIndexable
 
 /**
- * Anything that can be cloned.
- *
  * @author Akash Yadav
  */
-interface ICloneable {
-  fun clone(): ICloneable
-}
+interface IJavaIndexable : IIndexable

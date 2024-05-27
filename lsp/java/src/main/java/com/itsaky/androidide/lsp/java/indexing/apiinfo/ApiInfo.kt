@@ -15,9 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.apiinfo
 
 import com.google.common.base.Objects
+import com.itsaky.androidide.lsp.java.indexing.ICloneable
+import com.itsaky.androidide.lsp.java.indexing.ISharedJavaIndexable
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 import io.realm.annotations.RealmField

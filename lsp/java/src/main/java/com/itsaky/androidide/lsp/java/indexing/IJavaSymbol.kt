@@ -15,32 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing
 
-import io.realm.annotations.RealmModule
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 
 /**
- * [RealmModule] for the indexing databased for Java.
+ * A java symbol.
  *
+ * @property accessFlags Access flags of the symbol.
+ * @property apiInfo Info about the APIs in which this symbol was added, deprecated or removed in.
  * @author Akash Yadav
  */
-@RealmModule(
-  library = true, classes = [
-    AnnotationElement::class,
-    AnnotationAnnotationElementValue::class,
-    ArrayAnnotationElementValue::class,
-    ClassAnnotationElementValue::class,
-    EnumAnnotationElementValue::class,
-    PrimitiveAnnotationElementValue::class,
-    ApiInfo::class,
-    JavaAnnotation::class,
-    JavaClass::class,
-    JavaConstant::class,
-    JavaEnum::class,
-    JavaField::class,
-    JavaInterface::class,
-    JavaMethod::class,
-    JavaType::class,
-  ]
-)
-internal class JavaIndexingRealmModule
+interface IJavaSymbol : IJavaIndexable {
+  var accessFlags: Int
+  var apiInfo: ApiInfo?
+}

@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.indexing
 
-import com.itsaky.androidide.lsp.java.indexing.models.JavaType
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.utils.DescriptorUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

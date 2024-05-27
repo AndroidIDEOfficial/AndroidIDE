@@ -15,13 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing
+package com.itsaky.androidide.lsp.java.utils
 
-import com.itsaky.androidide.lsp.java.indexing.models.AnnotationElement
-import com.itsaky.androidide.lsp.java.indexing.models.IJavaType
-import com.itsaky.androidide.lsp.java.indexing.models.JavaField
-import com.itsaky.androidide.lsp.java.indexing.models.JavaMethod
-import com.itsaky.androidide.lsp.java.indexing.models.JavaType
+import com.itsaky.androidide.lsp.java.indexing.IJavaType
+import com.itsaky.androidide.lsp.java.indexing.classfile.AnnotationElement
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaField
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaMethod
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
 import java.util.Objects
 
 /**

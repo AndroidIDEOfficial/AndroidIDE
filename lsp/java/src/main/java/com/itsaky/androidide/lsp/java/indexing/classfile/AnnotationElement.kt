@@ -15,9 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.classfile
 
-import com.itsaky.androidide.lsp.java.indexing.DescriptorUtils
+import com.itsaky.androidide.lsp.java.indexing.IJavaSymbol
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmAny
 import io.realm.RealmResults
 import io.realm.annotations.Index
@@ -32,7 +33,6 @@ import io.realm.annotations.Required
  * @property defaultValue The default value of the annotation element.
  * @author Akash Yadav
  */
-
 @RealmClass(embedded = true)
 open class AnnotationElement : IJavaSymbol {
 
