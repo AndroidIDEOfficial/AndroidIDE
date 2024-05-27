@@ -43,13 +43,15 @@ open class JavaConstant : ISharedJavaIndexable {
   override var id: Int? = null
 
   @RealmField("kind")
-  private var kind: Short = JavaType.KIND_UNKNOWN
+  var kind: Int = JavaType.KIND_UNKNOWN
+    private set
 
   @RealmField("value")
-  private var value: RealmAny? = null
+  var value: RealmAny? = null
+    private set
 
   companion object {
-    fun newInstance(kind: Short, value: RealmAny): JavaConstant {
+    fun newInstance(kind: Int, value: RealmAny): JavaConstant {
       return JavaConstant().apply {
         this.kind = kind
         this.value = value
@@ -58,7 +60,7 @@ open class JavaConstant : ISharedJavaIndexable {
     }
   }
 
-  fun update(kind: Short = this.kind, value: RealmAny? = this.value) {
+  fun update(kind: Int = this.kind, value: RealmAny? = this.value) {
     this.kind = kind
     this.value = value
     this.computeId()
@@ -113,7 +115,7 @@ open class JavaConstant : ISharedJavaIndexable {
     return safeCast(JavaType.KIND_CHAR) { asInteger()?.toChar() }
   }
 
-  private inline fun <R> safeCast(kind: Short, action: RealmAny.() -> R): R? {
+  private inline fun <R> safeCast(kind: Int, action: RealmAny.() -> R): R? {
     return value?.let {
       if (this.kind == kind) {
         try {

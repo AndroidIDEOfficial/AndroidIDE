@@ -47,6 +47,9 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
   @RealmField("pck")
   override var packageName: String? = null
 
+  @RealmField("isInner")
+  override var isInner: Boolean = false
+
   @RealmField("superClassFqn")
   override var superClassFqn: String? = null
 
@@ -75,6 +78,7 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
       name: String,
       packageName: String,
       accessFlags: Int,
+      isInner: Boolean = false,
       superClassFqn: String? = null,
       superInterfacesFqn: RealmList<String>? = null,
       apiInfo: ApiInfo? = null,
@@ -85,6 +89,7 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
         this.fqn = fqn
         this.name = name
         this.packageName = packageName
+        this.isInner = isInner
         this.superClassFqn = superClassFqn
         this.superInterfacesFqn = superInterfacesFqn
         this.accessFlags = accessFlags

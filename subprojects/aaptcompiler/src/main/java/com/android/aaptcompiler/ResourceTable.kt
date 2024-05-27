@@ -706,7 +706,7 @@ class ResourceEntry(val name : String) {
   var allowNew: AllowNew? = null
   var overlayable: OverlayableItem? = null
 
-  internal val values = mutableListOf<ResourceConfigValue>()
+  val values = mutableListOf<ResourceConfigValue>()
 
   fun findValue(config: ConfigDescription, product: String = ""): ResourceConfigValue? {
     return values.find { it.config == config && it.product == product }

@@ -42,7 +42,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
   var name: String? = null
 
   @RealmField("kind")
-  var kind: Short = KIND_UNKNOWN
+  var kind: Int = KIND_UNKNOWN
 
   @RealmField("arrayDims")
   var arrayDims: Int = 0
@@ -146,17 +146,25 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
   }
   
   companion object {
-    const val KIND_UNKNOWN: Short = -1
-    const val KIND_BOOLEAN: Short = 0
-    const val KIND_BYTE: Short = 1
-    const val KIND_CHAR: Short = 2
-    const val KIND_DOUBLE: Short = 3
-    const val KIND_FLOAT: Short = 4
-    const val KIND_INT: Short = 5
-    const val KIND_LONG: Short = 6
-    const val KIND_SHORT: Short = 7
-    const val KIND_VOID: Short = 8
-    const val KIND_REF: Short = 9
+    const val KIND_UNKNOWN = -1
+    const val KIND_BOOLEAN = 0
+    const val KIND_BYTE = 1
+    const val KIND_CHAR = 2
+    const val KIND_DOUBLE = 3
+    const val KIND_FLOAT = 4
+    const val KIND_INT = 5
+    const val KIND_LONG = 6
+    const val KIND_SHORT = 7
+    const val KIND_VOID = 8
+    const val KIND_REF = 9
+
+    // kind values used in IAnnotationElementValue
+    // defined here for convenience
+    internal const val __KIND_STRING = 10
+    internal const val __KIND_CLASS  = 11
+    internal const val __KIND_ENUM = 12
+    internal const val __KIND_ANNOTATION = 13
+    internal const val __KIND_ARRAY = 14
 
     const val TYPE_BOOLEAN = 'Z'
     const val TYPE_BYTE = 'B'
@@ -219,7 +227,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     }
 
     @JvmStatic
-    fun typeForKind(kind: Short) = when (kind) {
+    fun typeForKind(kind: Int) = when (kind) {
       KIND_BOOLEAN -> TYPE_BOOLEAN
       KIND_BYTE -> TYPE_BYTE
       KIND_CHAR -> TYPE_CHAR
@@ -249,7 +257,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     }
 
     @JvmStatic
-    fun newInstance(name: String?, kind: Short, arrayDims: Int = 0): JavaType {
+    fun newInstance(name: String?, kind: Int, arrayDims: Int = 0): JavaType {
       return JavaType().apply {
         this.name = name
         this.kind = kind
@@ -259,7 +267,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     }
 
     @JvmStatic
-    fun newInstance(name: Char, kind: Short, arrayDims: Int = 0): JavaType {
+    fun newInstance(name: Char, kind: Int, arrayDims: Int = 0): JavaType {
       return newInstance(name.toString(), kind, arrayDims)
     }
   }
