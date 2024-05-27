@@ -19,7 +19,6 @@ package com.itsaky.androidide.build.config
 
 import java.io.File
 
-/** @author Akash Yadav */
 private const val generatedWarning = "DO NOT EDIT - Automatically generated file"
 
 /**

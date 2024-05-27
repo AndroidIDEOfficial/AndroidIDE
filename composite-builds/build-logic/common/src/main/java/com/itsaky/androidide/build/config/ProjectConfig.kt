@@ -34,6 +34,7 @@ object ProjectConfig {
   const val PROJECT_SITE = "https://m.androidide.com"
 }
 
+private var shouldPrintNotAGitRepoWarning = true
 private var shouldPrintVersionName = true
 
 /**
@@ -41,8 +42,8 @@ private var shouldPrintVersionName = true
  */
 val Project.isFDroidBuild: Boolean
   get() {
-    if (!com.itsaky.androidide.build.config.FDroidConfig.hasRead) {
-      com.itsaky.androidide.build.config.FDroidConfig.load(this)
+    if (!FDroidConfig.hasRead) {
+      FDroidConfig.load(this)
     }
     return com.itsaky.androidide.build.config.FDroidConfig.isFDroidBuild
   }
@@ -50,23 +51,33 @@ val Project.isFDroidBuild: Boolean
 val Project.simpleVersionName: String
   get() {
 
+    if (!CI.isGitRepo) {
+      if (shouldPrintNotAGitRepoWarning) {
+        logger.warn("Unable to infer version name. The build is not running on a git repository.")
+        shouldPrintNotAGitRepoWarning = false
+      }
+
+      return "1.0.0-beta"
+    }
+
     val version = rootProject.version.toString()
     val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
 
     val simpleVersion = regex.find(version)?.value?.substring(1)?.also {
-      if (com.itsaky.androidide.build.config.shouldPrintVersionName) {
+      if (shouldPrintVersionName) {
         logger.warn("Simple version name is '$it' (from version $version)")
-        com.itsaky.androidide.build.config.shouldPrintVersionName = false
+        shouldPrintVersionName = false
       }
     }
 
     if (simpleVersion == null) {
-      if (com.itsaky.androidide.build.config.CI.isTestEnv) {
+      if (CI.isTestEnv) {
         return "1.0.0-beta"
       }
 
       throw IllegalStateException(
-        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
+        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+      )
     }
 
     return simpleVersion
@@ -80,13 +91,14 @@ val Project.projectVersionCode: Int
     val regex = Regex("^\\d+\\.?\\d+\\.?\\d+")
 
     val versionCode = regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
-      if (com.itsaky.androidide.build.config.shouldPrintVersionCode) {
+      if (shouldPrintVersionCode) {
         logger.warn("Version code is '$it' (from version ${version}).")
-        com.itsaky.androidide.build.config.shouldPrintVersionCode = false
+        shouldPrintVersionCode = false
       }
     }
       ?: throw IllegalStateException(
-        "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
+        "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+      )
 
     return versionCode
   }
@@ -102,8 +114,8 @@ val Project.publishingVersion: String
       return publishing
     }
 
-    if (com.itsaky.androidide.build.config.CI.isCiBuild && com.itsaky.androidide.build.config.CI.branchName != "main") {
-      publishing += "-${com.itsaky.androidide.build.config.CI.commitHash}-SNAPSHOT"
+    if (CI.isCiBuild && CI.isGitRepo && CI.branchName != "main") {
+      publishing += "-${CI.commitHash}-SNAPSHOT"
     }
 
     return publishing
@@ -118,11 +130,11 @@ val Project.publishingVersion: String
  */
 val Project.downloadVersion: String
   get() {
-    return if (com.itsaky.androidide.build.config.CI.isCiBuild || isFDroidBuild) {
+    return if (CI.isCiBuild || isFDroidBuild) {
       publishingVersion
     } else {
       // sometimes, when working locally, Gradle fails to download the latest snapshot version
       // this may cause issues while initializing the project in AndroidIDE
-      com.itsaky.androidide.build.config.VersionUtils.getLatestSnapshotVersion("gradle-plugin")
+      VersionUtils.getLatestSnapshotVersion("gradle-plugin")
     }
   }

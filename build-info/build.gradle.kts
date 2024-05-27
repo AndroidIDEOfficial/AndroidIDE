@@ -15,7 +15,6 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.android.SdkConstants
 import com.itsaky.androidide.build.config.AGP_VERSION_MINIMUM
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.CI
@@ -65,8 +64,8 @@ tasks.create("generateBuildInfo") {
         "FDROID_BUILD_VERSION_CODE" to (FDroidConfig.fDroidVersionCode ?: -1).toString(),
 
         "CI_BUILD" to CI.isCiBuild.toString(),
-        "CI_GIT_BRANCH" to CI.branchName,
-        "CI_COMMIT_HASH" to CI.commitHash,
+        "CI_GIT_BRANCH" to if (CI.isGitRepo) CI.branchName else "NOT-A-GIT-REPO",
+        "CI_COMMIT_HASH" to if (CI.isGitRepo) CI.commitHash else "NOT-A-GIT-REPO",
 
         "REPO_HOST" to ProjectConfig.REPO_HOST,
         "REPO_OWNER" to ProjectConfig.REPO_OWNER,
