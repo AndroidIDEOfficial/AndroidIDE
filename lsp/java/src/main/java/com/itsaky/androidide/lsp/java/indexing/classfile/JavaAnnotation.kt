@@ -15,8 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.classfile
 
+import com.itsaky.androidide.lsp.java.indexing.IJavaType
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmList
 import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
@@ -25,12 +27,18 @@ import io.realm.annotations.RealmField
 import io.realm.annotations.Required
 
 /**
- * A Java enum type.
+ * A Java annotation type.
+ *
+ * Implementation note:
+ * An annotation type is a Java interface, and hence, it inherits from [JavaInterface] instead of
+ * [IJavaType]. Also, [IJavaType.isInterface] and [IJavaType.isAnnotation] both
+ * return `true` for annotation types.
  *
  * @author Akash Yadav
  */
+
 @RealmClass
-open class JavaEnum : IJavaType<JavaField, JavaMethod> {
+open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
 
   @Index
   @PrimaryKey
@@ -65,9 +73,12 @@ open class JavaEnum : IJavaType<JavaField, JavaMethod> {
   override var fields: RealmList<JavaField>? = null
 
   @RealmField("methods")
-  override var methods: RealmList<JavaMethod>? = null
+  override var methods: RealmList<AnnotationElement>? = null
 
-  override val isEnum: Boolean
+  override val isInterface: Boolean
+    get() = true
+
+  override val isAnnotation: Boolean
     get() = true
 
   companion object {
@@ -78,13 +89,12 @@ open class JavaEnum : IJavaType<JavaField, JavaMethod> {
       packageName: String,
       accessFlags: Int,
       isInner: Boolean = false,
-      superClassFqn: String? = null,
       superInterfacesFqn: RealmList<String>? = null,
       apiInfo: ApiInfo? = null,
       fields: RealmList<JavaField>? = null,
-      methods: RealmList<JavaMethod>? = null
-    ): JavaEnum {
-      return JavaEnum().apply {
+      methods: RealmList<AnnotationElement>? = null
+    ): JavaAnnotation {
+      return JavaAnnotation().apply {
         this.fqn = fqn
         this.name = name
         this.packageName = packageName

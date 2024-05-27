@@ -15,16 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing
 
 /**
- * A java symbol.
+ * An [IJavaIndexable] model which is shared between other models.
  *
- * @property accessFlags Access flags of the symbol.
- * @property apiInfo Info about the APIs in which this symbol was added, deprecated or removed in.
  * @author Akash Yadav
  */
-interface IJavaSymbol : IJavaIndexable {
-  var accessFlags: Int
-  var apiInfo: ApiInfo?
+interface ISharedJavaIndexable : IJavaIndexable {
+
+  /**
+   * A unique ID for the indexable.
+   */
+  var id: Int?
+
+  /**
+   * Compute and update the ID of this indexable.
+   */
+  fun computeId()
 }

@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.indexing
 import com.itsaky.androidide.indexing.IIndex
 import com.itsaky.androidide.indexing.IIndexer
 import com.itsaky.androidide.indexing.IIndexer.Params
-import com.itsaky.androidide.lsp.java.indexing.models.IJavaIndexable
 import com.itsaky.androidide.tasks.cancelIfActive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred

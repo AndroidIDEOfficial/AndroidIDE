@@ -15,32 +15,28 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.classfile
 
-import io.realm.RealmList
+import com.itsaky.androidide.lsp.java.indexing.IJavaSymbol
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmResults
 import io.realm.annotations.Index
 import io.realm.annotations.LinkingObjects
 import io.realm.annotations.RealmClass
 import io.realm.annotations.RealmField
-import io.realm.annotations.Required
 
 /**
  * @author Akash Yadav
  */
-
 @RealmClass(embedded = true)
-open class JavaMethod : IJavaSymbol {
+open class JavaField : IJavaSymbol {
+
   @Index
-  @Required
   @RealmField("name")
   var name: String? = null
 
-  @RealmField("paramTypes")
-  var paramsTypes: RealmList<JavaType>? = null
-
-  @RealmField("returnType")
-  var returnType: JavaType? = null
+  @RealmField("type")
+  var type: JavaType? = null
 
   @RealmField("accessFlags")
   override var accessFlags: Int = 0
@@ -48,39 +44,27 @@ open class JavaMethod : IJavaSymbol {
   @RealmField("apiInfo")
   override var apiInfo: ApiInfo? = null
 
-  @LinkingObjects("methods")
-  val ofClass: RealmResults<JavaClass>? = null
+  @RealmField("constantValue")
+  var constantValue: JavaConstant? = null
 
-  /**
-   * Returns the signature of the method.
-   */
-  fun signature(): String {
-    val sb = StringBuilder()
-    sb.append(name)
-    sb.append("(")
-    paramsTypes?.forEach {
-      sb.append(it.internalForm())
-    }
-    sb.append(")")
-    sb.append(returnType?.internalForm())
-    return sb.toString()
-  }
+  @LinkingObjects("fields")
+  val ofClass: RealmResults<JavaClass>? = null
 
   companion object {
     @JvmStatic
-    fun newInstance(
+    fun newField(
       name: String,
-      paramsTypes: RealmList<JavaType>,
-      returnType: JavaType,
+      type: JavaType,
       accessFlags: Int,
       apiInfo: ApiInfo? = null,
-    ): JavaMethod {
-      return JavaMethod().apply {
+      constantValue: JavaConstant? = null
+    ): JavaField {
+      return JavaField().apply {
         this.name = name
-        this.paramsTypes = paramsTypes
-        this.returnType = returnType
+        this.type = type
         this.accessFlags = accessFlags
         this.apiInfo = apiInfo
+        this.constantValue = constantValue
       }
     }
   }

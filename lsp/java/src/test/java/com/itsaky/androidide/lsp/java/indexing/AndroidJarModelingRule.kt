@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.indexing
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.lsp.java.indexing.models.IJavaType
 import com.itsaky.androidide.utils.FileProvider
 import org.junit.rules.TestRule
 import org.junit.runner.Description

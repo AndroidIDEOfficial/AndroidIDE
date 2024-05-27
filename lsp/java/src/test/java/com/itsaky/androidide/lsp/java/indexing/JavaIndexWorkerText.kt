@@ -19,17 +19,16 @@ package com.itsaky.androidide.lsp.java.indexing
 
 import android.view.View
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.lsp.java.indexing.models.AnnotationElement
-import com.itsaky.androidide.lsp.java.indexing.models.IAnnotationElementValue
-import com.itsaky.androidide.lsp.java.indexing.models.IJavaType
-import com.itsaky.androidide.lsp.java.indexing.models.JavaAnnotation
-import com.itsaky.androidide.lsp.java.indexing.models.JavaClass
-import com.itsaky.androidide.lsp.java.indexing.models.JavaEnum
-import com.itsaky.androidide.lsp.java.indexing.models.JavaField
-import com.itsaky.androidide.lsp.java.indexing.models.JavaInterface
-import com.itsaky.androidide.lsp.java.indexing.models.JavaMethod
-import com.itsaky.androidide.lsp.java.indexing.models.JavaType
-import com.itsaky.androidide.lsp.java.indexing.models.PrimitiveAnnotationElementValue
+import com.itsaky.androidide.lsp.java.indexing.classfile.AnnotationElement
+import com.itsaky.androidide.lsp.java.indexing.classfile.IAnnotationElementValue
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaAnnotation
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaClass
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaEnum
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaField
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaInterface
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaMethod
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.indexing.classfile.PrimitiveAnnotationElementValue
 import io.realm.RealmAny
 import openjdk.tools.classfile.AccessFlags
 import org.junit.Rule

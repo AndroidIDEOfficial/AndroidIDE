@@ -15,8 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.models
+package com.itsaky.androidide.lsp.java.indexing.classfile
 
+import com.itsaky.androidide.lsp.java.indexing.IJavaType
+import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmList
 import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
@@ -25,18 +27,12 @@ import io.realm.annotations.RealmField
 import io.realm.annotations.Required
 
 /**
- * A Java annotation type.
- *
- * Implementation note:
- * An annotation type is a Java interface, and hence, it inherits from [JavaInterface] instead of
- * [IJavaType]. Also, [IJavaType.isInterface] and [IJavaType.isAnnotation] both
- * return `true` for annotation types.
+ * A Java enum type.
  *
  * @author Akash Yadav
  */
-
 @RealmClass
-open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
+open class JavaEnum : IJavaType<JavaField, JavaMethod> {
 
   @Index
   @PrimaryKey
@@ -71,12 +67,9 @@ open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
   override var fields: RealmList<JavaField>? = null
 
   @RealmField("methods")
-  override var methods: RealmList<AnnotationElement>? = null
+  override var methods: RealmList<JavaMethod>? = null
 
-  override val isInterface: Boolean
-    get() = true
-
-  override val isAnnotation: Boolean
+  override val isEnum: Boolean
     get() = true
 
   companion object {
@@ -87,12 +80,13 @@ open class JavaAnnotation : IJavaType<JavaField, AnnotationElement> {
       packageName: String,
       accessFlags: Int,
       isInner: Boolean = false,
+      superClassFqn: String? = null,
       superInterfacesFqn: RealmList<String>? = null,
       apiInfo: ApiInfo? = null,
       fields: RealmList<JavaField>? = null,
-      methods: RealmList<AnnotationElement>? = null
-    ): JavaAnnotation {
-      return JavaAnnotation().apply {
+      methods: RealmList<JavaMethod>? = null
+    ): JavaEnum {
+      return JavaEnum().apply {
         this.fqn = fqn
         this.name = name
         this.packageName = packageName
