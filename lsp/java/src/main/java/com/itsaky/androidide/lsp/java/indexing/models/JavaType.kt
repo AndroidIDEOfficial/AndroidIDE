@@ -177,7 +177,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     const val TYPE_VOID = 'V'
 
     @JvmStatic
-    val BOOLEAN = newInstance(name = TYPE_BOOLEAN, kind = KIND_INT)
+    val BOOLEAN = newInstance(name = TYPE_BOOLEAN, kind = KIND_BOOLEAN)
 
     @JvmStatic
     val BYTE = newInstance(name = TYPE_BYTE, kind = KIND_BYTE)
