@@ -41,13 +41,16 @@ open class ApiInfo : ISharedJavaIndexable, ICloneable {
   override var id: Int? = null
 
   @RealmField("since")
-  private var since: Int = 1
+  var since: Int = 1
+    private set
 
   @RealmField("deprecatedIn")
-  private var deprecatedIn: Int = 0
+  var deprecatedIn: Int = 0
+    private set
 
   @RealmField("removedIn")
-  private var removedIn: Int = 0
+  var removedIn: Int = 0
+    private set
 
   override fun computeId() {
     this.id = Objects.hashCode(this.since, this.removedIn, this.deprecatedIn)

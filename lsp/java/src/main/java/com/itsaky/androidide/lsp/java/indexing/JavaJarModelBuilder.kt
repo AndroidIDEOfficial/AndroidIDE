@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.indexing
 
+import androidx.annotation.VisibleForTesting
 import com.itsaky.androidide.lsp.java.indexing.classfile.AnnotationAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.AnnotationElement
 import com.itsaky.androidide.lsp.java.indexing.classfile.AnnotationElement.Companion.newAnnotationElement
@@ -68,6 +69,7 @@ class JavaJarModelBuilder(private val jar: File) {
 
   // for testing purposes
   // prefer using consumeTypes(Function)
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   fun buildTypes(): List<IJavaType<*, *>> {
     val types = mutableListOf<IJavaType<*, *>>()
     consumeTypes { types.add(it) }

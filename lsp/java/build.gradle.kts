@@ -64,13 +64,15 @@ dependencies {
   implementation(projects.subprojects.javacServices)
 
   implementation(libs.composite.javac)
-  implementation(libs.composite.jdkJdeps)
   implementation(libs.composite.javapoet)
+  implementation(libs.composite.jaxp)
+  implementation(libs.composite.jdkJdeps)
   implementation(libs.composite.googleJavaFormat)
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.common.kotlin)
 
+  testImplementation(projects.testing.common)
   testImplementation(projects.testing.lsp)
   androidTestImplementation(projects.testing.android)
   androidTestImplementation(projects.common)

@@ -113,7 +113,7 @@ object ToolingApiTestLauncher {
     )
 
     val builder = ProcessBuilder(cmdLine)
-    val androidHome = findAndroidHome()
+    val androidHome = com.itsaky.androidide.testing.common.utils.findAndroidHome()
 
     builder.environment()["ANDROID_SDK_ROOT"] = androidHome
     builder.environment()["ANDROID_HOME"] = androidHome
@@ -124,7 +124,8 @@ object ToolingApiTestLauncher {
     proc.onExit().whenComplete { process, error ->
       if (process != null) {
         println(
-          "[ToolingApiTestLauncher] Tooling API server process finished with exit code: ${process.exitValue()}")
+          "[ToolingApiTestLauncher] Tooling API server process finished with exit code: ${process.exitValue()}"
+        )
       }
       if (error != null) {
         println("[ToolingApiTestLauncher] Tooling API server process error")
@@ -134,8 +135,10 @@ object ToolingApiTestLauncher {
 
     Thread(Reader(proc.errorStream, params.log)).start()
     val launcher =
-      ToolingApiLauncher.newClientLauncher(params.client, proc.inputStream,
-        proc.outputStream)
+      ToolingApiLauncher.newClientLauncher(
+        params.client, proc.inputStream,
+        proc.outputStream
+      )
 
     launcher.startListening()
 
