@@ -73,7 +73,10 @@ subprojects {
   }
 
   tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = BuildConfig.javaVersion.toString()
+    kotlinOptions {
+      jvmTarget = BuildConfig.javaVersion.toString()
+      freeCompilerArgs += "-Xstring-concat=inline"
+    }
   }
 }
 
