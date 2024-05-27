@@ -30,6 +30,7 @@ import androidx.collection.MutableIntObjectMap
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ImageUtils
+import com.google.gson.GsonBuilder
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
@@ -51,6 +52,25 @@ import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
+import com.itsaky.androidide.models.workspace.EditorWorkspaceSettings
+import com.itsaky.androidide.models.workspace.WorkspaceSettings
+import com.itsaky.androidide.models.workspace.WorkspaceSettings.Companion.EditorWorkspaceSettingsWrapper
+import com.itsaky.androidide.preferences.internal.EditorPreferences.autoSave
+import com.itsaky.androidide.preferences.internal.EditorPreferences.completionsMatchLower
+import com.itsaky.androidide.preferences.internal.EditorPreferences.deleteTabsOnBackspace
+import com.itsaky.androidide.preferences.internal.EditorPreferences.drawEmptyLineWs
+import com.itsaky.androidide.preferences.internal.EditorPreferences.drawInnerWs
+import com.itsaky.androidide.preferences.internal.EditorPreferences.drawLeadingWs
+import com.itsaky.androidide.preferences.internal.EditorPreferences.drawLineBreak
+import com.itsaky.androidide.preferences.internal.EditorPreferences.drawTrailingWs
+import com.itsaky.androidide.preferences.internal.EditorPreferences.fontLigatures
+import com.itsaky.androidide.preferences.internal.EditorPreferences.fontSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences.pinLineNumbers
+import com.itsaky.androidide.preferences.internal.EditorPreferences.stickyScrollEnabled
+import com.itsaky.androidide.preferences.internal.EditorPreferences.tabSize
+import com.itsaky.androidide.preferences.internal.EditorPreferences.useSoftTab
+import com.itsaky.androidide.preferences.internal.EditorPreferences.visiblePasswordFlag
+import com.itsaky.androidide.preferences.internal.EditorPreferences.wordwrap
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.ui.CodeEditorView
@@ -115,13 +135,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     editorViewModel.observeFiles(this) {
       // rewrite the cached files index if there are any opened files
-      val currentFile =
-        getCurrentEditor()?.editor?.file?.absolutePath
-          ?: run {
-            editorViewModel.writeOpenedFiles(null)
-            editorViewModel.openedFilesCache = null
-            return@observeFiles
-          }
+      val currentFile = getCurrentEditor()?.editor?.file?.absolutePath ?: run {
+        editorViewModel.writeOpenedFiles(null)
+        editorViewModel.openedFilesCache = null
+        return@observeFiles
+      }
       getOpenedFiles().also {
         val cache = OpenedFilesCache(currentFile, it)
         editorViewModel.writeOpenedFiles(cache)
@@ -180,6 +198,13 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     super.onStart()
 
     try {
+      editorViewModel.getOrReadEditorWorkspaceSettings(this::onReadOrUpdateEditorWorkspaceSettings)
+      editorViewModel.editorWorkspaceSettings = null
+    } catch (err: Throwable) {
+      log.error("Failed to reopen editor workspace settings", err)
+    }
+
+    try {
       editorViewModel.getOrReadOpenedFilesCache(this::onReadOpenedFilesCache)
       editorViewModel.openedFilesCache = null
     } catch (err: Throwable) {
@@ -193,6 +218,26 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       openFile(File(file.filePath), file.selection)
     }
     openFile(File(cache.selectedFile))
+  }
+
+  private fun onReadOrUpdateEditorWorkspaceSettings(workspaceSettings: EditorWorkspaceSettings?) {
+    workspaceSettings ?: return
+    completionsMatchLower = workspaceSettings.completionsMatchLower
+    drawLeadingWs = workspaceSettings.drawLeadingWs
+    drawTrailingWs = workspaceSettings.drawTrailingWs
+    drawInnerWs = workspaceSettings.drawInnerWs
+    drawEmptyLineWs = workspaceSettings.drawEmptyLineWs
+    drawLineBreak = workspaceSettings.drawLineBreak
+    fontSize = workspaceSettings.fontSize
+    tabSize = workspaceSettings.tabSize
+    autoSave = workspaceSettings.autoSave
+    fontLigatures = workspaceSettings.fontLigatures
+    visiblePasswordFlag = workspaceSettings.visiblePasswordFlag
+    wordwrap = workspaceSettings.wordwrap
+    useSoftTab = workspaceSettings.useSoftTab
+    deleteTabsOnBackspace = workspaceSettings.deleteTabsOnBackspace
+    stickyScrollEnabled = workspaceSettings.stickyScrollEnabled
+    pinLineNumbers = workspaceSettings.pinLineNumbers
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -423,16 +468,14 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
   }
 
-  private suspend fun saveResultInternal(
-    index: Int,
-    result: SaveResult
-  ) : Boolean {
+  private suspend fun saveResultInternal(index: Int, result: SaveResult): Boolean {
     if (index < 0 || index >= editorViewModel.getOpenedFileCount()) {
       return false
     }
 
     val frag = getEditorAtIndex(index) ?: return false
-    val fileName = frag.file?.name ?: return false
+    val file = frag.file ?: return false
+    val fileName = file.name
 
     run {
       // Must be called before frag.save()
@@ -457,6 +500,18 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     withContext(Dispatchers.Main) {
 
+      if (fileName == WorkspaceSettings.SETTINGS_FILE_NAME) {
+        withContext(Dispatchers.IO) {
+          if (file.readText().isEmpty()) {
+            file.writeText(GsonBuilder().setPrettyPrinting().create().toJson(
+              EditorWorkspaceSettingsWrapper()))
+          }
+        }
+        onReadOrUpdateEditorWorkspaceSettings(
+          file.bufferedReader().use(EditorWorkspaceSettings::parse)
+        )
+      }
+
       editorViewModel.areFilesModified = hasUnsaved
 
       // set tab as unmodified
@@ -473,7 +528,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     getEditorForFile(file)?.isModified == true
   }
 
-  private suspend inline fun <T : Any?> performFileSave(crossinline action: suspend () -> T) : T {
+  private suspend inline fun <T : Any?> performFileSave(crossinline action: suspend () -> T): T {
     setFilesSaving(true)
     try {
       return action()
@@ -535,9 +590,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return
     }
 
-    val unsavedFiles =
-      editorViewModel.getOpenedFiles().map(::getEditorForFile)
-        .filter { it != null && it.isModified }
+    val unsavedFiles = editorViewModel.getOpenedFiles().map(::getEditorForFile)
+      .filter { it != null && it.isModified }
 
     if (unsavedFiles.isNotEmpty()) {
       notifyFilesUnsaved(unsavedFiles) { closeOthers() }
@@ -569,9 +623,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun closeAll(runAfter: () -> Unit) {
     val count = editorViewModel.getOpenedFileCount()
-    val unsavedFiles =
-      editorViewModel.getOpenedFiles().map(this::getEditorForFile)
-        .filter { it != null && it.isModified }
+    val unsavedFiles = editorViewModel.getOpenedFiles().map(this::getEditorForFile)
+      .filter { it != null && it.isModified }
 
     if (unsavedFiles.isNotEmpty()) {
       // There are unsaved files
@@ -596,11 +649,10 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     runAfter()
   }
 
-  override fun getOpenedFiles() =
-    editorViewModel.getOpenedFiles().mapNotNull {
-      val editor = getEditorForFile(it)?.editor ?: return@mapNotNull null
-      OpenedFile(it.absolutePath, editor.cursorLSPRange)
-    }
+  override fun getOpenedFiles() = editorViewModel.getOpenedFiles().mapNotNull {
+    val editor = getEditorForFile(it)?.editor ?: return@mapNotNull null
+    OpenedFile(it.absolutePath, editor.cursorLSPRange)
+  }
 
   private fun notifyFilesUnsaved(unsavedEditors: List<CodeEditorView?>, invokeAfter: Runnable) {
     if (isDestroying) {
@@ -614,23 +666,19 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val mapped = unsavedEditors.mapNotNull { it?.file?.absolutePath }
-    val builder =
-      newYesNoDialog(
-        context = this,
-        title = getString(string.title_files_unsaved),
-        message = getString(string.msg_files_unsaved, TextUtils.join("\n", mapped)),
-        positiveClickListener = { dialog, _ ->
-          dialog.dismiss()
-          saveAllAsync(notify = true, runAfter = { runOnUiThread(invokeAfter) })
-        }
-      ) { dialog, _ ->
+    val builder = newYesNoDialog(context = this, title = getString(string.title_files_unsaved),
+      message = getString(string.msg_files_unsaved, TextUtils.join("\n", mapped)),
+      positiveClickListener = { dialog, _ ->
         dialog.dismiss()
-        // Mark all the files as saved, then try to close them all
-        for (editor in unsavedEditors) {
-          editor?.markAsSaved()
-        }
-        invokeAfter.run()
+        saveAllAsync(notify = true, runAfter = { runOnUiThread(invokeAfter) })
+      }) { dialog, _ ->
+      dialog.dismiss()
+      // Mark all the files as saved, then try to close them all
+      for (editor in unsavedEditors) {
+        editor?.markAsSaved()
       }
+      invokeAfter.run()
+    }
     builder.show()
   }
 

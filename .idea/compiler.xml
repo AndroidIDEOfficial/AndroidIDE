@@ -21,7 +21,7 @@
         <module name="AndroidIDE.annotation-processors.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="11">
       <module name="AndroidIDE.annotation-ksp" target="17" />
       <module name="AndroidIDE.annotation-ksp.main" target="17" />
       <module name="AndroidIDE.annotation-ksp.test" target="17" />
@@ -166,50 +166,17 @@
       <module name="ATS.tree-sitter-log" target="17" />
       <module name="ATS.tree-sitter-python" target="17" />
       <module name="ATS.tree-sitter-xml" target="17" />
-      <module name="build-deps.appintro" target="17" />
       <module name="build-deps.desugaring-core" target="11" />
       <module name="build-deps.desugaring-core.main" target="11" />
       <module name="build-deps.desugaring-core.test" target="11" />
-      <module name="build-deps.fuzzysearch" target="17" />
-      <module name="build-deps.fuzzysearch.main" target="17" />
-      <module name="build-deps.fuzzysearch.test" target="17" />
-      <module name="build-deps.google-java-format" target="17" />
-      <module name="build-deps.javac" target="17" />
-      <module name="build-deps.javac.main" target="17" />
-      <module name="build-deps.javac.test" target="17" />
-      <module name="build-deps.javapoet" target="17" />
-      <module name="build-deps.javapoet.main" target="17" />
-      <module name="build-deps.javapoet.test" target="17" />
-      <module name="build-deps.jdk-jdeps" target="17" />
-      <module name="build-deps.jdk-jdeps.main" target="17" />
-      <module name="build-deps.jdk-jdeps.test" target="17" />
-      <module name="build-deps.jdt" target="17" />
-      <module name="build-deps.jdt.main" target="17" />
-      <module name="build-deps.jdt.test" target="17" />
-      <module name="build-deps.layoutlib-api" target="17" />
-      <module name="build-deps.layoutlib-api.main" target="17" />
-      <module name="build-deps.layoutlib-api.test" target="17" />
       <module name="build-logic.ats" target="17" />
       <module name="build-logic.ats.main" target="17" />
       <module name="build-logic.ats.test" target="17" />
-      <module name="build-logic.common" target="17" />
-      <module name="build-logic.common.main" target="17" />
-      <module name="build-logic.common.test" target="17" />
-      <module name="build-logic.desugaring" target="17" />
-      <module name="build-logic.desugaring-core" target="11" />
       <module name="build-logic.desugaring-core.main" target="11" />
       <module name="build-logic.desugaring-core.test" target="11" />
-      <module name="build-logic.desugaring.main" target="17" />
-      <module name="build-logic.desugaring.test" target="17" />
       <module name="build-logic.ide" target="17" />
       <module name="build-logic.ide.main" target="17" />
       <module name="build-logic.ide.test" target="17" />
-      <module name="build-logic.plugins" target="17" />
-      <module name="build-logic.plugins.main" target="17" />
-      <module name="build-logic.plugins.test" target="17" />
-      <module name="build-logic.properties-parser" target="17" />
-      <module name="build-logic.properties-parser.main" target="17" />
-      <module name="build-logic.properties-parser.test" target="17" />
       <module name="composite-builds.build-logic.desugaring-core.main" target="11" />
       <module name="composite-builds.build-logic.desugaring-core.test" target="11" />
       <module name="composite-builds.plugins" target="17" />

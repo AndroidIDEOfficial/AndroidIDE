@@ -27,8 +27,10 @@ import java.io.Reader
 /**
  * @author Akash Yadav
  */
-data class OpenedFilesCache(@SerializedName(KEY_SELECTED_FILE) val selectedFile: String,
-  @SerializedName(KEY_ALL_FILES) val allFiles: List<OpenedFile>) {
+data class OpenedFilesCache(
+  @SerializedName(KEY_SELECTED_FILE) val selectedFile: String,
+  @SerializedName(KEY_ALL_FILES) val allFiles: List<OpenedFile>
+) {
 
   companion object {
 
