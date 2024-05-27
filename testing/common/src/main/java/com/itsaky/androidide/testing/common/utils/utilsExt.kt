@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.testing.tooling
+package com.itsaky.androidide.testing.common.utils
 
 fun findAndroidHome(): String {
   var androidHome = System.getenv("ANDROID_HOME")
@@ -28,11 +28,11 @@ fun findAndroidHome(): String {
     return androidHome
   }
 
-  val os = System.getProperty("os.name")
   val home = System.getProperty("user.home")
-  return if (os.contains("Linux")) {
-    "$home/Android/Sdk"
-  } else {
-    "$home\\AppData\\Local\\Android\\Sdk"
+  return when {
+    OperatingSystem.IS_UNIX -> "$home/Android/Sdk"
+    OperatingSystem.IS_MAC -> "$home/Library/Android/sdk"
+    OperatingSystem.IS_WINDOWS -> "$home\\AppData\\Local\\Android\\Sdk"
+    else -> throw IllegalStateException("Unsupported operating system")
   }
 }
