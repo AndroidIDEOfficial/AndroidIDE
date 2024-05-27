@@ -43,8 +43,11 @@ class SigningConfigPlugin : Plugin<Project> {
         return
       }
 
-      // Download the signing key
-      downloadSigningKey()
+      val signingKey = signingKey.get().asFile
+      if (!signingKey.exists()) {
+        logger.warn("Signing key not found. Debug signing will be used.")
+        return
+      }
 
       // Create and apply the signing config
       extensions.getByType(BaseExtension::class.java).let { extension ->
@@ -52,8 +55,6 @@ class SigningConfigPlugin : Plugin<Project> {
         val alias = getEnvOrProp(KEY_ALIAS)
         val storePass = getEnvOrProp(KEY_STORE_PASS)
         val keyPass = getEnvOrProp(KEY_PASS)
-
-        val signingKey = signingKey.get().asFile
 
         if (alias != null && storePass != null && keyPass != null && signingKey.exists()) {
           val config = extension.signingConfigs.create("common") {
@@ -70,7 +71,6 @@ class SigningConfigPlugin : Plugin<Project> {
           logger.warn(
             "Signing info not configured. keystoreFile=$signingKey[exists=${signingKey.exists()}]"
           )
-
           null
         }
       }

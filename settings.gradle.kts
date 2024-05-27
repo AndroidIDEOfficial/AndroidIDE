@@ -84,6 +84,21 @@ buildscript {
   }
 }
 
+val isGitRepo by lazy {
+  cmdOutput("git", "rev-parse", "--is-inside-work-tree").trim() == "true"
+}
+
+private fun cmdOutput(vararg args: String): String {
+  return ProcessBuilder(*args)
+    .directory(File("."))
+    .redirectErrorStream(true)
+    .start()
+    .inputStream
+    .bufferedReader()
+    .readText()
+    .trim()
+}
+
 FDroidConfig.load(rootDir)
 
 if (FDroidConfig.hasRead && FDroidConfig.isFDroidBuild) {
@@ -95,7 +110,7 @@ if (FDroidConfig.hasRead && FDroidConfig.isFDroidBuild) {
 
     project.setProperty("version", simpleVersion)
   }
-} else {
+} else if(isGitRepo) {
   apply {
     plugin("com.mooltiverse.oss.nyx")
   }
