@@ -46,20 +46,22 @@ class TerminalBootstrapPackagesPlugin : Plugin<Project> {
      */
     private const val BOOTSTRAP_PACKAGES_VERSION = "16.12.2023"
 
-    private const val PACKAGES_DOWNLOAD_URL = "https://github.com/AndroidIDEOfficial/terminal-packages/releases/download/bootstrap-%1\$s/bootstrap-%2\$s.zip"
+    private const val PACKAGES_DOWNLOAD_URL =
+      "https://github.com/AndroidIDEOfficial/terminal-packages/releases/download/bootstrap-%1\$s/bootstrap-%2\$s.zip"
   }
 
   override fun apply(target: Project) {
     target.run {
 
-      val bootstrapOut = project.layout.buildDirectory.file("intermediates/bootstrap-packages")
+      val bootstrapOut = project.layout.buildDirectory.dir("bootstrap-packages")
         .get().asFile
 
       val files = BOOTSTRAP_PACKAGES.map { (arch, sha256) ->
         val file = File(bootstrapOut, "bootstrap-${arch}.zip")
         file.parentFile.mkdirs()
 
-        DownloadUtils.doDownload(file = file,
+        DownloadUtils.doDownload(
+          file = file,
           remoteUrl = PACKAGES_DOWNLOAD_URL.format(BOOTSTRAP_PACKAGES_VERSION, arch),
           expectedChecksum = sha256,
           logger = logger

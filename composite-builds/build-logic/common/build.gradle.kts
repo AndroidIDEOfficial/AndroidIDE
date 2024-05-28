@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   //noinspection JavaPluginLanguageLevel
   id("java-library")
-  alias(libs.plugins.kotlin.jvm)
+  id("org.jetbrains.kotlin.jvm")
 }
 
 tasks.withType<KotlinCompile> {

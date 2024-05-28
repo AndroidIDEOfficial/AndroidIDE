@@ -32,10 +32,8 @@ dependencies {
   api(libs.tests.junit)
   api(libs.tests.google.truth)
   api(libs.tests.mockk)
-
   api(projects.buildInfo)
   api(projects.common)
   api(projects.shared)
-
-  api(projects.testing.common)
+  api(projects.subprojects.testingCommon)
 }

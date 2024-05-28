@@ -36,5 +36,5 @@ tasks.withType(Test::class.java) {
 
 dependencies {
     implementation(libs.androidx.annotation)
-    testImplementation(projects.testing.unit)
+    testImplementation(projects.subprojects.testingUnit)
 }

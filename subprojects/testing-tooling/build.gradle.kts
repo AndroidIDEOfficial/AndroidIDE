@@ -17,17 +17,22 @@
 
 @Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("java-library")
-  id("kotlin-kapt")
-  id("org.jetbrains.kotlin.jvm")
+    id("java-library")
+    id("org.jetbrains.kotlin.jvm")
 }
 
 dependencies {
-  kapt(libs.google.auto.service)
-  implementation(libs.google.auto.service.annotations)
+    api(libs.common.jkotlin)
+    api(libs.tests.robolectric)
+    api(libs.tests.junit)
+    api(libs.tests.google.truth)
+    api(libs.tests.mockk)
+    api(projects.buildInfo)
+    api(projects.logger)
+    api(projects.shared)
+    api(projects.subprojects.toolingApi)
+    api(projects.subprojects.testingCommon)
 
-  api(libs.tests.junit)
-  api(projects.logger)
-
-  implementation(projects.subprojects.toolingApiImpl)
+    // build tooling API before tests
+    compileOnly(projects.subprojects.toolingApiImpl)
 }

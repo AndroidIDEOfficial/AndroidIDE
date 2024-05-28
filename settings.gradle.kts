@@ -160,6 +160,12 @@ include(
   ":subprojects:indexing",
   ":subprojects:javac-services",
   ":subprojects:projects",
+  ":subprojects:testing-android",
+  ":subprojects:testing-benchmarks",
+  ":subprojects:testing-common",
+  ":subprojects:testing-lsp",
+  ":subprojects:testing-tooling",
+  ":subprojects:testing-unit",
   ":subprojects:tooling-api",
   ":subprojects:tooling-api-events",
   ":subprojects:tooling-api-impl",
@@ -170,12 +176,6 @@ include(
   ":termux:termux-emulator",
   ":termux:termux-shared",
   ":termux:termux-view",
-  ":testing:android",
-  ":testing:benchmark",
-  ":testing:common",
-  ":testing:lsp",
-  ":testing:tooling",
-  ":testing:unit",
 )
 
 object FDroidConfig {

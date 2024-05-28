@@ -153,10 +153,20 @@
       <module name="AndroidIDE.templates-testing.main" target="11" />
       <module name="AndroidIDE.templates-testing.test" target="11" />
       <module name="AndroidIDE.testing-android" target="17" />
+      <module name="AndroidIDE.testing.android" target="17" />
       <module name="AndroidIDE.testing.android.test" target="11" />
+      <module name="AndroidIDE.testing.benchmark" target="17" />
+      <module name="AndroidIDE.testing.common" target="11" />
+      <module name="AndroidIDE.testing.common.main" target="11" />
+      <module name="AndroidIDE.testing.common.test" target="11" />
+      <module name="AndroidIDE.testing.lsp" target="17" />
+      <module name="AndroidIDE.testing.tooling" target="11" />
       <module name="AndroidIDE.testing.tooling-api" target="11" />
       <module name="AndroidIDE.testing.tooling-api.main" target="11" />
       <module name="AndroidIDE.testing.tooling-api.test" target="11" />
+      <module name="AndroidIDE.testing.tooling.main" target="11" />
+      <module name="AndroidIDE.testing.tooling.test" target="11" />
+      <module name="AndroidIDE.testing.unit" target="17" />
       <module name="AndroidIDE.testing.unit.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
       <module name="ATS.android-tree-sitter" target="17" />

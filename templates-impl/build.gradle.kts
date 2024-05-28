@@ -43,6 +43,6 @@ dependencies {
   testImplementation(projects.templatesApi)
   testImplementation(projects.lsp.api)
   testImplementation(projects.preferences)
-  testImplementation(projects.testing.unit)
-  testImplementation(projects.testing.tooling)
+  testImplementation(projects.subprojects.testingUnit)
+  testImplementation(projects.subprojects.testingTooling)
 }
