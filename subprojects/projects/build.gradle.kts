@@ -38,5 +38,5 @@ dependencies {
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.guava)
 
-  testImplementation(projects.testing.tooling)
+  testImplementation(projects.subprojects.testingTooling)
 }

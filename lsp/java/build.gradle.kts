@@ -45,18 +45,17 @@ dependencies {
 
   implementation(libs.androidide.ts)
   implementation(libs.androidide.ts.java)
+  implementation(libs.androidx.appcompat)
   implementation(libs.common.editor)
   implementation(libs.common.javaparser)
   implementation(libs.common.utilcode)
   implementation(libs.androidx.annotation)
   implementation(libs.google.guava)
   implementation(libs.google.gson)
+  implementation(libs.google.material)
 
-  compileOnly(libs.androidx.appcompat)
-  compileOnly(libs.google.material)
-  compileOnly(projects.actions)
-  compileOnly(projects.common)
-
+  implementation(projects.actions)
+  implementation(projects.common)
   implementation(projects.editorApi)
   implementation(projects.resources)
   implementation(projects.lsp.api)
@@ -71,10 +70,10 @@ dependencies {
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.common.kotlin)
-
-  testImplementation(projects.testing.common)
-  testImplementation(projects.testing.lsp)
-  androidTestImplementation(projects.testing.android)
+  
+  testImplementation(projects.subprojects.testingCommon)
+  testImplementation(projects.subprojects.testingLsp)
+  androidTestImplementation(projects.subprojects.testingAndroid)
   androidTestImplementation(projects.common)
   androidTestImplementation(projects.shared)
 }

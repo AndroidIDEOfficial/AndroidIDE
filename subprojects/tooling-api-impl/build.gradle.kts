@@ -71,7 +71,7 @@ dependencies {
   implementation(libs.xml.apis)
   implementation(libs.tooling.gradleApi)
 
-  testImplementation(projects.testing.tooling)
+  testImplementation(projects.subprojects.testingTooling)
 
   runtimeOnly(libs.tooling.slf4j)
 }

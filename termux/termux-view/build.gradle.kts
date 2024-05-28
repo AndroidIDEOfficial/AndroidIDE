@@ -15,5 +15,5 @@ dependencies {
     implementation(projects.resources)
     api(projects.termux.termuxEmulator)
 
-    testImplementation(projects.testing.unit)
+    testImplementation(projects.subprojects.testingUnit)
 }

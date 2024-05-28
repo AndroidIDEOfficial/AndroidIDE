@@ -68,7 +68,7 @@ dependencies {
     implementation(projects.termux.termuxView)
     implementation(projects.termux.termuxShared)
 
-    testImplementation(projects.testing.unit)
+    testImplementation(projects.subprojects.testingUnit)
 }
 
 tasks.register("versionName") {

@@ -55,7 +55,8 @@ dependencies {
     testImplementation(projects.actions)
     testImplementation(projects.subprojects.projects)
     testImplementation(projects.subprojects.toolingApi)
-    testImplementation(projects.testing.lsp)
+    testImplementation(projects.subprojects.testingCommon)
+    testImplementation(projects.subprojects.testingLsp)
 
     compileOnly(projects.common)
     compileOnly(libs.common.antlr4)

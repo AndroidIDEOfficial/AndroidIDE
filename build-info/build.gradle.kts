@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.android.SdkConstants
 import com.itsaky.androidide.build.config.AGP_VERSION_MINIMUM
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.CI
@@ -74,7 +75,7 @@ tasks.create("generateBuildInfo") {
 
         "AGP_VERSION_MININUM" to AGP_VERSION_MINIMUM,
         "AGP_VERSION_LATEST" to libs.versions.agp.tooling.get(),
-        "AGP_VERSION_GRADLE_LATEST" to "8.6" /*SdkConstants.GRADLE_LATEST_VERSION*/,
+        "AGP_VERSION_GRADLE_LATEST" to SdkConstants.GRADLE_LATEST_VERSION,
 
         "SNAPSHOTS_REPOSITORY" to VersionUtils.SONATYPE_SNAPSHOTS_REPO,
         "PUBLIC_REPOSITORY" to VersionUtils.SONATYPE_PUBLIC_REPO,

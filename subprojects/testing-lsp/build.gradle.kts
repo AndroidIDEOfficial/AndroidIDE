@@ -18,8 +18,8 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.kotlin.android)
+  id("com.android.library")
+  id("kotlin-android")
 }
 
 android {
@@ -30,15 +30,14 @@ dependencies {
   api(libs.androidx.core.ktx)
   api(libs.common.editor)
   api(libs.common.kotlin)
-
   api(libs.tests.mockito.kotlin)
 
   api(projects.actions)
   api(projects.common)
   api(projects.eventbusAndroid)
   api(projects.lsp.api)
-  api(projects.testing.common)
-  api(projects.testing.android)
-  api(projects.testing.tooling)
-  api(projects.testing.unit)
+  api(projects.subprojects.testingCommon)
+  api(projects.subprojects.testingAndroid)
+  api(projects.subprojects.testingTooling)
+  api(projects.subprojects.testingUnit)
 }

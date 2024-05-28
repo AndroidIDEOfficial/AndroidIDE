@@ -41,5 +41,6 @@ dependencies {
   implementation(projects.resources)
 
   testImplementation(projects.subprojects.projects)
-  testImplementation(projects.testing.tooling)
+  testImplementation(projects.subprojects.testingCommon)
+  testImplementation(projects.subprojects.testingTooling)
 }

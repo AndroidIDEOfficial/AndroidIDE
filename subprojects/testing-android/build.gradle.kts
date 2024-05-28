@@ -18,8 +18,8 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.kotlin.android)
+  id("com.android.library")
+  id("kotlin-android")
 }
 
 android {
@@ -61,5 +61,5 @@ dependencies {
   api(projects.buildInfo)
   api(projects.common)
   api(projects.shared)
-  api(projects.testing.common)
+  api(projects.subprojects.testingCommon)
 }

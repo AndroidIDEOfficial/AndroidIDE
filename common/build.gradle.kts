@@ -18,8 +18,8 @@
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library")
+    id("kotlin-android")
 }
 
 android {

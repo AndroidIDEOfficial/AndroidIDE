@@ -40,6 +40,6 @@ dependencies {
     implementation(projects.preferences)
     implementation(projects.resources)
 
-    testImplementation(projects.testing.unit)
-    testImplementation(projects.testing.android)
+    testImplementation(projects.subprojects.testingUnit)
+    testImplementation(projects.subprojects.testingAndroid)
 }
