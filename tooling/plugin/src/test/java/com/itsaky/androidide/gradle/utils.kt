@@ -25,6 +25,7 @@ import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Path
+import java.nio.file.Paths
 import kotlin.io.path.pathString
 
 internal fun buildProject(
@@ -36,7 +37,7 @@ internal fun buildProject(
 ): BuildResult {
   val projectRoot = openProject(agpVersion, useApplyPluginGroovySyntax, *plugins)
   val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
-  val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local/repos.txt").toFile()
+  val mavenLocal = Paths.get("build/maven-local/repos.txt").toFile()
 
   if (!(mavenLocal.exists() && mavenLocal.isFile)) {
     throw FileNotFoundException("repos.txt file not found")
@@ -103,8 +104,7 @@ internal fun openProject(
   useApplyPluginGroovySyntax: Boolean = false,
   vararg plugins: String
 ): Path {
-  val projectRoot = FileProvider.projectRoot()
-    .resolve("gradle-plugin/src/test/resources/sample-project")
+  val projectRoot = Paths.get("src/test/resources/sample-project")
 
   run {
     projectRoot.resolve("build.gradle.kts").toFile()
