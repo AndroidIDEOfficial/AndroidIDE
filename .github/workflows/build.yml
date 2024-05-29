@@ -77,10 +77,10 @@ jobs:
       - name: Assemble ${{ matrix.build_type }} APK
         run: |
           build_type=${{ matrix.build_type }}
-          ./gradlew :app:assemble${build_type^}
+          ./gradlew :core:app:assemble${build_type^}
       - name: Copy ${{ matrix.build_type }} APK
         run: |
-          cp app/build/outputs/apk/${{ matrix.build_type }}/app-*.apk ./
+          cp core/app/build/outputs/apk/${{ matrix.build_type }}/app-*.apk ./
       - name: Upload arm64-v8a ${{ matrix.build_type }} APK
         uses: actions/upload-artifact@v4
         with:
@@ -165,7 +165,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run tooling API tests
-        run: ./gradlew :subprojects:tooling-api-impl:build --continue
+        run: ./gradlew :tooling:impl:build --continue
         env:
           ANDROIDIDE_TEST: true
           TEST_TOOLING_API_IMPL: true
