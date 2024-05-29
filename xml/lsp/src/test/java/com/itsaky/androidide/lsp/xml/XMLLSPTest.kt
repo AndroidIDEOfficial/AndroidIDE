@@ -29,7 +29,7 @@ import org.junit.Ignore
 
 /** @author Akash Yadav */
 @Ignore("Base class for XML tests")
-object XMLLSPTest : LSPTest() {
+object XMLLSPTest : LSPTest("xml") {
 
   @Before
   override fun initProjectIfNeeded() {
