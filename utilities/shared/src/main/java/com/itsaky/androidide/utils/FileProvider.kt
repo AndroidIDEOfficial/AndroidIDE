@@ -93,7 +93,7 @@ class FileProvider {
      * @return The path to the file.
      */
     @JvmStatic
-    fun sourceFile(name: String): Path {
+    fun sourceFile(name: String, extension: String = ""): Path {
       return resources().resolve("${name}_template.$extension").normalize()
     }
 

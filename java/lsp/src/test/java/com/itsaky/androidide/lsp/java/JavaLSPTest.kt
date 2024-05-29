@@ -26,7 +26,7 @@ import org.junit.Ignore
 
 /** @author Akash Yadav */
 @Ignore("Base singleton class")
-object JavaLSPTest : LSPTest() {
+object JavaLSPTest : LSPTest("java") {
 
   val server by lazy {
     ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)

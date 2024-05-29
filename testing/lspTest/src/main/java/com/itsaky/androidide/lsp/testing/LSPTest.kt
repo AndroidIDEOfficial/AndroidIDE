@@ -63,7 +63,9 @@ import java.nio.file.Path
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
-abstract class LSPTest {
+abstract class LSPTest(
+  private val sourceFileExt: String,
+) {
 
   protected lateinit var toolingServer: IToolingApiServer
   protected lateinit var toolingProject: IProject
@@ -162,7 +164,7 @@ abstract class LSPTest {
   }
 
   open fun openFile(fileName: String) {
-    file = FileProvider.sourceFile(fileName).normalize()
+    file = FileProvider.sourceFile(fileName, sourceFileExt).normalize()
     contents = FileProvider.contents(file!!)
 
     dispatchEvent(DocumentOpenEvent(file!!, contents.toString(), 0))
