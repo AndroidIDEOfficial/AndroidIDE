@@ -78,7 +78,10 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         // Tooling API JAR copier
         val copyToolingApiJar = tasks.register("copy${variantNameCapitalized}ToolingApiJar",
           AddFileToAssetsTask::class.java) {
-          val toolingApi = rootProject.findProject(":subprojects:tooling-api-impl")!!
+          val implPath = ":tooling:impl"
+          val toolingApi = checkNotNull(rootProject.findProject(implPath)) {
+            "Cannot find the Tooling Impl module with project path: '$implPath'"
+          }
           dependsOn(toolingApi.tasks.getByName("copyJar"))
 
           val toolingApiJar = toolingApi.layout.buildDirectory.file("libs/tooling-api-all.jar")

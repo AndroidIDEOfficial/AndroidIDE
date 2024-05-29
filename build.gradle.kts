@@ -21,6 +21,7 @@ import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.FDroidConfig
 import com.itsaky.androidide.build.config.publishingVersion
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
+import com.itsaky.androidide.plugins.GroupConfigPlugin
 import com.itsaky.androidide.plugins.conf.configureAndroidModule
 import com.itsaky.androidide.plugins.conf.configureJavaModule
 import com.itsaky.androidide.plugins.conf.configureMavenPublish
@@ -50,11 +51,11 @@ subprojects {
   // Always load the F-Droid config
   FDroidConfig.load(project)
 
+  apply { plugin(GroupConfigPlugin::class.java) }
   afterEvaluate {
     apply { plugin(AndroidIDEPlugin::class.java) }
   }
 
-  project.group = BuildConfig.packageName
   project.version = rootProject.version
 
   plugins.withId("com.android.application") {
