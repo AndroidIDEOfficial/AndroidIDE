@@ -27,6 +27,8 @@ import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.FDroidConfig
 import com.itsaky.androidide.build.config.isFDroidBuild
 import com.itsaky.androidide.build.config.projectVersionCode
+import com.itsaky.androidide.plugins.AndroidIDECoreAppPlugin
+import com.itsaky.androidide.plugins.NoDesugarPlugin
 import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -42,19 +44,20 @@ import org.gradle.api.provider.Provider
  * flavor, the version code will be `100 * 270 + 1` i.e. `27001`
  */
 internal val flavorsAbis = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2, "x86_64" to 3)
-private val disableCoreLibDesugaringForModules = arrayOf(":logsender", ":logger")
 
 fun Project.configureAndroidModule(
   coreLibDesugDep: Provider<MinimalExternalModuleDependency>
 ) {
+  val isAppModule = plugins.hasPlugin("com.android.application")
   assert(
-    plugins.hasPlugin("com.android.application") || plugins.hasPlugin("com.android.library")) {
+    isAppModule || plugins.hasPlugin("com.android.library")
+  ) {
     "${javaClass.simpleName} can only be applied to Android projects"
   }
 
   val androidJar = extensions.getByType(AndroidComponentsExtension::class.java)
     .getAndroidJar(assertExists = true)
-  val frameworkStubsJar = findProject(":subprojects:framework-stubs")!!.file("libs/android.jar")
+  val frameworkStubsJar = findProject(":utilities:framework-stubs")!!.file("libs/android.jar")
     .also { it.parentFile.mkdirs() }
 
   if (!(frameworkStubsJar.exists() && frameworkStubsJar.isFile)) {
@@ -116,18 +119,11 @@ fun Project.configureAndroidModule(
 
     configureCoreLibDesugaring(this, coreLibDesugDep)
 
-    if (":app" == project.path) {
+    if (project.plugins.hasPlugin(AndroidIDECoreAppPlugin::class.java)) {
       packagingOptions {
         jniLibs {
           useLegacyPackaging = true
         }
-      }
-
-      flavorsAbis.forEach { (abi, _) ->
-        // the common defaultConfig, not the flavor-specific
-        defaultConfig.buildConfigField("String",
-          "ABI_${abi.replace('-', '_').uppercase()}",
-          "\"${abi}\"")
       }
 
       splits {
@@ -149,7 +145,8 @@ fun Project.configureAndroidModule(
 
             // version code increment
             val verCodeIncr = flavorsAbis[output.getFilter(
-              FilterConfiguration.FilterType.ABI)?.identifier]
+              FilterConfiguration.FilterType.ABI
+            )?.identifier]
               ?: throw UnsupportedOperationException("Universal APKs are not supported!")
 
             output.versionCode.set(100 * projectVersionCode + verCodeIncr)
@@ -167,7 +164,11 @@ fun Project.configureAndroidModule(
 
     buildTypes.getByName("debug") { isMinifyEnabled = false }
     buildTypes.getByName("release") {
-      isMinifyEnabled = true
+
+      // from AGP 8.4.0 onwards, there are some behavioral changes in R8
+      // enabling R8 on library projects results in missing class errors
+      // see https://issuetracker.google.com/issues/338411137#comment11
+      isMinifyEnabled = isAppModule
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
 
@@ -177,7 +178,6 @@ fun Project.configureAndroidModule(
     // the build are faster for this build type as compared to 'release'
     buildTypes.register("dev") {
       initWith(buildTypes.getByName("release"))
-
       isMinifyEnabled = false
     }
 
@@ -188,9 +188,11 @@ fun Project.configureAndroidModule(
   }
 }
 
-private fun Project.configureCoreLibDesugaring(baseExtension: BaseExtension,
-  coreLibDesugDep: Provider<MinimalExternalModuleDependency>) {
-  val coreLibDesugaringEnabled = project.path !in disableCoreLibDesugaringForModules
+private fun Project.configureCoreLibDesugaring(
+  baseExtension: BaseExtension,
+  coreLibDesugDep: Provider<MinimalExternalModuleDependency>
+) {
+  val coreLibDesugaringEnabled = !project.plugins.hasPlugin(NoDesugarPlugin::class.java)
 
   baseExtension.compileOptions.isCoreLibraryDesugaringEnabled = coreLibDesugaringEnabled
 
