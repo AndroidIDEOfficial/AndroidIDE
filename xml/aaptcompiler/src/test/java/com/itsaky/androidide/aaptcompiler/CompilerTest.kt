@@ -40,7 +40,7 @@ class CompilerTest {
   @Test
   fun `test simple compilatation`() {
     val input =
-      FileProvider.projectRoot().resolve("app/src/main/res/layout/activity_editor.xml").toFile()
+      FileProvider.projectRoot().resolve("core/app/src/main/res/layout/activity_editor.xml").toFile()
     val output = Paths.get("./build").absolute().normalize().toFile()
     println(input)
     println(output)

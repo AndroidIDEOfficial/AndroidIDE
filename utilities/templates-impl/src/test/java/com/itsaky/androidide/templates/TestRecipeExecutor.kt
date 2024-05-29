@@ -33,9 +33,9 @@ class TestRecipeExecutor : RecipeExecutor {
   // order of the element matters!
   private val modulesWithAssets by lazy {
     arrayOf(
-      "templates-api",
-      "templates-impl",
-      "app"
+      "utilities/templates-api",
+      "utilities/templates-impl",
+      "core/app"
     )
   }
 
