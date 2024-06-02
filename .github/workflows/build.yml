@@ -97,7 +97,7 @@ jobs:
           name: apk-x86_64-${{ matrix.build_type }}
           path: app-x86_64-${{ matrix.build_type }}.apk
       - name: Upload ${{ matrix.build_type }} mappings
-        if: ${{ matrix.build_type == 'release' }}
+        if: ${{ always() && matrix.build_type == 'release' }}
         uses: actions/upload-artifact@v4
         with:
           name: release-mappings
