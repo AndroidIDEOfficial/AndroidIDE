@@ -221,7 +221,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: Nexus 6
-          script: ./gradlew connectedCheck
+          script: ./gradlew connectedCheck --info --stacktrace
       - name: Upload test reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
