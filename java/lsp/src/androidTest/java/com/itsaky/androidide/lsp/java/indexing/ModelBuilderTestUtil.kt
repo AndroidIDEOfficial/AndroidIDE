@@ -27,9 +27,9 @@ import openjdk.tools.classfile.AccessFlags
 /**
  * @author Akash Yadav
  */
-object ModelBuilder {
+object ModelBuilderTestUtil {
 
-  fun createJavaClass() = JavaClass.newInstance(
+  fun createTestClass() = JavaClass.newInstance(
     fqn = "com/itsaky/androidide/indexing/TestClass",
     name = "TestClass",
     packageName = "com/itsaky/androidide/indexing",

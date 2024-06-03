@@ -43,7 +43,7 @@ class JavaClassCRUDTest {
   @Test
   fun testSimpleJavaClassCRUD() {
     dbTestRule.withDb("java-class-CRUD") {
-      val klass = ModelBuilder.createJavaClass()
+      val klass = ModelBuilderTestUtil.createTestClass()
 
       // CREATE
       executeTransaction {

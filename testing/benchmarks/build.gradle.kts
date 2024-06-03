@@ -32,7 +32,7 @@ android {
 
   sourceSets {
     getByName("androidTest") {
-      assets.srcDirs(rootProject.file("subprojects/framework-stubs/libs"))
+      assets.srcDirs(rootProject.file("utilities/framework-stubs/libs"))
     }
   }
 
