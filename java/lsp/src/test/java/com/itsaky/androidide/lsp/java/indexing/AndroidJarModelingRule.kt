@@ -31,11 +31,15 @@ class AndroidJarModelingRule : TestRule {
 
   private val androidJar: File by lazy {
     FileProvider.projectRoot()
-      .resolve("subprojects")
+      .resolve("utilities")
       .resolve("framework-stubs")
       .resolve("libs")
       .resolve("android.jar")
-      .toFile()
+      .toFile().also {
+        check(it.exists()) {
+          "android.jar file could not be found"
+        }
+      }
   }
 
   private val androidJarIndexer: JavaJarModelBuilder by lazy {
