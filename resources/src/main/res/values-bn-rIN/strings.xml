@@ -175,7 +175,7 @@
   <string name="msg_empty_ui_layout">কোন ভিউ যোগ করা হয়নি। যোগ করতে ক্লিক করুন৷</string>
   <string name="msg_generate_xml_failed">XML কোড তৈরি করতে ব্যর্থ</string>
   <string name="title_generating_xml">XML কোড তৈরি করা হচ্ছে</string>
-  <string name="msg_swipe_up">Swipe up or click for build output, logs and more.</string>
+  <string name="msg_swipe_up">বিল্ড আউটপুট, লগ এবং আরও অনেক কিছুর জন্য উপরে উঠান বা ক্লিক করুন।.</string>
   <string name="msg_ide_crashed">AndroidIDE ক্র্যাশ হয়েছে</string>
   <string name="msg_report_crash">অনুগ্রহ করে গিটহাবে নিম্নলিখিত স্ট্যাকট্রেস সহ একটি সমস্যা খুলুন :</string>
   <string name="msg_crash_report_hint">লগ কপি করতে এবং সমস্যা পৃষ্ঠা খুলতে নীচের বোতামে ক্লিক করুন৷</string>
@@ -427,7 +427,7 @@
   <string name="idepref_launchAppAfterInstall_title">ইনস্টলেশনের পরে অ্যাপ চালু করুন</string>
   <string name="idepref_launchAppAfterInstall_summary">যদি সক্ষম করা থাকে, তাহলে IDE (নিশ্চিতকরণ ছাড়াই) অ্যাপ্লিকেশনটি ইনস্টল করার সাথে সাথে এটি চালু করবে।</string>
   <string name="title_run_options">চালানোর অপশনগুলি</string>
-  <string name="err_cannot_determine_package">অ্যাপ্লিকেশন চালানো যাবে না. প্যাকেজ নাম নির্ধারণ করতে অক্ষম.</string>
+  <string name="err_cannot_determine_package">অ্যাপ্লিকেশন চালানো যাবে না। প্যাকেজ নাম নির্ধারণ করতে অক্ষম।.</string>
   <string name="msg_launch_failure_no_app_module">অ্যাপ্লিকেশন চালানো যাবে না। প্রকল্পে কোনো অ্যাপ্লিকেশন মডিউল পাওয়া যায়নি।</string>
   <string name="title_launch_app">অ্যাপ্লিকেশন চালু করুন</string>
   <string name="title_experiment_flavor">পরীক্ষামূলক</string>
