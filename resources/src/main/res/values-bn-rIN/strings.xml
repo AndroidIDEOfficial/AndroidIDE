@@ -231,7 +231,7 @@
   <string name="idepref_useIcu_summary">ডাবল-ট্যাপ এবং দীর্ঘক্ষণ চাপা শব্দ নির্বাচনের জন্য ICU লাইব্রেরি ব্যবহার করুন৷</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_drawer_for_files">Open the left drawer for @@files@@.</string>
+  <string name="msg_drawer_for_files">\@@files@@ এর জন্য বাম ড্রয়ার খুলুন.</string>
   <string name="msg_swipe_for_output">\@@বিল্ড আউটপুট@@ এর জন্য উপরে সোয়াইপ করুন।</string>
   <string name="idepref_editor_useSoftTabs_title">সফ্ট ট্যাব ব্যবহার করুন</string>
   <string name="idepref_editor_useSoftTabs_summary">ট্যাব অক্ষরের (\\t) পরিবর্তে স্পেস ব্যবহার করবেন কিনা তা বেছে নিন।</string>
@@ -427,7 +427,7 @@
   <string name="idepref_launchAppAfterInstall_title">ইনস্টলেশনের পরে অ্যাপ চালু করুন</string>
   <string name="idepref_launchAppAfterInstall_summary">যদি সক্ষম করা থাকে, তাহলে IDE (নিশ্চিতকরণ ছাড়াই) অ্যাপ্লিকেশনটি ইনস্টল করার সাথে সাথে এটি চালু করবে।</string>
   <string name="title_run_options">চালানোর অপশনগুলি</string>
-  <string name="err_cannot_determine_package">Cannot run application. Unable to determine package name.</string>
+  <string name="err_cannot_determine_package">অ্যাপ্লিকেশন চালানো যাবে না. প্যাকেজ নাম নির্ধারণ করতে অক্ষম.</string>
   <string name="msg_launch_failure_no_app_module">অ্যাপ্লিকেশন চালানো যাবে না। প্রকল্পে কোনো অ্যাপ্লিকেশন মডিউল পাওয়া যায়নি।</string>
   <string name="title_launch_app">অ্যাপ্লিকেশন চালু করুন</string>
   <string name="title_experiment_flavor">পরীক্ষামূলক</string>
@@ -446,7 +446,7 @@
   <string name="msg_files_being_saved">একটি ফাইল save অপারেশন ইতিমধ্যেই চলছে!</string>
   <string name="title_install_tools">SDK ইনস্টলেশন</string>
   <string name="subtitle_install_tools">ডেভেলপমেন্ট টুলসগুলি ইনস্টল করুন</string>
-  <string name="msg_install_tools">The development tools must be installed for the IDE to work. Clicking the done button will open terminal to install the tools. To install, follow the instructions <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">here</a>.<br/><br/>Or read the <a href="https://docs.androidide.com/">documentation</a>]]>.</string>
+  <string name="msg_install_tools">IDE তে কাজ করার জন্য ডেভেলপমেন্ট টুল ইনস্টল করা আবশ্যক। সম্পন্ন বাটনে ক্লিক করলে টুল ইনস্টল করার জন্য টার্মিনাল খুলবে। অথবা ইনস্টল করতে, নির্দেশাবলী অনুসরণ করুন <![CDATA[ <a href="https://docs.androidide.com/tutorials/get-started.html">এখানে</a>।<br/><br/>অথবা <a href= পড়ুন "https://docs.androidide.com/">ডকুমেন্টেশন</a>]]>।.</string>
   <string name="greeting_title">স্বাগতম</string>
   <string name="greeting_subtitle">শিখুন, তৈরি করুন, চালান। সব আপনার অ্যান্ড্রয়েডে।</string>
   <string name="title_grant">প্রদান করুন</string>
@@ -482,6 +482,6 @@
   <string name="msg_app_unavailable_for_intent">Intent গ্রহন করার জন্য কোনো অ্যাপ্লিকেশন উপলব্ধ নেই৷</string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="summary_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি দেখুন।</string>
-  <string name="idepref_jdkVersion_title">JDK version</string>
-  <string name="idepref_jdkVersion_summary">Currently selected: %1$s (requires restart if changed)</string>
+  <string name="idepref_jdkVersion_title">JDK ভার্সন</string>
+  <string name="idepref_jdkVersion_summary">বর্তমানে নির্বাচিত: %1$s (পরিবর্তিত হলে পুনরায় চালু করতে হবে)</string>
 </resources>
