@@ -19,13 +19,12 @@ package com.itsaky.androidide.lsp.java.indexing
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
+import com.itsaky.androidide.indexing.core.platform.ApiInfo
 import com.itsaky.androidide.lsp.java.indexing.classfile.ArrayAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.ClassAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.EnumAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.IAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaConstant
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaIndexingRealmModule
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
 import com.itsaky.androidide.lsp.java.indexing.classfile.PrimitiveAnnotationElementValue
 import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
@@ -49,7 +48,7 @@ class SharedModelCRUDTest {
   @Test
   fun testApiInfoCreate() {
     dbTestRule.withDb("api-info") {
-      val apiInfo = ApiInfo.newInstance(since = 1, deprecatedIn = 21, removedIn = 23)
+      val apiInfo = com.itsaky.androidide.indexing.core.platform.ApiInfo.newInstance(since = 1, deprecatedIn = 21, removedIn = 23)
       assertInsertUnique(apiInfo)
 
       val apiInfo2 = apiInfo.clone().update(removedIn = 26)
@@ -63,7 +62,7 @@ class SharedModelCRUDTest {
   @Test(expected = RealmPrimaryKeyConstraintException::class)
   fun testApiInfoDuplicationError() {
     dbTestRule.withDb("api-info-duplication-error") {
-      val apiInfo = ApiInfo.newInstance(since = 1, deprecatedIn = 21, removedIn = 23)
+      val apiInfo = com.itsaky.androidide.indexing.core.platform.ApiInfo.newInstance(since = 1, deprecatedIn = 21, removedIn = 23)
       assertInsertSingle(apiInfo)
       assertInsertSingle(apiInfo)
     }

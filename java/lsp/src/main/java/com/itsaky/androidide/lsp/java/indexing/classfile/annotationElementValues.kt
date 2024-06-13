@@ -18,8 +18,8 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.google.common.base.Objects
-import com.itsaky.androidide.db.utils.isEqualTo
 import com.itsaky.androidide.db.utils.hash
+import com.itsaky.androidide.db.utils.isEqualTo
 import com.itsaky.androidide.lsp.java.indexing.ISharedJavaIndexable
 import io.realm.RealmAny
 import io.realm.RealmDictionary

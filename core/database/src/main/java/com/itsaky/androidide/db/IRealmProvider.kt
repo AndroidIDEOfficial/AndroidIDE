@@ -55,6 +55,28 @@ interface IRealmProvider {
     const val PATH_SEPARATOR = '/'
 
     /**
+     * Create the path for the given segments.
+     *
+     * @param first The first (root) path segment.
+     * @param rest The rest of the path segments.
+     * @return The created path string.
+     */
+    @JvmStatic
+    fun createPath(first: String, vararg rest: String): String {
+
+      val sb = StringBuilder()
+      sb.append(PATH_SEPARATOR)
+      sb.append(first)
+
+      for (segment in rest) {
+        sb.append(PATH_SEPARATOR)
+        sb.append(segment)
+      }
+
+      return sb.toString()
+    }
+
+    /**
      * Get the [IRealmProvider] instance, finding the implementation if necessary.
      */
     @JvmStatic

@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.indexing
 
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
-
 /**
  * A java symbol.
  *
@@ -28,5 +26,4 @@ import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
  */
 interface IJavaSymbol : IJavaIndexable {
   var accessFlags: Int
-  var apiInfo: ApiInfo?
 }

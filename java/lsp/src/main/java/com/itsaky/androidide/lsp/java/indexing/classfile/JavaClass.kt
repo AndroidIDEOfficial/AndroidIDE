@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.itsaky.androidide.lsp.java.indexing.IJavaType
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmList
 import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
@@ -61,9 +60,6 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
   @RealmField("accessFlags")
   override var accessFlags: Int = 0
 
-  @RealmField("apiInfo")
-  override var apiInfo: ApiInfo? = null
-
   @RealmField("fields")
   override var fields: RealmList<JavaField>? = null
 
@@ -83,7 +79,6 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
       isInner: Boolean = false,
       superClassFqn: String? = null,
       superInterfacesFqn: RealmList<String>? = null,
-      apiInfo: ApiInfo? = null,
       fields: RealmList<JavaField>? = null,
       methods: RealmList<JavaMethod>? = null
     ): JavaClass {
@@ -95,7 +90,6 @@ open class JavaClass : IJavaType<JavaField, JavaMethod> {
         this.superClassFqn = superClassFqn
         this.superInterfacesFqn = superInterfacesFqn
         this.accessFlags = accessFlags
-        this.apiInfo = apiInfo
         this.fields = fields
         this.methods = methods
       }

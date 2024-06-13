@@ -46,21 +46,24 @@ kapt {
 
 dependencies {
   kapt(projects.annotation.processors)
+  kapt(libs.google.auto.service)
 
   implementation(libs.androidide.ts)
   implementation(libs.androidide.ts.java)
+  implementation(libs.androidx.annotation)
   implementation(libs.androidx.appcompat)
   implementation(libs.common.editor)
   implementation(libs.common.javaparser)
   implementation(libs.common.utilcode)
-  implementation(libs.androidx.annotation)
+
+  implementation(libs.google.auto.service.annotations)
   implementation(libs.google.guava)
   implementation(libs.google.gson)
   implementation(libs.google.material)
 
   implementation(projects.core.actions)
   implementation(projects.core.common)
-  implementation(projects.core.indexing)
+  implementation(projects.core.indexingApi)
   implementation(projects.core.lspApi)
   implementation(projects.core.resources)
   implementation(projects.editor.api)

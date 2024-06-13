@@ -129,7 +129,8 @@ dependencies {
   // Local projects here
   implementation(projects.core.actions)
   implementation(projects.core.common)
-  implementation(projects.core.indexing)
+  implementation(projects.core.indexingApi)
+  implementation(projects.core.indexingCore)
   implementation(projects.core.lspApi)
   implementation(projects.core.projects)
   implementation(projects.core.resources)
