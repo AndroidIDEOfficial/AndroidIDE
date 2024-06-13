@@ -18,8 +18,8 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.google.common.base.Objects
-import com.itsaky.androidide.lsp.java.indexing.ICloneable
 import com.itsaky.androidide.lsp.java.indexing.ISharedJavaIndexable
+import com.itsaky.androidide.models.ICloneable
 import io.realm.annotations.Index
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
@@ -146,7 +146,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
   override fun toString(): String {
     return "JavaType(id=$id, name=$name, kind=$kind, arrayDims=$arrayDims)"
   }
-  
+
   companion object {
     const val KIND_UNKNOWN = -1
     const val KIND_BOOLEAN = 0
@@ -163,7 +163,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     // kind values used in IAnnotationElementValue
     // defined here for convenience
     internal const val __KIND_STRING = 10
-    internal const val __KIND_CLASS  = 11
+    internal const val __KIND_CLASS = 11
     internal const val __KIND_ENUM = 12
     internal const val __KIND_ANNOTATION = 13
     internal const val __KIND_ARRAY = 14

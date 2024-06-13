@@ -22,7 +22,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.blankj.utilcode.util.ConvertUtils
 import com.google.common.truth.Truth
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaIndexingRealmModule
 import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
 import io.realm.RealmModel
 import org.junit.Rule

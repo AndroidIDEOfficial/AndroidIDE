@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.itsaky.androidide.lsp.java.indexing.IJavaSymbol
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmAny
 import io.realm.RealmResults
 import io.realm.annotations.Index
@@ -46,9 +45,6 @@ open class AnnotationElement : IJavaSymbol {
 
   @RealmField("accessFlags")
   override var accessFlags: Int = 0
-
-  @RealmField("apiInfo")
-  override var apiInfo: ApiInfo? = null
 
   @LinkingObjects("methods")
   val ofClass: RealmResults<JavaAnnotation>? = null
@@ -78,18 +74,16 @@ open class AnnotationElement : IJavaSymbol {
 
   companion object {
     @JvmStatic
-    fun JavaAnnotation.newAnnotationElement(
+    fun newAnnotationElement(
       name: String,
       type: JavaType,
       accessFlags: Int,
-      apiInfo: ApiInfo? = null,
       defaultValue: RealmAny? = null
     ): AnnotationElement {
       return AnnotationElement().apply {
         this.name = name
         this.type = type
         this.accessFlags = accessFlags
-        this.apiInfo = apiInfo
         this.defaultValue = defaultValue
       }
     }

@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.itsaky.androidide.lsp.java.indexing.IJavaSymbol
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmResults
 import io.realm.annotations.Index
 import io.realm.annotations.LinkingObjects
@@ -41,9 +40,6 @@ open class JavaField : IJavaSymbol {
   @RealmField("accessFlags")
   override var accessFlags: Int = 0
 
-  @RealmField("apiInfo")
-  override var apiInfo: ApiInfo? = null
-
   @RealmField("constantValue")
   var constantValue: JavaConstant? = null
 
@@ -56,14 +52,12 @@ open class JavaField : IJavaSymbol {
       name: String,
       type: JavaType,
       accessFlags: Int,
-      apiInfo: ApiInfo? = null,
       constantValue: JavaConstant? = null
     ): JavaField {
       return JavaField().apply {
         this.name = name
         this.type = type
         this.accessFlags = accessFlags
-        this.apiInfo = apiInfo
         this.constantValue = constantValue
       }
     }

@@ -163,8 +163,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   override fun getSourceDirectories(): Set<File> {
     if (mainSourceSet == null) {
-      log.warn("No main source set is available for project {}. Cannot get source directories.",
-        name)
+      log.warn(
+        "No main source set is available for project {}. Cannot get source directories.",
+        name
+      )
       return mutableSetOf()
     }
 
@@ -256,7 +258,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     // Read resources in parallel
     withStopWatch("Read resources for module : $path") {
       val resourceReaderScope = CoroutineScope(
-        Dispatchers.IO + CoroutineName("ResourceReader($path)"))
+        Dispatchers.IO + CoroutineName("ResourceReader($path)")
+      )
 
       val resourceFlow = flow {
         emit(getFrameworkResourceTable())
@@ -361,8 +364,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
         libraryMap.values
           .filter { library ->
             library.type == ANDROID_LIBRARY &&
-                library.androidLibraryData!!.resFolder.exists() &&
-                library.findPackageName() != UNKNOWN_PACKAGE
+              library.androidLibraryData!!.resFolder.exists() &&
+              library.findPackageName() != UNKNOWN_PACKAGE
           }
           .also { libs -> deps = libs.size }
           .mapNotNull { library ->
@@ -493,19 +496,26 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     val info = projectManager.androidBuildVariants[this.path]
     if (info == null) {
       log.error(
-        "Failed to find selected build variant for module: '{}'", this.path)
+        "Failed to find selected build variant for module: '{}'", this.path
+      )
       return null
     }
 
     val variant = this.getVariant(info.selectedVariant)
     if (variant == null) {
       log.error(
-        "Build variant with name '{}' not found.", info.selectedVariant)
+        "Build variant with name '{}' not found.", info.selectedVariant
+      )
       return null
     }
 
     return variant
   }
 
-  private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
+  /**
+   * Get the Android SDK platform directory for this Android module.
+   *
+   * @return The Android SDK platform directory for this Android module, or `null` if none is found.
+   */
+  fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }

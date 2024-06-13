@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.indexing.classfile
 
 import com.itsaky.androidide.lsp.java.indexing.IJavaSymbol
-import com.itsaky.androidide.lsp.java.indexing.apiinfo.ApiInfo
 import io.realm.RealmList
 import io.realm.RealmResults
 import io.realm.annotations.Index
@@ -47,9 +46,6 @@ open class JavaMethod : IJavaSymbol {
   @RealmField("accessFlags")
   override var accessFlags: Int = 0
 
-  @RealmField("apiInfo")
-  override var apiInfo: ApiInfo? = null
-
   @LinkingObjects("methods")
   val ofClass: RealmResults<JavaClass>? = null
 
@@ -75,14 +71,12 @@ open class JavaMethod : IJavaSymbol {
       paramsTypes: RealmList<JavaType>,
       returnType: JavaType,
       accessFlags: Int,
-      apiInfo: ApiInfo? = null,
     ): JavaMethod {
       return JavaMethod().apply {
         this.name = name
         this.paramsTypes = paramsTypes
         this.returnType = returnType
         this.accessFlags = accessFlags
-        this.apiInfo = apiInfo
       }
     }
   }

@@ -116,6 +116,7 @@
       <module name="AndroidIDE.colorschemes" target="11" />
       <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.common" target="17" />
+      <module name="AndroidIDE.core.indexing" target="17" />
       <module name="AndroidIDE.editor-api" target="17" />
       <module name="AndroidIDE.editor-languages" target="11" />
       <module name="AndroidIDE.editor-treesitter" target="17" />

@@ -1,0 +1,48 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.indexing
+
+import com.itsaky.androidide.progress.IProgressIndicator
+import com.itsaky.androidide.projects.api.Project
+import kotlinx.coroutines.Deferred
+import java.io.File
+
+/**
+ * An index service is responsible for indexing symbols.
+ *
+ * @author Akash Yadav
+ */
+interface IIndexService {
+
+  /**
+   * Called to scan files that need to be indexed by this index service.
+   *
+   * @param project The root project model which can be used to query the project properties.
+   * @return A [Deferred] collection of files that need to be indexed.
+   */
+  fun scanFiles(project: Project): Collection<File>
+
+  /**
+   * Called to index the given files.
+   *
+   * @param project The root project model which can be used to query the project properties.
+   * @param progress An [IProgressIndicator] to report progress of the indexing process.
+   * @param files The files to index.
+   */
+  suspend fun indexFiles(project: Project, progress: IProgressIndicator, files: Collection<File>)
+}

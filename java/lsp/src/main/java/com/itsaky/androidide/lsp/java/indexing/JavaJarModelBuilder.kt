@@ -269,17 +269,18 @@ class JavaJarModelBuilder(private val jar: File) {
         val methodName = method.getName(classFile.constant_pool)
         val methodType = DescriptorUtils.returnType(descriptor)
 
-        add(this@setAnnotationElements.newAnnotationElement(
-          methodName, methodType, method.access_flags.flags
-        ).apply {
-          val annotationDefault =
-            method.attributes.get(Attribute.AnnotationDefault) as? AnnotationDefault_attribute?
-          if (annotationDefault != null) {
-            val defaultValue = annotationDefault.default_value
-            val value = toAnnotationElementValue(defaultValue, classFile)
-            this.defaultValue = value.let(RealmAny::valueOf) ?: RealmAny.nullValue()
-          }
-        })
+        add(
+          newAnnotationElement(
+            methodName, methodType, method.access_flags.flags
+          ).apply {
+            val annotationDefault =
+              method.attributes.get(Attribute.AnnotationDefault) as? AnnotationDefault_attribute?
+            if (annotationDefault != null) {
+              val defaultValue = annotationDefault.default_value
+              val value = toAnnotationElementValue(defaultValue, classFile)
+              this.defaultValue = value.let(RealmAny::valueOf) ?: RealmAny.nullValue()
+            }
+          })
       }
     }
   }

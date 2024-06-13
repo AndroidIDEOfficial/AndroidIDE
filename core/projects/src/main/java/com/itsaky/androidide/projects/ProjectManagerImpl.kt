@@ -113,8 +113,10 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       androidBuildVariants = buildVariants
     }
 
-    log.info("Found {} project sync issues: {}", rootProject.projectSyncIssues.syncIssues.size,
-      rootProject.projectSyncIssues.syncIssues)
+    log.info(
+      "Found {} project sync issues: {}", rootProject.projectSyncIssues.syncIssues.size,
+      rootProject.projectSyncIssues.syncIssues
+    )
 
     withStopWatch("Setup project") {
       val indexerScope = CoroutineScope(Dispatchers.Default)
@@ -227,7 +229,8 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       val variant = module.getSelectedVariant()
       if (variant == null) {
         log.error(
-          "Selected build variant for project '{}' not found", module.path)
+          "Selected build variant for project '{}' not found", module.path
+        )
         return@flatMap emptyList()
       }
 
