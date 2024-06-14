@@ -59,6 +59,7 @@ import com.itsaky.androidide.tooling.api.models.ToolingServerMetadata
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.Environment
 import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,7 @@ import java.util.concurrent.TimeUnit
  *
  * @author Akash Yadav
  */
+@AndroidEntryPoint
 class GradleBuildService : Service(), BuildService, IToolingApiClient,
   ToolingServerRunner.Observer {
 
@@ -100,7 +102,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   private var eventListener: EventListener? = null
 
   private val buildServiceScope = CoroutineScope(
-    Dispatchers.Default + CoroutineName("GradleBuildService"))
+    Dispatchers.Default + CoroutineName("GradleBuildService")
+  )
 
   private val isGradleWrapperAvailable: Boolean
     get() {
@@ -122,7 +125,6 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     }
 
   companion object {
-
     private val log = LoggerFactory.getLogger(GradleBuildService::class.java)
     private val NOTIFICATION_ID = R.string.app_name
     private val SERVER_System_err = LoggerFactory.getLogger("ToolingApiErrorStream")
@@ -138,8 +140,10 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     return isToolingServerStarted && server != null
   }
 
-  private fun showNotification(message: String,
-    @Suppress("SameParameterValue") isProgress: Boolean) {
+  private fun showNotification(
+    message: String,
+    @Suppress("SameParameterValue") isProgress: Boolean
+  ) {
     log.info("Showing notification to user...")
     createNotificationChannels()
     startForeground(NOTIFICATION_ID, buildNotification(message, isProgress))
@@ -149,7 +153,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     val buildNotificationChannel = NotificationChannel(
       BaseApplication.NOTIFICATION_GRADLE_BUILD_SERVICE,
       getString(string.title_gradle_service_notification_channel),
-      NotificationManager.IMPORTANCE_LOW)
+      NotificationManager.IMPORTANCE_LOW
+    )
     NotificationManagerCompat.from(this)
       .createNotificationChannel(buildNotificationChannel)
   }
@@ -315,7 +320,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> {
     return if (isGradleWrapperAvailable) CompletableFuture.completedFuture(
-      GradleWrapperCheckResult(true)) else installWrapper()
+      GradleWrapperCheckResult(true)
+    ) else installWrapper()
   }
 
   internal fun setServerListener(listener: OnServerStartListener?) {
@@ -335,8 +341,10 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   private fun doInstallWrapper(): GradleWrapperCheckResult {
     val extracted = File(Environment.TMP_DIR, "gradle-wrapper.zip")
-    if (!ResourceUtils.copyFileFromAssets(ToolsManager.getCommonAsset("gradle-wrapper.zip"),
-        extracted.absolutePath)
+    if (!ResourceUtils.copyFileFromAssets(
+        ToolsManager.getCommonAsset("gradle-wrapper.zip"),
+        extracted.absolutePath
+      )
     ) {
       log.error("Unable to extract gradle-plugin.zip from IDE resources.")
       return GradleWrapperCheckResult(false)
@@ -358,8 +366,10 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   private fun doUpdateNotification(message: String, isProgress: Boolean) {
-    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(NOTIFICATION_ID,
-      buildNotification(message, isProgress))
+    (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(
+      NOTIFICATION_ID,
+      buildNotification(message, isProgress)
+    )
   }
 
   override fun metadata(): CompletableFuture<ToolingServerMetadata> {
@@ -368,7 +378,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   override fun initializeProject(
-    params: InitializeProjectParams): CompletableFuture<InitializeResult> {
+    params: InitializeProjectParams
+  ): CompletableFuture<InitializeResult> {
     checkServerStarted()
     Objects.requireNonNull(params)
     return performBuildTasks(server!!.initialize(params))
@@ -481,7 +492,8 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     }
 
     outputReaderJob = buildServiceScope.launch(
-      Dispatchers.IO + CoroutineName("ToolingServerErrorReader")) {
+      Dispatchers.IO + CoroutineName("ToolingServerErrorReader")
+    ) {
       val reader = input.bufferedReader()
       try {
         reader.forEachLine { line ->

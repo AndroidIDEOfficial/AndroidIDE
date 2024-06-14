@@ -19,6 +19,7 @@ package com.itsaky.androidide.plugins
 
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.build.config.isFDroidBuild
+import com.itsaky.androidide.plugins.util.isAndroidModule
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -39,10 +40,10 @@ class AndroidIDEPlugin : Plugin<Project> {
       return@run
     }
 
-    val isAndroidModule = plugins.hasPlugin("com.android.application") ||
-      plugins.hasPlugin("com.android.library")
+    // Apply dependency injection for all modules
+    plugins.apply(DIConfigPlugin::class.java)
 
-    if (isAndroidModule && !isFDroidBuild) {
+    if (this.isAndroidModule && !isFDroidBuild) {
       // setup signing configuration
       plugins.apply(SigningConfigPlugin::class.java)
     }
@@ -57,7 +58,7 @@ class AndroidIDEPlugin : Plugin<Project> {
     }
 
     val taskName = when {
-      isAndroidModule -> "testDebugUnitTest"
+      this.isAndroidModule -> "testDebugUnitTest"
       else -> "test"
     }
 

@@ -21,6 +21,7 @@ logback = "1.5.3"
 realm = "10.18.0"
 benchmark = "1.2.4"
 benchmark-junit4 = "1.2.4"
+hilt = "2.51.1"
 
 [libraries]
 
@@ -74,6 +75,13 @@ common-markwon-recycler = { module = "io.noties.markwon:recycler", version.ref =
 common-hiddenApiBypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
 common-termuxAmLib = { module = "com.termux:termux-am-library", version = "v2.0.0" }
 common-charts = { module = "com.github.AppDevNext:AndroidChart", version = "3.1.0.21" }
+
+# Dependency Injection
+## DO NOT REMOVE
+## Accessed programmatically in DIConfigPlugin
+## Update DIConfigPlugin if renamed
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.7.1" }
@@ -179,3 +187,4 @@ maven-publish = { id = "com.vanniktech.maven.publish.base", version.ref = "maven
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
 protobuf = { id = "com.google.protobuf", version = "0.9.4" }
 benchmark = { id = "androidx.benchmark", version.ref = "benchmark" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
