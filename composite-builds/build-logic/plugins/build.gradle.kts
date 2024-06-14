@@ -37,6 +37,7 @@ dependencies {
   implementation(projects.buildLogic.propertiesParser)
 
   implementation("com.android.tools.build:gradle:${libs.versions.agp.asProvider().get()}")
+  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
   implementation(libs.maven.publish)
 
   implementation(libs.common.jkotlin)
