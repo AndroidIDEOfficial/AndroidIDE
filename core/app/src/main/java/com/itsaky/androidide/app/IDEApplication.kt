@@ -58,7 +58,6 @@ import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import com.termux.app.TermuxApplication
 import com.termux.shared.reflection.ReflectionUtils
-import dagger.hilt.android.HiltAndroidApp
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import io.realm.Realm
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -72,7 +71,7 @@ import java.lang.Thread.UncaughtExceptionHandler
 import java.time.Duration
 import kotlin.system.exitProcess
 
-@HiltAndroidApp
+
 class IDEApplication : TermuxApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null

@@ -454,7 +454,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
     buildServiceConnection.onConnected = null
     editorViewModel.isBoundToBuildSerice = true
-
+    Lookup.getDefault().update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
 
     if (!service.isToolingServerStarted()) {

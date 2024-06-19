@@ -13,7 +13,6 @@ plugins {
   id("realm-android")
   id("androidx.navigation.safeargs.kotlin")
   id("com.itsaky.androidide.desugaring")
-  id("com.google.dagger.hilt.android")
 }
 
 apply {
@@ -59,8 +58,6 @@ kapt {
   arguments {
     arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex")
   }
-
-  correctErrorTypes = true
 }
 
 desugaring {
@@ -79,7 +76,6 @@ dependencies {
   // Annotation processors
   kapt(libs.common.glide.ap)
   kapt(libs.google.auto.service)
-  kapt(libs.hilt.compiler)
   kapt(projects.annotation.processors)
 
   implementation(libs.common.editor)
@@ -95,8 +91,6 @@ dependencies {
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)
   implementation(libs.google.guava)
-
-  implementation(libs.hilt.android)
 
   // Git
   implementation(libs.git.jgit)
