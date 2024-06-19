@@ -27,7 +27,6 @@ import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.FDroidConfig
 import com.itsaky.androidide.build.config.isFDroidBuild
 import com.itsaky.androidide.build.config.projectVersionCode
-import com.itsaky.androidide.plugins.AndroidIDECoreAppPlugin
 import com.itsaky.androidide.plugins.NoDesugarPlugin
 import com.itsaky.androidide.plugins.util.SdkUtils.getAndroidJar
 import org.gradle.api.Project
@@ -119,7 +118,7 @@ fun Project.configureAndroidModule(
 
     configureCoreLibDesugaring(this, coreLibDesugDep)
 
-    if (project.plugins.hasPlugin(AndroidIDECoreAppPlugin::class.java)) {
+    if (project.plugins.hasPlugin("com.itsaky.androidide.core-app")) {
       packagingOptions {
         jniLibs {
           useLegacyPackaging = true

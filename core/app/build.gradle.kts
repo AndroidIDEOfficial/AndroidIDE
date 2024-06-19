@@ -3,9 +3,9 @@
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.desugaring.utils.JavaIOReplacements.applyJavaIOReplacements
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
-import com.itsaky.androidide.plugins.AndroidIDECoreAppPlugin
 
 plugins {
+  id("com.itsaky.androidide.core-app")
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-kapt")
@@ -18,7 +18,6 @@ plugins {
 
 apply {
   plugin(AndroidIDEAssetsPlugin::class.java)
-  plugin(AndroidIDECoreAppPlugin::class.java)
 }
 
 buildscript {

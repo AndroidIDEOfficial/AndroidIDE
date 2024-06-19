@@ -52,6 +52,10 @@ gradlePlugin {
       id = "com.itsaky.androidide.build"
       implementationClass = "com.itsaky.androidide.plugins.AndroidIDEPlugin"
     }
+    create("com.itsaky.androidide.core-app") {
+      id = "com.itsaky.androidide.core-app"
+      implementationClass = "com.itsaky.androidide.plugins.AndroidIDECoreAppPlugin"
+    }
     create("com.itsaky.androidide.build.propsparser") {
       id = "com.itsaky.androidide.build.propsparser"
       implementationClass = "com.itsaky.androidide.plugins.PropertiesParserPlugin"
