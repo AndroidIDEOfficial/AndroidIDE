@@ -40,10 +40,7 @@ class AndroidIDEPlugin : Plugin<Project> {
       return@run
     }
 
-    // Apply dependency injection for all modules
-    plugins.apply(DIConfigPlugin::class.java)
-
-    if (this.isAndroidModule && !isFDroidBuild) {
+    if (isAndroidModule && !isFDroidBuild) {
       // setup signing configuration
       plugins.apply(SigningConfigPlugin::class.java)
     }
@@ -58,7 +55,7 @@ class AndroidIDEPlugin : Plugin<Project> {
     }
 
     val taskName = when {
-      this.isAndroidModule -> "testDebugUnitTest"
+      isAndroidModule -> "testDebugUnitTest"
       else -> "test"
     }
 
