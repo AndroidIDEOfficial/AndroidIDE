@@ -48,7 +48,7 @@ class AndroidIDEPlugin : Plugin<Project> {
       plugins.apply(SigningConfigPlugin::class.java)
     }
 
-    if (isFDroidBuild && project.plugins.hasPlugin(AndroidIDECoreAppPlugin::class.java)) {
+    if (isFDroidBuild && project.plugins.hasPlugin("com.itsaky.androidide.core-app")) {
       val baseExtension = extensions.getByType(BaseExtension::class.java)
       logger.warn("Building for F-Droid with configuration:")
       logger.warn("applicationId = ${baseExtension.defaultConfig.applicationId}")

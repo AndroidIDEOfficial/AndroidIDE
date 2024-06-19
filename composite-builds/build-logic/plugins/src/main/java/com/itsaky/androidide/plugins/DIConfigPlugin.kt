@@ -17,8 +17,10 @@
 
 package com.itsaky.androidide.plugins
 
+import com.itsaky.androidide.plugins.util.isAndroidModule
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 
 /**
  * Configures dependency injection in a module.
@@ -29,6 +31,12 @@ class DIConfigPlugin : Plugin<Project> {
 
   override fun apply(target: Project) = target.run {
     dependencies.add("implementation", "javax.inject:javax.inject:1")
+    if (isAndroidModule) {
+      val libs =
+        rootProject.extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+      val hiltAndroid = libs.findLibrary("hilt-android").get().get()
+      dependencies.add("implementation", hiltAndroid)
+    }
     Unit
   }
 }
