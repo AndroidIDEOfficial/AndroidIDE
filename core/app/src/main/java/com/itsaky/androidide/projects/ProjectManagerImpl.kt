@@ -89,14 +89,10 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     get() = rootProject?.projectSyncIssues
 
   companion object {
-
     private val log = LoggerFactory.getLogger(ProjectManagerImpl::class.java)
 
     @JvmStatic
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-    fun getInstance(): ProjectManagerImpl {
-      return IProjectManager.getInstance() as ProjectManagerImpl
-    }
+    fun getInstance(): ProjectManagerImpl = IProjectManager.getInstance() as ProjectManagerImpl
   }
 
   override suspend fun setupProject(project: IProject) {
@@ -327,7 +323,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
         return@apply
       }
 
-      val module = IProjectManager.getInstance().findModuleForFile(this, false) ?: return@apply
+      val module = findModuleForFile(this, false) ?: return@apply
       if (module !is AndroidModule) {
         return@apply
       }
@@ -344,13 +340,25 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     }
   }
 
+  override fun notifyFileCreated(file: File) {
+    onFileCreated(FileCreationEvent(file))
+  }
+
+  override fun notifyFileDeleted(file: File) {
+    onFileDeleted(FileDeletionEvent(file))
+  }
+
+  override fun notifyFileRenamed(from: File, to: File) {
+    onFileRenamed(FileRenameEvent(from, to))
+  }
+
   @Suppress("unused")
   @Subscribe(threadMode = ThreadMode.BACKGROUND)
   fun onFileCreated(event: FileCreationEvent) {
     generateSourcesIfNecessary(event)
 
     if (DocumentUtils.isJavaFile(event.file.toPath())) {
-      IProjectManager.getInstance().findModuleForFile(event.file, false)?.let {
+      findModuleForFile(event.file, false)?.let {
         val sourceRoot = it.findSourceRoot(event.file) ?: return@let
 
         // add the source node entry
@@ -368,7 +376,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     // Do not check for Java file DocumentUtils.isJavaFile(...) as it checks for file existence as
     // well. As the file is already deleted, it will always return false
     if (event.file.extension == "java") {
-      IProjectManager.getInstance().findModuleForFile(event.file, false)
+      findModuleForFile(event.file, false)
         ?.compileJavaSourceClasses
         ?.findSource(event.file.toPath())
         ?.let { it.parent?.removeChild(it) }
@@ -384,14 +392,14 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     // well. As the file is already renamed to another filename, it will always return false
     if (event.file.extension == "java") {
       // remove the source node entry
-      IProjectManager.getInstance().findModuleForFile(event.file, false)
+      findModuleForFile(event.file, false)
         ?.compileJavaSourceClasses
         ?.findSource(event.file.toPath())
         ?.let { it.parent?.removeChild(it) }
     }
 
     if (DocumentUtils.isJavaFile(event.newFile.toPath())) {
-      IProjectManager.getInstance().findModuleForFile(event.newFile, false)?.let {
+      findModuleForFile(event.newFile, false)?.let {
         val sourceRoot = it.findSourceRoot(event.newFile) ?: return@let
         // add the new source node entry
         it.compileJavaSourceClasses.append(event.newFile.toPath(), sourceRoot)

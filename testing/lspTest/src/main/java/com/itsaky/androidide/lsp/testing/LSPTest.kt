@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.testing
 import android.content.Context
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.ChangeType.DELETE
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
@@ -34,7 +35,7 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.EditorPreferences
 import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.api.IProject
@@ -108,8 +109,13 @@ abstract class LSPTest(
       Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
       registerServer()
 
-      val projectManager = ProjectManagerImpl.getInstance()
-      projectManager.register()
+      val projectManager = IProjectManager.getInstance()
+      if (projectManager is EventReceiver) {
+        projectManager.register()
+      } else {
+        throw IllegalStateException("Expected IProjectManager instance to be an EventReceiver")
+      }
+
       runBlocking { projectManager.setupProject(project) }
 
       // We need to manually setup the language server with the project here
