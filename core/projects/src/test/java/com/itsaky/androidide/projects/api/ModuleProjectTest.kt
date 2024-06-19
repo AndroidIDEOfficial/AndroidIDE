@@ -18,12 +18,8 @@
 package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
-import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
-import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.api.IAndroidProject
@@ -149,8 +145,8 @@ class ModuleProjectTest {
         assertThat(
           filter {
             it.absolutePath.endsWith("appcompat-1.5.1/jars/classes.jar") ||
-                it.absolutePath.endsWith("material-1.8.0-alpha01/jars/classes.jar") ||
-                it.absolutePath.endsWith("coordinatorlayout-1.2.0/jars/classes.jar")
+              it.absolutePath.endsWith("material-1.8.0-alpha01/jars/classes.jar") ||
+              it.absolutePath.endsWith("coordinatorlayout-1.2.0/jars/classes.jar")
           }
         )
           .hasSize(3)
@@ -172,7 +168,8 @@ class ModuleProjectTest {
 
       for (klass in arrayOf(
         "com.itsaky.androidide.tooling.test.Main",
-        "com.itsaky.test.app.MainActivity")
+        "com.itsaky.test.app.MainActivity"
+      )
       ) {
 
         classes.find { it.qualifiedName == klass }.let {
@@ -208,7 +205,7 @@ class ModuleProjectTest {
       Files.delete(testCls_renamed)
     }
 
-    val projectManager = ProjectManagerImpl.getInstance()
+    val projectManager = IProjectManager.getInstance()
     runBlocking { projectManager.setupProject() }
 
     val rootProject = IProjectManager.getInstance().rootProject
@@ -239,22 +236,23 @@ class ModuleProjectTest {
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
 
     testCls.writeText("public class Test {  }")
-    projectManager.onFileCreated(FileCreationEvent(testCls.toFile()))
+    projectManager.notifyFileCreated(testCls.toFile())
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isTrue()
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
     assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isEqualTo(module)
     assertThat(IProjectManager.getInstance().findModuleForFile(testCls_renamed, true)).isNull()
 
     Files.move(testCls, testCls_renamed)
-    projectManager.onFileRenamed(FileRenameEvent(testCls.toFile(), testCls_renamed.toFile()))
+    projectManager.notifyFileRenamed(testCls.toFile(), testCls_renamed.toFile())
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isFalse()
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isTrue()
     assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isNull()
     assertThat(IProjectManager.getInstance().findModuleForFile(testCls_renamed, true)).isEqualTo(
-      module)
+      module
+    )
 
     Files.delete(testCls_renamed)
-    projectManager.onFileDeleted(FileDeletionEvent(testCls_renamed.toFile()))
+    projectManager.notifyFileDeleted(testCls_renamed.toFile())
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isFalse()
     assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
     assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isNull()
