@@ -169,6 +169,25 @@ interface IProjectManager {
   fun isAndroidResource(file: File): Boolean
 
   /**
+   * Notify the project manager that the given <code>file</code> was created.
+   * @param file The file that was created.
+   */
+  fun notifyFileCreated(file: File)
+
+  /**
+   * Notify the project manager that the given <code>file</code> was deleted.
+   * @param file The file that was deleted.
+   */
+  fun notifyFileDeleted(file: File)
+
+  /**
+   * Notify the project manager that the file was renamed or moved.
+   * @param from The file that was renamed or moved.
+   * @param to The file after renaming/move.
+   */
+  fun notifyFileRenamed(from: File, to: File)
+
+  /**
    * Destroy the project manager.
    */
   fun destroy()

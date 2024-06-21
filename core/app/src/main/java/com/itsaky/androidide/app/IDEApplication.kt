@@ -42,7 +42,6 @@ import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
-import com.itsaky.androidide.events.ProjectsApiEventsIndex
 import com.itsaky.androidide.preferences.internal.DevOpsPreferences
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.preferences.internal.StatPreferences
@@ -102,9 +101,12 @@ class IDEApplication : TermuxApplication() {
       }
     }
 
-    EventBus.builder().addIndex(AppEventsIndex()).addIndex(EditorEventsIndex())
-      .addIndex(ProjectsApiEventsIndex()).addIndex(LspApiEventsIndex())
-      .addIndex(LspJavaEventsIndex()).installDefaultEventBus(true)
+    EventBus.builder()
+      .addIndex(AppEventsIndex())
+      .addIndex(EditorEventsIndex())
+      .addIndex(LspApiEventsIndex())
+      .addIndex(LspJavaEventsIndex())
+      .installDefaultEventBus(true)
 
     EventBus.getDefault().register(this)
 
