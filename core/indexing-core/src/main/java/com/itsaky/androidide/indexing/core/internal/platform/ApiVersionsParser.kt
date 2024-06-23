@@ -70,7 +70,14 @@ open class ApiVersionsParser {
         consumeEndElement(event.asEndElement())
       }
     }
+
+    onFinishParse()
   }
+
+  /**
+   * Called when the parser is done parsing the `api-versions.xml` file.
+   */
+  protected open fun onFinishParse() {}
 
   private fun consumeStartElement(event: StartElement) {
     when (event.name.localPart) {
@@ -110,6 +117,12 @@ open class ApiVersionsParser {
     return false
   }
 
+  /**
+   * Consume [ApiVersion] info of a class.
+   *
+   * @param name The fully qualified name of the class in its internal form.
+   * @param apiVersion The [ApiVersion] info of the class.
+   */
   protected open fun consumeClassVersionInfo(name: String, apiVersion: ApiVersion) {}
 
   private fun consumeMember(event: StartElement, memberType: String) {
@@ -130,6 +143,14 @@ open class ApiVersionsParser {
     return false
   }
 
+  /**
+   * Consume [ApiVersion] info for a member of a class.
+   *
+   * @param className The name of the class which declares this member.
+   * @param member The identifier of the member. This is the name of the field and the method signature for methods.
+   * @param memberType The type of member. This may be "field" or "method".
+   * @param apiVersion The [ApiVersion] info.
+   */
   protected open fun consumeMemberVersionInfo(
     className: String,
     member: String,

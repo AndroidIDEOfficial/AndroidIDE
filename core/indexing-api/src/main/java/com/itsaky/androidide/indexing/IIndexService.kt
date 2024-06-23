@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.indexing
 
-import com.itsaky.androidide.progress.IProgressIndicator
 import com.itsaky.androidide.projects.api.Project
 import kotlinx.coroutines.Deferred
 import java.io.File
@@ -28,6 +27,11 @@ import java.io.File
  * @author Akash Yadav
  */
 interface IIndexService {
+
+  /**
+   * The display name of the service.
+   */
+  val displayName: String
 
   /**
    * Called to scan files that need to be indexed by this index service.
@@ -41,8 +45,7 @@ interface IIndexService {
    * Called to index the given files.
    *
    * @param project The root project model which can be used to query the project properties.
-   * @param progress An [IProgressIndicator] to report progress of the indexing process.
    * @param files The files to index.
    */
-  suspend fun indexFiles(project: Project, progress: IProgressIndicator, files: Collection<File>)
+  suspend fun indexFiles(project: Project, files: Collection<File>)
 }

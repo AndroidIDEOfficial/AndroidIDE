@@ -25,9 +25,9 @@ import io.realm.Realm
  * @property params The index parameters.
  * @author Akash Yadav
  */
-abstract class AbstractDBIndex<T : IIndexable, C : IIndexParams>(
+abstract class AbstractDBIndex<T : IIndexable>(
   protected val params: IIndexParams?
-) : IIndex<T, C> {
+) : IDatabaseIndex<T> {
 
   protected abstract val realm: Realm
 

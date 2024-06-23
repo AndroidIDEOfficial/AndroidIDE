@@ -18,7 +18,9 @@
 package com.itsaky.androidide.indexing
 
 /**
- * Index configuration
+ * Index configuration parameters. All implementations of this interface must implement the
+ * [Object.equals] and [Object.hashCode] methods properly as the parameters may be used to cache
+ * the index implementations in [IIndexFactory]s.
  *
  * @author Akash Yadav
  */
