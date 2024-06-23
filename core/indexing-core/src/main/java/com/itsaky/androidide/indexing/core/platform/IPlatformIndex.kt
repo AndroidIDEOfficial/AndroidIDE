@@ -17,22 +17,20 @@
 
 package com.itsaky.androidide.indexing.core.platform
 
-import com.itsaky.androidide.db.IRealmProvider
 import com.itsaky.androidide.indexing.IIndex
-import com.itsaky.androidide.indexing.IIndexParams
 
 /**
  * Index for data available in the Android Platform SDK.
  *
  * @author Akash Yadav
  */
-interface IPlatformIndex<T : IPlatformIndexable, C : IIndexParams> : IIndex<T, C> {
+interface IPlatformIndex<T : IPlatformIndexable> : IIndex<T> {
 
   companion object {
 
     /**
      * Base path for the platform index.
      */
-    val PLATFORM_INDEX_BASE_PATH = IRealmProvider.createPath(IIndex.INDEX_BASE_PATH, "platform")
+    val PLATFORM_INDEX_BASE_PATH = IIndex.createIndexPath(IIndex.INDEX_BASE_PATH, "platform")
   }
 }

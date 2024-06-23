@@ -17,11 +17,17 @@
 
 package com.itsaky.androidide.indexing
 
-import io.realm.RealmModel
+import io.realm.RealmQuery
 
 /**
- * An indexable object.
+ * An index which is stored in the database.
  *
  * @author Akash Yadav
  */
-interface IIndexable : RealmModel
+interface IDatabaseIndex<IndexableT : IIndexable> : IIndex<IndexableT> {
+
+  /**
+   * Perform a query on the Realm database.
+   */
+  fun query(): RealmQuery<IndexableT>
+}

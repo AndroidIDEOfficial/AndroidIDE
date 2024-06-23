@@ -15,20 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing.core.platform
+package com.itsaky.androidide.indexing.core
 
-import com.itsaky.androidide.indexing.IIndexParams
-import com.itsaky.androidide.indexing.core.platform.IApiVersionsIndex.Params
+import io.realm.annotations.RealmModule
 
 /**
- * Index which provides access to the API versions informations (`api-versions.xml`) from the
- * Android SDK.
- *
  * @author Akash Yadav
  */
-interface IApiVersionsIndex : IPlatformIndex<ClassOrMemberInfo, Params> {
-
-  class Params(
-    val platformId: String
-  ) : IIndexParams
-}
+@RealmModule(classes = [])
+class IndexingCoreRealmModule

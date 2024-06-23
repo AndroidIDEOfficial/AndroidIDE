@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.indexing.internal
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.indexing.IIndexService
-import com.itsaky.androidide.progress.IProgressIndicator
 import com.itsaky.androidide.projects.api.Project
 import java.io.File
 
@@ -29,13 +28,15 @@ import java.io.File
 @AutoService(IIndexService::class)
 internal class JavaIndexServiceImpl : IIndexService {
 
+  override val displayName: String
+    get() = "Java LSP Indexing Service"
+
   override fun scanFiles(project: Project): Collection<File> {
     return emptySet()
   }
 
   override suspend fun indexFiles(
     project: Project,
-    progress: IProgressIndicator,
     files: Collection<File>
   ) {
   }

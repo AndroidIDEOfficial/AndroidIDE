@@ -24,7 +24,7 @@ import com.itsaky.androidide.db.IRealmProvider
  *
  * @author Akash Yadav
  */
-interface IIndex<IndexableT : IIndexable, ConfigT : IIndexParams> {
+interface IIndex<IndexableT : IIndexable> {
 
   companion object {
 
@@ -36,7 +36,7 @@ interface IIndex<IndexableT : IIndexable, ConfigT : IIndexParams> {
     /**
      * Base path for indices.
      */
-    const val INDEX_BASE_PATH = "${IRealmProvider.PATH_SEPARATOR}index"
+    val INDEX_BASE_PATH = createIndexPath("", "index")
 
     private const val DEF_IS_ASYNC = true
 
@@ -91,9 +91,9 @@ interface IIndex<IndexableT : IIndexable, ConfigT : IIndexParams> {
    *
    * @return The created sub-index.
    */
-  fun <I : IIndexable, C : IIndexParams> createSubIndex(
+  fun <I : IIndexable> createSubIndex(
     params: IIndexParams? = null
-  ): IIndex<I, C> {
+  ): IIndex<I> {
     throw UnsupportedOperationException()
   }
 

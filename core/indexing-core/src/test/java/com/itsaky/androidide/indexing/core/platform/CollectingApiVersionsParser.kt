@@ -17,12 +17,12 @@
 
 package com.itsaky.androidide.indexing.core.platform
 
-import com.itsaky.androidide.indexing.core.internal.platform.ApiVersionsParser
+import com.itsaky.androidide.indexing.platform.ApiVersionsParser
 
 /**
  * @author Akash Yadav
  */
-class CollectingApiVersionsParser : ApiVersionsParser() {
+class CollectingApiVersionsParser : com.itsaky.androidide.indexing.platform.ApiVersionsParser() {
 
   private val apiInfo = mutableMapOf<String, Pair<ApiVersion, MutableMap<String, ApiVersion>>>()
 

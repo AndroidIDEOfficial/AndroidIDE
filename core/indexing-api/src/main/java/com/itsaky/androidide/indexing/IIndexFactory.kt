@@ -49,7 +49,7 @@ interface IIndexFactory<I : IIndexable, P : IIndexParams> {
    * @return The created [IIndex].
    */
   @Throws(NotFoundException::class)
-  fun create(): IIndex<I, P>
+  fun create(): IIndex<I>
 
   companion object {
 
@@ -99,10 +99,10 @@ interface IIndexFactory<I : IIndexable, P : IIndexParams> {
         return factory
       }
 
-      val impls = ServiceLoader.load(symTyp).iterator()
+      val impls = ServiceLoader.load(IIndexFactory::class.java).iterator()
       while (impls.hasNext()) {
         val impl = impls.next()
-        if (impl is IIndexFactory<*, *> && symTyp == impl.indexableType()) {
+        if (symTyp == impl.indexableType()) {
           if (factory == null) {
             factory = impl as IIndexFactory<T, P>
             continue

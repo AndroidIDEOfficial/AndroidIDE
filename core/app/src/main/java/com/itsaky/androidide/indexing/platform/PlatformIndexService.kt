@@ -15,12 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing.core.internal.platform
+package com.itsaky.androidide.indexing.platform
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.indexing.IIndexService
-import com.itsaky.androidide.progress.IProgressIndicator
 import com.itsaky.androidide.projects.api.Project
+import org.slf4j.LoggerFactory
 import java.io.File
 
 /**
@@ -29,19 +29,26 @@ import java.io.File
 @AutoService(IIndexService::class)
 internal class PlatformIndexService : IIndexService {
 
+  companion object {
+    private val log = LoggerFactory.getLogger(PlatformIndexService::class.java)
+  }
+
+  override val displayName: String
+    get() = "Android Platform Indexing Service"
+
   override fun scanFiles(project: Project): Collection<File> {
     return mutableListOf<File>().apply {
       project.findAndroidModules().forEach { androidModule ->
-        add(androidModule.getPlatformDir() ?: return@forEach)
+        add(androidModule.getPlatformDir()?.also {
+          log.debug("Adding {} to the list of indexable paths", it)
+        } ?: return@forEach)
       }
     }
   }
 
   override suspend fun indexFiles(
     project: Project,
-    progress: IProgressIndicator,
     files: Collection<File>
   ) {
-    TODO("Not yet implemented")
   }
 }
