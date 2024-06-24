@@ -19,7 +19,6 @@ package com.itsaky.androidide.editor.adapters
 import android.content.res.Resources
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ import android.widget.TextView
 import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
 import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
@@ -49,8 +49,8 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.customOrJBMono
 import com.itsaky.androidide.xml.versions.ApiVersions
-import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
+import org.eclipse.jdt.core.Signature
 import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
@@ -85,8 +85,10 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionLabel.text = label
     binding.completionType.text = type
     binding.completionDetail.text = desc
-    binding.completionIconText.setTypeface(customOrJBMono(EditorPreferences.useCustomFont),
-      Typeface.BOLD)
+    binding.completionIconText.setTypeface(
+      customOrJBMono(EditorPreferences.useCustomFont),
+      Typeface.BOLD
+    )
     if (desc.isEmpty()) {
       binding.completionDetail.visibility = View.GONE
     }
@@ -147,45 +149,40 @@ class CompletionListAdapter : EditorCompletionAdapter() {
       val data = item.data
       val versions =
         Lookup.getDefault().lookup(ApiVersions.COMPLETION_LOOKUP_KEY) ?: return@executeAsync null
-      val className =
+      val info =
         when (data) {
-          is ClassCompletionData -> data.className
-          is MemberCompletionData -> data.classInfo.className
+          is ClassCompletionData -> versions.classInfo(data.className)
+          is MemberCompletionData -> {
+            if (data is MethodCompletionData) {
+              // if the member is a method
+              // build the method identifier by joining the method name and the erased parameter types
+              // for method 'int some(String)', the identifier becomes 'some(Ljava/lang/String;)'
+              // return type of the method is ignored
+              versions.memberInfo(
+                data.classInfo.flatName,
+                methodIdentifier(data.memberName, data.erasedParameterTypes)
+              )
+            } else {
+              versions.memberInfo(data.classInfo.flatName, data.memberName)
+            }
+          }
+
           else -> return@executeAsync null
         }
-      val kind = item.completionKind
 
-      val clazz = versions.getClass(className) ?: return@executeAsync null
-      var info: Info? = clazz
-
-      if (data is MethodCompletionData) {
-        if (
-          kind == METHOD && data.erasedParameterTypes.isNotEmpty() && data.memberName.isNotBlank()
-        ) {
-          val method = clazz.getMethod(data.memberName, *data.erasedParameterTypes.toTypedArray())
-          if (method != null) {
-            info = method
-          }
-        } else if (kind == FIELD && data.memberName.isNotBlank()) {
-          val field = clazz.getField(data.memberName)
-          if (field != null) {
-            info = field
-          }
-        }
-      }
       val sb = StringBuilder()
       if (info!!.since > 1) {
         sb.append(textView.context.getString(msg_api_info_since, info.since))
         sb.append("\n")
       }
 
-      if (info.removed > 0) {
-        sb.append(textView.context.getString(msg_api_info_removed, info.removed))
+      if (info.removedIn > 0) {
+        sb.append(textView.context.getString(msg_api_info_removed, info.removedIn))
         sb.append("\n")
       }
 
-      if (info.deprecated > 0) {
-        sb.append(textView.context.getString(msg_api_info_deprecated, info.deprecated))
+      if (info.deprecatedIn > 0) {
+        sb.append(textView.context.getString(msg_api_info_deprecated, info.deprecatedIn))
         sb.append("\n")
       }
 
@@ -201,6 +198,21 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     }
   }
 
+  private fun methodIdentifier(memberName: String, erasedParameterTypes: List<String>): String {
+    val sb = StringBuilder()
+    sb.append(memberName)
+    sb.append('(')
+    for (type in erasedParameterTypes) {
+      if (type.length == 1 && JavaType.primitiveFor(type[0]) != null) {
+        sb.append(type)
+      } else {
+        sb.append(Signature.createTypeSignature(type, true))
+      }
+    }
+    sb.append(')')
+    return sb.toString()
+  }
+
   private fun isValidForApiVersion(item: LspCompletionItem?): Boolean {
     if (item == null) {
       return false
@@ -209,15 +221,15 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     val data = item.data
     return if ( // These represent a class type
       (type === CLASS ||
-          type === INTERFACE ||
-          type === ENUM ||
+        type === INTERFACE ||
+        type === ENUM ||
 
-          // These represent a method type
-          type === METHOD ||
-          type === CONSTRUCTOR ||
+        // These represent a method type
+        type === METHOD ||
+        type === CONSTRUCTOR ||
 
-          // A field type
-          type === FIELD) && data != null
+        // A field type
+        type === FIELD) && data != null
     ) {
       val className =
         when (data) {
@@ -225,7 +237,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
           is MemberCompletionData -> data.classInfo.className
           else -> null
         }
-      !TextUtils.isEmpty(className)
+      !className.isNullOrBlank()
     } else false
   }
 }

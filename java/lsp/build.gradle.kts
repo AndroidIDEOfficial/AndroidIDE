@@ -48,6 +48,8 @@ dependencies {
   kapt(projects.annotation.processors)
   kapt(libs.google.auto.service)
 
+  api(projects.core.indexingApi)
+
   implementation(libs.androidide.ts)
   implementation(libs.androidide.ts.java)
   implementation(libs.androidx.annotation)
@@ -63,7 +65,6 @@ dependencies {
 
   implementation(projects.core.actions)
   implementation(projects.core.common)
-  implementation(projects.core.indexingApi)
   implementation(projects.core.lspApi)
   implementation(projects.core.resources)
   implementation(projects.editor.api)
@@ -73,6 +74,7 @@ dependencies {
   implementation(libs.composite.javapoet)
   implementation(libs.composite.jaxp)
   implementation(libs.composite.jdkJdeps)
+  implementation(libs.composite.jdt)
   implementation(libs.composite.googleJavaFormat)
 
   implementation(libs.androidx.core.ktx)

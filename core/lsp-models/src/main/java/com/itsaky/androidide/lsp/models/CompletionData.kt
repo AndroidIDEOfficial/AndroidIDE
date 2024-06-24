@@ -23,9 +23,12 @@ interface ICompletionData
 /**
  * Information about a class-related completion item.
  *
- * @property className The fully qualified name of the class.
+ * @property className The fully qualified name of the class. Example: `pck.outer.inner`.
+ * @property flatName The flat name of the class. Example: `pck.outer$inner`.
+ * @property isCompleteData Whether the data provided by this [ClassCompletionData] is complete.
  * @property isNested Whether the given class is a nested class or not.
  * @property topLevelClass If [isNested] is true, then this must be set to the fully qualified name
+ * of the top-level class.
  * @property simpleName The simple name of the class.
  * @property nameWithoutTopLevel The name of this class without the fully qualified name of its top
  * level class. For example, the value of this property for class name
@@ -33,20 +36,20 @@ interface ICompletionData
  */
 data class ClassCompletionData
 @JvmOverloads
-constructor(val className: String, val isNested: Boolean = false, val topLevelClass: String = "") :
-  ICompletionData {
-  val simpleName: String
-    get() {
-      return className.substringAfterLast(delimiter = '.')
-    }
+constructor(
+  val className: String,
+  val isCompleteData: Boolean = false,
+  val flatName: String = className,
+  val simpleName: String = className.substringAfterLast(delimiter = '.'),
+  val isNested: Boolean = false,
+  val topLevelClass: String = ""
+) : ICompletionData {
 
-  val nameWithoutTopLevel: String
-    get() {
-      if (!isNested) {
-        return className
-      }
-      return className.substring(topLevelClass.length + 1)
-    }
+  val nameWithoutTopLevel: String = if (isNested) {
+    className.substring(topLevelClass.length + 1)
+  } else {
+    className
+  }
 }
 
 /**

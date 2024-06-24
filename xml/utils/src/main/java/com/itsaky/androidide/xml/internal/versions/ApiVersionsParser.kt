@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing.core.internal.platform
+package com.itsaky.androidide.xml.internal.versions
 
 import androidx.collection.mutableIntObjectMapOf
-import com.itsaky.androidide.indexing.core.platform.ApiVersion
+import com.itsaky.androidide.xml.versions.ApiVersion
 import jaxp.xml.namespace.QName
 import jaxp.xml.stream.XMLInputFactory
 import jaxp.xml.stream.events.Attribute
@@ -37,7 +37,7 @@ open class ApiVersionsParser {
   // A cache to store the ApiVersion instances with different values
   // For example, if two classes have the same value for `since`,
   // 'removed' and 'deprecated', then the same ApiVersion instance
-  // will be used for the two classes.
+  // will be used for the two classes. To prevent value corruption, ApiVersion instances are immutable.
   // The keys in this map are the packed (bitwise ORed) values of the three version integers.
   // The first 8 bits are 0, the next 8 bits represent 'since', the next 8 bits represent 'deprecated'
   // and the last 8 bits represent 'removed'.
@@ -47,6 +47,14 @@ open class ApiVersionsParser {
   private var currentClass: String? = null
 
   companion object {
+    internal const val TAG_API = "api"
+    internal const val TAG_CLASS = "class"
+    internal const val TAG_FIELD = "field"
+    internal const val TAG_METHOD = "method"
+    internal const val ATTR_NAME = "name"
+    internal const val ATTR_DEPR = "deprecated"
+    internal const val ATTR_REM = "removed"
+    internal const val ATTR_SIN = "since"
     private val log = LoggerFactory.getLogger(ApiVersionsParser::class.java)
   }
 
@@ -77,14 +85,15 @@ open class ApiVersionsParser {
   /**
    * Called when the parser is done parsing the `api-versions.xml` file.
    */
-  protected open fun onFinishParse() {}
+  protected open fun onFinishParse() {
+  }
 
   private fun consumeStartElement(event: StartElement) {
     when (event.name.localPart) {
-      "api" -> apiVersion = event.getAttributeByName(QName("version")).value.toInt()
-      "class" -> consumeClass(event)
-      "field" -> consumeMember(event, "field")
-      "method" -> consumeMember(event, "method")
+      TAG_API -> apiVersion = event.getAttributeByName(QName("version")).value.toInt()
+      TAG_CLASS -> consumeClass(event)
+      TAG_FIELD -> consumeMember(event, TAG_FIELD)
+      TAG_METHOD -> consumeMember(event, TAG_METHOD)
     }
   }
 
@@ -161,25 +170,25 @@ open class ApiVersionsParser {
 
   private fun consumeEndElement(element: EndElement) {
     when (element.name.localPart) {
-      "api" -> apiVersion = null
-      "class" -> currentClass = null
+      TAG_API -> apiVersion = null
+      TAG_CLASS -> currentClass = null
     }
   }
 
   private fun StartElement.parseAttrs(): Pair<String, Int> {
     var name: String? = null
     var since = 1
-    var deprecated = 0
-    var removed = 0
+    var deprecated = ApiVersion.NONE
+    var removed = ApiVersion.NONE
 
     attributes.forEach { attribute ->
       attribute as Attribute
 
       when (attribute.name.localPart) {
-        "name" -> name = attribute.value
-        "since" -> since = attribute.value.toInt()
-        "deprecated" -> deprecated = attribute.value.toInt()
-        "removed" -> removed = attribute.value.toInt()
+        ATTR_NAME -> name = attribute.value
+        ATTR_SIN -> since = attribute.value.toInt()
+        ATTR_DEPR -> deprecated = attribute.value.toInt()
+        ATTR_REM -> removed = attribute.value.toInt()
       }
     }
 
@@ -200,6 +209,6 @@ open class ApiVersionsParser {
     val since = (versions shr 16) and 0x000000FF
     val deprecated = (versions shr 8) and 0x000000FF
     val removed = versions and 0x000000FF
-    return ApiVersion.newInstance(since = since, deprecatedIn = deprecated, removedIn = removed)
+    return ApiVersion(since = since, deprecatedIn = deprecated, removedIn = removed)
   }
 }

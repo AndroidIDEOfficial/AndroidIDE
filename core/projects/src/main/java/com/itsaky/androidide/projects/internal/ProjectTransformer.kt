@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects
+package com.itsaky.androidide.projects.internal
 
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.GradleProject

@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects
+package com.itsaky.androidide.projects.internal
 
 import androidx.annotation.RestrictTo
 import com.android.builder.model.v2.models.ProjectSyncIssues
@@ -29,6 +29,9 @@ import com.itsaky.androidide.eventbus.events.file.FileEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.CachingProject
+import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.R
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project

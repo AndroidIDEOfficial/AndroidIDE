@@ -34,7 +34,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.managers.ToolsManager
 import com.itsaky.androidide.preferences.internal.BuildPreferences
 import com.itsaky.androidide.preferences.internal.DevOpsPreferences
-import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.services.ToolingServerNotStartedException

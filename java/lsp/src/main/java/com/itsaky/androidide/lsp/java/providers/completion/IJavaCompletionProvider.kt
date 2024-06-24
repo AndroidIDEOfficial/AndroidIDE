@@ -66,6 +66,7 @@ import jdkx.lang.model.element.ElementKind.TYPE_PARAMETER
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.element.VariableElement
+import jdkx.lang.model.type.TypeKind
 import openjdk.source.tree.Tree
 import openjdk.source.util.TreePath
 import org.slf4j.Logger
@@ -85,7 +86,7 @@ abstract class IJavaCompletionProvider(
 ) : BaseJavaServiceProvider(completingFile, compiler, settings) {
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
-  
+
   companion object {
     @JvmStatic
     protected val log: Logger = LoggerFactory.getLogger(IJavaCompletionProvider::class.java)
@@ -261,6 +262,8 @@ abstract class IJavaCompletionProvider(
     item.detail = packageName(className).toString()
     item.ideSortText = item.ideLabel
     item.matchLevel = matchLevel
+
+    // TODO(itsaky): This will result in incorrect flatName if 'className' is a nested or local class
     item.data = ClassCompletionData(className)
 
     // If file is not provided, we are probably completing an import path
@@ -331,13 +334,19 @@ abstract class IJavaCompletionProvider(
       ENUM -> CompletionItemKind.ENUM
       ENUM_CONSTANT -> ENUM_MEMBER
       EXCEPTION_PARAMETER,
-      PARAMETER, -> PROPERTY
+      PARAMETER,
+      -> PROPERTY
+
       FIELD -> CompletionItemKind.FIELD
       STATIC_INIT,
-      INSTANCE_INIT, -> FUNCTION
+      INSTANCE_INIT,
+      -> FUNCTION
+
       INTERFACE -> CompletionItemKind.INTERFACE
       LOCAL_VARIABLE,
-      RESOURCE_VARIABLE, -> VARIABLE
+      RESOURCE_VARIABLE,
+      -> VARIABLE
+
       METHOD -> CompletionItemKind.METHOD
       PACKAGE -> MODULE
       TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER
@@ -350,8 +359,8 @@ abstract class IJavaCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     return when {
-      element is TypeElement -> getClassCompletionData(element)
-      element.kind == FIELD -> getFieldCompletionData(element)
+      element is TypeElement -> getClassCompletionData(task, element)
+      element.kind == FIELD -> getFieldCompletionData(task, element)
       element is ExecutableElement -> getMethodCompletionData(task, element, overloads)
       else -> return null
     }
@@ -363,6 +372,7 @@ abstract class IJavaCompletionProvider(
     overloads: Int
   ): MethodCompletionData {
     val types = task.task.types
+    val elements = task.task.elements
     val type = element.enclosingElement as TypeElement
     val parameterTypes = Array(element.parameters.size) { "" }
     val erasedParameterTypes = Array(parameterTypes.size) { "" }
@@ -371,30 +381,47 @@ abstract class IJavaCompletionProvider(
     for (i in element.parameters.indices) {
       val p = element.parameters[i].asType()
       parameterTypes[i] = p.toString()
-      erasedParameterTypes[i] = types.erasure(p).toString()
+
+      if (p.kind == TypeKind.DECLARED) {
+        erasedParameterTypes[i] =
+          elements.getBinaryName(types.asElement(p) as TypeElement).toString()
+      } else {
+        erasedParameterTypes[i] = types.erasure(p).toString()
+      }
     }
 
     return MethodCompletionData(
       element.simpleName.toString(),
-      getClassCompletionData(type),
+      getClassCompletionData(task, type),
       parameterTypes.toList(),
       erasedParameterTypes.toList(),
       plusOverloads
     )
   }
 
-  protected open fun getFieldCompletionData(element: Element): FieldCompletionData {
+  protected open fun getFieldCompletionData(
+    task: CompileTask,
+    element: Element
+  ): FieldCompletionData {
     val field = element as VariableElement
     val type = field.enclosingElement as TypeElement
-    return FieldCompletionData(field.simpleName.toString(), getClassCompletionData(type))
+    return FieldCompletionData(field.simpleName.toString(), getClassCompletionData(task, type))
   }
 
-  protected open fun getClassCompletionData(element: TypeElement) =
-    ClassCompletionData(
-      element.qualifiedName.toString(),
-      element.enclosingElement.kind != PACKAGE,
-      element.findTopLevelElement().qualifiedName.toString()
+  protected open fun getClassCompletionData(
+    task: CompileTask,
+    element: TypeElement
+  ): ClassCompletionData {
+    val elements = task.task.elements
+    return ClassCompletionData(
+      className = element.qualifiedName.toString(),
+      isCompleteData = true,
+      flatName = elements.getBinaryName(element).toString(),
+      simpleName = element.simpleName.toString(),
+      isNested = element.enclosingElement.kind != PACKAGE,
+      topLevelClass = element.findTopLevelElement().qualifiedName.toString()
     )
+  }
 
   protected open fun TypeElement.findTopLevelElement(): TypeElement {
     if (enclosingElement.kind == PACKAGE) {
