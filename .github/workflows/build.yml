@@ -1,7 +1,7 @@
 name: Build and test
 
-on:
-  push:
+on: 
+  push: true
     branches: [ "dev", "main", "release/**" ]
     paths-ignore:
       - '**.md'
