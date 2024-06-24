@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.models.SaveResult
-import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess

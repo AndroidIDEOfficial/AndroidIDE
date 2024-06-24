@@ -15,14 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing.core.platform
-
-import com.itsaky.androidide.indexing.platform.ApiVersionsParser
+package com.itsaky.androidide.xml.versions
 
 /**
  * @author Akash Yadav
  */
-class CollectingApiVersionsParser : com.itsaky.androidide.indexing.platform.ApiVersionsParser() {
+class CollectingApiVersionsParser :
+  com.itsaky.androidide.xml.internal.versions.ApiVersionsParser() {
 
   private val apiInfo = mutableMapOf<String, Pair<ApiVersion, MutableMap<String, ApiVersion>>>()
 

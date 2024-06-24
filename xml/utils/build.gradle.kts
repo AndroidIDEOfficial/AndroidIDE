@@ -39,6 +39,7 @@ dependencies {
 
     implementation(libs.common.kotlin)
     implementation(libs.composite.jdt)
+    implementation(libs.composite.jaxp)
     implementation(libs.google.auto.service.annotations)
 
     implementation(projects.core.common)

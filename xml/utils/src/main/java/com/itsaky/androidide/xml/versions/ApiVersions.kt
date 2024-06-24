@@ -27,13 +27,23 @@ import com.itsaky.androidide.lookup.Lookup
 interface ApiVersions {
 
   companion object {
-    @JvmStatic val COMPLETION_LOOKUP_KEY = Lookup.Key<ApiVersions>()
+    @JvmStatic
+    val COMPLETION_LOOKUP_KEY = Lookup.Key<ApiVersions>()
   }
 
   /**
-   * Get the information about the class with the given name.
+   * Get the API version info about the class with the given name.
    *
-   * @param name The fully qualified name of the class.
+   * @param name The fully qualified name of the class, in its internal form.
    */
-  fun getClass(name: String): ClassInfo?
+  fun classInfo(name: String): ApiVersion?
+
+  /**
+   * Get the API version info about the member of the given class.
+   *
+   * @param className The fully qualified name of the class, in its internal form.
+   * @param identifier The identifier of the member. This is the member name in case the member is a
+   * field. For method, this is the signature of the method without the return type.
+   */
+  fun memberInfo(className: String, identifier: String): ApiVersion?
 }

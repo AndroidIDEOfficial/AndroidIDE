@@ -17,20 +17,49 @@
 
 package com.itsaky.androidide.xml.internal.versions
 
+import com.itsaky.androidide.xml.versions.ApiVersion
 import com.itsaky.androidide.xml.versions.ApiVersions
-import com.itsaky.androidide.xml.versions.ClassInfo
+import org.eclipse.jdt.core.Signature
 import java.util.concurrent.ConcurrentHashMap
 
 /** @author Akash Yadav */
 internal class DefaultApiVersions : ApiVersions {
 
-  val classes = ConcurrentHashMap<String, ClassInfo>()
+  val classes =
+    ConcurrentHashMap<String, Pair<ApiVersion?, ConcurrentHashMap<String, ApiVersion>>>()
 
-  override fun getClass(name: String): ClassInfo? {
-    return classes[name.replace('.', '/')]
+  private fun String.flatten() = replace('.', '/')
+
+  override fun classInfo(name: String): ApiVersion? {
+    return classes[name.flatten()]?.first
   }
-  
-  internal fun putClass(name: String, info: ClassInfo) {
-    classes[name] = info
+
+  override fun memberInfo(className: String, identifier: String): ApiVersion? {
+    return classes[className.flatten()]?.second?.get(identifier)
+  }
+
+  fun containsClass(name: String): Boolean {
+    return classes.containsKey(name.flatten())
+  }
+
+  fun containsClassMember(name: String, member: String): Boolean {
+    return classes[name.flatten()]?.second?.containsKey(member) ?: false
+  }
+
+  fun putClass(name: String, version: ApiVersion) {
+    computeClass(name, version)
+  }
+
+  fun putMember(className: String, identifier: String, version: ApiVersion) {
+    computeClass(className).second[identifier] = version
+  }
+
+  private fun computeClass(
+    name: String,
+    version: ApiVersion? = null
+  ): Pair<ApiVersion?, ConcurrentHashMap<String, ApiVersion>> {
+    return classes.computeIfAbsent(name.flatten()) {
+      version to ConcurrentHashMap()
+    }
   }
 }

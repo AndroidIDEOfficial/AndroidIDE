@@ -28,7 +28,7 @@ import com.itsaky.androidide.eventbus.events.editor.OnPauseEvent
 import com.itsaky.androidide.eventbus.events.editor.OnResumeEvent
 import com.itsaky.androidide.eventbus.events.editor.OnStartEvent
 import com.itsaky.androidide.eventbus.events.editor.OnStopEvent
-import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.EditorActivityActions
 import com.itsaky.androidide.utils.EditorSidebarActions

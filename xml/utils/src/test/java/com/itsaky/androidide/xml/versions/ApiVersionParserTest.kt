@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.indexing.core.platform
+package com.itsaky.androidide.xml.versions
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.testing.common.utils.findAndroidHome
+import com.itsaky.androidide.xml.findAndroidHome
 import jaxp.xml.stream.XMLStreamException
 import org.junit.Assert.assertThrows
 import org.junit.Before

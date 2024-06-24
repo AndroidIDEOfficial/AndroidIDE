@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.tracing.ktx)
 
     implementation(libs.common.utilcode)
+    implementation(libs.composite.jdt)
     
     implementation(libs.google.material)
 

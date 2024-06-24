@@ -21,6 +21,7 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider
+import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
@@ -50,7 +51,7 @@ class ClassNamesCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
-    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
+    val list = mutableListOf<CompletionItem>()
     val packageName = Objects.toString(root.packageName, "")
     val uniques: MutableSet<String> = HashSet()
 
