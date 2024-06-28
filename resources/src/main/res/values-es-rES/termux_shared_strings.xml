@@ -69,14 +69,14 @@
   <!-- Miscellaneous -->
   <string name="action_share">Compartir</string>
   <string name="action_save_to_file">Guardar en archivo</string>
-  <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
-  <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
+  <string name="msg_storage_permission_granted_on_request">El permiso de almacenamiento concedido por el usuario a solicitud</string>
+  <string name="msg_storage_permission_not_granted_on_request">El permiso de almacenamiento no fue concedido por el usuario a solicitud</string>
   <!-- Log Level -->
-  <string name="log_level_title">Log Level</string>
-  <string name="log_level_off">Off</string>
+  <string name="log_level_title">Nivel de registro</string>
+  <string name="log_level_off">Apagado</string>
   <string name="log_level_normal">Normal</string>
-  <string name="log_level_debug">Debug</string>
-  <string name="log_level_verbose">Verbose</string>
-  <string name="log_level_unknown">*Unknown*</string>
-  <string name="log_level_value">Logcat log level set to \"%1$s\"</string>
+  <string name="log_level_debug">Depuración</string>
+  <string name="log_level_verbose">Detallado</string>
+  <string name="log_level_unknown">*Desconocido*</string>
+  <string name="log_level_value">Nivel de registro de Logcat establecido en \"%1$s\"</string>
 </resources>
