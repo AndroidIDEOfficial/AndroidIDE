@@ -16,59 +16,59 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-  <string name="msg_directory_absolute_path">%1$s Directory Absolute Path: \"%2$s\"</string>
+  <string name="msg_directory_absolute_path">%1$s Ruta absoluta del directorio: \"%2$s\"</string>
   <!-- PackageUtils -->
-  <string name="error_app_not_installed_or_disabled_warning">The %1$s (%2$s) app is not installed or is disabled.</string>
-  <string name="error_get_package_context_failed_title">Failed To Get Package Context</string>
-  <string name="error_get_package_context_failed_message">Failed to get package context for the \"%1$s\" package. This may be because the app package is not installed or it has different APK signature from the current app.</string>
-  <string name="error_get_package_context_failed_help_url_message">Check %1$s for more details.</string>
-  <string name="error_get_component_state_failed">Failed to get %1$s/%2$s component state</string>
-  <string name="error_enable_component_failed">Failed to enable %1$s/%2$s component</string>
-  <string name="error_disable_component_failed">Failed to disable %1$s/%2$s component</string>
+  <string name="error_app_not_installed_or_disabled_warning">La aplicación %1$s (%2$s) no está instalada o está deshabilitada.</string>
+  <string name="error_get_package_context_failed_title">Error al obtener el contexto del paquete</string>
+  <string name="error_get_package_context_failed_message">No se pudo obtener el contexto del paquete para el paquete \"%1$s\". Esto puede deberse a que el paquete de la aplicación no está instalado o tiene una firma de APK diferente de la aplicación actual.</string>
+  <string name="error_get_package_context_failed_help_url_message">Revisa %1$s para más detalles.</string>
+  <string name="error_get_component_state_failed">Error al obtener el estado del componente %1$s/%2$s</string>
+  <string name="error_enable_component_failed">Error al activar el componente %1$s/%2$s</string>
+  <string name="error_disable_component_failed">Error al desactivar el componente %1$s/%2$s</string>
   <!-- PermissionUtils -->
-  <string name="error_failed_to_request_permissions">Failed to request permissions with request code %1$d: %2$s</string>
-  <string name="error_attempted_to_ask_for_permissions_not_requested">Attempted to ask for permissions that have not been requested in app manifest: %1$s</string>
-  <string name="error_has_not_requested_legacy_external_storage">The \"%1$s\" package is targeting targetSdkVersion %2$d and is running on android sdk %3$d but has not set requestLegacyExternalStorage to true in app manifest</string>
-  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requires `DUMP` and `PACKAGE_USAGE_STATS` permission</string>
-  <string name="error_display_over_other_apps_permission_not_granted">%1$s requires
-        \"Display over other apps\" permission to start activities and services from background on Android &gt;= 10.
-        Grants it from Android Settings -&gt; Apps -&gt; %1$s -&gt; Advanced -&gt; Draw over other apps.
-        The permission name may be different on different devices, like on Xiaomi, its called
-        \"Display pop-up windows while running in the background\", check https://dontkillmyapp.com
-        for device specific issues.</string>
+  <string name="error_failed_to_request_permissions">Error al solicitar permisos con el código de solicitud %1$d: %2$s</string>
+  <string name="error_attempted_to_ask_for_permissions_not_requested">Intentó solicitar permisos que no han sido solicitados en el manifiesto de la aplicación: %1$s</string>
+  <string name="error_has_not_requested_legacy_external_storage">El paquete \"%1$s\" está dirigido a targetSdkVersion %2$d y se está ejecutando en android sdk %3$d pero no ha establecido requestLegacyExternalStorage como verdadero en el manifiesto de la aplicación</string>
+  <string name="msg_requires_dump_and_package_usage_stats_permissions">Requiere permiso `DUMP` y `PACKAGE_USAGE_STATS`</string>
+  <string name="error_display_over_other_apps_permission_not_granted">%1$s requiere
+        permiso \"Mostrar sobre otras aplicaciones\" para iniciar actividades y servicios desde el fondo en Android &gt;= 10.
+        Concede desde los ajustes de Android -&gt; Aplicaciones -&gt; %1$s -&gt; Avanzado -&gt; Dibujar sobre otras aplicaciones.
+        El nombre de los permisos puede ser diferente en diferentes dispositivos, como en Xiaomi, se llama
+        \"Mostrar ventanas emergentes mientras se ejecuta en segundo plano\", comprueba https://dontkillmyapp. om
+        para problemas específicos de dispositivo.</string>
   <!-- TermuxPluginUtils -->
-  <string name="error_allow_external_apps_ungranted">%1$s requires `allow-external-apps` property to be set to `true` in `%2$s` file.</string>
+  <string name="error_allow_external_apps_ungranted">%1$s requiere que la propiedad `allow-external-apps` sea establecida en `true` en ` archivo%2$s.</string>
   <!-- ReportActivity -->
-  <string name="title_report_text">Report Text</string>
-  <string name="msg_report_truncated">**Report Truncated**\n\nReport is too large to view here. Use `Save To File` option from options menu (3-dots on top right) and view it in an external text editor app.\n\n##\n\n</string>
+  <string name="title_report_text">Reportar texto</string>
+  <string name="msg_report_truncated">**Informe truncado**\n\nEl informe es demasiado grande para ver aquí. Usa la opción `Guardar a archivo` desde el menú de opciones (3 puntos en la parte superior derecha) y verla en una aplicación de editor de texto externo.\n\n##\n\n</string>
   <!-- ShareUtils -->
-  <string name="title_share_with">Share With</string>
-  <string name="title_open_url_with">Open URL With</string>
-  <string name="msg_storage_permission_not_granted">The storage permission not granted.</string>
-  <string name="msg_file_saved_successfully">The %1$s file saved successfully at \"%2$s\"</string>
+  <string name="title_share_with">Compartir con</string>
+  <string name="title_open_url_with">Abrir URL con</string>
+  <string name="msg_storage_permission_not_granted">Permiso de almacenamiento no concecido.</string>
+  <string name="msg_file_saved_successfully">El archivo %1$s se ha guardado correctamente en \"%2$s\"</string>
   <!-- Shell -->
   <!-- TermuxUtils -->
-  <string name="msg_report_issue">        If you want to report this issue, then copy its text from the options menu (3-dots on top right) and post
-        an issue on one of the following links.
-        \n\nIf you are posting a Termux app crash report, then please provide details on what you were doing that
-        caused the crash and how to reproduce it, if possible.
-        \n\nIf you are posting an issue on GitHub, then post it in the repository at which the report belongs at.
-        Issues opened or emails sent with **(partial) screenshots** instead of copied text or a file of this report
-        **will likely be automatically closed/deleted**. You may optionally remove any device specific info that
-        you consider private or don\'t want to share or that is not relevant to the issue.
-        \n\nWe do not provide support for any hacking related tools/scripts. Any questions asked about them over email,
-        on GitHub or other official termux community forums **will likely be automatically closed/deleted** and may
-        even result in **temporary or permanent** ban. Check %1$s/wiki/Hacking for details.</string>
-  <string name="msg_termux_app_required_by_app">The AndroidIDE is required by the %1$s app to run termux commands.</string>
-  <string name="error_termux_app_package_context_not_accessible">The AndroidIDE app (package context) is not accessible.</string>
-  <string name="error_termux_prefix_dir_path_not_accessible">The AndroidIDE app $PREFIX directory is not accessible by the %1$s app.
-        This may be because you have not installed or setup AndroidIDE app or
-    AndroidIDE app and %1$s app both have different APK signatures because you have managed to install both apps from different sources.
-        It may also be because AndroidIDE $PREFIX directory \"/data/data/com.itsaky.androidide/files/usr\" does not exist or does not have read,
-        write and execute permissions.</string>
+  <string name="msg_report_issue">        Si deseas informar este problema, copia su texto desde el menú de opciones (tres puntos en la esquina superior derecha) y publícalo.
+        un problema en uno de los siguientes enlaces.
+        \n\nSi estás publicando un informe de fallo de la aplicación Termux, por favor proporciona detalles sobre lo que estabas haciendo
+        causó el fallo y cómo reproducirlo, si es posible.
+        \n\nSi estás publicando un problema en GitHub, publícalo en el repositorio al que pertenece el informe.
+        Problemas abiertos o correos electrónicos enviados con **(parciales) capturas de pantalla** en lugar de texto copiado o un archivo de este informe
+        **probablemente serán cerrados/eliminados automáticamente**. Opcionalmente, puedes eliminar cualquier información específica del dispositivo
+        consideres privada o no deseas compartir, o que no sea relevante para el problema.
+        \n\nNo brindamos soporte para herramientas o scripts relacionados con hacking. Cualquier pregunta sobre ellos por correo electrónico,
+        en GitHub u otros foros comunitarios oficiales de Termux **probablemente serán cerradas/eliminadas automáticamente** y
+        incluso podría resultar en una prohibición **temporal o permanente**. Consulta %1$s/wiki/Hacking para más detalles.</string>
+  <string name="msg_termux_app_required_by_app">El AndroidIDE es requerido por la aplicación %1$s para ejecutar comandos de termux.</string>
+  <string name="error_termux_app_package_context_not_accessible">La aplicación AndroidIDE (contexto del paquete) no es accesible.</string>
+  <string name="error_termux_prefix_dir_path_not_accessible">El directorio $PREFIX de la aplicación AndroidIDE no es accesible por la aplicación %1$s.
+        Esto podría deberse a que no has instalado o configurado la aplicación AndroidIDE, o
+    La aplicación AndroidIDE y la aplicación %1$s tienen firmas de APK diferentes porque has logrado instalar ambas aplicaciones desde fuentes diferentes.
+        También puede ser porque el directorio $PREFIX de AndroidIDE \"/data/data/com.itsaky.androidide/files/usr\" no existe o no tiene permisos de lectura,
+        permisos de escritura y ejecución.</string>
   <!-- Miscellaneous -->
-  <string name="action_share">Share</string>
-  <string name="action_save_to_file">Save To File</string>
+  <string name="action_share">Compartir</string>
+  <string name="action_save_to_file">Guardar en archivo</string>
   <string name="msg_storage_permission_granted_on_request">The storage permission granted by user on request</string>
   <string name="msg_storage_permission_not_granted_on_request">The storage permission not granted by user on request</string>
   <!-- Log Level -->
