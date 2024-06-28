@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.projects.ModuleProject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

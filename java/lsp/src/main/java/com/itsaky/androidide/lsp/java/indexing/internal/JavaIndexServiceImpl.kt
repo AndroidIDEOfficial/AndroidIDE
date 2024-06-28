@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.java.indexing.internal
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.indexing.IIndexService
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.Project
 import java.io.File
 
 /**

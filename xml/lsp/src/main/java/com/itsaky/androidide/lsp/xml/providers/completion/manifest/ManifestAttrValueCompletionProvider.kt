@@ -41,8 +41,8 @@ import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionPro
 import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.projects.android.AndroidModule
+import com.itsaky.androidide.projects.ModuleProject
 import com.itsaky.androidide.xml.permissions.Permission
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMDocument

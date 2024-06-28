@@ -20,9 +20,7 @@ package com.itsaky.androidide.projects
 import androidx.annotation.RestrictTo
 import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.ModuleProject
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo

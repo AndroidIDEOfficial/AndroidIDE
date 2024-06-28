@@ -23,7 +23,7 @@ import com.itsaky.androidide.inflater.utils.endParse
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher

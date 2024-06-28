@@ -18,7 +18,7 @@
 package com.itsaky.androidide.inflater.utils
 
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import java.io.File
 
 private var currentModule: AndroidModule? = null

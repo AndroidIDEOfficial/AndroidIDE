@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.indexing
 
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.Project
 import kotlinx.coroutines.Deferred
 import java.io.File
 

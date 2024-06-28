@@ -50,7 +50,7 @@ import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetType

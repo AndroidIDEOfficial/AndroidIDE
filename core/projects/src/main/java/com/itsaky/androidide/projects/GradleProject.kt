@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.api
+package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.models.GradleTask
@@ -34,7 +34,6 @@ import java.util.concurrent.CompletableFuture
  * @param buildDir The build directory of the project.
  * @param buildScript The Gradle buildscript file of the project.
  * @param tasks The tasks of the project.
- * @param subModules The submodules of the project.
  * @author Akash Yadav
  */
 open class GradleProject(

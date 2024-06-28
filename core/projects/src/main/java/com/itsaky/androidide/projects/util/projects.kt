@@ -19,7 +19,7 @@ package com.itsaky.androidide.projects.util
 
 import androidx.annotation.RestrictTo
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 
 /**
  * **For testing purposes only!**

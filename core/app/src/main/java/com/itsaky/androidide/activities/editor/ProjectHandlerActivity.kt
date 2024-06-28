@@ -40,7 +40,7 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
 import com.itsaky.androidide.projects.internal.ProjectManagerImpl
-import com.itsaky.androidide.projects.api.GradleProject
+import com.itsaky.androidide.projects.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection

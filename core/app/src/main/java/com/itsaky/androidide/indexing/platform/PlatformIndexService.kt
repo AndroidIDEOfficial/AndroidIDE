@@ -19,7 +19,7 @@ package com.itsaky.androidide.indexing.platform
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.indexing.IIndexService
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.Project
 import org.slf4j.LoggerFactory
 import java.io.File
 

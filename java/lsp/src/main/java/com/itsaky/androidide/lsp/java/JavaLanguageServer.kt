@@ -60,8 +60,8 @@ import com.itsaky.androidide.lsp.util.LSPEditorActions
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.FileManager.getActiveDocumentCount
 import com.itsaky.androidide.projects.IProjectManager.Companion.getInstance
-import com.itsaky.androidide.projects.api.ModuleProject
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.ModuleProject
+import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.VMUtils
 import kotlinx.coroutines.CoroutineScope

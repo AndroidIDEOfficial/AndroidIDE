@@ -19,7 +19,9 @@ package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.java.JavaModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.api.IAndroidProject

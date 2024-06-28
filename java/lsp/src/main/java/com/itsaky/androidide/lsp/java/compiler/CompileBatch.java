@@ -32,7 +32,7 @@ import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.tooling.api.ProjectType;
 import com.itsaky.androidide.utils.ClassTrie;

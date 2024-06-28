@@ -46,7 +46,7 @@ import com.itsaky.androidide.lsp.models.ReferenceResult
 import com.itsaky.androidide.lsp.models.SignatureHelp
 import com.itsaky.androidide.lsp.models.SignatureHelpParams
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.Project
 import java.nio.file.Path
 
 /**
