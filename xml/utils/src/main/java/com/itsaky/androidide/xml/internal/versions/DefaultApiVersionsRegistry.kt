@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @AutoService(ApiVersionsRegistry::class)
 @VisibleForTesting
-class DefaultApiVersionsRegistry : ApiVersionsParser(), ApiVersionsRegistry {
+class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private val versions = ConcurrentHashMap<String, ApiVersions>()
 
@@ -42,10 +42,6 @@ class DefaultApiVersionsRegistry : ApiVersionsParser(), ApiVersionsRegistry {
   }
 
   override var isLoggingEnabled: Boolean = true
-
-  private var _currentApiVersions: DefaultApiVersions? = null
-  private val currentApiVersions: DefaultApiVersions
-    get() = checkNotNull(_currentApiVersions)
 
   override fun forPlatformDir(platform: File): ApiVersions? {
     var version = versions[platform.path]
@@ -69,50 +65,53 @@ class DefaultApiVersionsRegistry : ApiVersionsParser(), ApiVersionsRegistry {
     }
 
     return versionsFile.inputStream().buffered().use { inputStream ->
-      check(_currentApiVersions == null)
-      _currentApiVersions = DefaultApiVersions()
-      parse(inputStream)
-      currentApiVersions.also {
-        _currentApiVersions = null
-      }
+      // we do not implement the parsing logic in the registry itself for thread safety
+      val versions = DefaultApiVersions()
+      val parser = ApiVersionsParserInternal(versions)
+      parser.parse(inputStream)
+      versions
     }
-  }
-
-  override fun isDuplicateClass(name: String): Boolean {
-    return currentApiVersions.containsClass(name)
-  }
-
-  override fun isDuplicateMember(className: String, memberName: String): Boolean {
-    return currentApiVersions.containsClassMember(className, memberName)
-  }
-
-  override fun consumeClassVersionInfo(name: String, apiVersion: ApiVersion) {
-    if (apiVersion.isSinceInception()) {
-      return
-    }
-    currentApiVersions.putClass(name, apiVersion)
-  }
-
-  override fun consumeMemberVersionInfo(
-    className: String,
-    member: String,
-    memberType: String,
-    apiVersion: ApiVersion
-  ) {
-    if (apiVersion.isSinceInception()) {
-      return
-    }
-
-    var identifier = member
-    if (memberType == TAG_METHOD) {
-      // strip return type to save some memory
-      identifier = member.substring(0, member.lastIndexOf(')') + 1)
-    }
-
-    currentApiVersions.putMember(className, identifier, apiVersion)
   }
 
   override fun clear() {
     versions.clear()
+  }
+
+  private class ApiVersionsParserInternal(
+    private val currentApiVersions: DefaultApiVersions
+  ) : ApiVersionsParser() {
+    override fun isDuplicateClass(name: String): Boolean {
+      return currentApiVersions.containsClass(name)
+    }
+
+    override fun isDuplicateMember(className: String, memberName: String): Boolean {
+      return currentApiVersions.containsClassMember(className, memberName)
+    }
+
+    override fun consumeClassVersionInfo(name: String, apiVersion: ApiVersion) {
+      if (apiVersion.isSinceInception()) {
+        return
+      }
+      currentApiVersions.putClass(name, apiVersion)
+    }
+
+    override fun consumeMemberVersionInfo(
+      className: String,
+      member: String,
+      memberType: String,
+      apiVersion: ApiVersion
+    ) {
+      if (apiVersion.isSinceInception()) {
+        return
+      }
+
+      var identifier = member
+      if (memberType == TAG_METHOD) {
+        // strip return type to save some memory
+        identifier = member.substring(0, member.lastIndexOf(')') + 1)
+      }
+
+      currentApiVersions.putMember(className, identifier, apiVersion)
+    }
   }
 }
