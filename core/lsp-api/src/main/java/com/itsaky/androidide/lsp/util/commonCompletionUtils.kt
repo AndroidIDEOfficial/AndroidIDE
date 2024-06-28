@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.util
 
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.projects.android.AndroidModule
+import com.itsaky.androidide.projects.ModuleProject
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.widgets.WidgetTable

@@ -21,7 +21,7 @@ import android.view.ViewGroup
 import com.itsaky.androidide.inflater.events.IInflateEventsListener
 import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
 import com.itsaky.androidide.lookup.Lookup.Key
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import java.io.Closeable
 import java.io.File
 

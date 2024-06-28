@@ -18,7 +18,6 @@
 package com.itsaky.androidide.fragments
 
 import android.app.Dialog
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -27,7 +26,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat.Type.navigationBars
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
 import androidx.core.view.updateLayoutParams
@@ -46,7 +44,7 @@ import com.itsaky.androidide.databinding.LayoutRunTaskDialogBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.Checkable
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.GradleProject
+import com.itsaky.androidide.projects.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsync
@@ -55,7 +53,6 @@ import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
-import com.itsaky.androidide.utils.updateSystemBarColors
 import com.itsaky.androidide.viewmodel.RunTasksViewModel
 import org.slf4j.LoggerFactory
 

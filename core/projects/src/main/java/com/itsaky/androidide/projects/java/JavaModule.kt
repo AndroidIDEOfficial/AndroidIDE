@@ -15,10 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.api
+package com.itsaky.androidide.projects.java
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.ModuleProject
 import com.itsaky.androidide.tooling.api.ProjectType.Java
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.models.JavaContentRoot

@@ -15,13 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.api
+package com.itsaky.androidide.projects
 
 import android.text.TextUtils
 import androidx.annotation.RestrictTo
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.tooling.api.models.GradleTask

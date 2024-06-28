@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
-import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.projects.Project;
 import com.itsaky.androidide.utils.ILogger;
 import java.util.HashMap;
 import java.util.Map;

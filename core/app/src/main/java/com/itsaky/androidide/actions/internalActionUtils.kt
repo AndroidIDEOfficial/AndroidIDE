@@ -20,7 +20,7 @@ package com.itsaky.androidide.actions
 import android.content.Context
 import com.itsaky.androidide.R
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError

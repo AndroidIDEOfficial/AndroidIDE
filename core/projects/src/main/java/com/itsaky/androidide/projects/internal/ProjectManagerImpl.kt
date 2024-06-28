@@ -32,9 +32,9 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.CachingProject
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.R
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.ModuleProject
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.android.AndroidModule
+import com.itsaky.androidide.projects.ModuleProject
+import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IAndroidProject

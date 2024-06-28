@@ -22,7 +22,7 @@ import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.IProjectManager;
-import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.ModuleProject;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;

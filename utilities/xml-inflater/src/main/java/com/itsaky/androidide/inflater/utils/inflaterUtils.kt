@@ -35,7 +35,7 @@ import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import java.io.File
 
 /** Get the [ILayoutInflater] registered with [Lookup]. */

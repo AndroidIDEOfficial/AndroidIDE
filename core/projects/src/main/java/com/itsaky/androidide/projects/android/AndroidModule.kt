@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.api
+package com.itsaky.androidide.projects.android
 
 import com.android.SdkConstants
 import com.android.aaptcompiler.AaptResourceType
@@ -31,6 +31,8 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.ModuleProject
+import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.tooling.api.ProjectType.Android
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask

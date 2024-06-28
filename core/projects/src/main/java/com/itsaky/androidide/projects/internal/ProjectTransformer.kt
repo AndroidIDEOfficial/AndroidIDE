@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.projects.internal
 
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.GradleProject
-import com.itsaky.androidide.projects.api.JavaModule
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.android.AndroidModule
+import com.itsaky.androidide.projects.GradleProject
+import com.itsaky.androidide.projects.java.JavaModule
+import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IGradleProject
 import com.itsaky.androidide.tooling.api.IJavaProject

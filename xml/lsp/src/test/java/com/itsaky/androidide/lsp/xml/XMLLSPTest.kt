@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.xml
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.testing.LSPTest
-import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.projects.ModuleProject
 import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
