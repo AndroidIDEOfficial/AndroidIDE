@@ -17,13 +17,13 @@
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
   <!-- Termux Bootstrap Packages Installation -->
-  <string name="bootstrap_installer_body">Installing bootstrap packages…</string>
-  <string name="bootstrap_error_title">Unable to install bootstrap</string>
-  <string name="bootstrap_error_body">AndroidIDE was unable to install the bootstrap packages.</string>
-  <string name="bootstrap_error_abort">Abort</string>
-  <string name="bootstrap_error_try_again">Try again</string>
-  <string name="bootstrap_error_not_primary_user_message">AndroidIDE can only be run as the primary user.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
-  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE cannot be installed on portable/external/removable sd card on your device.\nBootstrap binaries compiled for AndroidIDE have hardcoded $PREFIX path and cannot be installed under any path other than:\n%1$s.</string>
+  <string name="bootstrap_installer_body">Instalando paquetes de bootstrap…</string>
+  <string name="bootstrap_error_title">No se puede instalar el bootstrap</string>
+  <string name="bootstrap_error_body">AndroidIDE no pudo instalar los paquetes de bootstrap.</string>
+  <string name="bootstrap_error_abort">Abortar</string>
+  <string name="bootstrap_error_try_again">Inténtelo de nuevo</string>
+  <string name="bootstrap_error_not_primary_user_message">AndroidIDE sólo puede ejecutarse como el usuario principal.\nBinarios de Bootstrap compilados para AndroidIDE tienen una ruta $PREFIX duradera y no pueden instalarse bajo ninguna ruta que no sea\n%1$s.</string>
+  <string name="bootstrap_error_installed_on_portable_sd">AndroidIDE no se puede instalar en la tarjeta sd portátil/external/extraíble en su dispositivo.\nBinarios de Bootstrap compilados para AndroidIDE tienen una ruta $PREFIX duradera y no pueden instalarse bajo ninguna ruta que no sea\n%1$s.</string>
   <!-- Terminal Sidebar and Shortcuts -->
   <string name="action_new_session">Nueva sesión</string>
   <string name="action_new_session_failsafe">Failsafe</string>
@@ -51,53 +51,53 @@
   <string name="action_reset_terminal">Reiniciar</string>
   <string name="msg_terminal_reset">Reiniciar terminal</string>
   <string name="action_kill_process">Cerrar proceso (%d)</string>
-  <string name="title_confirm_kill_process">Really kill this session?</string>
-  <string name="action_toggle_keep_screen_on">Keep screen on</string>
-  <string name="action_open_help">Help</string>
-  <string name="action_open_settings">Settings</string>
-  <string name="action_report_issue">Report Issue</string>
-  <string name="msg_generating_report">Generating Report</string>
-  <string name="msg_add_termux_debug_info">Add termux debug info to report?</string>
+  <string name="title_confirm_kill_process">¿Realmente deseas cerrar esta sesión?</string>
+  <string name="action_toggle_keep_screen_on">Mantener pantalla encendida</string>
+  <string name="action_open_help">Ayuda</string>
+  <string name="action_open_settings">Configuraciones</string>
+  <string name="action_report_issue">Reportar un problema</string>
+  <string name="msg_generating_report">Generando informe</string>
+  <string name="msg_add_termux_debug_info">¿Agregar información de depuración de Termux al informe?</string>
   <!-- Termux Notifications -->
-  <string name="notification_action_wake_lock">Acquire wakelock</string>
-  <string name="notification_action_wake_unlock">Release wakelock</string>
+  <string name="notification_action_wake_lock">Obtener \"WakeLock\"</string>
+  <string name="notification_action_wake_unlock">Liberar Wakelock</string>
   <!-- TermuxService -->
-  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requires \"Display over other apps\" permission to start terminal sessions from background on Android &gt;= 10. Grants it from Settings -&gt; Apps -&gt; AndroidIDE -&gt; Advanced</string>
+  <string name="error_display_over_other_apps_permission_not_granted_to_start_terminal">AndroidIDE requiere permiso \"Mostrar sobre otras aplicaciones\" para iniciar sesiones de terminal desde segundo plano en Android &gt;= 10. Concede desde Ajustes -&gt; Apps -&gt; AndroidIDE -&gt; Avanzado</string>
   <!-- Termux File Receiver -->
-  <string name="title_file_received">Save file in ~/downloads/</string>
-  <string name="action_file_received_edit">Edit</string>
-  <string name="action_file_received_open_directory">Open directory</string>
+  <string name="title_file_received">Guardar archivo en ~/downloads/</string>
+  <string name="action_file_received_edit">Editar</string>
+  <string name="action_file_received_open_directory">Abrir directorio</string>
   <!-- Miscellaneous -->
-  <string name="error_termux_service_start_failed_general">Failed to start TermuxService. Check logcat for exception message.</string>
-  <string name="error_termux_service_start_failed_bg">Failed to start TermuxService while app is in background due to android bg restrictions.</string>
+  <string name="error_termux_service_start_failed_general">Error al iniciar TermuxService. Verifica logcat para el mensaje de excepción.</string>
+  <string name="error_termux_service_start_failed_bg">No se pudo iniciar TermuxService mientras la aplicación se encuentra en segundo plano debido a las restricciones bg de android.</string>
   <!-- Termux App Preferences -->
-  <string name="termux_preferences_summary">Preferences for the Termux terminal.</string>
+  <string name="termux_preferences_summary">Preferencias para la terminal de Termux.</string>
   <!-- Debugging Preferences -->
-  <string name="termux_debugging_preferences_title">Debugging</string>
-  <string name="termux_debugging_preferences_summary">Preferences for debugging</string>
+  <string name="termux_debugging_preferences_title">Depuración</string>
+  <string name="termux_debugging_preferences_summary">Preferencias para depuración</string>
   <!-- Logging Category -->
-  <string name="termux_logging_header">Logging</string>
+  <string name="termux_logging_header">Registros</string>
   <!-- Log Level -->
-  <string name="termux_log_level_title">Log Level</string>
+  <string name="termux_log_level_title">Nivel de registro</string>
   <!-- Terminal View Key Logging -->
-  <string name="termux_terminal_view_key_logging_enabled_title">Terminal View Key Logging</string>
-  <string name="termux_terminal_view_key_logging_enabled_off">Logs will not have entries for terminal view keys. (Default)</string>
-  <string name="termux_terminal_view_key_logging_enabled_on">Logcat logs will have entries for terminal view keys. These are very verbose and should be disabled under normal circumstances or will cause performance issues.</string>
+  <string name="termux_terminal_view_key_logging_enabled_title">Registro de teclas de vista terminal</string>
+  <string name="termux_terminal_view_key_logging_enabled_off">Los registros no tendrán entradas para las claves de vista de terminal. (por defecto)</string>
+  <string name="termux_terminal_view_key_logging_enabled_on">Los registros Logcat tendrán entradas para las claves de vista de terminal. Estas son muy detalladas y deberían desactivarse en circunstancias normales o causarán problemas de rendimiento.</string>
   <!-- Crash Report Notifications -->
-  <string name="termux_crash_report_notifications_enabled_title">Crash Report Notifications</string>
-  <string name="termux_crash_report_notifications_enabled_off">Disable notifications for crash reports.</string>
-  <string name="termux_crash_report_notifications_enabled_on">Show notifications for crash reports. (Default)</string>
+  <string name="termux_crash_report_notifications_enabled_title">Notificaciones de informe de error</string>
+  <string name="termux_crash_report_notifications_enabled_off">Desactivar notificaciones para reportes de error.</string>
+  <string name="termux_crash_report_notifications_enabled_on">Mostrar notificaciones de reportes de error. (Por defecto)</string>
   <!-- Terminal IO Preferences -->
-  <string name="termux_terminal_io_preferences_title">Terminal I/O</string>
-  <string name="termux_terminal_io_preferences_summary">Preferences for terminal I/O</string>
+  <string name="termux_terminal_io_preferences_title">E/S de terminal</string>
+  <string name="termux_terminal_io_preferences_summary">Preferencias para terminal E/S</string>
   <!-- Keyboard Category -->
-  <string name="termux_keyboard_header">Keyboard</string>
+  <string name="termux_keyboard_header">Teclado</string>
   <!-- Soft Keyboard -->
-  <string name="termux_soft_keyboard_enabled_title">Soft Keyboard Enabled</string>
-  <string name="termux_soft_keyboard_enabled_off">Soft keyboard will be disabled.</string>
-  <string name="termux_soft_keyboard_enabled_on">Soft keyboard will be enabled. (Default)</string>
+  <string name="termux_soft_keyboard_enabled_title">Teclado suave habilitado</string>
+  <string name="termux_soft_keyboard_enabled_off">Se desactivará el teclado suave.</string>
+  <string name="termux_soft_keyboard_enabled_on">Se habilitará el teclado suave. (Por defecto)</string>
   <!-- Soft Keyboard Only If No Hardware-->
-  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Soft Keyboard Only If No Hardware</string>
+  <string name="termux_soft_keyboard_enabled_only_if_no_hardware_title">Teclado suave sólo si no hay hardware</string>
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_off">Soft keyboard will be enabled even if hardware keyboard is connected. (Default)</string>
   <string name="termux_soft_keyboard_enabled_only_if_no_hardware_on">Soft keyboard will be enabled only if no hardware keyboard is connected.</string>
   <!-- Terminal View Preferences -->
