@@ -19,14 +19,15 @@ package com.itsaky.androidide.xml.internal.versions
 
 import com.itsaky.androidide.xml.versions.ApiVersion
 import com.itsaky.androidide.xml.versions.ApiVersions
-import org.eclipse.jdt.core.Signature
-import java.util.concurrent.ConcurrentHashMap
 
-/** @author Akash Yadav */
+/**
+ * This implementation is not thread safe. Do not modify concurrently.
+ *
+ * @author Akash Yadav
+ */
 internal class DefaultApiVersions : ApiVersions {
 
-  val classes =
-    ConcurrentHashMap<String, Pair<ApiVersion?, ConcurrentHashMap<String, ApiVersion>>>()
+  val classes = HashMap<String, Pair<ApiVersion?, HashMap<String, ApiVersion>>>()
 
   private fun String.flatten() = replace('.', '/')
 
@@ -57,9 +58,9 @@ internal class DefaultApiVersions : ApiVersions {
   private fun computeClass(
     name: String,
     version: ApiVersion? = null
-  ): Pair<ApiVersion?, ConcurrentHashMap<String, ApiVersion>> {
+  ): Pair<ApiVersion?, HashMap<String, ApiVersion>> {
     return classes.computeIfAbsent(name.flatten()) {
-      version to ConcurrentHashMap()
+      version to hashMapOf()
     }
   }
 }
