@@ -33,7 +33,7 @@ fun startParse(file: File) {
   if (isParsing) {
     return
   }
-  (IProjectManager.getInstance().findModuleForFile(file, false) as? AndroidModule)?.let {
+  (IProjectManager.getInstance().getWorkspace()?.findModuleForFile(file, false) as? AndroidModule)?.let {
     startParse(it)
   }
 }

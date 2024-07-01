@@ -64,7 +64,9 @@ class AddThrowsAction : BaseJavaCodeAction() {
     val diagnostic = data[DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return Any()
+      )
     val file = data.requirePath()
     return compiler.compile(file).get { task ->
       val needsThrow = CodeActionUtils.findMethod(task, diagnostic.range)

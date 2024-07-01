@@ -15,29 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.internal
+package com.itsaky.androidide.projects.android
 
-import com.google.auto.service.AutoService
-import com.itsaky.androidide.indexing.IIndexService
 import com.itsaky.androidide.projects.IWorkspace
-import java.io.File
 
 /**
- * @author Akash Yadav
+ * Get a sequence of all Android application projects in this workspace.
  */
-@AutoService(IIndexService::class)
-internal class JavaIndexServiceImpl : IIndexService {
+fun IWorkspace.androidAppProjects() = androidProjects().filterIsAndroidApp()
 
-  override val displayName: String
-    get() = "Java LSP Indexing Service"
+/**
+ * Get a sequence of all Android library projects in this workspace.
+ */
+fun IWorkspace.androidLibraryProjects() = androidProjects().filterIsAndroidLib()
 
-  override fun scanFiles(workspace: IWorkspace): Collection<File> {
-    return emptySet()
-  }
+/**
+ * Returns a sequence containing only Android application projects.
+ */
+fun Sequence<AndroidModule>.filterIsAndroidApp() = filter(AndroidModule::isApplication)
 
-  override suspend fun indexFiles(
-    workspace: IWorkspace,
-    files: Collection<File>
-  ) {
-  }
-}
+/**
+ * Returns a sequence containing only Android library projects.
+ */
+fun Sequence<AndroidModule>.filterIsAndroidLib() = filter(AndroidModule::isApplication)

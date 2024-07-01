@@ -49,7 +49,7 @@ class JavaDiagnosticProvider {
 
   fun analyze(file: Path): DiagnosticResult {
 
-    val module = IProjectManager.getInstance().findModuleForFile(file, false)
+    val module = IProjectManager.getInstance().getWorkspace()?.findModuleForFile(file, false)
       ?: return DiagnosticResult.NO_UPDATE
     val compiler = JavaCompilerService(module)
 

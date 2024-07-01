@@ -31,15 +31,14 @@ import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.CachingProject
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.IWorkspace
+import com.itsaky.androidide.projects.ModuleProject
 import com.itsaky.androidide.projects.R
 import com.itsaky.androidide.projects.android.AndroidModule
-import com.itsaky.androidide.projects.ModuleProject
-import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.DocumentUtils
@@ -58,8 +57,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
 import java.util.Locale
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
@@ -74,52 +71,53 @@ import kotlin.io.path.pathString
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
 class ProjectManagerImpl : IProjectManager, EventReceiver {
 
-  lateinit var projectPath: String
+  private var _workspace: WorkspaceImpl? = null
+  private var _projectDir: File? = null
+
   var projectInitialized: Boolean = false
   var cachedInitResult: InitializeResult? = null
 
-  override var rootProject: Project? = null
-    private set
-
-  override var androidBuildVariants: Map<String, BuildVariantInfo> = emptyMap()
-    private set
-
-  override val projectDirPath: String
-    get() = projectPath
+  override val projectDir: File
+    get() = checkNotNull(_projectDir) {
+      "Cannot get project directory. Path has not been set."
+    }
 
   override val projectSyncIssues: ProjectSyncIssues?
-    get() = rootProject?.projectSyncIssues
+    get() = getWorkspace()?.getProjectSyncIssues()
 
-  companion object {
-    private val log = LoggerFactory.getLogger(ProjectManagerImpl::class.java)
+  override fun getWorkspace(): IWorkspace? {
+    return _workspace
+  }
 
-    @JvmStatic
-    fun getInstance(): ProjectManagerImpl = IProjectManager.getInstance() as ProjectManagerImpl
+  override fun openProject(directory: File) {
+    // IMP: Always use canonical path
+    this._projectDir = directory.canonicalFile
   }
 
   override suspend fun setupProject(project: IProject) {
-    this.rootProject = withStopWatch("Transform project proxy") {
+    this._workspace = withStopWatch("Transform project proxy") {
       withContext(Dispatchers.IO) {
-        ProjectTransformer().transform(CachingProject(project))
+        WorkspaceModelBuilder.build(projectDir, CachingProject(project))
       }
     }
 
-    val rootProject = this.rootProject ?: return
+    val rootProject = this.getWorkspace() ?: return
 
     // build variants must be updated before the sources and classpaths are indexed
     updateBuildVariants { buildVariants ->
-      androidBuildVariants = buildVariants
+      _workspace!!.setVariantSelections(buildVariants)
     }
 
     log.info(
-      "Found {} project sync issues: {}", rootProject.projectSyncIssues.syncIssues.size,
-      rootProject.projectSyncIssues.syncIssues
+      "Found {} project sync issues: {}",
+      rootProject.getProjectSyncIssues().syncIssues.size,
+      rootProject.getProjectSyncIssues().syncIssues
     )
 
     withStopWatch("Setup project") {
       val indexerScope = CoroutineScope(Dispatchers.Default)
       val modulesFlow = flow {
-        rootProject.subProjects.filterIsInstance<ModuleProject>().forEach {
+        rootProject.getSubProjects().filterIsInstance<ModuleProject>().forEach {
           emit(it)
         }
       }
@@ -138,71 +136,15 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     }
   }
 
-  override fun getAndroidModules(): List<AndroidModule> {
-    val rootProject = this.rootProject ?: return emptyList()
-    return rootProject.subProjects.mapNotNull { module ->
-      if (module.type != ProjectType.Android) {
-        return@mapNotNull null
-      }
-
-      return@mapNotNull module as AndroidModule
-    }
-  }
-
-  override fun getAndroidAppModules(): List<AndroidModule> {
-    return getAndroidModules().filter { it.projectType == com.android.builder.model.v2.ide.ProjectType.APPLICATION }
-  }
-
-  override fun getAndroidLibraryModules(): List<AndroidModule> {
-    return getAndroidModules().filter { it.projectType == com.android.builder.model.v2.ide.ProjectType.LIBRARY }
-  }
-
-  override fun findModuleForFile(file: File, checkExistance: Boolean): ModuleProject? {
-    if (!isInitialized()) {
-      return null
-    }
-
-    return this.rootProject!!.findModuleForFile(file, checkExistance)
-  }
-
-  override fun containsSourceFile(file: Path): Boolean {
-    if (!isInitialized()) {
-      return false
-    }
-
-    if (!Files.exists(file)) {
-      return false
-    }
-
-    for (module in this.rootProject!!.subProjects) {
-      if (module !is ModuleProject) {
-        continue
-      }
-
-      val source = module.compileJavaSourceClasses.findSource(file)
-      if (source != null) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  override fun isAndroidResource(file: File): Boolean {
-    val module = findModuleForFile(file) ?: return false
-    if (module is AndroidModule) {
-      return module.getResourceDirectories().find { file.path.startsWith(it.path) } != null
-    }
-    return true
-  }
-
   override fun destroy() {
     log.info("Destroying project manager")
-    this.rootProject = null
+
+    this._workspace?.setVariantSelections(emptyMap())
+    this._workspace = null
+
+    this._projectDir = null
     this.cachedInitResult = null
     this.projectInitialized = false
-
-    (this.androidBuildVariants as? MutableMap?)?.clear()
   }
 
   @JvmOverloads
@@ -223,7 +165,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       return
     }
 
-    val tasks = getAndroidModules().flatMap { module ->
+    val tasks = getWorkspace()?.androidProjects()?.flatMap { module ->
       val variant = module.getSelectedVariant()
       if (variant == null) {
         log.error(
@@ -243,28 +185,25 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
         if (module.viewBindingOptions.isEnabled) "dataBindingGenBaseClasses$variantNameCapitalized" else null,
         "process${variantNameCapitalized}Resources"
       ).mapNotNull { it?.let { "${module.path}:${it}" } }
-    }
+    }?.toList() ?: emptyList()
 
 
-    builder
-      .executeTasks(*tasks.toTypedArray())
-      .whenComplete { result, taskErr ->
-        if (result == null || !result.isSuccessful || taskErr != null) {
-          log.warn(
-            "Execution for tasks failed: {} {}", tasks,
-            taskErr ?: ""
-          )
-        } else {
-          notifyProjectUpdate()
-        }
+    builder.executeTasks(*tasks.toTypedArray()).whenComplete { result, taskErr ->
+      if (result == null || !result.isSuccessful || taskErr != null) {
+        log.warn(
+          "Execution for tasks failed: {} {}", tasks, taskErr ?: ""
+        )
+      } else {
+        notifyProjectUpdate()
       }
+    }
   }
 
   fun notifyProjectUpdate() {
 
     executeAsync {
-      rootProject?.apply {
-        subProjects.forEach { subproject ->
+      getWorkspace()?.apply {
+        getSubProjects().forEach { subproject ->
           if (subproject is ModuleProject) {
             subproject.indexSources()
           }
@@ -272,26 +211,25 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       }
 
       val event = ProjectInitializedEvent()
-      event.put(Project::class.java, rootProject)
+      event.put(IWorkspace::class.java, getWorkspace())
       EventBus.getDefault().post(event)
     }
   }
 
   private fun updateBuildVariants(onUpdated: (Map<String, BuildVariantInfo>) -> Unit = {}) {
-    val rootProject = checkNotNull(this.rootProject) {
+    val rootProject = checkNotNull(this.getWorkspace()) {
       "Cannot update build variants. Root project model is null."
     }
 
     val buildVariants = mutableMapOf<String, BuildVariantInfo>()
-    rootProject.subProjects.forEach { subproject ->
+    rootProject.getSubProjects().forEach { subproject ->
       if (subproject is AndroidModule) {
 
         // variant names are not expected to be modified
         val variantNames = ImmutableList.builder<String>()
           .addAll(subproject.variants.map { variant -> variant.name }).build()
 
-        val variantName = subproject.configuredVariant?.name
-          ?: IAndroidProject.DEFAULT_VARIANT
+        val variantName = subproject.configuredVariant?.name ?: IAndroidProject.DEFAULT_VARIANT
 
         buildVariants[subproject.path] =
           BuildVariantInfo(subproject.path, variantNames, variantName)
@@ -301,12 +239,10 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     onUpdated(buildVariants)
   }
 
-  private fun isInitialized() = rootProject != null
-
   private fun generateSourcesIfNecessary(event: FileEvent) {
     val builder = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) ?: return
     val file = event.file
-    if (!isAndroidResource(file)) {
+    if (getWorkspace()?.isAndroidResource(file) != true) {
       return
     }
 
@@ -325,16 +261,14 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
         return@apply
       }
 
-      val module = findModuleForFile(this, false) ?: return@apply
+      val module = getWorkspace()?.findModuleForFile(this, false) ?: return@apply
       if (module !is AndroidModule) {
         return@apply
       }
 
-      val isResource =
-        module.mainSourceSet?.sourceProvider?.resDirectories?.any {
-          this.pathString.contains(it.path)
-        }
-          ?: false
+      val isResource = module.mainSourceSet?.sourceProvider?.resDirectories?.any {
+        this.pathString.contains(it.path)
+      } ?: false
 
       if (isResource) {
         module.updateResourceTable()
@@ -360,7 +294,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     generateSourcesIfNecessary(event)
 
     if (DocumentUtils.isJavaFile(event.file.toPath())) {
-      findModuleForFile(event.file, false)?.let {
+      getWorkspace()?.findModuleForFile(event.file, false)?.let {
         val sourceRoot = it.findSourceRoot(event.file) ?: return@let
 
         // add the source node entry
@@ -378,9 +312,10 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     // Do not check for Java file DocumentUtils.isJavaFile(...) as it checks for file existence as
     // well. As the file is already deleted, it will always return false
     if (event.file.extension == "java") {
-      findModuleForFile(event.file, false)
-        ?.compileJavaSourceClasses
-        ?.findSource(event.file.toPath())
+      getWorkspace()?.findModuleForFile(
+        event.file,
+        false
+      )?.compileJavaSourceClasses?.findSource(event.file.toPath())
         ?.let { it.parent?.removeChild(it) }
     }
   }
@@ -394,18 +329,26 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     // well. As the file is already renamed to another filename, it will always return false
     if (event.file.extension == "java") {
       // remove the source node entry
-      findModuleForFile(event.file, false)
-        ?.compileJavaSourceClasses
-        ?.findSource(event.file.toPath())
+      getWorkspace()?.findModuleForFile(
+        event.file,
+        false
+      )?.compileJavaSourceClasses?.findSource(event.file.toPath())
         ?.let { it.parent?.removeChild(it) }
     }
 
     if (DocumentUtils.isJavaFile(event.newFile.toPath())) {
-      findModuleForFile(event.newFile, false)?.let {
+      getWorkspace()?.findModuleForFile(event.newFile, false)?.let {
         val sourceRoot = it.findSourceRoot(event.newFile) ?: return@let
         // add the new source node entry
         it.compileJavaSourceClasses.append(event.newFile.toPath(), sourceRoot)
       }
     }
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(ProjectManagerImpl::class.java)
+
+    @JvmStatic
+    fun getInstance(): ProjectManagerImpl = IProjectManager.getInstance() as ProjectManagerImpl
   }
 }

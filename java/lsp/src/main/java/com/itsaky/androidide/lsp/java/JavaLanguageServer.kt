@@ -60,8 +60,8 @@ import com.itsaky.androidide.lsp.util.LSPEditorActions
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.FileManager.getActiveDocumentCount
 import com.itsaky.androidide.projects.IProjectManager.Companion.getInstance
+import com.itsaky.androidide.projects.IWorkspace
 import com.itsaky.androidide.projects.ModuleProject
-import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.VMUtils
 import kotlinx.coroutines.CoroutineScope
@@ -131,10 +131,10 @@ class JavaLanguageServer : ILanguageServer {
     this._settings = settings
   }
 
-  override fun setupWithProject(project: Project) {
+  override fun setupWorkspace(workspace: IWorkspace) {
     LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu)
 
-    // Once we have project initialized
+    // Once we have workspace initialized
     // Destory the NO_MODULE_COMPILER instance
     JavaCompilerService.NO_MODULE_COMPILER.destroy()
 
@@ -144,15 +144,15 @@ class JavaLanguageServer : ILanguageServer {
     // Clear cached JAR file system for R.jar
     // Using the cached instance will result in completions not being updated for updated resources
     // TODO Clearing caches for JAR files ending with '/R.jar' is probably not a good idea
-    //    Maybe this could be improved by using data from the AndroidModule project model
+    //    Maybe this could be improved by using data from the AndroidModule workspace model
     clearCachesForPaths { path: String -> path.endsWith("/R.jar") }
 
     // Clear cached module-specific compilers
     JavaCompilerProvider.getInstance().destroy()
 
     // Cache classpath locations
-    for (subModule in project.subProjects) {
-      if (subModule !is ModuleProject || subModule.path == project.rootProject.path) {
+    for (subModule in workspace.getSubProjects()) {
+      if (subModule !is ModuleProject || subModule.path == workspace.getRootProject().path) {
         continue
       }
       SourceFileManager.forModule(subModule)
@@ -173,7 +173,8 @@ class JavaLanguageServer : ILanguageServer {
     }
 
     completionProvider.reset(
-      compiler, settings, cachedCompletion) { cachedCompletion: CachedCompletion ->
+      compiler, settings, cachedCompletion
+    ) { cachedCompletion: CachedCompletion ->
       updateCachedCompletion(cachedCompletion)
     }
 
@@ -239,9 +240,9 @@ class JavaLanguageServer : ILanguageServer {
     if (!DocumentUtils.isJavaFile(file)) {
       return JavaCompilerService.NO_MODULE_COMPILER
     }
-    val root = getInstance().rootProject
+    val workspace = getInstance().getWorkspace()
       ?: return JavaCompilerService.NO_MODULE_COMPILER
-    val module = root.findModuleForFile(file!!) ?: return JavaCompilerService.NO_MODULE_COMPILER
+    val module = workspace.findModuleForFile(file!!) ?: return JavaCompilerService.NO_MODULE_COMPILER
     return JavaCompilerProvider.get(module)
   }
 
@@ -271,7 +272,7 @@ class JavaLanguageServer : ILanguageServer {
     // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
     JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event)
     val module = getInstance()
-      .findModuleForFile(event.changedFile)
+      .getWorkspace()?.findModuleForFile(event.changedFile, true)
     if (module != null) {
       val compiler = JavaCompilerProvider.get(module)
       compiler.onDocumentChange(event)

@@ -27,6 +27,7 @@ import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
+import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.robolectric.Robolectric
@@ -43,11 +44,17 @@ object XmlInflaterTest {
       return
     }
 
-    ToolingApiTestLauncher.launchServer {
+    val params = ToolingApiTestLauncherParams()
+    ToolingApiTestLauncher.launchServer(params) {
       assertThat(result?.isSuccessful).isTrue()
 
       Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
-      runBlocking { IProjectManager.getInstance().setupProject(project) }
+
+      val projectManager = IProjectManager.getInstance()
+      projectManager.openProject(params.projectDir.toFile())
+
+      runBlocking { projectManager.setupProject(project) }
+
       init.set(true)
     }
   }

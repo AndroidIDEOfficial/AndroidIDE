@@ -20,13 +20,10 @@ package com.itsaky.androidide.projects
 import androidx.annotation.RestrictTo
 import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.ServiceLoader
 import java.io.File
-import java.nio.file.Path
 
 /**
  * Project manager.
@@ -52,20 +49,15 @@ interface IProjectManager {
   }
 
   /**
-   * The root project model.
-   */
-  val rootProject: Project?
-
-  /**
    * The path to the project's root directory.
    */
   val projectDirPath: String
+    get() = projectDir.path
 
   /**
    * The project's root directory.
    */
   val projectDir: File
-    get() = File(projectDirPath)
 
   /**
    * Issues that were encountered during project synchronization.
@@ -73,11 +65,14 @@ interface IProjectManager {
   val projectSyncIssues: ProjectSyncIssues?
 
   /**
-   * Build variant information about Android modules in the project.
-   *
-   * The entries in this map are the Gradle project paths mapped to the corresponding [BuildVariantInfo]s.
+   * Open the given project directory.
    */
-  val androidBuildVariants: Map<String, BuildVariantInfo>
+  fun openProject(directory: File)
+
+  /**
+   * Same as [openProject].
+   */
+  fun openProject(path: String) = openProject(File(path))
 
   /**
    * Setup the project with the given [project proxy][project] from the Tooling API.
@@ -90,81 +85,19 @@ interface IProjectManager {
   )
 
   /**
-   * Get the list of the modules in this project which are Android projects.
+   * Get the workspace instance.
    *
-   * @return The list of Android modules.
+   * @return The configured workspace, or `null`.
    */
-  fun getAndroidModules(): List<AndroidModule>
+  fun getWorkspace(): IWorkspace?
 
   /**
-   * Get the list of modules in this project which are Android application modules.
+   * Get the workspace instance.
    *
-   * @return The list of Android application modules.
+   * @return The configured workspace.
+   * @throws IWorkspace.NotConfiguredException If the workspace has not been configured yet.
    */
-  fun getAndroidAppModules(): List<AndroidModule>
-
-  /**
-   * Get the list of modules in this project which are Android library modules.
-   *
-   * @return The list of Android library modules.
-   */
-  fun getAndroidLibraryModules(): List<AndroidModule>
-
-  /**
-   * Find the module for the given file.
-   *
-   * @param file The file to find the module for.
-   * @return The module project, or `null` if not found.
-   */
-  fun findModuleForFile(file: File): ModuleProject? {
-    return findModuleForFile(file, true)
-  }
-
-  /**
-   * Find the module for the given file.
-   *
-   * @param file The file to find the module for.
-   * @param checkExistance Whether to check if the file exists or not.
-   * @return The [ModuleProject] for the given file, or `null` if cannot be found.
-   */
-  fun findModuleForFile(file: File, checkExistance: Boolean): ModuleProject?
-
-  /**
-   * Find the module for the given file.
-   *
-   * @param file The file to find the module for.
-   * @return The module project, or `null` if not found.
-   */
-  fun findModuleForFile(file: Path): ModuleProject? {
-    return findModuleForFile(file, true)
-  }
-
-  /**
-   * Find the module for the given file.
-   *
-   * @param file The file to find the module for.
-   * @param checkExistance Whether to check if the file exists or not.
-   * @return The [ModuleProject] for the given file, or `null` if cannot be found.
-   */
-  fun findModuleForFile(file: Path, checkExistance: Boolean): ModuleProject? {
-    return findModuleForFile(file.toFile(), checkExistance)
-  }
-
-  /**
-   * Check if any of the module projects contain the given [file] in their source folder.
-   *
-   * @param file The file to check.
-   * @return `true` if the given [file] is a source file in any of the mdoules, `false` otherwise.
-   */
-  fun containsSourceFile(file: Path): Boolean
-
-  /**
-   * Checks if the given file is a resource file in any of the included Android modules.
-   *
-   * @param file The file to check.
-   * @return `true` if the given file is a resource file in any of the Android modules, `false` otherwise.
-   */
-  fun isAndroidResource(file: File): Boolean
+  fun requireWorkspace(): IWorkspace = getWorkspace() ?: throw IWorkspace.NotConfiguredException()
 
   /**
    * Notify the project manager that the given <code>file</code> was created.

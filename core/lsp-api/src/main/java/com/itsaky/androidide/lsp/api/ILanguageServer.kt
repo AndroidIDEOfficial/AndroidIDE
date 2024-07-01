@@ -46,7 +46,7 @@ import com.itsaky.androidide.lsp.models.ReferenceResult
 import com.itsaky.androidide.lsp.models.SignatureHelp
 import com.itsaky.androidide.lsp.models.SignatureHelpParams
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.projects.Project
+import com.itsaky.androidide.projects.IWorkspace
 import java.nio.file.Path
 
 /**
@@ -90,14 +90,14 @@ interface ILanguageServer {
   fun applySettings(settings: IServerSettings?)
 
   /**
-   * Setup this language server with the given project. Servers are not expected to keep a reference
-   * to the provided project. Instead, use
-   * [getRootProject()][com.itsaky.androidide.projects.IProjectManager.rootProject] to
-   * obtain the project instance.
+   * Setup this language server with the given workspace. Servers are not expected to keep a reference
+   * to the provided workspace. Instead, use
+   * [getRootWorkspace()][com.itsaky.androidide.projects.IProjectManager.workspace] to
+   * obtain the workspace instance.
    *
-   * @param project The initialized project.
+   * @param workspace The initialized workspace.
    */
-  fun setupWithProject(project: Project)
+  fun setupWorkspace(workspace: IWorkspace)
 
   /**
    * Compute code completions for the given completion params.

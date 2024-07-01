@@ -38,6 +38,7 @@ import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
+import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.utils.Environment
@@ -96,7 +97,8 @@ abstract class LSPTest(
     mockkStatic(EditorPreferences::tabSize)
     every { EditorPreferences.tabSize } returns 4
 
-    ToolingApiTestLauncher.launchServer {
+    val params = ToolingApiTestLauncherParams()
+    ToolingApiTestLauncher.launchServer(params) {
 
       assertThat(result?.isSuccessful).isTrue()
 
@@ -116,13 +118,14 @@ abstract class LSPTest(
         throw IllegalStateException("Expected IProjectManager instance to be an EventReceiver")
       }
 
+      projectManager.openProject(params.projectDir.toFile())
       runBlocking { projectManager.setupProject(project) }
 
       // We need to manually setup the language server with the project here
       // ProjectManager.notifyProjectUpdate()
       ILanguageServerRegistry.getDefault()
         .getServer(getServerId())!!
-        .setupWithProject(projectManager.rootProject!!)
+        .setupWorkspace(projectManager.getWorkspace()!!)
 
       isInitialized = true
     }

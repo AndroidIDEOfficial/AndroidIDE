@@ -39,12 +39,12 @@ class JavaCompilerProviderTest {
 
   @Test
   fun `test module specific compilers`() {
-    val rootProject = IProjectManager.getInstance().rootProject!!
-    val appModule = rootProject.findByPath(":app")!! as ModuleProject
-    val androidLib = rootProject.findByPath(":android-library")!! as ModuleProject
-    val anotherAndroidLib = rootProject.findByPath(":another-android-library")!! as ModuleProject
-    val javaLib = rootProject.findByPath(":java-library")!! as ModuleProject
-    val anotherJavaLib = rootProject.findByPath(":another-java-library")!! as ModuleProject
+    val workspace = IProjectManager.getInstance().getWorkspace()!!
+    val appModule = workspace.getProject(":app") as ModuleProject
+    val androidLib = workspace.getProject(":android-library") as ModuleProject
+    val anotherAndroidLib = workspace.getProject(":another-android-library") as ModuleProject
+    val javaLib = workspace.getProject(":java-library") as ModuleProject
+    val anotherJavaLib = workspace.getProject(":another-java-library") as ModuleProject
 
     val compilers = mutableSetOf<JavaCompilerService>()
     for (module in listOf(appModule, androidLib, anotherAndroidLib, javaLib, anotherJavaLib)) {

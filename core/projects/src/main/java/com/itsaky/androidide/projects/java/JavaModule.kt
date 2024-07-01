@@ -107,12 +107,12 @@ class JavaModule(
   }
 
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    val root = IProjectManager.getInstance().rootProject ?: return emptyList()
+    val workspace = IProjectManager.getInstance().getWorkspace() ?: return emptyList()
     return this.dependencies
-      .filterIsInstance(JavaModuleProjectDependency::class.java)
+      .filterIsInstance<JavaModuleProjectDependency>()
       .filter { it.scope == SCOPE_COMPILE }
-      .mapNotNull { root.findByPath(it.projectPath) }
-      .filterIsInstance(ModuleProject::class.java)
+      .mapNotNull { workspace.findProject(it.projectPath) }
+      .filterIsInstance<ModuleProject>()
   }
 
   fun getDependencyClasspaths(): Set<File> {

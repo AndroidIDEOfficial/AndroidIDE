@@ -31,8 +31,8 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.IWorkspace
 import com.itsaky.androidide.projects.ModuleProject
-import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.tooling.api.ProjectType.Android
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
@@ -111,16 +111,21 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val variants: List<BasicAndroidVariantMetadata> = listOf(),
   val configuredVariant: BasicAndroidVariantMetadata?,
   val classesJar: File?
-) :
-  ModuleProject(
-    name,
-    description,
-    path,
-    projectDir,
-    buildDir,
-    buildScript,
-    tasks
-  ) {
+) : ModuleProject(
+  name, description, path, projectDir, buildDir, buildScript, tasks
+) {
+
+  /**
+   * Whether this project is an Android library project.
+   */
+  val isLibrary: Boolean
+    get() = this.projectType == ProjectType.LIBRARY
+
+  /**
+   * Whether this project is an Android application project.
+   */
+  val isApplication: Boolean
+    get() = this.projectType == ProjectType.APPLICATION
 
   companion object {
 
@@ -166,8 +171,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   override fun getSourceDirectories(): Set<File> {
     if (mainSourceSet == null) {
       log.warn(
-        "No main source set is available for project {}. Cannot get source directories.",
-        name
+        "No main source set is available for project {}. Cannot get source directories.", name
       )
       return mutableSetOf()
     }
@@ -202,7 +206,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileClasspaths(): Set<File> {
-    val project = IProjectManager.getInstance().rootProject ?: return emptySet()
+    val project = IProjectManager.getInstance().getWorkspace() ?: return emptySet()
     val result = mutableSetOf<File>()
     result.addAll(getModuleClasspaths())
 
@@ -210,11 +214,11 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     return result
   }
 
-  private fun collectLibraries(root: Project, libraries: Set<String>, result: MutableSet<File>) {
+  private fun collectLibraries(root: IWorkspace, libraries: Set<String>, result: MutableSet<File>) {
     for (library in libraries) {
       val lib = this.libraryMap[library] ?: continue
       if (lib.type == PROJECT) {
-        val module = root.findByPath(lib.projectInfo!!.projectPath) ?: continue
+        val module = root.findProject(lib.projectInfo!!.projectPath) ?: continue
         if (module !is ModuleProject) {
           continue
         }
@@ -231,7 +235,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    val root = IProjectManager.getInstance().rootProject ?: return emptyList()
+    val root = IProjectManager.getInstance().getWorkspace() ?: return emptyList()
     val result = mutableListOf<ModuleProject>()
 
     for (library in this.libraries) {
@@ -240,7 +244,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
         continue
       }
 
-      val module = root.findByPath(lib.projectInfo!!.projectPath) ?: continue
+      val module = root.findProject(lib.projectInfo!!.projectPath) ?: continue
       if (module !is ModuleProject) {
         continue
       }
@@ -362,27 +366,19 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   fun getDependencyResourceTables(): Set<ResourceTable> {
     return mutableSetOf<ResourceTable>().also {
       var deps: Int
-      it.addAll(
-        libraryMap.values
-          .filter { library ->
-            library.type == ANDROID_LIBRARY &&
-              library.androidLibraryData!!.resFolder.exists() &&
-              library.findPackageName() != UNKNOWN_PACKAGE
-          }
-          .also { libs -> deps = libs.size }
-          .mapNotNull { library ->
-            ResourceTableRegistry.getInstance()
-              .let { registry ->
-                registry.isLoggingEnabled = false
-                registry.forPackage(
-                  library.packageName,
-                  library.androidLibraryData!!.resFolder,
-                ).also {
-                  registry.isLoggingEnabled = true
-                }
+      it.addAll(libraryMap.values.filter { library ->
+          library.type == ANDROID_LIBRARY && library.androidLibraryData!!.resFolder.exists() && library.findPackageName() != UNKNOWN_PACKAGE
+        }.also { libs -> deps = libs.size }.mapNotNull { library ->
+          ResourceTableRegistry.getInstance().let { registry ->
+              registry.isLoggingEnabled = false
+              registry.forPackage(
+                library.packageName,
+                library.androidLibraryData!!.resFolder,
+              ).also {
+                registry.isLoggingEnabled = true
               }
-          }
-      )
+            }
+        })
 
       log.info("Created {} resource tables for {} dependencies of module '{}'", it.size, deps, path)
     }
@@ -409,19 +405,17 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    * @param pck The package to look for.
    */
   fun findAllResourceTableForPackage(
-    pck: String,
-    hasGroup: AaptResourceType? = null
+    pck: String, hasGroup: AaptResourceType? = null
   ): List<ResourceTable> {
     if (pck == SdkConstants.ANDROID_PKG) {
       return getFrameworkResourceTable()?.let { listOf(it) } ?: emptyList()
     }
 
-    val tables: List<ResourceTable> =
-      mutableListOf<ResourceTable>().apply {
-        getResourceTable()?.let { add(it) }
-        addAll(getSourceResourceTables())
-        addAll(getDependencyResourceTables())
-      }
+    val tables: List<ResourceTable> = mutableListOf<ResourceTable>().apply {
+      getResourceTable()?.let { add(it) }
+      addAll(getSourceResourceTables())
+      addAll(getDependencyResourceTables())
+    }
 
     val result = mutableListOf<ResourceTable>()
     for (table in tables) {
@@ -495,7 +489,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   fun getSelectedVariant(): BasicAndroidVariantMetadata? {
     val projectManager = IProjectManager.getInstance()
 
-    val info = projectManager.androidBuildVariants[this.path]
+    val info =
+      (projectManager.getWorkspace()?.getAndroidVariantSelections() ?: emptyMap())[this.path]
     if (info == null) {
       log.error(
         "Failed to find selected build variant for module: '{}'", this.path

@@ -26,6 +26,7 @@ import com.itsaky.androidide.actions.EditorActivityAction
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.openApplicationModuleChooser
 import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.android.androidAppProjects
 import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
 import org.slf4j.LoggerFactory
@@ -58,8 +59,11 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
 
     visible = true
 
-    val projectManager = IProjectManager.getInstance()
-    enabled = projectManager.getAndroidAppModules().isNotEmpty()
+    enabled = IProjectManager.getInstance()
+      .getWorkspace()
+      ?.androidAppProjects()
+      ?.iterator()
+      ?.hasNext() == true
   }
 
   override suspend fun execAction(data: ActionData) {
