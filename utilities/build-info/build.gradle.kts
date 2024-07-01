@@ -35,8 +35,6 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-
-
 description = "Information about the AndroidIDE build"
 
 val buildInfoGenDir: Provider<Directory> = project.layout.buildDirectory.dir("generated/buildInfo")
