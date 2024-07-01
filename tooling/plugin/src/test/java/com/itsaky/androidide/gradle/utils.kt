@@ -18,6 +18,8 @@
 package com.itsaky.androidide.gradle
 
 import com.itsaky.androidide.buildinfo.BuildInfo
+import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_IS_TEST_ENV
+import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_MAVEN_LOCAL_REPOSITORY
 import com.itsaky.androidide.utils.FileProvider
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -55,8 +57,8 @@ internal fun buildProject(
   val args = mutableListOf(
     ":app:tasks", // run any task, as long as it applies the plugins
     "--init-script", initScript.pathString,
-    "-Pandroidide.plugins.internal.isTestEnv=true", // plugins should be published to maven local first
-    "-Pandroidide.plugins.internal.mavenLocalRepositories=$repositories",
+    "-P$_PROPERTY_IS_TEST_ENV=true", // plugins should be published to maven local first
+    "-P$_PROPERTY_MAVEN_LOCAL_REPOSITORY=$repositories",
     "--stacktrace"
   )
 

@@ -38,7 +38,7 @@ internal val Project.isTestEnv: Boolean
     _PROPERTY_IS_TEST_ENV).toString().toBoolean()
 
 internal fun depVersion(testEnv: Boolean): String {
-  return if (testEnv  ) {
+  return if (testEnv && !System.getenv("CI").toBoolean()) {
     BuildInfo.VERSION_NAME_SIMPLE
   } else {
     BuildInfo.VERSION_NAME_DOWNLOAD
