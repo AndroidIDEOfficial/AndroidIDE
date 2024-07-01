@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.plugins.LexerGeneratorPlugin
 import com.itsaky.androidide.build.config.BuildConfig
 
@@ -27,9 +28,7 @@ apply {
   plugin(LexerGeneratorPlugin::class.java)
 }
 
-groupConfig {
-  groupIdSuffix.set("core")
-}
+
 
 java {
   sourceCompatibility = BuildConfig.javaVersion

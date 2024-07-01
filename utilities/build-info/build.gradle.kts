@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.android.SdkConstants
 import com.itsaky.androidide.build.config.AGP_VERSION_MINIMUM
 import com.itsaky.androidide.build.config.BuildConfig
@@ -34,9 +35,7 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-groupConfig {
-  groupIdSuffix.set("utils")
-}
+
 
 description = "Information about the AndroidIDE build"
 

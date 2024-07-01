@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.google.protobuf.gradle.id
 import com.itsaky.androidide.build.config.BuildConfig
 
@@ -24,9 +25,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-groupConfig {
-    groupIdSuffix.set("xml")
-}
+
 
 android {
     namespace = "${BuildConfig.packageName}.aaptcompiler"

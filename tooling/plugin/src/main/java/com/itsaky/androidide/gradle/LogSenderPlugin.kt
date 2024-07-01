@@ -81,7 +81,10 @@ class LogSenderPlugin : Plugin<Project> {
             variant.withRuntimeConfiguration {
 
               val logsenderDependency = project.dependencies.ideDependency(
-                LOGSENDER_DEPENDENCY_ARTIFACT, project.isTestEnv)
+                LIB_GROUP_LOGGING,
+                LOGSENDER_DEPENDENCY_ARTIFACT,
+                project.isTestEnv
+              )
 
               if (logsenderDependency is ExternalModuleDependency) {
                 // a new snapshot is published for each build

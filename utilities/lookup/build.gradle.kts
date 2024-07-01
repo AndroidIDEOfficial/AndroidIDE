@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 @Suppress("JavaPluginLanguageLevel")
 plugins {
     id("java-library")
@@ -22,9 +23,7 @@ plugins {
     id("kotlin-kapt")
 }
 
-groupConfig {
-    groupIdSuffix.set("utils")
-}
+
 
 dependencies {
     kapt(libs.google.auto.service)

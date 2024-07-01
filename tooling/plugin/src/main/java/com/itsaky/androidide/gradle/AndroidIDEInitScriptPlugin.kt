@@ -51,7 +51,7 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     target.rootProject { rootProject ->
       rootProject.buildscript.apply {
         dependencies.apply {
-          val gradlePluginDep = rootProject.ideDependency("gradle-plugin")
+          val gradlePluginDep = rootProject.ideDependency(LIB_GROUP_TOOLING, "plugin")
           if (gradlePluginDep is ExternalModuleDependency) {
             // SNAPSHOT versions of gradle-plugin do not change
             gradlePluginDep.isChanging = false
@@ -108,7 +108,7 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
   private fun getTestEnvProps(startParameter: StartParameter): Pair<Boolean, String> {
     return startParameter.run {
       val isTestEnv = projectProperties.containsKey(_PROPERTY_IS_TEST_ENV)
-          && projectProperties[_PROPERTY_IS_TEST_ENV].toString().toBoolean()
+        && projectProperties[_PROPERTY_IS_TEST_ENV].toString().toBoolean()
       val mavenLocalRepos = projectProperties.getOrDefault(_PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
 
       isTestEnv to mavenLocalRepos

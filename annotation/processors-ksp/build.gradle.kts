@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -23,9 +24,7 @@ plugins {
   kotlin("kapt")
 }
 
-groupConfig {
-  groupIdSuffix.set("annotations")
-}
+
 
 dependencies {
   kapt(libs.google.auto.service)

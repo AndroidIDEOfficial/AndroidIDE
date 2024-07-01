@@ -21,7 +21,6 @@ import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.FDroidConfig
 import com.itsaky.androidide.build.config.publishingVersion
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
-import com.itsaky.androidide.plugins.GroupConfigPlugin
 import com.itsaky.androidide.plugins.conf.configureAndroidModule
 import com.itsaky.androidide.plugins.conf.configureJavaModule
 import com.itsaky.androidide.plugins.conf.configureMavenPublish
@@ -47,11 +46,21 @@ buildscript {
   }
 }
 
+// Root project has 'com.itsaky.androidide' as the group ID
+project.group = BuildConfig.packageName
+
 subprojects {
+  if (project != rootProject) {
+    var group = project.parent!!.group
+    if (project.parent != rootProject) {
+      group = "${group}.${project.parent!!.name}"
+    }
+    project.group = group
+  }
+
   // Always load the F-Droid config
   FDroidConfig.load(project)
 
-  apply { plugin(GroupConfigPlugin::class.java) }
   afterEvaluate {
     apply { plugin(AndroidIDEPlugin::class.java) }
   }

@@ -22,14 +22,13 @@
  *     additional information or have any questions
  ******************************************************************************/
 
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
 }
 
-groupConfig {
-    groupIdSuffix.set("core")
-}
+
 
 android {
     namespace = "io.github.rosemoe.sora.ts"

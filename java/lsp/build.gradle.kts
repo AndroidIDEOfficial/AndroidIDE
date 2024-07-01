@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
@@ -24,9 +25,7 @@ plugins {
   id("realm-android")
 }
 
-groupConfig {
-  groupIdSuffix.set("event")
-}
+
 
 android {
   namespace = "${BuildConfig.packageName}.lsp.java"

@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.plugins.NoDesugarPlugin
 import com.itsaky.androidide.build.config.BuildConfig
 
@@ -27,9 +28,7 @@ apply {
   plugin(NoDesugarPlugin::class.java)
 }
 
-groupConfig {
-  groupIdSuffix.set("logging")
-}
+
 
 description = "LogSender is used to read logs from applications built with AndroidIDE"
 
