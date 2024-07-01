@@ -15,11 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 plugins { id("com.android.library") }
 
-groupConfig {
-  groupIdSuffix.set("utils")
-}
+
 
 android { namespace = "com.unnamed.b.atv" }
 

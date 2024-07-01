@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
@@ -22,9 +23,7 @@ plugins {
   id("kotlin-android")
 }
 
-groupConfig {
-  groupIdSuffix.set("testing")
-}
+
 
 android {
   namespace = "${BuildConfig.packageName}.lsp.testing"

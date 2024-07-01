@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.AGP_VERSION_MINIMUM
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.build.config.ProjectConfig
@@ -25,9 +26,7 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
-groupConfig {
-  groupIdSuffix.set("tooling")
-}
+
 
 description = "Gradle Plugin for projects that are built with AndroidIDE"
 

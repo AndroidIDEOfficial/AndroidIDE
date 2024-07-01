@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
@@ -23,9 +24,7 @@ plugins {
   id("kotlin-kapt")
 }
 
-groupConfig {
-  groupIdSuffix.set("utils")
-}
+
 
 android {
   namespace = "${BuildConfig.packageName}.templates.impl"

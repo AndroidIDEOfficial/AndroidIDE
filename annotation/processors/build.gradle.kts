@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.itsaky.androidide.build.config.BuildConfig
 
@@ -22,9 +23,7 @@ plugins {
   kotlin("jvm")
 }
 
-groupConfig {
-  groupIdSuffix.set("annotations")
-}
+
 
 dependencies {
   implementation(kotlin("stdlib"))

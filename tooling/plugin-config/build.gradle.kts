@@ -15,14 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 plugins {
   //noinspection JavaPluginLanguageLevel
   id("java-library")
   id("com.vanniktech.maven.publish.base")
 }
 
-groupConfig {
-  groupIdSuffix.set("tooling")
-}
+
 
 description = "Configuration options for the Tooling API and Gradle Plugin."

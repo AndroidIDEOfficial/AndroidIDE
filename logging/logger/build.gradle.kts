@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.plugins.NoDesugarPlugin
 
 @Suppress("JavaPluginLanguageLevel")
@@ -27,9 +28,7 @@ apply {
     plugin(NoDesugarPlugin::class.java)
 }
 
-groupConfig {
-    groupIdSuffix.set("logging")
-}
+
 
 description = "AndroidIDE Logging Framework"
 

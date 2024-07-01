@@ -69,8 +69,10 @@ internal fun buildProject(
       *args.toTypedArray()
     )
 
-  writeInitScript(initScript.toFile(),
-    PluginUnderTestMetadataReading.readImplementationClasspath())
+  writeInitScript(
+    initScript.toFile(),
+    PluginUnderTestMetadataReading.readImplementationClasspath()
+  )
 
   return runner.build()
 }
@@ -81,12 +83,12 @@ internal fun writeInitScript(file: File, deps: List<File>) {
   val root = FileProvider.projectRoot().pathString
   val depsString = deps.filter { it.absolutePath.startsWith(root) }
     .joinToString(separator = System.lineSeparator()) {
-      val isDir = it.isDirectory
-      "classpath ${if (isDir) "files" else "files"}(\"${it}\")"
+      "classpath files(\"${it}\")"
     }
 
   file.bufferedWriter().use {
-    it.write("""
+    it.write(
+      """
       initscript {
         dependencies {
           // make sure the init script plugin is in classpath
@@ -95,7 +97,8 @@ internal fun writeInitScript(file: File, deps: List<File>) {
       }
       
       apply plugin: com.itsaky.androidide.gradle.AndroidIDEInitScriptPlugin
-    """.trimIndent())
+    """.trimIndent()
+    )
   }
 }
 
@@ -125,7 +128,8 @@ internal fun openProject(
       plugins.joinToString(separator = "\n") { "apply plugin: \"$it\"" }
     }
 
-    projectRoot.resolve("app/build.gradle" + if (useApplyPluginGroovySyntax) "" else ".kts").toFile()
+    projectRoot.resolve("app/build.gradle" + if (useApplyPluginGroovySyntax) "" else ".kts")
+      .toFile()
       .replaceAllPlaceholders(mapOf("PLUGINS" to pluginsText))
   }
 

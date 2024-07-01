@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
@@ -24,9 +25,7 @@ plugins {
   id("com.google.devtools.ksp") version libs.versions.ksp
 }
 
-groupConfig {
-  groupIdSuffix.set("utils")
-}
+
 
 android { namespace = "${BuildConfig.packageName}.inflater" }
 

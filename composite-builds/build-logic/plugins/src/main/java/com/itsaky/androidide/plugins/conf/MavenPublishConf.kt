@@ -18,6 +18,7 @@
 package com.itsaky.androidide.plugins.conf
 
 import com.itsaky.androidide.build.config.ProjectConfig
+import com.itsaky.androidide.build.config.publishingVersion
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavaLibrary
@@ -32,7 +33,6 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
-import com.itsaky.androidide.build.config.publishingVersion
 import java.io.File
 
 private val projectsRequiringMavenLocalForTests = arrayOf(":tooling:plugin")
@@ -55,7 +55,8 @@ fun Project.configureMavenPublish() {
         tasks.withType<Test> {
           for ((project, _) in mavenLocalRepos) {
             dependsOn(
-              project(project).tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
+              project(project).tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository")
+            )
           }
         }
       }

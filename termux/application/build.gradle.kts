@@ -17,6 +17,8 @@
 
 @file:Suppress("UnstableApiUsage")
 
+
+
 import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.plugins.TerminalBootstrapPackagesPlugin
 
@@ -29,9 +31,7 @@ apply {
     plugin(TerminalBootstrapPackagesPlugin::class.java)
 }
 
-groupConfig {
-    groupIdSuffix.set("termux")
-}
+
 
 val packageVariant = System.getenv("TERMUX_PACKAGE_VARIANT") ?: "apt-android-7" // Default: "apt-android-7"
 

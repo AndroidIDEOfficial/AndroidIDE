@@ -15,6 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 @Suppress("JavaPluginLanguageLevel")
@@ -25,9 +26,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm")
 }
 
-groupConfig {
-  groupIdSuffix.set("tooling")
-}
+
 
 tasks.withType<Jar> {
   manifest { attributes("Main-Class" to "${BuildConfig.packageName}.tooling.impl.Main") }

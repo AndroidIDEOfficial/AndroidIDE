@@ -15,15 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 import com.itsaky.androidide.build.config.BuildConfig
 
 plugins {
   id("com.android.library")
 }
 
-groupConfig {
-  groupIdSuffix.set("core")
-}
+
 
 android {
   namespace = "${BuildConfig.packageName}.resources"
