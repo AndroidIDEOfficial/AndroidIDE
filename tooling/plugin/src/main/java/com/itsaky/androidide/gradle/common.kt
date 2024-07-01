@@ -38,7 +38,7 @@ internal val Project.isTestEnv: Boolean
     _PROPERTY_IS_TEST_ENV).toString().toBoolean()
 
 internal fun depVersion(testEnv: Boolean): String {
-  return if (testEnv && !System.getenv("CI").toBoolean()) {
+  return if (testEnv  ) {
     BuildInfo.VERSION_NAME_SIMPLE
   } else {
     BuildInfo.VERSION_NAME_DOWNLOAD
@@ -49,6 +49,6 @@ fun Project.ideDependency(group: String, artifact: String): Dependency {
   return dependencies.ideDependency(group, artifact, isTestEnv)
 }
 
-fun DependencyHandler.ideDependency(group: String, artifact: String, testEnv: Boolean): Dependency {
+fun DependencyHandler.  ideDependency(group: String, artifact: String, testEnv: Boolean): Dependency {
   return create("${BuildInfo.MVN_GROUP_ID}.${group}:${artifact}:${depVersion(testEnv)}")
 }
