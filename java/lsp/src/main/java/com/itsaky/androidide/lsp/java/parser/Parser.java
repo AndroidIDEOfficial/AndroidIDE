@@ -23,12 +23,17 @@ import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.IProjectManager;
 import com.itsaky.androidide.projects.ModuleProject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import jdkx.tools.JavaCompiler;
 import jdkx.tools.JavaFileObject;
 import openjdk.source.tree.ClassTree;
@@ -42,8 +47,6 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 import openjdk.tools.javac.api.JavacTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Parser {
 
@@ -78,20 +81,23 @@ public class Parser {
    * Create a task that compiles a single file
    */
   private static JavacTask singleFileTask(JavaFileObject file) {
-    final ModuleProject module = IProjectManager.getInstance()
-        .findModuleForFile(Paths.get(file.toUri()));
+    final var workspace = IProjectManager.getInstance().getWorkspace();
+    final var module = workspace != null
+      ? workspace.findModuleForFile(Paths.get(file.toUri()), false)
+      : null;
+
     if (module != null) {
       FILE_MANAGER = SourceFileManager.forModule(module);
     }
 
     return (JavacTask)
-        COMPILER.getTask(
-            null,
-            FILE_MANAGER,
-            Parser::ignoreError,
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.singletonList(file));
+      COMPILER.getTask(
+        null,
+        FILE_MANAGER,
+        Parser::ignoreError,
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.singletonList(file));
   }
 
   private static void ignoreError(jdkx.tools.Diagnostic<? extends JavaFileObject> __) {
@@ -215,7 +221,7 @@ public class Parser {
     int endCol = (int) lines.getColumnNumber(end);
 
     return new Range(
-        new Position(startLine - 1, startCol - 1), new Position(endLine - 1, endCol - 1));
+      new Position(startLine - 1, startCol - 1), new Position(endLine - 1, endCol - 1));
   }
 
   private static int indexOf(CharSequence contents, String name, int start) {

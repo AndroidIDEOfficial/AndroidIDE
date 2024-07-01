@@ -60,7 +60,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
         com.itsaky.androidide.models.Range::class.java,
         CodeEditor::class.java
       ) ||
-      IProjectManager.getInstance().rootProject == null
+      IProjectManager.getInstance().getWorkspace() == null
     ) {
       markInvisible()
       return
@@ -73,7 +73,8 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
   override suspend fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = data.requirePath()
-    val module = IProjectManager.getInstance().findModuleForFile(file, false) ?: return Any()
+    val module =
+      IProjectManager.getInstance().getWorkspace()?.findModuleForFile(file, false) ?: return Any()
 
     return JavaCompilerProvider.get(module).compile(file).get { task ->
       val triple = findFields(task, file, range)

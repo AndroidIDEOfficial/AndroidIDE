@@ -32,7 +32,7 @@ import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.EdgeToEdgeIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
-import com.itsaky.androidide.projects.internal.ProjectManagerImpl
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
@@ -196,7 +196,7 @@ class MainActivity : EdgeToEdgeIDEActivity() {
   }
 
   internal fun openProject(root: File) {
-    ProjectManagerImpl.getInstance().projectPath = root.absolutePath
+    IProjectManager.getInstance().openProject(root)
     startActivity(Intent(this, EditorActivityKt::class.java))
   }
 

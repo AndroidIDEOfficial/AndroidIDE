@@ -19,11 +19,12 @@ package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.java.JavaModule
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.projects.java.JavaModule
 import com.itsaky.androidide.testing.tooling.ToolingApiTestLauncher
+import com.itsaky.androidide.testing.tooling.models.ToolingApiTestLauncherParams
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.utils.FileProvider
 import kotlinx.coroutines.runBlocking
@@ -38,24 +39,28 @@ import kotlin.io.path.writeText
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
-class ModuleProjectTest {
+class ModuleWorkspaceTest {
 
   @Test
   fun test() {
-    ToolingApiTestLauncher.launchServer() {
+    val params = ToolingApiTestLauncherParams()
+    ToolingApiTestLauncher.launchServer(params) {
 
       assertThat(result?.isSuccessful).isTrue()
 
       Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
 
+      val projectManager = IProjectManager.getInstance()
+      projectManager.openProject(params.projectDir.toFile())
+
       verifyProjectManagerAPIs()
 
       assertThat(project).isNotNull()
 
-      val rootProject = IProjectManager.getInstance().rootProject
+      val rootProject = projectManager.getWorkspace()
       assertThat(rootProject).isNotNull()
 
-      val root = rootProject!!.rootProject
+      val root = rootProject!!.getRootProject()
       assertThat(root).isNotNull()
       assertThat(root.name).isEqualTo("TestApp")
 
@@ -63,7 +68,7 @@ class ModuleProjectTest {
       assertThat(rootDir).isNotNull()
       assertThat(Files.isSameFile(rootDir.toPath(), FileProvider.testProjectRoot())).isTrue()
 
-      val app = rootProject.findByPath(":app")
+      val app = rootProject.findProject(":app")
       assertThat(app).isNotNull()
       assertThat(app).isInstanceOf(AndroidModule::class.java)
 
@@ -79,7 +84,7 @@ class ModuleProjectTest {
       assertThat(app.compilerSettings.javaBytecodeVersion)
         .isEqualTo(app.compilerSettings.targetCompatibility)
 
-      val anotherAndroidLib = rootProject.findByPath(":another-android-library")
+      val anotherAndroidLib = rootProject.findProject(":another-android-library")
       assertThat(anotherAndroidLib).isNotNull()
       assertThat(anotherAndroidLib).isInstanceOf(AndroidModule::class.java)
 
@@ -154,7 +159,7 @@ class ModuleProjectTest {
           .hasSize(3)
       }
 
-      val javaLibrary = rootProject.findByPath(":java-library")
+      val javaLibrary = rootProject.findProject(":java-library")
       assertThat(javaLibrary).isNotNull()
       assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
 
@@ -181,7 +186,7 @@ class ModuleProjectTest {
         }
       }
 
-      rootProject.findByPath(":another-java-library").run {
+      rootProject.findProject(":another-java-library").run {
         assertThat(this).isInstanceOf(JavaModule::class.java)
         assertThat((this as JavaModule).compilerSettings).isNotNull()
         assertThat(compilerSettings.javaSourceVersion).isEqualTo("1.8")
@@ -207,19 +212,18 @@ class ModuleProjectTest {
       Files.delete(testCls_renamed)
     }
 
-    val projectManager = IProjectManager.getInstance()
-    runBlocking { projectManager.setupProject() }
+    runBlocking { IProjectManager.getInstance().setupProject() }
 
-    val rootProject = IProjectManager.getInstance().rootProject
-    assertThat(rootProject).isNotNull()
+    val workspace = IProjectManager.getInstance().getWorkspace()
+    assertThat(workspace).isNotNull()
 
-    val root = rootProject?.rootProject
+    val root = workspace?.getRootProject()
     assertThat(root).isNotNull()
     assertThat(root!!.path).isEqualTo(":")
 
     val source =
       root.projectDir.toPath().resolve("app/src/main/java/com/itsaky/test/app/MainActivity.java")
-    val module = rootProject.findModuleForFile(source)
+    val module = workspace.findModuleForFile(source)
     assertThat(module).isNotNull()
     assertThat(module!!.path).isEqualTo(":app")
     assertThat(module.projectDir.path).isEqualTo(File(root.projectDir, "app").path)
@@ -234,30 +238,30 @@ class ModuleProjectTest {
     assertThat(Files.isSameFile(source, sourceNode.file)).isTrue()
 
     // make sure the files are not indexed
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isFalse()
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
+    assertThat(workspace.containsSourceFile(testCls)).isFalse()
+    assertThat(workspace.containsSourceFile(testCls_renamed)).isFalse()
 
     testCls.writeText("public class Test {  }")
-    projectManager.notifyFileCreated(testCls.toFile())
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isTrue()
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isEqualTo(module)
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls_renamed, true)).isNull()
+    IProjectManager.getInstance().notifyFileCreated(testCls.toFile())
+    assertThat(workspace.containsSourceFile(testCls)).isTrue()
+    assertThat(workspace.containsSourceFile(testCls_renamed)).isFalse()
+    assertThat(workspace.findModuleForFile(testCls, true)).isEqualTo(module)
+    assertThat(workspace.findModuleForFile(testCls_renamed, true)).isNull()
 
     Files.move(testCls, testCls_renamed)
-    projectManager.notifyFileRenamed(testCls.toFile(), testCls_renamed.toFile())
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isFalse()
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isTrue()
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isNull()
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls_renamed, true)).isEqualTo(
+    IProjectManager.getInstance().notifyFileRenamed(testCls.toFile(), testCls_renamed.toFile())
+    assertThat(workspace.containsSourceFile(testCls)).isFalse()
+    assertThat(workspace.containsSourceFile(testCls_renamed)).isTrue()
+    assertThat(workspace.findModuleForFile(testCls, true)).isNull()
+    assertThat(workspace.findModuleForFile(testCls_renamed, true)).isEqualTo(
       module
     )
 
     Files.delete(testCls_renamed)
-    projectManager.notifyFileDeleted(testCls_renamed.toFile())
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls)).isFalse()
-    assertThat(IProjectManager.getInstance().containsSourceFile(testCls_renamed)).isFalse()
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls, true)).isNull()
-    assertThat(IProjectManager.getInstance().findModuleForFile(testCls_renamed, true)).isNull()
+    IProjectManager.getInstance().notifyFileDeleted(testCls_renamed.toFile())
+    assertThat(workspace.containsSourceFile(testCls)).isFalse()
+    assertThat(workspace.containsSourceFile(testCls_renamed)).isFalse()
+    assertThat(workspace.findModuleForFile(testCls, true)).isNull()
+    assertThat(workspace.findModuleForFile(testCls_renamed, true)).isNull()
   }
 }

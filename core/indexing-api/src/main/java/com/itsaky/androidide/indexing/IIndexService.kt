@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.indexing
 
-import com.itsaky.androidide.projects.Project
+import com.itsaky.androidide.projects.IWorkspace
 import kotlinx.coroutines.Deferred
 import java.io.File
 
@@ -36,16 +36,16 @@ interface IIndexService {
   /**
    * Called to scan files that need to be indexed by this index service.
    *
-   * @param project The root project model which can be used to query the project properties.
+   * @param workspace The root workspace model which can be used to query the workspace properties.
    * @return A [Deferred] collection of files that need to be indexed.
    */
-  fun scanFiles(project: Project): Collection<File>
+  fun scanFiles(workspace: IWorkspace): Collection<File>
 
   /**
    * Called to index the given files.
    *
-   * @param project The root project model which can be used to query the project properties.
+   * @param workspace The root workspace model which can be used to query the workspace properties.
    * @param files The files to index.
    */
-  suspend fun indexFiles(project: Project, files: Collection<File>)
+  suspend fun indexFiles(workspace: IWorkspace, files: Collection<File>)
 }

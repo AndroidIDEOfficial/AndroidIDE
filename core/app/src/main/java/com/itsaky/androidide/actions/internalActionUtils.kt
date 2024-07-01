@@ -41,8 +41,12 @@ inline fun openApplicationModuleChooser(data: ActionData,
  */
 inline fun openApplicationModuleChooser(context: Context,
   crossinline callback: (AndroidModule) -> Unit) {
-  val projectManager = IProjectManager.getInstance()
-  val applications = projectManager.getAndroidAppModules()
+  val applications = IProjectManager.getInstance()
+    .getWorkspace()
+    ?.androidProjects()
+    ?.filter(AndroidModule::isApplication)
+    ?.toList() ?: emptyList()
+
   if (applications.isEmpty()) {
     flashError(R.string.msg_launch_failure_no_app_module)
     ILogger.ROOT.error("Cannot run application. No application modules found in project.")
@@ -61,7 +65,8 @@ inline fun openApplicationModuleChooser(context: Context,
     context,
     context.getString(R.string.title_choose_application),
     applications.map { it.path }.toTypedArray(),
-    0) { selection ->
+    0
+  ) { selection ->
     val app = applications[selection]
     ILogger.ROOT.info("Selected application: '{}'", app.path)
     callback(app)

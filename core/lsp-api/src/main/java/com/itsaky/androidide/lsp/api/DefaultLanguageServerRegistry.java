@@ -19,17 +19,20 @@ package com.itsaky.androidide.lsp.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
-import com.itsaky.androidide.projects.Project;
+import com.itsaky.androidide.projects.IWorkspace;
 import com.itsaky.androidide.utils.ILogger;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Thread-safe implementation of {@link ILanguageServerRegistry}.
@@ -117,14 +120,14 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
   @Subscribe(threadMode = ThreadMode.BACKGROUND)
   @SuppressWarnings("unused")
   public void onProjectInitialized(ProjectInitializedEvent event) {
-    final var project = event.get(Project.class);
-    if (project == null) {
+    final var workspace = event.get(IWorkspace.class);
+    if (workspace == null) {
       return;
     }
 
     ILogger.ROOT.debug("Dispatching ProjectInitializedEvent to language servers...");
     for (final var server : mRegister.values()) {
-      server.setupWithProject(project);
+      server.setupWorkspace(workspace);
     }
   }
 }

@@ -17,10 +17,9 @@
 
 package com.itsaky.androidide.projects.internal
 
-import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.GradleProject
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.java.JavaModule
-import com.itsaky.androidide.projects.Project
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IGradleProject
 import com.itsaky.androidide.tooling.api.IJavaProject
@@ -31,6 +30,7 @@ import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import org.slf4j.LoggerFactory
+import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -38,13 +38,14 @@ import java.util.concurrent.CopyOnWriteArrayList
  *
  * @author Akash Yadav
  */
-class ProjectTransformer {
+internal object WorkspaceModelBuilder {
 
-  companion object {
-    private val log = LoggerFactory.getLogger(ProjectTransformer::class.java)
-  }
+  private val log = LoggerFactory.getLogger(WorkspaceModelBuilder::class.java)
 
-  fun transform(project: IProject): Project? {
+  fun build(
+    projectDir: File,
+    project: IProject
+  ): WorkspaceImpl? {
     try {
       val allProjects = project.getProjects().get()
       val selectionResult = project.selectProject(StringParameter("")).get()
@@ -56,10 +57,12 @@ class ProjectTransformer {
         ProjectType.Gradle -> transform(project.asGradleProject())
         ProjectType.Android -> transform(project.asAndroidProject())
         else -> throw IllegalStateException(
-          "Root project must be either an Android project or a Gradle project")
+          "Root project must be either an Android project or a Gradle project"
+        )
       }
 
-      return Project(
+      return WorkspaceImpl(
+        projectDir,
         rootProject,
         CopyOnWriteArrayList(transform(allProjects, project)),
         project.getProjectSyncIssues().get()

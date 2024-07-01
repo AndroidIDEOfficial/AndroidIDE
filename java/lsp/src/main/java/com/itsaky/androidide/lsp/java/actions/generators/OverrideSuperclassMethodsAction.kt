@@ -95,7 +95,9 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return Any()
+      )
     val file = data.requirePath()
 
     return compiler.compile(file).get { task ->
@@ -203,7 +205,9 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
   private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return
+      )
     val file = data.requirePath()
 
     compiler.compile(file).run { task ->
@@ -270,7 +274,9 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
   ) {
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return
+      )
     val editor = data[CodeEditor::class.java]!!
     val file = data.requirePath()
     val text = editor.text

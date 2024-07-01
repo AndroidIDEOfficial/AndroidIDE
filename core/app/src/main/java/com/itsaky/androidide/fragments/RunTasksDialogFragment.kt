@@ -177,10 +177,10 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     viewModel.displayedChild = CHILD_LOADING
 
     executeAsync({
-      val project = IProjectManager.getInstance().rootProject
+      val workspace = IProjectManager.getInstance().getWorkspace()
         ?: return@executeAsync emptyList<Checkable<GradleTask>>()
 
-      return@executeAsync project.subProjects
+      return@executeAsync workspace.getSubProjects()
         .flatMap<GradleProject, GradleTask> { it.tasks }
         .map<GradleTask, Checkable<GradleTask>> {
           Checkable<GradleTask>(false, it)

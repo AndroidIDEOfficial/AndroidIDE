@@ -65,7 +65,9 @@ class GenerateMissingConstructorAction : BaseJavaCodeAction() {
     val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return Any()
+      )
     val file = data.requirePath()
     return compiler.compile(file).get { task ->
       val needsConstructor =

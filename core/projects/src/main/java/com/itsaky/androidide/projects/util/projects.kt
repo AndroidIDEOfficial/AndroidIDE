@@ -18,13 +18,17 @@
 package com.itsaky.androidide.projects.util
 
 import androidx.annotation.RestrictTo
+import androidx.annotation.VisibleForTesting
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.android.AndroidModule
+import com.itsaky.androidide.projects.android.androidAppProjects
 
 /**
  * **For testing purposes only!**
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@VisibleForTesting
 fun findAppModule(): AndroidModule? {
-  return IProjectManager.getInstance().getAndroidAppModules().firstOrNull { it.path == ":app" }
+  return IProjectManager.getInstance().getWorkspace()?.androidAppProjects()
+    ?.firstOrNull { it.path == ":app" }
 }

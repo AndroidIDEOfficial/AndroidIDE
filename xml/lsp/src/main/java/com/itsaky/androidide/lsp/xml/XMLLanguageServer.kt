@@ -41,7 +41,7 @@ import com.itsaky.androidide.lsp.xml.providers.AdvancedEditProvider.onContentCha
 import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.projects.Project
+import com.itsaky.androidide.projects.IWorkspace
 import com.itsaky.androidide.utils.DocumentUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -81,10 +81,9 @@ class XMLLanguageServer : ILanguageServer {
     this.settings = settings
   }
 
-  override fun setupWithProject(project: Project) {}
+  override fun setupWorkspace(workspace: IWorkspace) {}
   override fun complete(params: CompletionParams?): CompletionResult {
-    val completionProvider: ICompletionProvider
-    completionProvider = if (!getSettings().completionsEnabled()) {
+    val completionProvider: ICompletionProvider = if (!getSettings().completionsEnabled()) {
       NoCompletionsProvider()
     } else {
       XmlCompletionProvider(getSettings())

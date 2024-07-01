@@ -67,7 +67,9 @@ class FieldToBlockAction : BaseJavaCodeAction() {
   override suspend fun execAction(data: ActionData): Any {
     val compiler =
       JavaCompilerProvider.get(
-        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
+        IProjectManager.getInstance().getWorkspace()?.findModuleForFile(data.requireFile(), false)
+          ?: return Any()
+      )
     val diagnostic = data[DiagnosticItem::class.java]!!
     val file = data.requirePath()
 

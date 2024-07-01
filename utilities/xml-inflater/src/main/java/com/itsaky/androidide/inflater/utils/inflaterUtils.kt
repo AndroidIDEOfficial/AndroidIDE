@@ -92,12 +92,12 @@ fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcesso
     throw InflateException("File is not a layout file.")
   }
 
-  if (IProjectManager.getInstance().rootProject == null) {
+  if (IProjectManager.getInstance().getWorkspace() == null) {
     throw InflateException("GradleProject is not initialized!")
   }
 
   val module =
-    IProjectManager.getInstance().findModuleForFile(file, false) as? AndroidModule
+    IProjectManager.getInstance().getWorkspace()?.findModuleForFile(file, false) as? AndroidModule
       ?: throw InflateException("Cannot find module for given file. Is the project initialized?")
   val resFile =
     ResourceFile(

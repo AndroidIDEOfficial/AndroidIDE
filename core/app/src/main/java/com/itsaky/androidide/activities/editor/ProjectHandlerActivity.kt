@@ -39,9 +39,9 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.preferences.internal.GeneralPreferences
-import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.projects.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection
 import com.itsaky.androidide.services.builder.gradleDistributionParams
@@ -320,7 +320,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     // use the default variant selections
     if (currentVariants == null) {
       log.debug(
-        "No variant selection information available. Default build variants will be selected.")
+        "No variant selection information available. Default build variants will be selected."
+      )
       initializeProject(emptyMap())
       return
     }
@@ -355,7 +356,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
    */
   fun initializeProject(buildVariants: Map<String, String>) {
     val manager = ProjectManagerImpl.getInstance()
-    val projectDir = File(manager.projectPath)
+    val projectDir = manager.projectDir
     if (!projectDir.exists()) {
       log.error("GradleProject directory does not exist. Cannot initialize project")
       return
@@ -471,7 +472,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
           if (pid != metadata.pid) {
             log.warn(
               "Tooling server pid mismatch. Expected: {}, Actual: {}. Replacing memory watcher...",
-              pid, metadata.pid)
+              pid, metadata.pid
+            )
             memoryUsageWatcher.watchProcess(metadata.pid, PROC_GRADLE_TOOLING)
             resetMemUsageChart()
           }
@@ -495,7 +497,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     editorActivityScope.launch(Dispatchers.IO) {
       manager.setupProject()
       manager.notifyProjectUpdate()
-      updateBuildVariants(manager.androidBuildVariants)
+      updateBuildVariants(manager.requireWorkspace().getAndroidVariantSelections())
 
       com.itsaky.androidide.tasks.runOnUiThread {
         postProjectInit(true, null)
@@ -552,7 +554,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
   protected open fun createFindInProjectDialog(): AlertDialog? {
     val manager = ProjectManagerImpl.getInstance()
-    if (manager.rootProject == null) {
+    if (manager.getWorkspace() == null) {
       log.warn("No root project model found. Is the project initialized?")
       flashError(getString(string.msg_project_not_initialized))
       return null
@@ -560,7 +562,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
     val moduleDirs =
       try {
-        manager.rootProject!!.subProjects.stream().map(GradleProject::projectDir)
+        manager.getWorkspace()!!.getSubProjects().stream().map(GradleProject::projectDir)
           .collect(Collectors.toList())
       } catch (e: Throwable) {
         flashError(getString(string.msg_no_modules))
@@ -655,13 +657,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     val manager = ProjectManagerImpl.getInstance()
     GeneralPreferences.lastOpenedProject = manager.projectDirPath
     try {
-      val project = manager.rootProject
-      if (project == null) {
+      val workspace = manager.getWorkspace()
+      if (workspace == null) {
         log.warn("GradleProject not initialized. Skipping initial setup...")
         return
       }
 
-      var projectName = project.rootProject.name
+      var projectName = workspace.getRootProject().name
       if (projectName.isEmpty()) {
         projectName = manager.projectDir.name
       }

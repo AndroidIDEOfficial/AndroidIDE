@@ -84,7 +84,6 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.preferences.internal.BuildPreferences
 import com.itsaky.androidide.projects.IProjectManager
-import com.itsaky.androidide.projects.internal.ProjectManagerImpl
 import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.ui.CodeEditorView
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
@@ -325,9 +324,8 @@ abstract class BaseEditorActivity : EdgeToEdgeIDEActivity(), TabLayout.OnTabSele
     registerLanguageServers()
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
-      ProjectManagerImpl.getInstance().projectPath = savedInstanceState.getString(
-        KEY_PROJECT_PATH
-      )!!
+      IProjectManager.getInstance()
+        .openProject(savedInstanceState.getString(KEY_PROJECT_PATH)!!)
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
