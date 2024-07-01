@@ -41,7 +41,7 @@ class CIOnlyToolingApiTests {
 
   /**
    * Tests the functionality of the tooling API implementation against multiple versions of the
-   * Android Gradle Plugin. This test runs only in the CI environment.
+   * Android Gradle   Plugin. This test runs only in the CI environment.
    */
   @Test
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {

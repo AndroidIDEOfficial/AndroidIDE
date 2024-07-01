@@ -70,6 +70,8 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       it.dontBuildAndroidTestRuntimeClasspath = true
       it.dontBuildTestFixtureRuntimeClasspath = true
       it.dontBuildUnitTestRuntimeClasspath = true
+      it.dontBuildHostTestRuntimeClasspath = emptyMap()
+      it.dontBuildScreenshotTestRuntimeClasspath = true
     }
 
     controller.findModel(module, ProjectSyncIssues::class.java)?.also { syncIssues ->
