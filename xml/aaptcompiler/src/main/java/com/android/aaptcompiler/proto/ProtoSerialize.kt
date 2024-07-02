@@ -1,7 +1,6 @@
 package com.android.aaptcompiler.proto
 
 import android.aapt.pb.internal.ResourcesInternal
-import androidx.collection.intIntMapOf
 import com.android.aapt.ConfigurationOuterClass
 import com.android.aapt.Resources
 import com.android.aaptcompiler.ArrayResource
@@ -59,7 +58,7 @@ internal fun serializeSourceToPb(source: Source, sourcePool: StringPool): Resour
   sourceBuilder.setPathIdx(ref.index())
   if (source.line != null) {
     sourceBuilder.setPosition(
-      Resources.SourcePosition.newBuilder().setLineNumber(source.line).build()
+      Resources.SourcePosition.newBuilder().setLineNumber(source.line!!).build()
     )
   }
   return sourceBuilder.build()

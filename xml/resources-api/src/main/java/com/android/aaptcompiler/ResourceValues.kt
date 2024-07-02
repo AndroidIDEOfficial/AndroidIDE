@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +34,8 @@
 package com.android.aaptcompiler
 
 import com.android.aapt.Resources
+import com.android.aaptcompiler.AaptResourceType.MACRO
+import com.android.aaptcompiler.Reference.Type.RESOURCE
 import com.android.aaptcompiler.android.ResValue
 import com.android.aaptcompiler.android.deviceToHost
 import com.android.aaptcompiler.android.hostToDevice
@@ -74,7 +93,7 @@ class Reference(var name: ResourceName = ResourceName.EMPTY): Item() {
   }
 
   var id : Int? = null
-  var referenceType : Reference.Type = Reference.Type.RESOURCE
+  var referenceType : Type = RESOURCE
   var isPrivate = false
   var isDynamic = false
   // Only used for macros, which can contain any format type
@@ -83,14 +102,14 @@ class Reference(var name: ResourceName = ResourceName.EMPTY): Item() {
   var allowRaw = true
 
   override fun flatten(): ResValue? {
-    if (name?.type == AaptResourceType.MACRO) {
+    if (name?.type == MACRO) {
         return null
     }
     val resId = id ?: 0
     val dynamic = resId.isValidDynamicId() && isDynamic
 
     val dataType = when {
-      referenceType == Reference.Type.RESOURCE ->
+      referenceType == RESOURCE ->
         if (dynamic) ResValue.DataType.DYNAMIC_REFERENCE else ResValue.DataType.REFERENCE
       else ->
         if (dynamic) ResValue.DataType.DYNAMIC_ATTRIBUTE else ResValue.DataType.ATTRIBUTE
@@ -253,18 +272,23 @@ private fun maskToString(typeMask: Int): String {
   result.append(maskToString(typeMask, Resources.Attribute.FormatFlags.BOOLEAN_VALUE, "| boolean"))
   result.append(maskToString(typeMask, Resources.Attribute.FormatFlags.COLOR_VALUE, "| color"))
   result.append(
-    maskToString(typeMask, Resources.Attribute.FormatFlags.DIMENSION_VALUE, "| dimension"))
+    maskToString(typeMask, Resources.Attribute.FormatFlags.DIMENSION_VALUE, "| dimension")
+  )
   result.append(maskToString(typeMask, Resources.Attribute.FormatFlags.ENUM_VALUE, "| enum"))
   result.append(maskToString(typeMask, Resources.Attribute.FormatFlags.FLAGS_VALUE, "| flags"))
   result.append(maskToString(typeMask, Resources.Attribute.FormatFlags.FLOAT_VALUE, "| float"))
   result.append(
-    maskToString(typeMask, Resources.Attribute.FormatFlags.FRACTION_VALUE, "| fraction"))
+    maskToString(typeMask, Resources.Attribute.FormatFlags.FRACTION_VALUE, "| fraction")
+  )
   result.append(
-    maskToString(typeMask, Resources.Attribute.FormatFlags.INTEGER_VALUE, "| integer"))
+    maskToString(typeMask, Resources.Attribute.FormatFlags.INTEGER_VALUE, "| integer")
+  )
   result.append(
-    maskToString(typeMask, Resources.Attribute.FormatFlags.REFERENCE_VALUE, "| reference"))
+    maskToString(typeMask, Resources.Attribute.FormatFlags.REFERENCE_VALUE, "| reference")
+  )
   result.append(
-    maskToString(typeMask, Resources.Attribute.FormatFlags.STRING_VALUE, "| string"))
+    maskToString(typeMask, Resources.Attribute.FormatFlags.STRING_VALUE, "| string")
+  )
   return if (result.isNotEmpty()) result.substring(2) else ""
 }
 
@@ -414,7 +438,8 @@ class Style: Value() {
     newStyle.source = source
     for (entry in entries){
       newStyle.entries.add(
-        Entry(entry.key, entry.value?.clone(pool)))
+        Entry(entry.key, entry.value?.clone(pool))
+      )
     }
     return newStyle
   }
@@ -476,14 +501,14 @@ class Style: Value() {
 
     entries.clear()
     for (entry in mergedEntries) {
-      entries.add(Style.Entry(entry.key, entry.value?.clone(pool)))
+      entries.add(Entry(entry.key, entry.value?.clone(pool)))
     }
   }
 
   override fun toString(): String {
     val sb = StringBuilder(parent?.name.toString() +"\n")
     for (entry in entries) {
-      sb.appendln(entry.key.name.toString() + "    " + entry.value?.toString())
+      sb.appendLine(entry.key.name.toString() + "    " + entry.value?.toString())
     }
     return sb.toString()
   }
@@ -506,7 +531,7 @@ class Plural: Value() {
 
   val values = arrayOfNulls<Item?>(Type.NUM_TYPES)
 
-  fun setValue(type: Plural.Type, item: Item) {
+  fun setValue(type: Type, item: Item) {
     values[type.ordinal] = item
   }
 
@@ -540,10 +565,10 @@ class Styleable: Value() {
 }
 
 class Macro(
-    var rawValue: String? = null,
-    var styleString: StyleString? = null,
-    var untranslatables: List<UntranslatableSection> = listOf(),
-    var aliasNamespaces: List<Namespace> = listOf()): Value() {
+  var rawValue: String? = null,
+  var styleString: StyleString? = null,
+  var untranslatables: List<UntranslatableSection> = listOf(),
+  var aliasNamespaces: List<Namespace> = listOf()): Value() {
 
     class Namespace(
         var alias: String? = null,

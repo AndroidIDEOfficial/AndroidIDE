@@ -37,13 +37,13 @@ class BigBuffer(val blockSize: Int = 1024) {
   var size: Int = 0
     private set
 
-  internal val blocks = mutableListOf<Block>()
+  val blocks = mutableListOf<Block>()
 
-  internal class Block(
+  class Block(
     internal var size: Int, internal  val blockSize: Int, internal val data: ByteBuffer)
 
   data class BlockRef internal constructor(
-    internal val start: Int, val size: Int, internal val block: Block) {
+    val start: Int, val size: Int, val block: Block) {
 
     fun writeByte(value: Byte, location: Int) {
       if (location + 1 > size) {

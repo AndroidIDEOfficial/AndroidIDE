@@ -19,7 +19,6 @@ package com.itsaky.androidide.projects.android
 
 import com.android.SdkConstants
 import com.android.aaptcompiler.AaptResourceType
-import com.android.aaptcompiler.ResourceTable
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
@@ -38,6 +37,7 @@ import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.util.findPackageName
 import com.itsaky.androidide.utils.withStopWatch
+import com.itsaky.androidide.xml.res.IResourceTable
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -314,7 +314,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   /** Get the resource table for this module i.e. without resource tables for dependent modules. */
-  fun getResourceTable(): ResourceTable? {
+  fun getResourceTable(): IResourceTable? {
     val namespace = this.namespace ?: return null
 
     val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
@@ -336,11 +336,11 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   /**
-   * Get the [ResourceTable] instance for this module's compile SDK.
+   * Get the [IResourceTable] instance for this module's compile SDK.
    *
    * @return The [ApiVersions] for this module.
    */
-  fun getFrameworkResourceTable(): ResourceTable? {
+  fun getFrameworkResourceTable(): IResourceTable? {
     val platformDir = getPlatformDir()
     if (platformDir != null) {
       return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
@@ -354,7 +354,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    *
    * @return The set of resource tables. Empty when project is not initalized.
    */
-  fun getSourceResourceTables(): Set<ResourceTable> {
+  fun getSourceResourceTables(): Set<IResourceTable> {
     val set = mutableSetOf(getResourceTable() ?: return emptySet())
     getCompileModuleProjects().filterIsInstance<AndroidModule>().forEach {
       it.getResourceTable()?.also { table -> set.add(table) }
@@ -363,22 +363,22 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   /** Get the resource tables for external dependencies (not local module project dependencies). */
-  fun getDependencyResourceTables(): Set<ResourceTable> {
-    return mutableSetOf<ResourceTable>().also {
+  fun getDependencyResourceTables(): Set<IResourceTable> {
+    return mutableSetOf<IResourceTable>().also {
       var deps: Int
       it.addAll(libraryMap.values.filter { library ->
-          library.type == ANDROID_LIBRARY && library.androidLibraryData!!.resFolder.exists() && library.findPackageName() != UNKNOWN_PACKAGE
-        }.also { libs -> deps = libs.size }.mapNotNull { library ->
-          ResourceTableRegistry.getInstance().let { registry ->
-              registry.isLoggingEnabled = false
-              registry.forPackage(
-                library.packageName,
-                library.androidLibraryData!!.resFolder,
-              ).also {
-                registry.isLoggingEnabled = true
-              }
-            }
-        })
+        library.type == ANDROID_LIBRARY && library.androidLibraryData!!.resFolder.exists() && library.findPackageName() != UNKNOWN_PACKAGE
+      }.also { libs -> deps = libs.size }.mapNotNull { library ->
+        ResourceTableRegistry.getInstance().let { registry ->
+          registry.isLoggingEnabled = false
+          registry.forPackage(
+            library.packageName,
+            library.androidLibraryData!!.resFolder,
+          ).also {
+            registry.isLoggingEnabled = true
+          }
+        }
+      })
 
       log.info("Created {} resource tables for {} dependencies of module '{}'", it.size, deps, path)
     }
@@ -390,7 +390,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    *
    * @param pck The package to look for.
    */
-  fun findResourceTableForPackage(pck: String, hasGroup: AaptResourceType? = null): ResourceTable? {
+  fun findResourceTableForPackage(
+    pck: String,
+    hasGroup: AaptResourceType? = null
+  ): IResourceTable? {
     return findAllResourceTableForPackage(pck, hasGroup).let {
       if (it.isNotEmpty()) {
         return it.first()
@@ -406,18 +409,18 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    */
   fun findAllResourceTableForPackage(
     pck: String, hasGroup: AaptResourceType? = null
-  ): List<ResourceTable> {
+  ): List<IResourceTable> {
     if (pck == SdkConstants.ANDROID_PKG) {
       return getFrameworkResourceTable()?.let { listOf(it) } ?: emptyList()
     }
 
-    val tables: List<ResourceTable> = mutableListOf<ResourceTable>().apply {
+    val tables: List<IResourceTable> = mutableListOf<IResourceTable>().apply {
       getResourceTable()?.let { add(it) }
       addAll(getSourceResourceTables())
       addAll(getDependencyResourceTables())
     }
 
-    val result = mutableListOf<ResourceTable>()
+    val result = mutableListOf<IResourceTable>()
     for (table in tables) {
       val resPck = table.findPackage(pck) ?: continue
       if (hasGroup == null) {
@@ -439,8 +442,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    *
    * @return The associated resource tables.
    */
-  fun getAllResourceTables(): Set<ResourceTable> {
-    return mutableSetOf<ResourceTable>().apply {
+  fun getAllResourceTables(): Set<IResourceTable> {
+    return mutableSetOf<IResourceTable>().apply {
       getResourceTable()?.let { add(it) }
       getFrameworkResourceTable()?.let { add(it) }
       addAll(getSourceResourceTables())
@@ -449,7 +452,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   /** Get the resource table for the attrs_manifest.xml file. */
-  fun getManifestAttrTable(): ResourceTable? {
+  fun getManifestAttrTable(): IResourceTable? {
     val platform = getPlatformDir() ?: return null
     return ResourceTableRegistry.getInstance().getManifestAttrTable(platform)
   }

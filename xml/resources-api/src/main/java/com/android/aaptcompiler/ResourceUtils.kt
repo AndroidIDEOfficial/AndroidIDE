@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +34,27 @@
 package com.android.aaptcompiler
 
 import com.android.aapt.Resources
+import com.android.aaptcompiler.AaptResourceType.ATTR
+import com.android.aaptcompiler.AaptResourceType.ID
+import com.android.aaptcompiler.AaptResourceType.STYLE
+import com.android.aaptcompiler.Reference.Type.ATTRIBUTE
 import com.android.aaptcompiler.android.ResValue
+import com.android.aaptcompiler.android.ResValue.DataType.INT_BOOLEAN
+import com.android.aaptcompiler.android.ResValue.DataType.NULL
+import com.android.aaptcompiler.android.ResValue.NullFormat
 import com.android.aaptcompiler.android.parseHex
 import com.android.aaptcompiler.android.stringToFloat
 import com.android.aaptcompiler.android.stringToInt
 
-fun tryParseBool(string: String) : BinaryPrimitive? {
+fun tryParseBool(string: String): BinaryPrimitive? {
   val boolean = parseAsBool(string)
   boolean ?: return null
 
   val data = if (boolean) -1 else 0
-  return BinaryPrimitive(ResValue(ResValue.DataType.INT_BOOLEAN, data))
+  return BinaryPrimitive(ResValue(INT_BOOLEAN, data))
 }
 
-fun parseAsBool(string: String) : Boolean? =
+fun parseAsBool(string: String): Boolean? =
   when (string.trim()) {
     "true", "True", "TRUE" -> true
     "false", "False", "FALSE" -> false
@@ -46,15 +70,15 @@ fun tryParseNullOrEmpty(value: String): Item? {
   }
 }
 
-fun makeNull() : Reference {
+fun makeNull(): Reference {
   return Reference()
 }
 
-fun makeEmpty() : BinaryPrimitive {
-  return BinaryPrimitive(ResValue(ResValue.DataType.NULL, ResValue.NullFormat.EMPTY))
+fun makeEmpty(): BinaryPrimitive {
+  return BinaryPrimitive(ResValue(NULL, NullFormat.EMPTY))
 }
 
-fun tryParseInt(value: String) : BinaryPrimitive? {
+fun tryParseInt(value: String): BinaryPrimitive? {
   val trimmedValue = value.trim()
   val resValue = stringToInt(trimmedValue)
   return if (resValue != null) BinaryPrimitive(resValue) else null
@@ -64,13 +88,14 @@ fun parseResourceId(value: String): Int? {
   val resValue = stringToInt(value)
   if (resValue != null &&
     resValue.dataType == ResValue.DataType.INT_HEX &&
-    resValue.data.isValidDynamicId()) {
+    resValue.data.isValidDynamicId()
+  ) {
     return resValue.data
   }
   return null
 }
 
-fun tryParseFloat(value: String) : BinaryPrimitive? {
+fun tryParseFloat(value: String): BinaryPrimitive? {
   val floatResource = stringToFloat(value)
   floatResource ?: return null
 
@@ -100,6 +125,7 @@ fun tryParseColor(value: String): BinaryPrimitive? {
       }
       data = data or 0xff000000.toInt()
     }
+
     5 -> {
       dataType = ResValue.DataType.INT_COLOR_ARGB4
       for (i in 1..4) {
@@ -111,6 +137,7 @@ fun tryParseColor(value: String): BinaryPrimitive? {
         data = (data shl 8) or (hexValue + (hexValue shl 4))
       }
     }
+
     7 -> {
       dataType = ResValue.DataType.INT_COLOR_RGB8
       for (i in 1..6) {
@@ -123,6 +150,7 @@ fun tryParseColor(value: String): BinaryPrimitive? {
       }
       data = data or 0xff000000.toInt()
     }
+
     9 -> {
       dataType = ResValue.DataType.INT_COLOR_ARGB8
       for (i in 1..8) {
@@ -134,17 +162,18 @@ fun tryParseColor(value: String): BinaryPrimitive? {
         data = (data shl 4) or hexValue
       }
     }
+
     else -> return null
   }
   return if (error)
-      throw Exception("Unable to parse hex color '$value'.")
+    throw Exception("Unable to parse hex color '$value'.")
   else
-      BinaryPrimitive(ResValue(dataType, data))
+    BinaryPrimitive(ResValue(dataType, data))
 }
 
 data class ReferenceInfo(val reference: Reference, val createNew: Boolean = false)
 
-fun tryParseReference(value: String) : ReferenceInfo? {
+fun tryParseReference(value: String): ReferenceInfo? {
 
   val parsedReference = parseReference(value)
   if (parsedReference != null) {
@@ -171,7 +200,7 @@ fun tryParseReference(value: String) : ReferenceInfo? {
  *
  * [ReferenceInfo.createNew] will be false, as Attributes cannot be created.
  */
-fun parseAttributeReference(value: String) : ReferenceInfo? {
+fun parseAttributeReference(value: String): ReferenceInfo? {
   val trimmedValue = value.trim()
   if (trimmedValue.isEmpty()) {
     return null
@@ -197,8 +226,9 @@ fun parseAttributeReference(value: String) : ReferenceInfo? {
   val reference = Reference()
   reference.name =
     ResourceName(
-      possibleResourceName.packageName, AaptResourceType.ATTR, possibleResourceName.entry)
-  reference.referenceType = Reference.Type.ATTRIBUTE
+      possibleResourceName.packageName, ATTR, possibleResourceName.entry
+    )
+  reference.referenceType = ATTRIBUTE
   return ReferenceInfo(reference, false)
 }
 
@@ -226,7 +256,7 @@ fun parseAttributeReference(value: String) : ReferenceInfo? {
  * + [ReferenceInfo.reference] will be set as private if and only if a '*' followed the '@' in the
  * input.
  */
-fun parseReference(value: String) : ReferenceInfo? {
+fun parseReference(value: String): ReferenceInfo? {
   val trimmedValue = value.trim()
   if (trimmedValue.isEmpty()) {
     return null
@@ -248,7 +278,7 @@ fun parseReference(value: String) : ReferenceInfo? {
       return null
     }
 
-    if (create && referenceNameInfo.resourceName.type != AaptResourceType.ID) {
+    if (create && referenceNameInfo.resourceName.type != ID) {
       return null
     }
 
@@ -281,7 +311,7 @@ data class ResourceNameInfo(val resourceName: ResourceName, val isPrivate: Boole
  *   valid [ResourceName] and whether the parsed name identifies a private resource. If the value
  *   failed to parsed {@code null} is returned instead.
  */
-fun parseResourceName(value: String) : ResourceNameInfo? {
+fun parseResourceName(value: String): ResourceNameInfo? {
 
   if (value.isEmpty()) {
     return null
@@ -308,11 +338,13 @@ fun parseResourceName(value: String) : ResourceNameInfo? {
 
   return ResourceNameInfo(
     ResourceName(possibleResourceName.packageName, resourceType, possibleResourceName.entry),
-    isPrivate)
+    isPrivate
+  )
 }
 
 data class PossibleResourceName(
-  val packageName: String, val typeName: String, val entry: String, val success: Boolean = true)
+  val packageName: String, val typeName: String, val entry: String, val success: Boolean = true
+)
 
 
 fun extractResourceName(value: String): PossibleResourceName {
@@ -334,6 +366,7 @@ fun extractResourceName(value: String): PossibleResourceName {
         typeName = value.substring(offsetCurrent, currentChar)
         offsetCurrent = currentChar + 1
       }
+
       packageName.isEmpty() && value[currentChar] == ':' -> {
         hasPackageSeparator = true
         packageName = value.substring(offsetCurrent, currentChar)
@@ -353,7 +386,8 @@ fun extractResourceName(value: String): PossibleResourceName {
 fun tryParseItemForAttribute(
   value: String,
   resourceTypeMask: Int,
-  onCreateReference: ((name: ResourceName) -> Boolean)? = null): Item? {
+  onCreateReference: ((name: ResourceName) -> Boolean)? = null
+): Item? {
 
   val nullOrEmpty = tryParseNullOrEmpty(value)
   if (nullOrEmpty != null) {
@@ -365,8 +399,8 @@ fun tryParseItemForAttribute(
     reference.reference.typeFlags = resourceTypeMask
     if (reference.createNew) {
       val result = onCreateReference?.invoke(reference.reference.name)
-        if (result != null && !result) {
-          return null
+      if (result != null && !result) {
+        return null
       }
     }
     return reference.reference
@@ -399,7 +433,8 @@ fun tryParseItemForAttribute(
   if ((resourceTypeMask and floatMask) != 0) {
     val floatingPoint = tryParseFloat(value)
     if (floatingPoint != null &&
-      (androidTypeToAttributeTypeMask(floatingPoint.resValue.dataType) and resourceTypeMask) != 0) {
+      (androidTypeToAttributeTypeMask(floatingPoint.resValue.dataType) and resourceTypeMask) != 0
+    ) {
       return floatingPoint
     }
   }
@@ -413,6 +448,7 @@ fun androidTypeToAttributeTypeMask(type: ResValue.DataType) =
     ResValue.DataType.REFERENCE,
     ResValue.DataType.ATTRIBUTE,
     ResValue.DataType.DYNAMIC_REFERENCE -> Resources.Attribute.FormatFlags.REFERENCE_VALUE
+
     ResValue.DataType.STRING -> Resources.Attribute.FormatFlags.STRING_VALUE
     ResValue.DataType.FLOAT -> Resources.Attribute.FormatFlags.FLOAT_VALUE
     ResValue.DataType.DIMENSION -> Resources.Attribute.FormatFlags.DIMENSION_VALUE
@@ -423,11 +459,13 @@ fun androidTypeToAttributeTypeMask(type: ResValue.DataType) =
         Resources.Attribute.FormatFlags.ENUM_VALUE or
         Resources.Attribute.FormatFlags.FLAGS_VALUE
     }
+
     ResValue.DataType.INT_BOOLEAN -> Resources.Attribute.FormatFlags.BOOLEAN_VALUE
     ResValue.DataType.INT_COLOR_ARGB8,
     ResValue.DataType.INT_COLOR_RGB8,
     ResValue.DataType.INT_COLOR_ARGB4,
     ResValue.DataType.INT_COLOR_RGB4 -> Resources.Attribute.FormatFlags.COLOR_VALUE
+
     else -> 0
   }
 
@@ -456,6 +494,7 @@ fun verifyJavaStringFormat(string: String): Boolean {
             nonpositionalArgs = true
           }
         }
+
         currentIndex < string.length && string.codePointAt(currentIndex) == '<'.code -> {
           // Reusing last argument, bad idea since positions can be moved around during translation
           nonpositionalArgs = true
@@ -466,6 +505,7 @@ fun verifyJavaStringFormat(string: String): Boolean {
             ++currentIndex
           }
         }
+
         else -> nonpositionalArgs = true
       }
       // Ignore size, width, flags, etc.
@@ -478,6 +518,7 @@ fun verifyJavaStringFormat(string: String): Boolean {
           ','.code,
           '('.code,
           in '0'.code..'9'.code -> ++currentIndex
+
           else -> break@search
         }
       }
@@ -571,11 +612,13 @@ fun parseStyleParentReference(str: String): ParsedParentInfo {
 
   val resourceName =
     ResourceName(
-      possibleResourceName.packageName, AaptResourceType.STYLE, possibleResourceName.entry)
+      possibleResourceName.packageName, STYLE, possibleResourceName.entry
+    )
 
   if (!hasLeadingIdentifiers &&
     resourceName.pck!!.isEmpty() &&
-    possibleResourceName.typeName.isNotEmpty()) {
+    possibleResourceName.typeName.isNotEmpty()
+  ) {
     val errorString = "Invalid parent reference '$str'"
     return ParsedParentInfo(null, errorString)
   }
@@ -605,12 +648,12 @@ fun parseXmlAttributeName(str: String): Reference {
   for (i in startOffset..(name.length - 1)) {
     if (name.codePointAt(i) == ':'.code) {
       packageName = name.substring(startOffset, i)
-      entryName = name.substring(i+1)
+      entryName = name.substring(i + 1)
     }
   }
 
   result.name =
-    ResourceName(packageName, AaptResourceType.ATTR, if (entryName.isEmpty()) name else entryName)
+    ResourceName(packageName, ATTR, if (entryName.isEmpty()) name else entryName)
   return result
 }
 
@@ -632,7 +675,7 @@ fun tryParseFlagSymbol(attribute: AttributeResource, value: String): BinaryPrimi
       // so we need to match against the 'entry' part of the identifier
       val flagResourceName = symbol.symbol.name
       if (trimmedPart == flagResourceName.entry) {
-        flagsData =  flagsData or symbol.value
+        flagsData = flagsData or symbol.value
         flagSet = true
         break
       }

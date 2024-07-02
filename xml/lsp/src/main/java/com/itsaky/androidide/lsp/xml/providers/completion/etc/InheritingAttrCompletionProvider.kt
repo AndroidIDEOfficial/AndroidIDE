@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion.etc
 
-import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
+import com.itsaky.androidide.xml.res.IResourceGroup
 import org.eclipse.lemminx.dom.DOMNode
 
 /**
@@ -35,7 +35,7 @@ class InheritingAttrCompletionProvider(
   provider: ICompletionProvider
 ) : AttrCompletionProvider(provider) {
 
-  override fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
+  override fun findNodeStyleables(node: DOMNode, styleables: IResourceGroup): Set<Styleable> {
     val nodeStyleables = mutableSetOf<Styleable>()
     val name = node.nodeName
     val entryName = tagTransform.transform(name, nodeAtCursor.parentNode?.nodeName ?: "")

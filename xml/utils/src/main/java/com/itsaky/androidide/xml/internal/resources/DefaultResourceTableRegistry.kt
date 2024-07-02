@@ -40,6 +40,7 @@ import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
 import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
+import com.itsaky.androidide.xml.res.IResourceTable
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import org.slf4j.LoggerFactory
@@ -98,7 +99,7 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
       }
   }
 
-  override fun forPlatformDir(platform: File): ResourceTable? {
+  override fun forPlatformDir(platform: File): IResourceTable? {
     getManifestAttrTable(platform)
     getActivityActions(platform)
     getBroadcastActions(platform)
@@ -249,14 +250,19 @@ class DefaultResourceTableRegistry : ResourceTableRegistry {
           AaptResourceType.UNKNOWN
         }
         val resName = ResourceName(pck, type, file.nameWithoutExtension)
-        table.addFileReference(resName, ConfigDescription(), Source(file.path), file.path)
+        table.addFileReference(
+          resName, ConfigDescription(),
+          Source(file.path), file.path
+        )
       }
     }
   }
 
   private fun getDefaultOptions(): TableExtractorOptions {
-    return TableExtractorOptions(translatable = true, errorOnPositionalArgs = false,
-      visibility = PUBLIC)
+    return TableExtractorOptions(
+      translatable = true, errorOnPositionalArgs = false,
+      visibility = PUBLIC
+    )
   }
 
   private fun updateFromDirectory(

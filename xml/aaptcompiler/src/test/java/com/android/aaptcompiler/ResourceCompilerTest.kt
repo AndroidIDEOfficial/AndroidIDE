@@ -3,7 +3,6 @@ package com.android.aaptcompiler
 import com.android.aapt.Resources
 import com.android.aaptcompiler.android.ResValue
 import com.android.aaptcompiler.proto.deserializeConfigFromPb
-import com.android.aaptcompiler.proto.deserializeFileTypeFromPb
 import com.android.aaptcompiler.proto.deserializeTableFromPb
 import com.android.aaptcompiler.testutils.ContainerReader
 import com.android.aaptcompiler.testutils.FileEntry
@@ -57,10 +56,10 @@ class ResourceCompilerTest {
     }
 
     private fun testXmlFile(
-        type: AaptResourceType,
-        input: String,
-        config: String = "",
-        options: ResourceCompilerOptions = ResourceCompilerOptions()
+      type: AaptResourceType,
+      input: String,
+      config: String = "",
+      options: ResourceCompilerOptions = ResourceCompilerOptions()
     ): File {
         val resourceFolder = tempFolder.newFolder(type.tagName)
         val configSuffix = if (config.isEmpty()) "" else "-$config"
@@ -85,11 +84,11 @@ class ResourceCompilerTest {
     }
 
     private fun testPngFile(
-        type: AaptResourceType,
-        input: String,
-        config: String = "",
-        isPatch9: Boolean = false,
-        options: ResourceCompilerOptions = ResourceCompilerOptions()
+      type: AaptResourceType,
+      input: String,
+      config: String = "",
+      isPatch9: Boolean = false,
+      options: ResourceCompilerOptions = ResourceCompilerOptions()
     ): File {
         val resourceFolder = tempFolder.newFolder(type.tagName)
         val configSuffix = if (config.isEmpty()) "" else "-$config"

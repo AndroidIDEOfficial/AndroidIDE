@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +33,7 @@
 
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.StringPool.Context.Priority.NORMAL
 import com.android.aaptcompiler.android.ChunkType
 import com.android.aaptcompiler.android.ResChunkHeader
 import com.android.aaptcompiler.android.ResStringPoolHeader
@@ -36,8 +54,9 @@ class StringPool {
   private val indexedStrings = mutableMapOf<String, MutableList<Entry>>()
 
   class Context(
-      var priority: Long = Priority.NORMAL.priority,
-      var config: ConfigDescription = ConfigDescription()) {
+    var priority: Long = NORMAL.priority,
+    var config: ConfigDescription = ConfigDescription()
+  ) {
     enum class Priority(val priority: Long) {
       HIGH(1),
       NORMAL(0x7fffffffL),
@@ -58,7 +77,7 @@ class StringPool {
     fun context(): Context = entry.context
   }
 
-  class Span(internal val name: Ref, var firstChar: Int, var lastChar: Int = firstChar) {
+  class Span(val name: Ref, var firstChar: Int, var lastChar: Int = firstChar) {
     override fun equals(other: Any?): Boolean {
       if (other is Span) {
         return name.value() == other.name.value() &&
@@ -97,7 +116,7 @@ class StringPool {
 
   fun size(): Int = styles.size + strings.size
 
-  fun entryAt(index: Int): StringPool.Entry {
+  fun entryAt(index: Int): Entry {
     return strings[index]
   }
 
@@ -105,7 +124,7 @@ class StringPool {
     return makeRefImpl(str, context, true)
   }
 
-  fun makeRef(ref: Ref): Ref{
+  fun makeRef(ref: Ref): Ref {
     if (ref.entry.pool == this) {
       return ref
     }

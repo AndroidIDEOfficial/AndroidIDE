@@ -1,6 +1,7 @@
 package com.android.aaptcompiler.proto
 
 import com.android.aapt.Resources
+import com.android.aapt.Resources.Attribute.FormatFlags
 import com.android.aaptcompiler.ArrayResource
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.BasicString
@@ -25,6 +26,10 @@ import com.android.aaptcompiler.StyledString
 import com.android.aaptcompiler.Visibility
 import com.android.aaptcompiler.android.ResStringPool
 import com.android.aaptcompiler.android.ResValue
+import com.android.aaptcompiler.android.ResValue.DataType.INT_DEC
+import com.android.aaptcompiler.android.ResValue.DataType.INT_HEX
+import com.android.aaptcompiler.android.ResValue.DataType.NULL
+import com.android.aaptcompiler.android.ResValue.NullFormat
 import com.android.aaptcompiler.buffer.BigBuffer
 import com.android.aaptcompiler.getValue
 import com.android.aaptcompiler.makeEmpty
@@ -237,7 +242,8 @@ class ProtoSerializeTest {
     testSerializeDeserialize(tryParseBool("true")!!)
     // Null type
     testSerializeDeserialize(
-      BinaryPrimitive(ResValue(ResValue.DataType.NULL, ResValue.NullFormat.UNDEFINED)))
+      BinaryPrimitive(ResValue(NULL, NullFormat.UNDEFINED))
+    )
     // Empty type
     testSerializeDeserialize(tryParseNullOrEmpty("@empty") as BinaryPrimitive)
     // Int types
@@ -372,7 +378,8 @@ class ProtoSerializeTest {
         originalPool.makeRef(
           StyleString(
             "Hello World!",
-            listOf(Span("b", 0, 4), Span("i", 6, 10)))),
+            listOf(Span("b", 0, 4), Span("i", 6, 10)))
+        ),
         listOf()),
       newPool)
 
@@ -396,7 +403,8 @@ class ProtoSerializeTest {
       overlayable,
       OverlayableItem.Policy.SYSTEM or OverlayableItem.Policy.PRODUCT,
       "comment",
-      Source("res/values/overlayable.xml", 19))
+      Source("res/values/overlayable.xml", 19)
+    )
 
     val overlayableItem2 = OverlayableItem(overlayable)
 
@@ -419,10 +427,10 @@ class ProtoSerializeTest {
 
   @Test
   fun testAttrSerialization() {
-    val emptyAttribute = AttributeResource(Resources.Attribute.FormatFlags.ENUM_VALUE)
+    val emptyAttribute = AttributeResource(FormatFlags.ENUM_VALUE)
     testSerializeDeserialize(emptyAttribute)
 
-    val attributeExample = AttributeResource(Resources.Attribute.FormatFlags.FLAGS_VALUE)
+    val attributeExample = AttributeResource(FormatFlags.FLAGS_VALUE)
     attributeExample.minInt = 0
     attributeExample.maxInt = 1 shl 16
 
@@ -457,14 +465,16 @@ class ProtoSerializeTest {
     styleExampleNoParent.entries.add(
       Style.Entry(
         Reference(parseResourceName("android:string/foo")!!.resourceName),
-        BasicString(oldPool.makeRef("Hello there!"))))
+        BasicString(oldPool.makeRef("Hello there!"))
+      ))
     val keyReference = Reference(parseResourceName("android:bool/bar")!!.resourceName)
     keyReference.source = Source("res/values/style.xml", 30)
     keyReference.comment = "Whether or not the bar state can be active."
     styleExampleNoParent.entries.add(
       Style.Entry(
         keyReference,
-        tryParseBool("true")))
+        tryParseBool("true")
+      ))
 
     testSerializeDeserialize(styleExampleNoParent, newPool)
     Truth.assertThat(newPool.size()).isEqualTo(1)
@@ -567,7 +577,8 @@ class ProtoSerializeTest {
         parseNameOrFail("com.app.a:string/styled"),
         ConfigDescription(),
         "",
-        StyledString(table.stringPool.makeRef(styleString), listOf()))).isTrue()
+        StyledString(table.stringPool.makeRef(styleString), listOf())
+      )).isTrue()
 
     // Make a resource with different products.
     Truth.assertThat(
@@ -575,13 +586,15 @@ class ProtoSerializeTest {
         parseNameOrFail("com.app.a:integer/one"),
         parse("land"),
         "",
-        BinaryPrimitive(ResValue(ResValue.DataType.INT_DEC, 123)))).isTrue()
+        BinaryPrimitive(ResValue(INT_DEC, 123))
+      )).isTrue()
     Truth.assertThat(
       table.addResource(
         parseNameOrFail("com.app.a:integer/one"),
         parse("land"),
         "tablet",
-        BinaryPrimitive(ResValue(ResValue.DataType.INT_HEX, 321)))).isTrue()
+        BinaryPrimitive(ResValue(INT_HEX, 321))
+      )).isTrue()
 
     // Make a reference with both resource name and resource ID.
     // The reference should point to a resource outside of this table to test that both name and id
@@ -595,7 +608,8 @@ class ProtoSerializeTest {
     // Make an overlayable resource.
     val overlayableItem = OverlayableItem(
       Overlayable("OverlayableName", "overlay://theme", Source("res/values/overlayable.xml", 40)),
-      source = Source("res/values/overlayable.xml", 42))
+      source = Source("res/values/overlayable.xml", 42)
+    )
     Truth.assertThat(
         table.setOverlayable(
           parseNameOrFail("com.app.a:integer/overlayable"), overlayableItem)).isTrue()

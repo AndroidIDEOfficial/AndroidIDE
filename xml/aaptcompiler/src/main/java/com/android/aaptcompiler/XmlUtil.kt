@@ -3,7 +3,6 @@ package com.android.aaptcompiler
 import com.android.SdkConstants
 import jaxp.sun.xml.internal.stream.XMLInputFactoryImpl
 import jaxp.xml.stream.XMLEventReader
-import jaxp.xml.stream.XMLInputFactory
 import jaxp.xml.stream.events.StartElement
 
 internal val xmlInputFactory = XMLInputFactoryImpl()

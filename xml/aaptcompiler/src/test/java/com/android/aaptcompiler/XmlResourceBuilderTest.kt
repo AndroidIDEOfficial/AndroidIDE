@@ -1,5 +1,6 @@
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
 import com.android.aaptcompiler.testutils.parseNameOrFail
 import com.google.common.truth.Truth
 import org.junit.Test
@@ -10,7 +11,8 @@ class XmlResourceBuilderTest {
     parseNameOrFail("layout/foo"),
     ConfigDescription(),
     Source(""),
-    ResourceFile.Type.ProtoXml)
+    ProtoXml
+  )
 
   @Test
   fun testBasicXmlFlattening() {

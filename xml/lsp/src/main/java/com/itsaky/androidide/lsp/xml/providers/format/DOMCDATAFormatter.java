@@ -30,8 +30,10 @@ package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.preferences.internal.EditorPreferences;
-import java.util.List;
+
 import org.eclipse.lemminx.dom.DOMCDATASection;
+
+import java.util.List;
 
 /** DOM CDATA section formatter. */
 public class DOMCDATAFormatter {

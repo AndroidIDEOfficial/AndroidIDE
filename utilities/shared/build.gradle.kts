@@ -25,8 +25,9 @@ plugins {
 
 
 dependencies {
-    implementation(libs.androidx.annotation)
-    implementation(libs.androidx.collection)
+    api(libs.androidx.annotation)
+    api(libs.androidx.collection)
+
     implementation(libs.google.guava)
     implementation(libs.google.gson)
 

@@ -16,6 +16,7 @@
 
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.BlameLogger.Source
 import com.android.utils.ILogger
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
@@ -73,5 +74,5 @@ fun getMockBlameLogger(mockLogger: BlameLoggerTest.MockLogger) =
     BlameLogger(
         mockLogger
     ) {
-        BlameLogger.Source(it.sourcePath + ".rewritten", it.line + 1, it.column + 2)
+        Source(it.sourcePath + ".rewritten", it.line + 1, it.column + 2)
     }

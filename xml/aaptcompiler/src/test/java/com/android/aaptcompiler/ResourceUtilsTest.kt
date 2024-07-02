@@ -1,7 +1,17 @@
 package com.android.aaptcompiler
 
 import com.android.aapt.Resources
+import com.android.aapt.Resources.Attribute.FormatFlags
+import com.android.aaptcompiler.AaptResourceType.COLOR
+import com.android.aaptcompiler.AaptResourceType.ID
+import com.android.aaptcompiler.AaptResourceType.INTEGER
+import com.android.aaptcompiler.AaptResourceType.STRING
 import com.android.aaptcompiler.android.ResValue
+import com.android.aaptcompiler.android.ResValue.DataType.FLOAT
+import com.android.aaptcompiler.android.ResValue.DataType.INT_BOOLEAN
+import com.android.aaptcompiler.android.ResValue.DataType.INT_DEC
+import com.android.aaptcompiler.android.ResValue.DataType.NULL
+import com.android.aaptcompiler.android.ResValue.NullFormat
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
@@ -25,19 +35,19 @@ class ResourceUtilsTest {
     var result = parseResourceName("android:color/foo")
     assertThat(result).isNotNull()
     assertThat(result?.resourceName)
-      .isEqualTo(ResourceName("android", AaptResourceType.COLOR, "foo"))
+      .isEqualTo(ResourceName("android", COLOR, "foo"))
     assertThat(result?.isPrivate).isFalse()
 
     result = parseResourceName("color/foo")
     assertThat(result).isNotNull()
     assertThat(result?.resourceName)
-      .isEqualTo(ResourceName("", AaptResourceType.COLOR, "foo"))
+      .isEqualTo(ResourceName("", COLOR, "foo"))
     assertThat(result?.isPrivate).isFalse()
 
     result = parseResourceName("*android:string/foo")
     assertThat(result).isNotNull()
     assertThat(result?.resourceName)
-      .isEqualTo(ResourceName("android", AaptResourceType.STRING, "foo"))
+      .isEqualTo(ResourceName("android", STRING, "foo"))
     assertThat(result?.isPrivate).isTrue()
 
     result = parseResourceName("")
@@ -49,7 +59,7 @@ class ResourceUtilsTest {
     val result = parseReference("@color/bar")
     assertThat(result).isNotNull()
     assertThat(result?.reference?.name)
-      .isEqualTo(ResourceName("", AaptResourceType.COLOR, "bar"))
+      .isEqualTo(ResourceName("", COLOR, "bar"))
     assertThat(result?.createNew).isFalse()
     assertThat(result?.reference?.isPrivate).isFalse()
   }
@@ -59,7 +69,7 @@ class ResourceUtilsTest {
     val result = parseReference("@android:integer/foo")
     assertThat(result).isNotNull()
     assertThat(result?.reference?.name)
-      .isEqualTo(ResourceName("android", AaptResourceType.INTEGER, "foo"))
+      .isEqualTo(ResourceName("android", INTEGER, "foo"))
     assertThat(result?.createNew).isFalse()
     assertThat(result?.reference?.isPrivate).isFalse()
   }
@@ -69,7 +79,7 @@ class ResourceUtilsTest {
     val result = parseReference("\t @android:integer/foo\n \n\t")
     assertThat(result).isNotNull()
     assertThat(result?.reference?.name)
-      .isEqualTo(ResourceName("android", AaptResourceType.INTEGER, "foo"))
+      .isEqualTo(ResourceName("android", INTEGER, "foo"))
     assertThat(result?.createNew).isFalse()
     assertThat(result?.reference?.isPrivate).isFalse()
   }
@@ -79,7 +89,7 @@ class ResourceUtilsTest {
     val result = parseReference("@+android:id/foo")
     assertThat(result).isNotNull()
     assertThat(result?.reference?.name)
-      .isEqualTo(ResourceName("android", AaptResourceType.ID, "foo"))
+      .isEqualTo(ResourceName("android", ID, "foo"))
     assertThat(result?.createNew).isTrue()
     assertThat(result?.reference?.isPrivate).isFalse()
   }
@@ -89,7 +99,7 @@ class ResourceUtilsTest {
     val result = parseReference("@*android:id/foo")
     assertThat(result).isNotNull()
     assertThat(result?.reference?.name)
-      .isEqualTo(ResourceName("android", AaptResourceType.ID, "foo"))
+      .isEqualTo(ResourceName("android", ID, "foo"))
     assertThat(result?.createNew).isFalse()
     assertThat(result?.reference?.isPrivate).isTrue()
   }
@@ -128,29 +138,29 @@ class ResourceUtilsTest {
   @Test
   fun testEmptyIsBinaryPrimitive() {
     assertThat(makeEmpty())
-      .isEqualTo(BinaryPrimitive(ResValue(ResValue.DataType.NULL, ResValue.NullFormat.EMPTY)))
+      .isEqualTo(BinaryPrimitive(ResValue(NULL, NullFormat.EMPTY)))
     assertThat(tryParseNullOrEmpty("@empty"))
-      .isEqualTo(BinaryPrimitive(ResValue(ResValue.DataType.NULL, ResValue.NullFormat.EMPTY)))
+      .isEqualTo(BinaryPrimitive(ResValue(NULL, NullFormat.EMPTY)))
   }
 
   @Test
   fun testItemsWithWhitespaceAreParsedCorrectly() {
     var result =
-      tryParseItemForAttribute("  12\n   ", Resources.Attribute.FormatFlags.INTEGER_VALUE)
+      tryParseItemForAttribute("  12\n   ", FormatFlags.INTEGER_VALUE)
     assertThat(result).isNotNull()
     assertThat(result)
-      .isEqualTo(BinaryPrimitive(ResValue(ResValue.DataType.INT_DEC, 12)))
+      .isEqualTo(BinaryPrimitive(ResValue(INT_DEC, 12)))
     result =
-      tryParseItemForAttribute("  true\n   ", Resources.Attribute.FormatFlags.BOOLEAN_VALUE)
+      tryParseItemForAttribute("  true\n   ", FormatFlags.BOOLEAN_VALUE)
     assertThat(result).isNotNull()
     assertThat(result)
-      .isEqualTo(BinaryPrimitive(ResValue(ResValue.DataType.INT_BOOLEAN, -1)))
+      .isEqualTo(BinaryPrimitive(ResValue(INT_BOOLEAN, -1)))
 
     val expectedFloat = 12.0f
     result =
-      tryParseItemForAttribute("  12.0\n  ", Resources.Attribute.FormatFlags.FLOAT_VALUE)
+      tryParseItemForAttribute("  12.0\n  ", FormatFlags.FLOAT_VALUE)
     assertThat(result).isNotNull()
     assertThat(result)
-      .isEqualTo(BinaryPrimitive(ResValue(ResValue.DataType.FLOAT, expectedFloat.toRawBits())))
+      .isEqualTo(BinaryPrimitive(ResValue(FLOAT, expectedFloat.toRawBits())))
   }
 }

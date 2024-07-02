@@ -60,6 +60,9 @@ import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.inflater.drawable.DrawableParserFactory
 import com.itsaky.androidide.inflater.utils.module
+import com.itsaky.androidide.xml.res.IResourceEntry
+import com.itsaky.androidide.xml.res.IResourceTable
+import com.itsaky.androidide.xml.res.IResourceTablePackage
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.SimpleDateFormat
@@ -72,16 +75,16 @@ private const val DEFAULT_STRING_VALUE = "AndroidIDE"
 private val stringResolver =
   fun(it: Value?): String? {
     return when (it) {
-      is BasicString -> it.ref.value()
-      is RawString -> it.value.value()
-      is StyledString -> it.ref.value()
+      is com.android.aaptcompiler.BasicString -> it.ref.value()
+      is com.android.aaptcompiler.RawString -> it.value.value()
+      is com.android.aaptcompiler.StyledString -> it.ref.value()
       else -> null
     }
   }
 
 private val intResolver =
   fun(it: Value?): Int? {
-    return if (it is BinaryPrimitive) {
+    return if (it is com.android.aaptcompiler.BinaryPrimitive) {
       it.resValue.data
     } else null
   }
@@ -89,14 +92,14 @@ private val intResolver =
 val colorResolver: (Value?) -> Int? =
   fun(it): Int? {
     // TODO(itsaky) : Implement color state list parser
-    if (it is BinaryPrimitive) {
+    if (it is com.android.aaptcompiler.BinaryPrimitive) {
       return it.resValue.data
     }
     return null
   }
 
 inline fun <reified T> ((Value?) -> T?).arrayResolver(value: Value?): Array<T>? {
-  return if (value is ArrayResource) {
+  return if (value is com.android.aaptcompiler.ArrayResource) {
     Array(value.elements.size) { invoke(value.elements[it]) ?: return null }
   } else emptyArray()
 }
@@ -151,7 +154,7 @@ fun parseInteger(value: String, def: Int = 0): Int {
     return def
   }
   if (value.isDigitsOnly()) {
-    tryParseInt(value)?.resValue?.apply {
+    com.android.aaptcompiler.tryParseInt(value)?.resValue?.apply {
       return data
     }
   }
@@ -169,14 +172,14 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
     return def
   }
 
-  tryParseBool(value)?.resValue?.apply {
+  com.android.aaptcompiler.tryParseBool(value)?.resValue?.apply {
     return data == -1
   }
 
   if (value[0] == '@') {
     val resolver: (Value?) -> Boolean? =
       fun(resValue): Boolean {
-        return if (resValue is BinaryPrimitive) {
+        return if (resValue is com.android.aaptcompiler.BinaryPrimitive) {
           resValue.resValue.data == -1
         } else def
       }
@@ -190,7 +193,7 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
 fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawable()): Drawable {
   val drawableResolver: (Value?) -> Drawable? =
     fun(it): Drawable? {
-      if (it is FileReference) {
+      if (it is com.android.aaptcompiler.FileReference) {
         val file = File(it.path.value())
         if (!file.exists() || file.extension != EXT_XML) {
           return null
@@ -229,7 +232,7 @@ fun parseLayoutReference(value: String): File? {
 
   val layoutResolver: (Value?) -> File? =
     fun(it): File? {
-      return if (it is FileReference) {
+      return if (it is com.android.aaptcompiler.FileReference) {
         File(it.source.path)
       } else null
     }
@@ -310,7 +313,7 @@ fun parseDimension(
     return complexToDimension(data, displayMetrics)
   } else if (c == '@') {
     val resolver: (Value?) -> Float? = {
-      if (it is BinaryPrimitive) {
+      if (it is com.android.aaptcompiler.BinaryPrimitive) {
         complexToDimension(it.resValue.data, displayMetrics)
       } else null
     }
@@ -357,8 +360,8 @@ fun parseGravity(value: String, def: Int = defaultGravity()): Int {
   return parseFlag(attr = attr, value = value, def = def)
 }
 
-fun parseFlag(attr: AttributeResource, value: String, def: Int = -1): Int {
-  return tryParseFlagSymbol(attr, value)?.resValue?.data ?: def
+fun parseFlag(attr: com.android.aaptcompiler.AttributeResource, value: String, def: Int = -1): Int {
+  return com.android.aaptcompiler.tryParseFlagSymbol(attr, value)?.resValue?.data ?: def
 }
 
 fun defaultGravity(): Int {
@@ -441,7 +444,7 @@ fun <T> resolveQualifiedResourceReference(
 }
 
 fun <T> resolveResourceReference(
-  table: ResourceTable,
+  table: IResourceTable,
   type: AaptResourceType,
   pck: String,
   name: String,
@@ -449,7 +452,7 @@ fun <T> resolveResourceReference(
   resolver: (Value?) -> T?
 ): T {
   val result =
-    table.findResource(ResourceName(pck = pck, type = type, entry = name))
+    table.findResource(com.android.aaptcompiler.ResourceName(pck = pck, type = type, entry = name))
       ?: run { throw IllegalArgumentException("$type resource '$name' not found") }
   return resolveResourceReference(
     table,
@@ -463,9 +466,9 @@ fun <T> resolveResourceReference(
 }
 
 fun <T> resolveResourceReference(
-  table: ResourceTable,
-  pck: ResourceTablePackage,
-  entry: ResourceEntry,
+  table: IResourceTable,
+  pck: IResourceTablePackage,
+  entry: IResourceEntry,
   type: AaptResourceType,
   name: String,
   def: T,

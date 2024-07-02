@@ -1487,12 +1487,12 @@ open class ResTableConfig(
   }
 
   companion object {
-    internal val ENGLISH = byteArrayOf('e'.code.toByte(), 'n'.code.toByte()) // packed version of "en"
-    internal val UNITED_STATES = byteArrayOf('U'.code.toByte(), 'S'.code.toByte()) // packed version of "US"
-    internal val FILIPINO = byteArrayOf(0xAD.toByte(), 0x05.toByte()) // packed version of "fil"
-    internal val TAGALOG = byteArrayOf('t'.code.toByte(), 'l'.code.toByte()) // packed version of "tl"
+    val ENGLISH = byteArrayOf('e'.code.toByte(), 'n'.code.toByte()) // packed version of "en"
+    val UNITED_STATES = byteArrayOf('U'.code.toByte(), 'S'.code.toByte()) // packed version of "US"
+    val FILIPINO = byteArrayOf(0xAD.toByte(), 0x05.toByte()) // packed version of "fil"
+    val TAGALOG = byteArrayOf('t'.code.toByte(), 'l'.code.toByte()) // packed version of "tl"
 
-    internal const val NUMBERING_SYSTEM_PREFIX = "u-nu-"
+    const val NUMBERING_SYSTEM_PREFIX = "u-nu-"
 
     // Flags indicating a set of config values.  These flag constants must
     // match the corresponding ones in android.content.pm.ActivityInfo and

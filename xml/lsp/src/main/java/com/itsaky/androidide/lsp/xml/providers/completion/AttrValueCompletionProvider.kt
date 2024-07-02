@@ -27,7 +27,6 @@ import com.android.aapt.Resources.Attribute.FormatFlags.FLAGS
 import com.android.aapt.Resources.Attribute.FormatFlags.INTEGER
 import com.android.aapt.Resources.Attribute.FormatFlags.REFERENCE
 import com.android.aapt.Resources.Attribute.FormatFlags.STRING
-import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
@@ -35,9 +34,6 @@ import com.android.aaptcompiler.AaptResourceType.UNKNOWN
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTable
-import com.android.aaptcompiler.ResourceTablePackage
-import com.itsaky.androidide.aapt.findEntries
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
@@ -49,6 +45,8 @@ import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.dimensionUnits
+import com.itsaky.androidide.xml.res.IResourceTable
+import com.itsaky.androidide.xml.res.IResourceTablePackage
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRefWithIncompletePckOrType
@@ -143,7 +141,9 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     if (matcher.matches()) {
       val valPck = matcher.group(1)
       val typeStr = matcher.group(3)
-      val valType = AaptResourceType.values().firstOrNull { it.tagName == typeStr } ?: return EMPTY
+      val valType =
+        com.android.aaptcompiler.AaptResourceType.values().firstOrNull { it.tagName == typeStr }
+          ?: return EMPTY
       val newPrefix = matcher.group(4) ?: ""
       addValues(valType, newPrefix, list) { it == valPck }
       return CompletionResult(list)
@@ -179,7 +179,9 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     if (matcher.matches()) {
       val typeStr = matcher.group(1)
       val newPrefix = matcher.group(2) ?: ""
-      val valType = AaptResourceType.values().firstOrNull { it.tagName == typeStr } ?: return EMPTY
+      val valType =
+        com.android.aaptcompiler.AaptResourceType.values().firstOrNull { it.tagName == typeStr }
+          ?: return EMPTY
       addValues(valType, newPrefix, list)
       return CompletionResult(list)
     }
@@ -217,12 +219,13 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun listResTypes(): List<String> = AaptResourceType.values().map { it.tagName }
+  private fun listResTypes(): List<String> =
+    com.android.aaptcompiler.AaptResourceType.values().map { it.tagName }
 
   protected open fun resTableForFindAttr() = platformResourceTable()
 
   private fun findAttr(
-    tables: Set<ResourceTable>,
+    tables: Set<IResourceTable>,
     namespace: String,
     pck: String,
     attr: String
@@ -248,7 +251,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   private fun findAttr(
-    packages: Collection<ResourceTablePackage>,
+    packages: Collection<IResourceTablePackage>,
     attr: String
   ): AttributeResource? {
     for (pck in packages) {
@@ -272,15 +275,27 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     } else {
       // Check for specific attribute formats
       if (attr.hasType(STRING)) {
-        addValues(type = AaptResourceType.STRING, prefix = prefix, result = list)
+        addValues(
+          type = com.android.aaptcompiler.AaptResourceType.STRING,
+          prefix = prefix,
+          result = list
+        )
       }
 
       if (attr.hasType(INTEGER)) {
-        addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+        addValues(
+          type = com.android.aaptcompiler.AaptResourceType.INTEGER,
+          prefix = prefix,
+          result = list
+        )
       }
 
       if (attr.hasType(COLOR)) {
-        addValues(type = AaptResourceType.COLOR, prefix = prefix, result = list)
+        addValues(
+          type = com.android.aaptcompiler.AaptResourceType.COLOR,
+          prefix = prefix,
+          result = list
+        )
       }
 
       if (attr.hasType(BOOLEAN)) {
@@ -294,7 +309,11 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       }
 
       if (attr.hasType(INTEGER)) {
-        addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+        addValues(
+          type = com.android.aaptcompiler.AaptResourceType.INTEGER,
+          prefix = prefix,
+          result = list
+        )
       }
 
       if (attr.hasType(ENUM) || attr.hasType(FLAGS)) {
@@ -333,7 +352,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   private fun completeReferences(prefix: String, list: MutableList<CompletionItem>) {
-    for (value in AaptResourceType.values()) {
+    for (value in com.android.aaptcompiler.AaptResourceType.values()) {
       if (value == UNKNOWN) {
         continue
       }
@@ -343,7 +362,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   private fun addValues(
-    type: AaptResourceType,
+    type: com.android.aaptcompiler.AaptResourceType,
     prefix: String,
     result: MutableList<CompletionItem>,
     checkPck: (String) -> Boolean = { true }
@@ -361,28 +380,28 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
               return@mapNotNull null
             }
             pck.name to
-                pck.findGroup(type)?.findEntries { entryName ->
-                  matchLevel(entryName, prefix) != NO_MATCH
-                }
+              pck.findGroup(type)?.findEntries { entryName ->
+                matchLevel(entryName, prefix) != NO_MATCH
+              }
           }
         }
         .toHashSet()
 
     entries.forEach { pair ->
-      pair.second?.forEach {
+      pair.second?.forEach { entry ->
         result.add(
           createAttrValueCompletionItem(
             pair.first,
             type.tagName,
-            it.name,
-            matchLevel(it.name, prefix)
+            entry.name,
+            matchLevel(entry.name, prefix)
           )
         )
       }
     }
   }
 
-  override fun findResourceTables(nsUri: String?): Set<ResourceTable> {
+  override fun findResourceTables(nsUri: String?): Set<IResourceTable> {
     // When completing values, all namespaces must be included
     val tables = HashSet(findAllModuleResourceTables())
 

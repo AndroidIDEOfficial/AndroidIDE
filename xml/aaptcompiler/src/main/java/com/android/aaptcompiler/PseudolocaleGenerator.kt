@@ -46,7 +46,8 @@ internal fun mergeSpans(string: StyledString): List<UnifiedSpan> {
 }
 
 internal fun pseudolocalizeStyledString(
-  original: StyledString, method: Pseudolocalizer.Method, pool: StringPool): StyledString {
+  original: StyledString, method: Pseudolocalizer.Method, pool: StringPool
+): StyledString {
 
   val localizer = Pseudolocalizer(method)
 
@@ -136,7 +137,8 @@ internal fun pseudolocalizeStyledString(
 }
 
 internal fun pseudolocalizeBasicString(
-  original: BasicString, method: Pseudolocalizer.Method, pool: StringPool): BasicString {
+  original: BasicString, method: Pseudolocalizer.Method, pool: StringPool
+): BasicString {
   try {
     val localizer = Pseudolocalizer(method)
 
@@ -170,7 +172,8 @@ internal fun pseudolocalizeBasicString(
 }
 
 internal fun pseudolocalizePlural(
-  original: Plural, method: Pseudolocalizer.Method, pool: StringPool): Plural {
+  original: Plural, method: Pseudolocalizer.Method, pool: StringPool
+): Plural {
 
   val localizedPlural = Plural()
 

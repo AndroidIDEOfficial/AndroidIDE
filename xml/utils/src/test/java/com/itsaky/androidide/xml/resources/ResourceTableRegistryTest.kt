@@ -155,7 +155,13 @@ class ResourceTableRegistryTest {
       this.packages.first().apply { assertThat(this.name).isEqualTo("android") }
     }
 
-    resourceTable!!.findResource(ResourceName(pck = "android", type = STRING, entry = "ok")).apply {
+    resourceTable!!.findResource(
+      com.android.aaptcompiler.ResourceName(
+        pck = "android",
+        type = STRING,
+        entry = "ok"
+      )
+    ).apply {
       assertThat(this).isNotNull()
       assertThat(this!!.entry).isNotNull()
       assertThat(this.entry.values).isNotEmpty()
@@ -163,14 +169,20 @@ class ResourceTableRegistryTest {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isNotNull()
         this.value.apply {
-          assertThat(this).isInstanceOf(BasicString::class.java)
+          assertThat(this).isInstanceOf(com.android.aaptcompiler.BasicString::class.java)
           assertThat(this.toString()).isEqualTo("OK")
         }
       }
     }
 
     resourceTable
-      .findResource(ResourceName(pck = "android", type = STRING, entry = "cancel"))
+      .findResource(
+        com.android.aaptcompiler.ResourceName(
+          pck = "android",
+          type = STRING,
+          entry = "cancel"
+        )
+      )
       .apply {
         assertThat(this).isNotNull()
         assertThat(this!!.entry).isNotNull()
@@ -179,14 +191,20 @@ class ResourceTableRegistryTest {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isNotNull()
           this.value.apply {
-            assertThat(this).isInstanceOf(BasicString::class.java)
+            assertThat(this).isInstanceOf(com.android.aaptcompiler.BasicString::class.java)
             assertThat(this.toString()).isEqualTo("Cancel")
           }
         }
       }
 
     resourceTable
-      .findResource(ResourceName(pck = "android", type = COLOR, entry = "holo_red_dark"))
+      .findResource(
+        com.android.aaptcompiler.ResourceName(
+          pck = "android",
+          type = COLOR,
+          entry = "holo_red_dark"
+        )
+      )
       .apply {
         assertThat(this).isNotNull()
         assertThat(this!!.entry).isNotNull()
@@ -196,8 +214,8 @@ class ResourceTableRegistryTest {
           assertThat(this!!.value).isNotNull()
           this.value.apply {
             assertThat(this).isNotNull()
-            assertThat(this!!).isInstanceOf(BinaryPrimitive::class.java)
-            (this as BinaryPrimitive).resValue.apply {
+            assertThat(this!!).isInstanceOf(com.android.aaptcompiler.BinaryPrimitive::class.java)
+            (this as com.android.aaptcompiler.BinaryPrimitive).resValue.apply {
               assertThat(this).isNotNull()
               assertThat(this.dataType).isEqualTo(DataType.INT_COLOR_ARGB8)
               assertThat(this.data)

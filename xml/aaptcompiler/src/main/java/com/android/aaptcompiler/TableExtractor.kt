@@ -1,6 +1,11 @@
 package com.android.aaptcompiler
 
 import com.android.aapt.Resources
+import com.android.aapt.Resources.Attribute.FormatFlags
+import com.android.aaptcompiler.AaptResourceType.ID
+import com.android.aaptcompiler.AaptResourceType.STYLE
+import com.android.aaptcompiler.StringPool.Context
+import com.android.aaptcompiler.StringPool.Context.Priority.NORMAL
 import com.android.aaptcompiler.android.stringToInt
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import java.io.InputStream
@@ -148,7 +153,8 @@ class TableExtractor(
   val source: Source,
   val config: ConfigDescription,
   val options: TableExtractorOptions,
-  val logger: BlameLogger) {
+  val logger: BlameLogger
+) {
 
   fun extract(inputFile: InputStream) {
     var eventReader : XMLEventReader? = null
@@ -349,7 +355,7 @@ class TableExtractor(
       // Grab the name of the resource. This will be validated later, as not all XML resources
       // require a name.
       parsedResource.name =
-        parsedResource.name.copy(type = AaptResourceType.ID, entry = nameAttribute.value)
+        parsedResource.name.copy(type = ID, entry = nameAttribute.value)
       parseItem(element, eventReader, parsedResource, resourceFormat)
 
       val item = parsedResource.value
@@ -361,7 +367,7 @@ class TableExtractor(
           // A null reference also means there is no inner element when ids are in the form:
           //    <id name="name"/>
           parsedResource.value = Id()
-        (item is Reference && item.name.type != AaptResourceType.ID) || item !is Reference -> {
+        (item is Reference && item.name.type != ID) || item !is Reference -> {
           // if an inner element exists, the inner element must be a reference to another id
           logError(
             blameSource(parsedResource.source),
@@ -518,7 +524,8 @@ class TableExtractor(
       return StyledString(
         table.stringPool.makeRef(
           flattenedXml.styleString,
-          StringPool.Context(StringPool.Context.Priority.NORMAL.priority, config)),
+          Context(NORMAL.priority, config)
+        ),
         flattenedXml.untranslatableSections)
     }
 
@@ -543,7 +550,8 @@ class TableExtractor(
       // use trimmed escaped string.
       return BasicString(
         table.stringPool.makeRef(
-          flattenedXml.styleString.str, StringPool.Context(config = config)),
+          flattenedXml.styleString.str, Context(config = config)
+        ),
         flattenedXml.untranslatableSections)
     }
 
@@ -566,7 +574,7 @@ class TableExtractor(
                 .removeSurrounding("\"")
         }
       return RawString(
-        table.stringPool.makeRef(raw, StringPool.Context(config=config)))
+        table.stringPool.makeRef(raw, Context(config=config)))
     }
 
     return null
@@ -708,12 +716,12 @@ class TableExtractor(
     val resValue = stringToInt(valueAttribute.value)
     if (resValue == null) {
       logError(
-        blameSource(elementSource), "Invalid value '$resValue' for <$tag>. Must be an integer.")
+        blameSource(elementSource), "Invalid value 'null' for <$tag>. Must be an integer.")
       return null
     }
 
     val reference = Reference()
-    reference.name = ResourceName("", AaptResourceType.ID, nameAttribute.value)
+    reference.name = ResourceName("", ID, nameAttribute.value)
     return AttributeResource.Symbol(reference, resValue.data, resValue.dataType.byteValue)
   }
 
@@ -729,7 +737,8 @@ class TableExtractor(
    *   failed.
    */
   private fun parseStyleItem(
-    element: StartElement, eventReader: XMLEventReader, style: Style): Boolean {
+    element: StartElement, eventReader: XMLEventReader, style: Style
+  ): Boolean {
     val itemSource = source.withLine(element.location.lineNumber)
 
     val nameAttribute = element.getAttributeByName(QName("name"))
@@ -811,9 +820,10 @@ class TableExtractor(
             }
             else -> {
               // besides XLIFF, any other namespaced tags are unsupported and ignored.
-              logger?.warning(
+              logger.warning(
                 "Ignoring element '$elementName' with unknown namespace '${elementName.namespaceURI}'.",
-                blameSource(source.withLine(element.location.lineNumber)))
+                blameSource(source.withLine(element.location.lineNumber))
+              )
             }
 
           }
@@ -873,9 +883,10 @@ class TableExtractor(
 
     // Symbols should have the default config
     if (parsedResource.config != ConfigDescription()) {
-      logger?.warning(
-                "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+      logger.warning(
+        "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
+        blameSource(source, element.location)
+      )
     }
 
     if (!parseSymbolImpl(element, eventReader, parsedResource)) {
@@ -1002,9 +1013,10 @@ class TableExtractor(
     // Attributes only end up in default configuration
     val defaultConfig = ConfigDescription()
     if (parsedResource.config != defaultConfig) {
-      logger?.warning(
+      logger.warning(
         "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+        blameSource(source, element.location)
+      )
       parsedResource.config = defaultConfig
     }
 
@@ -1142,11 +1154,9 @@ class TableExtractor(
           val symbolName = symbol.symbol.name.toString()
           if (symbolMap.contains(symbolName)) {
             val newSource =
-              logger?.getOriginalSource(blameSource(symbol.symbol.source))
-                ?: blameSource(symbol.symbol.source)
+              logger.getOriginalSource(blameSource(symbol.symbol.source))
             val previousSource =
-              logger?.getOriginalSource(blameSource(symbolMap[symbolName]!!.symbol.source))
-                ?: blameSource(symbolMap[symbolName]!!.symbol.source)
+              logger.getOriginalSource(blameSource(symbolMap[symbolName]!!.symbol.source))
             val errorMsg =
               "Duplicate symbol '$symbolName' defined here: $newSource" +
                       " and here: $previousSource"
@@ -1174,7 +1184,7 @@ class TableExtractor(
     }
 
     val resource = AttributeResource(
-      if (typeMask == 0) Resources.Attribute.FormatFlags.ANY_VALUE else typeMask)
+      if (typeMask == 0) FormatFlags.ANY_VALUE else typeMask)
     resource.weak = isWeak
     resource.symbols.addAll(symbolMap.values)
     resource.minInt = min ?: Int.MIN_VALUE
@@ -1365,7 +1375,8 @@ class TableExtractor(
     element: StartElement,
     eventReader: XMLEventReader,
     parsedResource: ParsedResource,
-    type: AaptResourceType): Boolean {
+    type: AaptResourceType
+  ): Boolean {
 
     parsedResource.name = parsedResource.name.copy(type = type)
 
@@ -1394,7 +1405,7 @@ class TableExtractor(
       if (marker != -1) {
         style.parentInferred = true
         style.parent =
-          Reference(ResourceName("", AaptResourceType.STYLE, styleName.substring(0, marker)))
+          Reference(ResourceName("", STYLE, styleName.substring(0, marker)))
       }
     }
 
@@ -1458,9 +1469,10 @@ class TableExtractor(
     // Declare-stylable only ends up in the default config
     val defaultConfig = ConfigDescription()
     if (parsedResource.config != defaultConfig) {
-      logger?.warning(
+      logger.warning(
         "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+        blameSource(source, element.location)
+      )
       parsedResource.config = defaultConfig
     }
 
@@ -1554,9 +1566,10 @@ class TableExtractor(
 
     val defaultConfig = ConfigDescription()
     if (parsedResource.config != defaultConfig) {
-      logger?.warning(
+      logger.warning(
         "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+        blameSource(source, element.location)
+      )
     }
 
     val nameAttribute = element.getAttributeByName(QName(null, "name"))
@@ -1774,7 +1787,7 @@ class TableExtractor(
    */
   private fun parsePlural(
     element: StartElement, eventReader: XMLEventReader, parsedResource: ParsedResource): Boolean {
-    parsedResource.name = parsedResource.name.copy(type=AaptResourceType.PLURALS)
+    parsedResource.name = parsedResource.name.copy(type= AaptResourceType.PLURALS)
 
     val plural = Plural()
 
@@ -1883,9 +1896,10 @@ class TableExtractor(
     }
 
     if (parsedResource.config != ConfigDescription()) {
-      logger?.warning(
+      logger.warning(
         "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+        blameSource(source, element.location)
+      )
     }
 
     val typeAttribute = element.getAttributeByName(QName("type"))
@@ -1919,7 +1933,7 @@ class TableExtractor(
       parsedResource.resourceId = id
     }
 
-    if (parsedType == AaptResourceType.ID) {
+    if (parsedType == ID) {
       // An ID marked as public is also the definition of an ID.
       parsedResource.value = Id()
     }
@@ -1944,9 +1958,10 @@ class TableExtractor(
     }
 
     if (parsedResource.config != ConfigDescription()) {
-      logger?.warning(
-          "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
-        blameSource(source, element.location))
+      logger.warning(
+        "Ignoring configuration '${parsedResource.config}' for <${element.name}> tag.",
+        blameSource(source, element.location)
+      )
     }
 
     val typeAttribute = element.getAttributeByName(QName("type"))

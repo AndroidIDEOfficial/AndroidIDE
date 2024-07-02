@@ -1,5 +1,6 @@
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
 import com.android.aaptcompiler.testutils.parseNameOrFail
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
@@ -41,7 +42,8 @@ class XmlProcessorTest {
       parseNameOrFail("layout/test"),
       parse(configDescription),
       Source(""),
-      ResourceFile.Type.ProtoXml)
+      ProtoXml
+    )
     try {
       processor.process(file, input.byteInputStream())
     } catch (e: Exception) {

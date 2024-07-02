@@ -2,6 +2,7 @@ package com.android.aaptcompiler
 
 import com.android.aaptcompiler.android.ResValue
 import com.android.aapt.Resources
+import com.android.aaptcompiler.AaptResourceType.RAW
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
@@ -573,7 +574,7 @@ class TableExtractorTest {
     val nullRef = getValue("integer/foo") as? Reference
     assertThat(nullRef).isNotNull()
     nullRef!!
-    assertThat(nullRef.name).isEqualTo(ResourceName("", AaptResourceType.RAW, ""))
+    assertThat(nullRef.name).isEqualTo(ResourceName("", RAW, ""))
     assertThat(nullRef.id).isNull()
     assertThat(nullRef.referenceType).isEqualTo(Reference.Type.RESOURCE)
   }

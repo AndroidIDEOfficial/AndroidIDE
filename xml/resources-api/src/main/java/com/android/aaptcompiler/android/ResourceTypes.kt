@@ -20,7 +20,6 @@ import com.android.aaptcompiler.StringPool
 import com.android.aaptcompiler.parseFloat
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import kotlin.text.Charsets
 
 /**
  * Definitions of resource data structures.
@@ -36,9 +35,10 @@ class ResChunkHeader(
   val typeId: Short,
   // Size of the chunk header (in bytes). Adding this value to the address of the chunk will be
   // the address of the associated data if any.
-  val headerSize: Short) {
+  val headerSize: Short
+) {
 
-  constructor(): this(0, 0)
+  constructor() : this(0, 0)
 
   // Total size of this chunk (in bytes). This is the chunkSize plus the size of any data
   // associated with this chunk. Adding the this to the address of this chunk will completely skip
@@ -54,6 +54,7 @@ enum class ChunkType(val id: Short) {
 
   // Marker for the beginning of XML types.
   XML_FIRST_CHUNK_TYPE(0x0100),
+
   // Child types of XML_TYPE
   XML_START_NAMESPACE_TYPE(0x0100),
   XML_END_NAMESPACE_TYPE(0x0101),
@@ -61,6 +62,7 @@ enum class ChunkType(val id: Short) {
   XML_END_ELEMENT_TYPE(0x0103),
   XML_CDATA_TYPE(0x0104),
   XML_LAST_CHUNK_TYPE(0x017f),
+
   // This contains a uint32_t array mapping strings in the string
   // pool back to resource identifiers.  It is optional.
   XML_RESOURCE_MAP_TYPE(0x0180),
@@ -85,36 +87,51 @@ data class ResValue(val dataType: DataType, val data: Int, val size: Short = 0) 
   enum class DataType(val byteValue: Byte) {
     // The 'data' is either 0 or 1, specifying this resource is undefined or empty, respectively.
     NULL(0X00),
+
     // The 'data' holds a ResTable reference, i.e. a reference to another resource.
     REFERENCE(0x01),
+
     // The 'data' holds an attribute resource identifier.
     ATTRIBUTE(0x02),
+
     // The 'data' holds an index into the containing resource table's string pool.
     STRING(0x03),
+
     // The 'data' holds a single-precision floating point number.
     FLOAT(0x04),
+
     // The 'data' holds a fixed point number encoding a dimension value, e.g. 100in.
     DIMENSION(0x05),
+
     // The 'data' holds a fixed point number encoding a fraction of a container.
     FRACTION(0x06),
+
     // The 'data' holds a dynamic ResTable reference, which needs to be resolved before it can be
     // used as a REFERENCE.
     DYNAMIC_REFERENCE(0x07),
+
     // The 'data' holds an attribute resource identifier, which needs to be resolved before it can
     // be used like a ATTRIBUTE.
     DYNAMIC_ATTRIBUTE(0x08),
+
     // The 'data' is a raw integer of the form n..n.
     INT_DEC(0x10),
+
     // The 'data' is a raw integer value of the form 0xn..n.
     INT_HEX(0x11),
+
     // The 'data' is either 0 or 1, for input 'false' or 'true' respectively.
     INT_BOOLEAN(0x12),
+
     // The 'data' is a raw integer value of the form #aarrggbb.
     INT_COLOR_ARGB8(0x1c),
+
     // The 'data' is a raw integer value of the form #rrggbb.
     INT_COLOR_RGB8(0x1d),
+
     // The 'data' is a raw integer value of the form #argb
     INT_COLOR_ARGB4(0x1e),
+
     // The 'data is a raw integer value of the form #rgb
     INT_COLOR_RGB4(0x1f);
 
@@ -135,19 +152,25 @@ data class ResValue(val dataType: DataType, val data: Int, val size: Short = 0) 
 
     // TYPE_DIMENSION: Value is raw pixels.
     const val UNIT_PX = 0
+
     // TYPE_DIMENSION: Value is Device Independent Pixels.
     const val UNIT_DIP = 1
+
     // TYPE_DIMENSION: Value is a Scaled device independent Pixels.
     const val UNIT_SP = 2
+
     // TYPE_DIMENSION: Value is in points.
     const val UNIT_PT = 3
+
     // TYPE_DIMENSION: Value is in inches.
     const val UNIT_IN = 4
+
     // TYPE_DIMENSION: Value is in millimeters.
     const val UNIT_MM = 5
 
     // TYPE_FRACTION: A basic fraction of the overall size.
     const val UNIT_FRACTION = 0
+
     // TYPE_FRACTION: A fraction of the parent size.
     const val UNIT_FRACTION_PARENT = 1
 
@@ -159,10 +182,13 @@ data class ResValue(val dataType: DataType, val data: Int, val size: Short = 0) 
 
     // The mantissa is an integral number -- i.e., 0xnnnnnn.0
     const val RADIX_23p0 = 0
+
     // The mantissa magnitude is 16 bits -- i.e, 0xnnnn.nn
     const val RADIX_16p7 = 1
+
     // The mantissa magnitude is 8 bits -- i.e, 0xnn.nnnn
     const val RADIX_8p15 = 2
+
     // The mantissa magnitude is 0 bits -- i.e, 0x0.nnnnnn
     const val RADIX_0p23 = 3
 
@@ -186,7 +212,8 @@ data class ResValue(val dataType: DataType, val data: Int, val size: Short = 0) 
 data class ResStringPoolRef(
   // Index into the string pool table (unsigned 32 bit offset from the indices immediately after
   // ResStringPoolHeader) at which to find the location of the string data in the pool
-  val index: Int)
+  val index: Int
+)
 
 /**
  * Definition of a pool of strings.
@@ -208,13 +235,16 @@ data class ResStringPoolHeader(
   val stringCount: Int,
   // Number of style span arrays in the pool (number of 32 bit indices that follow the string
   // indices).
-  val styleCount: Int) {
+  val styleCount: Int
+) {
 
-  constructor(): this(ResChunkHeader(), 0, 0)
+  constructor() : this(ResChunkHeader(), 0, 0)
 
   var flags: Int = 0
+
   // Index from header of the string data.
   var stringsStart: Int = 0
+
   // Index from header of the style data.
   var stylesStart: Int = 0
 
@@ -250,7 +280,8 @@ class ResStringPool private constructor(
   val stringPoolSize: Int,
   val strings: List<String>,
   val stylesPoolSize: Int,
-  val styles: List<List<ResStringPoolSpan>>) {
+  val styles: List<List<ResStringPoolSpan>>
+) {
 
   companion object {
     fun get(buffer: ByteBuffer, length: Int): ResStringPool {
@@ -278,7 +309,8 @@ class ResStringPool private constructor(
 
       val header =
         ResStringPoolHeader(
-          chunkHeader, buffer.getInt(8).deviceToHost(), buffer.getInt(12).deviceToHost())
+          chunkHeader, buffer.getInt(8).deviceToHost(), buffer.getInt(12).deviceToHost()
+        )
       header.flags = buffer.getInt(16).deviceToHost()
       header.stringsStart = buffer.getInt(20).deviceToHost()
       header.stylesStart = buffer.getInt(24).deviceToHost()
@@ -287,8 +319,9 @@ class ResStringPool private constructor(
       val strings = mutableListOf<String>()
       if (header.stringCount != 0) {
         // we need to check overflow and ensure the string indexes can fit.
-        if (header.stringCount*4 < header.stringCount ||
-          (header.header.headerSize + (header.stringCount*4)) > resourceSize) {
+        if (header.stringCount * 4 < header.stringCount ||
+          (header.header.headerSize + (header.stringCount * 4)) > resourceSize
+        ) {
           error("Invalid StringPool: Buffer not large enough for string indices.")
         }
 
@@ -296,7 +329,7 @@ class ResStringPool private constructor(
 
         // There should at least be enough space for the smallest string.
         // (2 bytes length, null terminator)
-        if (header.stringsStart+2 >= resourceSize) {
+        if (header.stringsStart + 2 >= resourceSize) {
           error("Invalid StringPool: Buffer not large enough for strings.")
         }
 
@@ -314,7 +347,7 @@ class ResStringPool private constructor(
           stringPoolSize = (header.stylesStart - header.stringsStart) / charSize
         }
 
-        if (stringPoolSize ==0) {
+        if (stringPoolSize == 0) {
           error("Invalid StringPool: Space for strings in header is too small.")
         }
 
@@ -333,13 +366,13 @@ class ResStringPool private constructor(
       val styles = mutableListOf<List<ResStringPoolSpan>>()
       if (header.styleCount != 0) {
 
-        var currentStyleIndex = headerSize.toInt() + header.stringCount*4
+        var currentStyleIndex = headerSize.toInt() + header.stringCount * 4
         // invariant: integer overflow in calculating styles
         if (currentStyleIndex < headerSize.toInt()) {
           error("Invalid StringPool: Integer overflow encountered while decoding styles.")
         }
 
-        stylePoolSize = (resourceSize - header.stylesStart)/4
+        stylePoolSize = (resourceSize - header.stylesStart) / 4
 
         for (i in 0.until(header.styleCount)) {
           val styleLocation = buffer.getInt(currentStyleIndex).deviceToHost() + header.stylesStart
@@ -367,6 +400,7 @@ class ResStringPool private constructor(
 
             ((firstByteUTF16.toInt() shl 8) + secondByte) and StringPool.UTF8_ENCODE_LENGTH_MAX
           }
+
           else -> firstByteUTF16.toInt()
         }
 
@@ -381,6 +415,7 @@ class ResStringPool private constructor(
 
             ((firstByteUTF8.toInt() shl 8) + secondByte) and StringPool.UTF8_ENCODE_LENGTH_MAX
           }
+
           else -> firstByteUTF8.toInt()
         }
 
@@ -414,6 +449,7 @@ class ResStringPool private constructor(
             stringPosition += 2
             ((firstShort.toInt() shl 16) + secondShort) and StringPool.UTF16_ENCODE_LENGTH_MAX
           }
+
           else -> firstShort.toInt()
         }
 
@@ -453,7 +489,7 @@ class ResStringPool private constructor(
 }
 
 fun parseHex(codePoint: Int) =
-  when(codePoint) {
+  when (codePoint) {
     in '0'.code..'9'.code -> codePoint - '0'.code
     in 'A'.code..'F'.code -> codePoint - 'A'.code + 10
     in 'a'.code..'f'.code -> codePoint - 'a'.code + 10
@@ -487,7 +523,8 @@ fun stringToInt(string: String): ResValue? {
   val isHex: Boolean
   if (codePointCount >= index + 2
     && trimmedString.codePointAt(index) == '0'.code
-    && trimmedString.codePointAt(index+1) == 'x'.code) {
+    && trimmedString.codePointAt(index + 1) == 'x'.code
+  ) {
     isHex = true
     index += 2
 
@@ -525,7 +562,7 @@ fun stringToInt(string: String): ResValue? {
       ++index
 
       val decValue = codePoint - '0'.code
-      value = (value*10) + decValue
+      value = (value * 10) + decValue
 
       val outOfBounds =
         if (isNegative) -value < Int.MIN_VALUE.toLong() else value > Int.MAX_VALUE.toLong()
@@ -540,12 +577,14 @@ fun stringToInt(string: String): ResValue? {
   }
 
   return ResValue(
-    if(isHex) ResValue.DataType.INT_HEX else ResValue.DataType.INT_DEC,
-    value.toInt())
+    if (isHex) ResValue.DataType.INT_HEX else ResValue.DataType.INT_DEC,
+    value.toInt()
+  )
 }
 
 private data class UnitEntry(
-  val name: String, val dataType: ResValue.DataType, val unitValue: Int, val scale: Float = 1.0f)
+  val name: String, val dataType: ResValue.DataType, val unitValue: Int, val scale: Float = 1.0f
+)
 
 private val unitSuffixes = listOf(
   UnitEntry("px", ResValue.DataType.DIMENSION, ResValue.ComplexFormat.UNIT_PX),
@@ -555,11 +594,13 @@ private val unitSuffixes = listOf(
   UnitEntry("pt", ResValue.DataType.DIMENSION, ResValue.ComplexFormat.UNIT_PT),
   UnitEntry("in", ResValue.DataType.DIMENSION, ResValue.ComplexFormat.UNIT_IN),
   UnitEntry("mm", ResValue.DataType.DIMENSION, ResValue.ComplexFormat.UNIT_MM),
-  UnitEntry("%", ResValue.DataType.FRACTION, ResValue.ComplexFormat.UNIT_FRACTION, 1.0f/100),
+  UnitEntry("%", ResValue.DataType.FRACTION, ResValue.ComplexFormat.UNIT_FRACTION, 1.0f / 100),
   UnitEntry(
-    "%p", ResValue.DataType.FRACTION, ResValue.ComplexFormat.UNIT_FRACTION_PARENT, 1.0f/100))
+    "%p", ResValue.DataType.FRACTION, ResValue.ComplexFormat.UNIT_FRACTION_PARENT, 1.0f / 100
+  )
+)
 
-private fun parseUnitType(string: String) : UnitEntry? {
+private fun parseUnitType(string: String): UnitEntry? {
   for (entry in unitSuffixes) {
     if (string.endsWith(entry.name)) {
       return entry
@@ -581,7 +622,7 @@ fun stringToFloat(string: String): ResValue? {
     if (entry != null) trimmedString.lastIndexOf(entry.name) else trimmedString.length
 
   // no spaces allowed between suffix and floating point value
-  if (suffixIndex == 0 || Character.isWhitespace(trimmedString.codePointAt(suffixIndex-1))) {
+  if (suffixIndex == 0 || Character.isWhitespace(trimmedString.codePointAt(suffixIndex - 1))) {
     return null
   }
 
@@ -592,7 +633,8 @@ fun stringToFloat(string: String): ResValue? {
   if (parseHex(entry?.name?.codePointAt(0) ?: 0) != -1) {
     // try to parse the float value with the beginning of the suffix considered.
     if (trimmedString.contains("0x", true) &&
-      !stringToParse.contains('p')) {
+      !stringToParse.contains('p')
+    ) {
       // ambiguous value string, resulting in a parse failure.
       return null
     }
@@ -624,21 +666,25 @@ fun stringToFloat(string: String): ResValue? {
 
     // Transform the float to (rounded) integer with the lower 23 bits representing the fraction
     // and bits 45 to 23 representing the whole number part.
-    val bits = (parsedValue*(1 shl 23) + .5f).toLong()
+    val bits = (parsedValue * (1 shl 23) + .5f).toLong()
 
     val (radix, shift) = when {
       bits and ((1L shl 23) - 1) == 0L ->
         // Always use 23p0 if there is no fraction, as it is easier to read.
         Pair(ResValue.ComplexFormat.RADIX_23p0, 23)
+
       bits and ((1L shl 23) - 1).inv() == 0L ->
         // Whole number part is zero -- can fit into 0 leading bits of precision.
         Pair(ResValue.ComplexFormat.RADIX_0p23, 0)
-      bits and ((1L shl 31) -1).inv() == 0L ->
+
+      bits and ((1L shl 31) - 1).inv() == 0L ->
         // Magnitude can fit in 8 leading bits of precision.
         Pair(ResValue.ComplexFormat.RADIX_8p15, 8)
-      bits and ((1L shl 39) -1).inv() == 0L ->
+
+      bits and ((1L shl 39) - 1).inv() == 0L ->
         // Magnitude can fit in 16 leading bits of precision.
         Pair(ResValue.ComplexFormat.RADIX_16p7, 16)
+
       else ->
         // Need whole range, so no fractional part.
         Pair(ResValue.ComplexFormat.RADIX_23p0, 23)

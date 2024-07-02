@@ -272,6 +272,7 @@ class PseudoMethodAccent: PseudoMethodImpl() {
     var currentChar = source[currentIndex]
     val htmlPartial = StringBuilder()
 
+    @Suppress("KotlinConstantConditions")
     htmlTag@ while (currentIndex < size) {
 
       if (currentChar == '&') {

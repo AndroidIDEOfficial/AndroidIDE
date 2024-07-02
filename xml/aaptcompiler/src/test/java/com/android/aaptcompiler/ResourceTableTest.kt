@@ -1,8 +1,12 @@
 package com.android.aaptcompiler
 
-import com.android.aapt.Resources
+import com.android.aapt.Resources.Attribute.FormatFlags
+import com.android.aaptcompiler.AaptResourceType.ATTR
+import com.android.aaptcompiler.AaptResourceType.ID
+import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.android.ResTableConfig
 import com.android.aaptcompiler.android.ResValue
+import com.android.aaptcompiler.android.ResValue.DataType.INT_BOOLEAN
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import com.google.common.truth.Truth
 import org.junit.Test
@@ -35,14 +39,14 @@ class ResourceTableTest {
 
     Truth.assertThat(
       table.addResource(
-        ResourceName("android", AaptResourceType.ID, "hey,there"),
+        ResourceName("android", ID, "hey,there"),
         ConfigDescription(),
         "",
         id)).isFalse()
 
     Truth.assertThat(
       table.addResource(
-        ResourceName("android", AaptResourceType.ID, "hey:there"),
+        ResourceName("android", ID, "hey:there"),
         ConfigDescription(),
         "",
         id)).isFalse()
@@ -86,23 +90,23 @@ class ResourceTableTest {
     val table = ResourceTable()
 
     val styleableOne = Styleable()
-    styleableOne.entries.add(0, Reference(ResourceName("", AaptResourceType.ATTR, "child_one")))
-    styleableOne.entries.add(1, Reference(ResourceName("android", AaptResourceType.ATTR, "child_two")))
+    styleableOne.entries.add(0, Reference(ResourceName("", ATTR, "child_one")))
+    styleableOne.entries.add(1, Reference(ResourceName("android", ATTR, "child_two")))
 
     Truth.assertThat(
             table.addResource(
-                    ResourceName("", AaptResourceType.STYLEABLE, "styleable_parent_one"),
+                    ResourceName("", STYLEABLE, "styleable_parent_one"),
                     ConfigDescription(),
                     "",
                     styleableOne)).isTrue()
 
     val styleableTwo = Styleable()
-    styleableTwo.entries.add(0, Reference(ResourceName("", AaptResourceType.ATTR, "child_one")))
-    styleableTwo.entries.add(1, Reference(ResourceName("android", AaptResourceType.ATTR, "child_three")))
+    styleableTwo.entries.add(0, Reference(ResourceName("", ATTR, "child_one")))
+    styleableTwo.entries.add(1, Reference(ResourceName("android", ATTR, "child_three")))
 
     Truth.assertThat(
             table.addResource(
-                    ResourceName("", AaptResourceType.STYLEABLE, "styleable_parent_two"),
+                    ResourceName("", STYLEABLE, "styleable_parent_two"),
                     ConfigDescription(),
                     "",
                     styleableTwo)).isTrue()
@@ -139,7 +143,7 @@ class ResourceTableTest {
     val table = ResourceTable()
     val config = ConfigDescription()
     val languageConfig =
-      ConfigDescription(ResTableConfig(language = byteArrayOf('p'.toByte(), 'l'.toByte())))
+      ConfigDescription(ResTableConfig(language = byteArrayOf('p'.code.toByte(), 'l'.code.toByte())))
 
     val id1 = Id()
     id1.source = Source("test/path/file.xml", 10)
@@ -223,11 +227,11 @@ class ResourceTableTest {
     val config = ConfigDescription()
 
     val name = parseResourceName("android:attr/foo")!!.resourceName
-    val weak1 = AttributeResource(Resources.Attribute.FormatFlags.STRING_VALUE)
+    val weak1 = AttributeResource(FormatFlags.STRING_VALUE)
     weak1.weak = true
     val weak2 = AttributeResource(
-      Resources.Attribute.FormatFlags.STRING_VALUE or
-        Resources.Attribute.FormatFlags.REFERENCE_VALUE)
+      FormatFlags.STRING_VALUE or
+        FormatFlags.REFERENCE_VALUE)
     weak2.weak = true
 
     Truth.assertThat(table.addResource(name, config, "", weak1)).isTrue()
@@ -340,7 +344,8 @@ class ResourceTableTest {
       overlayable,
       OverlayableItem.Policy.PRODUCT or OverlayableItem.Policy.VENDOR,
       "comment",
-      Source("res/values/overlayable.xml", 42))
+      Source("res/values/overlayable.xml", 42)
+    )
 
     val name = parseResourceName("android:string/foo")!!.resourceName
     table.setOverlayable(name, overlayableItem)
@@ -436,14 +441,16 @@ class ResourceTableTest {
         0x7f0100ff,
         ConfigDescription(),
         "",
-        BinaryPrimitive(ResValue(ResValue.DataType.INT_BOOLEAN, 0)))).isTrue()
+        BinaryPrimitive(ResValue(INT_BOOLEAN, 0))
+      )).isTrue()
     Truth.assertThat(
       table.addResourceWithId(
         name,
         0x7f010100,
         ConfigDescription(),
         "",
-        BinaryPrimitive(ResValue(ResValue.DataType.INT_BOOLEAN, 1)))).isTrue()
+        BinaryPrimitive(ResValue(INT_BOOLEAN, 1))
+      )).isTrue()
 
     Truth.assertThat(
       table.setVisibilityWithId(

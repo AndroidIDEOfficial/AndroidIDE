@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,14 +39,14 @@ import com.android.utils.ILogger
 import jaxp.xml.stream.Location
 import java.io.File
 
-internal fun blameSource(
+fun blameSource(
   source: Source,
   line: Int? = source.line,
   column: Int? = null
 ): BlameLogger.Source =
   BlameLogger.Source(source.path, line ?: -1, column ?: -1)
 
-internal fun blameSource(
+fun blameSource(
   source: Source,
   location: Location
 ): BlameLogger.Source =
@@ -126,7 +143,7 @@ class BlameLogger(
       logger.verbose(message)
   }
 
-  internal fun getOutputSource(source: Source): Source {
+  fun getOutputSource(source: Source): Source {
     return getOriginalSource(
       source.copy(sourcePath = userVisibleSourceTransform(source.sourcePath))
     )

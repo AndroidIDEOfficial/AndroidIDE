@@ -27,7 +27,7 @@ plugins {
 
 
 android {
-    namespace = "${BuildConfig.packageName}.lsp.xml"
+    namespace = "${BuildConfig.packageName}.xml.lsp"
 }
 
 kapt {

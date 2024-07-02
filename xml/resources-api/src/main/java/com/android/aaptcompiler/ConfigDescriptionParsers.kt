@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +35,11 @@ package com.android.aaptcompiler
 
 import com.android.aaptcompiler.android.AConfiguration
 import com.android.aaptcompiler.android.ResTableConfig
+import com.android.aaptcompiler.android.ResTableConfig.COLOR_MODE
+import com.android.aaptcompiler.android.ResTableConfig.INPUT_FLAGS
+import com.android.aaptcompiler.android.ResTableConfig.SCREEN_LAYOUT
+import com.android.aaptcompiler.android.ResTableConfig.SCREEN_LAYOUT2
+import com.android.aaptcompiler.android.ResTableConfig.UI_MODE
 import com.android.aaptcompiler.android.isTruthy
 
 /** attempt to parse the Mobile Country Code */
@@ -65,7 +87,7 @@ fun parseLayoutDirection(part: String, config: ConfigDescription) : Boolean {
     }
     // AND existing config with the mask and then OR with the found layout direction.
     config.screenLayout =
-      maskAndApply(config.screenLayout, ResTableConfig.SCREEN_LAYOUT.DIR_MASK, value)
+      maskAndApply(config.screenLayout, SCREEN_LAYOUT.DIR_MASK, value)
     return true
 }
 
@@ -119,7 +141,7 @@ fun parseScreenLayoutSize(part: String, config: ConfigDescription): Boolean {
     }
     // AND existing config with the mask and then OR with the found layout size.
     config.screenLayout =
-      maskAndApply(config.screenLayout, ResTableConfig.SCREEN_LAYOUT.SIZE_MASK, value)
+      maskAndApply(config.screenLayout, SCREEN_LAYOUT.SIZE_MASK, value)
     return true
 }
 
@@ -132,7 +154,7 @@ fun parseScreenLayoutLong(part: String, config: ConfigDescription): Boolean {
     }
     // AND existing config with the mask and then OR with the found layout size.
     config.screenLayout =
-      maskAndApply(config.screenLayout, ResTableConfig.SCREEN_LAYOUT.SCREENLONG_MASK, value)
+      maskAndApply(config.screenLayout, SCREEN_LAYOUT.SCREENLONG_MASK, value)
     return true
 }
 
@@ -144,7 +166,7 @@ fun parseScreenRound(part: String, config: ConfigDescription): Boolean {
         else -> return false
     }
     config.screenLayout2 =
-      maskAndApply(config.screenLayout2, ResTableConfig.SCREEN_LAYOUT2.SCREENROUND_MASK, value)
+      maskAndApply(config.screenLayout2, SCREEN_LAYOUT2.SCREENROUND_MASK, value)
     return true
 }
 
@@ -156,7 +178,7 @@ fun parseWideColorGamut(part: String, config: ConfigDescription): Boolean {
         else -> return false
     }
     config.colorMode =
-      maskAndApply(config.colorMode, ResTableConfig.COLOR_MODE.WIDE_GAMUT_MASK, value)
+      maskAndApply(config.colorMode, COLOR_MODE.WIDE_GAMUT_MASK, value)
     return true
 }
 
@@ -167,7 +189,7 @@ fun parseHdr(part: String, config: ConfigDescription): Boolean {
         "lowdr" -> ResTableConfig.COLOR_MODE.HDR_NO
         else -> return false
     }
-    config.colorMode = maskAndApply(config.colorMode, ResTableConfig.COLOR_MODE.HDR_MASK, value)
+    config.colorMode = maskAndApply(config.colorMode, COLOR_MODE.HDR_MASK, value)
     return true
 }
 
@@ -193,7 +215,7 @@ fun parseUiModeType(part: String, config: ConfigDescription): Boolean {
         "vrheadset" -> ResTableConfig.UI_MODE.TYPE_VR_HEADSET
         else -> return false
     }
-    config.uiMode = maskAndApply(config.uiMode, ResTableConfig.UI_MODE.TYPE_MASK, value)
+    config.uiMode = maskAndApply(config.uiMode, UI_MODE.TYPE_MASK, value)
     return true
 }
 
@@ -204,7 +226,7 @@ fun parseUiModeNight(part: String, config: ConfigDescription): Boolean {
         "notnight" -> ResTableConfig.UI_MODE.NIGHT_NO
         else -> return false
     }
-    config.uiMode = maskAndApply(config.uiMode, ResTableConfig.UI_MODE.NIGHT_MASK, value)
+    config.uiMode = maskAndApply(config.uiMode, UI_MODE.NIGHT_MASK, value)
     return true
 }
 
@@ -255,7 +277,7 @@ fun parseKeysHidden(part: String, config: ConfigDescription): Boolean {
         else -> return false
     }
     config.inputFlags =
-      maskAndApply(config.inputFlags, ResTableConfig.INPUT_FLAGS.KEYSHIDDEN_MASK, value)
+      maskAndApply(config.inputFlags, INPUT_FLAGS.KEYSHIDDEN_MASK, value)
     return true
 }
 
@@ -278,7 +300,7 @@ fun parseNavHidden(part: String, config: ConfigDescription): Boolean {
         else -> return false
     }
     config.inputFlags =
-      maskAndApply(config.inputFlags, ResTableConfig.INPUT_FLAGS.NAVHIDDEN_MASK, value)
+      maskAndApply(config.inputFlags, INPUT_FLAGS.NAVHIDDEN_MASK, value)
     return true
 }
 

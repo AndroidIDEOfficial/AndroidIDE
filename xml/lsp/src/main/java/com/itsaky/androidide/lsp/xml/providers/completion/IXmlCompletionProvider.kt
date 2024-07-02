@@ -17,9 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
-import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.api.describeSnippet
@@ -41,6 +39,7 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.xml.res.IResourceTable
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory
  * @author Akash Yadav
  */
 abstract class IXmlCompletionProvider(private val provider: ICompletionProvider) {
-  
+
   protected lateinit var nodeAtCursor: DOMNode
   protected lateinit var attrAtCursor: DOMAttr
   protected lateinit var allNamespaces: Set<Pair<String, String>>
@@ -62,7 +61,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   companion object {
     @JvmStatic
     protected val log: Logger = LoggerFactory.getLogger(IXmlCompletionProvider::class.java)
-    
+
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
@@ -163,7 +162,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
    * @param matchLevel The match level.
    */
   protected open fun createAttrCompletionItem(
-    attr: Reference,
+    attr: com.android.aaptcompiler.Reference,
     partial: String,
     resPkg: String,
     nsPrefix: String,
@@ -252,7 +251,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     }
   }
 
-  protected open fun findResourceTables(nsUri: String?): Set<ResourceTable> {
+  protected open fun findResourceTables(nsUri: String?): Set<IResourceTable> {
     if (nsUri.isNullOrBlank()) {
       return emptySet()
     }
@@ -287,11 +286,11 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     return setOf(table)
   }
 
-  protected open fun findAllModuleResourceTables(): Set<ResourceTable> {
+  protected open fun findAllModuleResourceTables(): Set<IResourceTable> {
     val lookup = Lookup.getDefault()
     val sourceResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_MODULE_RES) ?: emptySet()
     val depResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_DEP_RES) ?: emptySet()
-    return mutableSetOf<ResourceTable>().also {
+    return mutableSetOf<IResourceTable>().also {
       it.addAll(sourceResTables)
       it.addAll(depResTables)
     }

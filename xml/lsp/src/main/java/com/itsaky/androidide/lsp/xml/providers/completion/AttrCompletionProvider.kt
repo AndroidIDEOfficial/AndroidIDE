@@ -19,10 +19,7 @@ package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ConfigDescription
-import com.android.aaptcompiler.Reference
-import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTablePackage
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
@@ -32,6 +29,8 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
+import com.itsaky.androidide.xml.res.IResourceGroup
+import com.itsaky.androidide.xml.res.IResourceTablePackage
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.eclipse.lemminx.dom.DOMDocument
@@ -108,7 +107,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     }
 
     val pck = namespace.substringAfter(NAMESPACE_PREFIX)
-    val packages = mutableSetOf<ResourceTablePackage>()
+    val packages = mutableSetOf<IResourceTablePackage>()
     for (table in tables) {
       if (namespace == NAMESPACE_AUTO) {
         packages.addAll(table.packages.filter { it.name.isNotBlank() })
@@ -124,7 +123,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun addFromPackage(
-    tablePackage: ResourceTablePackage?,
+    tablePackage: IResourceTablePackage?,
     node: DOMNode,
     pck: String,
     nsPrefix: String,
@@ -173,11 +172,11 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  protected open fun hasAttr(prefix: String, ref: Reference): Boolean {
+  protected open fun hasAttr(prefix: String, ref: com.android.aaptcompiler.Reference): Boolean {
     return this.nodeAtCursor.hasAttribute("${prefix}:${ref.name.entry}")
   }
 
-  protected open fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
+  protected open fun findNodeStyleables(node: DOMNode, styleables: IResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
     val widgets = Lookup.getDefault().lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
 
@@ -205,7 +204,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun findStyleablesForName(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     node: DOMNode,
     addFromParent: Boolean = false,
     suffix: String = ""
@@ -237,7 +236,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun findLayoutParams(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     parentNode: DOMNode
   ): Set<Styleable> {
     val result = mutableSetOf<Styleable>()
@@ -257,7 +256,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun findStyleablesForWidget(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     widgets: WidgetTable,
     widget: Widget,
     node: DOMNode,
@@ -302,7 +301,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun addWidgetStyleable(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     widget: Widget,
     result: MutableSet<Styleable>,
     suffix: String = ""
@@ -311,7 +310,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun addWidgetStyleable(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     widget: String,
     result: MutableSet<Styleable>,
     suffix: String = ""
@@ -323,7 +322,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   }
 
   protected open fun addSuperclassStyleables(
-    styleables: ResourceGroup,
+    styleables: IResourceGroup,
     widgets: WidgetTable,
     widget: Widget,
     result: MutableSet<Styleable>,
@@ -340,7 +339,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  protected open fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
+  protected open fun findStyleableEntry(styleables: IResourceGroup, name: String): Styleable? {
     val value = styleables.findEntry(name)?.findValue(ConfigDescription())?.value
     if (value !is Styleable) {
       log.warn("Cannot find styleable for {}", name)

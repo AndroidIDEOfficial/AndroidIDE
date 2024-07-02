@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +32,8 @@
  */
 
 package com.android.aaptcompiler
+
+import com.android.aaptcompiler.AaptResourceType.RAW
 
 data class ResourceFile(
   val name: ResourceName,
@@ -42,7 +61,7 @@ data class ResourceFile(
 
 data class ResourceName(
   val pck: String?,
-  val type: AaptResourceType = AaptResourceType.RAW,
+  val type: AaptResourceType = RAW,
   val entry: String? = null): Comparable<ResourceName> {
 
   override fun compareTo(other: ResourceName): Int {
@@ -75,7 +94,7 @@ data class ResourceName(
     }
 
   companion object {
-    val EMPTY = ResourceName("", AaptResourceType.RAW, "")
+    val EMPTY = ResourceName("", RAW, "")
   }
 }
 

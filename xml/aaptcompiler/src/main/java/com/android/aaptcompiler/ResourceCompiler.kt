@@ -17,6 +17,8 @@
 
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
+import com.android.aaptcompiler.ResourceFile.Type.Unknown
 import com.android.aaptcompiler.proto.serializeTableToPb
 import com.itsaky.androidide.layoutlib.resources.ResourceType
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
@@ -106,11 +108,12 @@ fun canCompileResourceInJvm(file: File, requirePngCrunching: Boolean): Boolean {
  * See [canCompileResourceInJvm] to see what is supported.
  */
 fun compileResource(
-  file: File, outputDirectory: File, options: ResourceCompilerOptions, logger: BlameLogger) {
+  file: File, outputDirectory: File, options: ResourceCompilerOptions, logger: BlameLogger
+) {
 
   // Skip hidden files.
   if (file.isHidden) {
-    logger?.warning("Omitting file ${file.absolutePath} because it is hidden.")
+    logger.warning("Omitting file ${file.absolutePath} because it is hidden.")
     return
   }
 
@@ -122,7 +125,7 @@ fun compileResource(
   try {
     compileFunction(pathData, outputDirectory, options, logger)
   } catch (e: Exception) {
-    logger?.info("Failed to compile file", blameSource(pathData.source))
+    logger.info("Failed to compile file", blameSource(pathData.source))
       val message =
           "Resource compilation failed (${e.message}. Cause: ${e.cause}). " +
                   "Check logs for more details."
@@ -141,7 +144,7 @@ private fun getCompileMethod(pathData: ResourcePathData, logger: BlameLogger):
     if (type == null) {
       val errorMsg = "Invalid resource type '${pathData.resourceDirectory}'" +
         " for file ${pathData.file.absolutePath}"
-      logger?.warning(errorMsg)
+      logger.warning(errorMsg)
       error(errorMsg)
     }
     if (type != ResourceType.RAW) {
@@ -167,12 +170,13 @@ private fun getCompileMethod(pathData: ResourcePathData, logger: BlameLogger):
  * @throws IllegalStateException A failure occurred in processing this resource.
  */
 private fun compileTable(
-    pathData: ResourcePathData,
-    outputDirectory: File,
-    options: ResourceCompilerOptions,
-    logger: BlameLogger) {
+  pathData: ResourcePathData,
+  outputDirectory: File,
+  options: ResourceCompilerOptions,
+  logger: BlameLogger
+) {
   val outputFile = File(outputDirectory, pathData.getIntermediateContainerFilename())
-  logger?.info("Compiling XML table ${pathData.file.absolutePath} to $outputFile")
+  logger.info("Compiling XML table ${pathData.file.absolutePath} to $outputFile")
 
   val table = ResourceTable(logger = logger)
 
@@ -220,17 +224,17 @@ private fun compileTable(
           if (group.type != AaptResourceType.MACRO) {
               val javaType = if (group.type == AaptResourceType.STYLEABLE) "int[]" else "int"
               group.entries.forEach { entry ->
-                  val visibility = getVisibility(entry.value.values, group.type)
-                  builder.appendln("${visibility.getName()} $javaType ${group.type.tagName} ${entry.key}")
-                  if (group.type == AaptResourceType.STYLEABLE) {
-                      // We also need to write down styleable children (entries)
-                      group.getStyleable(entry).entries.forEach {
-                          val childPackage =
-                                  if (!it.name.pck.isNullOrEmpty()) "_${it.name.pck}" else ""
-                          // styleables and their children are always public
-                          builder.appendln("public int styleable ${entry.key}${childPackage}_${it.name.entry}")
-                      }
+                val visibility = getVisibility(entry.value.values, group.type)
+                builder.appendLine("${visibility.getName()} $javaType ${group.type.tagName} ${entry.key}")
+                if (group.type == AaptResourceType.STYLEABLE) {
+                  // We also need to write down styleable children (entries)
+                  group.getStyleable(entry).entries.forEach {
+                    val childPackage =
+                      if (!it.name.pck.isNullOrEmpty()) "_${it.name.pck}" else ""
+                    // styleables and their children are always public
+                    builder.appendLine("public int styleable ${entry.key}${childPackage}_${it.name.entry}")
                   }
+                }
               }
           }
         }
@@ -264,10 +268,10 @@ private fun getVisibility(values: Collection<ResourceEntry>, type: AaptResourceT
  * @param outputDirectory the directory to which the compiled file is to be placed.
  */
 private fun compileFile(
-    pathData: ResourcePathData,
-    outputDirectory: File,
-    options: ResourceCompilerOptions,
-    logger: BlameLogger?) {
+  pathData: ResourcePathData,
+  outputDirectory: File,
+  options: ResourceCompilerOptions,
+  logger: BlameLogger?) {
   val outputFile = File(outputDirectory, pathData.getIntermediateContainerFilename())
   logger?.info("Compiling file ${pathData.file.absolutePath} to $outputFile")
   pathData.file.inputStream().use {
@@ -275,7 +279,7 @@ private fun compileFile(
       ResourceName("", resourceTypeFromTag(pathData.resourceDirectory)!!, pathData.name),
       pathData.config,
       pathData.source,
-      ResourceFile.Type.Unknown
+      Unknown
     )
 
     val container = Container(outputFile.outputStream(), 1)
@@ -306,10 +310,10 @@ private fun compileFile(
  * @throws IllegalStateException A failure occurred in processing this resource.
  */
 private fun compileXml(
-    pathData: ResourcePathData,
-    outputDirectory: File,
-    options: ResourceCompilerOptions,
-    logger: BlameLogger?) {
+  pathData: ResourcePathData,
+  outputDirectory: File,
+  options: ResourceCompilerOptions,
+  logger: BlameLogger?) {
   val outputFile = File(outputDirectory, pathData.getIntermediateContainerFilename())
   logger?.info("Compiling xml file ${pathData.file.absolutePath} to $outputFile")
 
@@ -317,7 +321,7 @@ private fun compileXml(
     ResourceName("", pathData.type!!, pathData.name),
     pathData.config,
     pathData.source,
-    ResourceFile.Type.ProtoXml
+    ProtoXml
   )
 
   pathData.file.inputStream().use {
@@ -341,9 +345,9 @@ private fun compileXml(
 
     if (options.partialRFile != null) {
       val builder = StringBuilder()
-      builder.appendln("default int ${pathData.type.tagName} ${pathData.name}")
+      builder.appendLine("default int ${pathData.type!!.tagName} ${pathData.name}")
       fileToProcess.exportedSymbols.forEach { id ->
-        builder.appendln("default int id ${id.name.entry}")
+        builder.appendLine("default int id ${id.name.entry}")
       }
       FileUtils.writeToFile(options.partialRFile, builder.toString())
     }
@@ -367,10 +371,10 @@ private fun compileXml(
  * @param outputDirectory the directory in which the processed file will be placed.
  */
 private fun compilePng(
-    pathData: ResourcePathData,
-    outputDirectory: File,
-    options: ResourceCompilerOptions,
-    logger: BlameLogger?) {
+  pathData: ResourcePathData,
+  outputDirectory: File,
+  options: ResourceCompilerOptions,
+  logger: BlameLogger?) {
   logger?.info("Compiling image file ${pathData.file.absolutePath}")
   if (pathData.extension == PATCH_9_EXTENSION) {
     error("Patch 9 PNG processing is not supported with the JVM Android resource compiler.")

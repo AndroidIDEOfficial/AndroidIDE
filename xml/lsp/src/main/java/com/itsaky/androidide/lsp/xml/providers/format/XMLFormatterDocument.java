@@ -33,8 +33,7 @@ import com.itsaky.androidide.lsp.xml.utils.XMLBuilder;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferences;
-import java.util.ArrayList;
-import java.util.List;
+
 import org.eclipse.lemminx.commons.BadLocationException;
 import org.eclipse.lemminx.commons.TextDocument;
 import org.eclipse.lemminx.dom.DOMAttr;
@@ -51,6 +50,9 @@ import org.eclipse.lemminx.dom.DTDAttlistDecl;
 import org.eclipse.lemminx.dom.DTDDeclNode;
 import org.eclipse.lemminx.dom.DTDDeclParameter;
 import org.eclipse.lemminx.dom.builder.EmptyElements;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default XML formatter which generates one text edit by rewriting the DOM node which must be

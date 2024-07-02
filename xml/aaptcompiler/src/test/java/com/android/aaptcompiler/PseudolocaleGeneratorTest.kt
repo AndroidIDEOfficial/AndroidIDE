@@ -32,7 +32,8 @@ class PseudolocaleGeneratorTest {
     val spans = listOf(
       Span("i", 1, 10),
       Span("b", 2, 3),
-      Span("b", 6, 7))
+      Span("b", 6, 7)
+    )
     val original = StyledString(pool.makeRef(StyleString("Hello world!", spans)), listOf())
 
     val newString1 = pseudolocalizeStyledString(original, Pseudolocalizer.Method.NONE, pool)
@@ -124,7 +125,8 @@ class PseudolocaleGeneratorTest {
       Span("b", 16, 19),
       Span("em", 29, 47),
       Span("i", 38, 40),
-      Span("b", 44, 47))
+      Span("b", 44, 47)
+    )
     val originalText = "This sentence is not what you think it is at all."
     val original = StyledString(pool.makeRef(StyleString(originalText, originalSpans)), listOf())
 

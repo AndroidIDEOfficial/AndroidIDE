@@ -29,8 +29,10 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-import java.util.List;
+
 import org.eclipse.lemminx.dom.DOMText;
+
+import java.util.List;
 
 /**
  * DOM text formatter.

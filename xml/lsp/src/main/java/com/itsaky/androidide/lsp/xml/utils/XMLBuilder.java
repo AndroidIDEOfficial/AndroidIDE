@@ -28,6 +28,7 @@
 package com.itsaky.androidide.lsp.xml.utils;
 
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
+
 import org.eclipse.lemminx.dom.builder.BaseXmlFormattingOptions;
 import org.eclipse.lemminx.dom.builder.XmlBuilder;
 

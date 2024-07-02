@@ -18,10 +18,7 @@
 package com.itsaky.androidide.inflater.utils
 
 import com.android.aaptcompiler.AaptResourceType
-import com.android.aaptcompiler.BlameLogger
-import com.android.aaptcompiler.ResourceFile
 import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
-import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.XmlProcessor
 import com.android.aaptcompiler.extractPathData
 import com.itsaky.androidide.aapt.logging.IDELogger
@@ -86,7 +83,7 @@ fun newAttribute(
  * @return The pair of [XmlProcessor] (processed) instance and the [AndroidModule] instance for the
  *   given file.
  */
-fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcessor, AndroidModule> {
+fun processXmlFile(file: File, expectedType: com.android.aaptcompiler.AaptResourceType): Pair<XmlProcessor, AndroidModule> {
   val pathData = extractPathData(file)
   if (pathData.type != expectedType) {
     throw InflateException("File is not a layout file.")
@@ -100,14 +97,14 @@ fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcesso
     IProjectManager.getInstance().getWorkspace()?.findModuleForFile(file, false) as? AndroidModule
       ?: throw InflateException("Cannot find module for given file. Is the project initialized?")
   val resFile =
-    ResourceFile(
-      ResourceName(module.namespace, pathData.type!!, pathData.name),
+    com.android.aaptcompiler.ResourceFile(
+      com.android.aaptcompiler.ResourceName(module.namespace, pathData.type!!, pathData.name),
       pathData.config,
       pathData.source,
       ProtoXml
     )
 
-  val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
+  val processor = XmlProcessor(pathData.source, com.android.aaptcompiler.BlameLogger(IDELogger))
   processor.process(resFile, file.inputStream())
   return processor to module
 }

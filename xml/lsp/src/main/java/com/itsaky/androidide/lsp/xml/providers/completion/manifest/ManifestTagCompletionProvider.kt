@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 
 import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ResourcePathData
-import com.itsaky.androidide.aapt.findEntries
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem

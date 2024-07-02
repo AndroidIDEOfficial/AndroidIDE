@@ -25,7 +25,6 @@ import com.android.SdkConstants.TAG_INTENT_FILTER
 import com.android.SdkConstants.TAG_RECEIVER
 import com.android.SdkConstants.TAG_SERVICE
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.ClassCompletionData
@@ -41,9 +40,10 @@ import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionPro
 import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.projects.ModuleProject
+import com.itsaky.androidide.projects.android.AndroidModule
 import com.itsaky.androidide.xml.permissions.Permission
+import com.itsaky.androidide.xml.res.IResourceTable
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMDocument
 
@@ -74,7 +74,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
     return super.doComplete(params, pathData, document, type, prefix)
   }
 
-  override fun resTableForFindAttr(): ResourceTable? {
+  override fun resTableForFindAttr(): IResourceTable? {
     return manifestResourceTable().firstOrNull()
   }
 
@@ -190,7 +190,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       ?: throw IllegalStateException("No module project provided")
   }
 
-  override fun findResourceTables(nsUri: String?): Set<ResourceTable> {
+  override fun findResourceTables(nsUri: String?): Set<IResourceTable> {
     val tables = manifestResourceTable().toMutableSet()
     if (nsUri.isNullOrBlank()) {
       return tables

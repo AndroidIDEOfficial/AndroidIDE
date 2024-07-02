@@ -1,4 +1,21 @@
 /*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +33,8 @@
 
 package com.android.aaptcompiler
 
-import com.itsaky.androidide.layoutlib.resources.ResourceType
 import java.io.File
+import java.util.Locale
 
 /**
  * Class for keeping track of Resource File of any kind.
@@ -60,17 +77,19 @@ fun extractPathData(file: File, sourcePath: String = file.absolutePath) : Resour
     else file.name
   val source = Source(sourcePath)
   // TODO(b/142481190): think about obfuscation
-  val parentName = file.parentFile.name
+  val parentName = file.parentFile!!.name
   val type = parentName.substringBefore("-")
   val config = if (type != parentName) {
-    file.parentFile.name.substringAfter(type).substring(1)
+    file.parentFile!!.name.substringAfter(type).substring(1)
   } else {
     ""
   }
+
   val configDescription = parse(config)
 
   return ResourcePathData(
-    source, extension.toLowerCase(), resName, type, config, file, configDescription)
+    source, extension.lowercase(Locale.getDefault()), resName, type, config, file, configDescription
+  )
 }
 
 /**

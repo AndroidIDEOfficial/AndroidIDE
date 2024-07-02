@@ -24,17 +24,15 @@ plugins {
     id("kotlin-kapt")
 }
 
-
-
 android {
-    namespace = "${BuildConfig.packageName}.xml"
+    namespace = "${BuildConfig.packageName}.xml.utils"
 }
 
 dependencies {
     kapt(libs.google.auto.service)
 
     api(projects.utilities.lookup)
-    api(projects.xml.aaptcompiler)
+    api(projects.xml.resourcesApi)
 
     implementation(libs.common.kotlin)
     implementation(libs.composite.jdt)
@@ -43,6 +41,7 @@ dependencies {
 
     implementation(projects.core.common)
     implementation(projects.logging.logger)
+    implementation(projects.xml.aaptcompiler)
     
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.robolectric)

@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
-import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.xml.res.IResourceTable
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMNode
 import kotlin.math.min
@@ -36,22 +36,21 @@ fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel
   return MatchLevel.values()[min(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
 }
 
-fun platformResourceTable(): ResourceTable? {
+fun platformResourceTable(): IResourceTable? {
   return Lookup.getDefault().lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
 }
 
 fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
   val namespaces = mutableSetOf<Pair<String, String>>()
   var curr: DOMNode? = node
-  
+
   while (curr != null && !curr.isOwnerDocument) {
-    
-    @Suppress("SENSELESS_COMPARISON") // attributes might be null. Ignore warning
+
     if (curr.attributes == null) {
       curr = curr.parentNode
       continue
     }
-    
+
     for (i in 0 until curr.attributes.length) {
       val currAttr = curr.getAttributeAtIndex(i)
       if (currAttr.isXmlns) {

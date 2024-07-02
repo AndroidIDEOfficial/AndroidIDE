@@ -18,10 +18,10 @@
 package com.itsaky.androidide.xml.resources
 
 import com.android.aaptcompiler.ResourceGroup
-import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
+import com.itsaky.androidide.xml.res.IResourceTable
 import java.io.File
 
 /**
@@ -29,26 +29,31 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
+interface ResourceTableRegistry : XmlRegistry<IResourceTable> {
 
   companion object {
 
     const val PCK_ANDROID = "android"
+
     @JvmStatic
-    val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
+    val COMPLETION_MODULE_RES = Lookup.Key<Set<IResourceTable>>()
+
     @JvmStatic
-    val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
+    val COMPLETION_DEP_RES = Lookup.Key<Set<IResourceTable>>()
+
     @JvmStatic
-    val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
+    val COMPLETION_FRAMEWORK_RES = Lookup.Key<IResourceTable>()
+
     @JvmStatic
-    val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
+    val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<IResourceTable>()
 
     private var sInstance: ResourceTableRegistry? = null
 
     @JvmStatic
     fun getInstance(): ResourceTableRegistry {
       val klass = ResourceTableRegistry::class.java
-      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow().also { sInstance = it }
+      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
+        .also { sInstance = it }
     }
   }
 
@@ -57,7 +62,7 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    *
    * @param name The package name for the resource table.
    */
-  fun forPackage(name: String, vararg resDirs: File): ResourceTable?
+  fun forPackage(name: String, vararg resDirs: File): IResourceTable?
 
   /**
    * Remove the resource table entry for the given package name.
@@ -71,7 +76,7 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    *
    * @return The [ResourceGroup] or null if not found or not available.
    */
-  fun getManifestAttrTable(platform: File): ResourceTable?
+  fun getManifestAttrTable(platform: File): IResourceTable?
 
   /** Get the list of all activity actions for the given [platform] directory. */
   fun getActivityActions(platform: File): List<String>
@@ -88,7 +93,7 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
   /** Get the list of all features for the given [platform] directory. */
   fun getFeatures(platform: File): List<String>
 
-  override fun forPlatformDir(platform: File): ResourceTable? {
+  override fun forPlatformDir(platform: File): IResourceTable? {
     return forPackage(PCK_ANDROID, File(platform, "data/res"))
   }
 }

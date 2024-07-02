@@ -21,21 +21,21 @@ import com.android.SdkConstants
 import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
-import com.android.aaptcompiler.ResourceEntry
-import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceName
-import com.android.aaptcompiler.ResourceTable
-import com.android.aaptcompiler.ResourceTablePackage
 import com.itsaky.androidide.inflater.utils.module
+import com.itsaky.androidide.xml.res.IResourceEntry
+import com.itsaky.androidide.xml.res.IResourceGroup
+import com.itsaky.androidide.xml.res.IResourceTable
+import com.itsaky.androidide.xml.res.IResourceTablePackage
 import org.slf4j.LoggerFactory
 
 private val log = LoggerFactory.getLogger("ParseLookupUtils")
 
 internal data class LookupResult(
-  val table: ResourceTable,
-  val group: ResourceGroup,
-  val pack: ResourceTablePackage,
-  val entry: ResourceEntry
+  val table: IResourceTable,
+  val group: IResourceGroup,
+  val pack: IResourceTablePackage,
+  val entry: IResourceEntry
 )
 
 internal fun lookupUnqualifedResource(
@@ -57,10 +57,10 @@ internal fun lookupUnqualifedResource(
 }
 
 internal fun findUnqualifiedResourceEntry(type: AaptResourceType, name: String): LookupResult? {
-  var resTable: ResourceTable? = null
-  var resGrp: ResourceGroup? = null
-  var resPck: ResourceTablePackage? = null
-  var resEntry: ResourceEntry? = null
+  var resTable: IResourceTable? = null
+  var resGrp: IResourceGroup? = null
+  var resPck: IResourceTablePackage? = null
+  var resEntry: IResourceEntry? = null
   for (t in module.getAllResourceTables()) {
     val entries =
       t.packages.mapNotNull {
@@ -93,7 +93,7 @@ internal fun findQualifedResourceEntry(
   pack: String,
   type: AaptResourceType,
   name: String
-): ResourceEntry? {
+): IResourceEntry? {
   return module
     .findResourceTableForPackage(pack, type)
     ?.findResource(ResourceName(pack, type, name))

@@ -22,10 +22,7 @@ import com.itsaky.androidide.build.config.BuildConfig
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.google.protobuf")
 }
-
-
 
 android {
     namespace = "${BuildConfig.packageName}.aaptcompiler"
@@ -37,22 +34,6 @@ android {
     }
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:4.27.0"
-    }
-
-    generateProtoTasks {
-        all().forEach {
-            it.builtins {
-                id("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(libs.common.kotlin)
     implementation(libs.androidx.collection)
@@ -60,6 +41,8 @@ dependencies {
 
     implementation(projects.logging.logger)
     implementation(projects.utilities.shared)
+
+    api(projects.xml.resourcesApi)
 
     api(libs.aapt2.annotations)
     api(libs.aapt2.common)

@@ -1,5 +1,6 @@
 package com.android.aaptcompiler
 
+import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
 import java.io.InputStream
 import java.lang.RuntimeException
 import jaxp.xml.namespace.QName
@@ -389,7 +390,7 @@ class XmlProcessor(val source: Source, val logger: BlameLogger?) {
 
         // Now to add the new attribute to the parent xml element.
         parentBuilder.addAttribute(
-            nameValue.entry,
+            nameValue.entry!!,
             attrUri,
             "@${resource.name}",
             attrElement.location.lineNumber,
@@ -529,7 +530,7 @@ class XmlProcessor(val source: Source, val logger: BlameLogger?) {
             primaryFile.name.copy(entry = newEntryName),
             primaryFile.configuration,
             primaryFile.source.withLine(element.location.lineNumber),
-            ResourceFile.Type.ProtoXml
+            ProtoXml
         )
     }
 }
