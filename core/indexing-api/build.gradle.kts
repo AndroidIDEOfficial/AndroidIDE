@@ -22,10 +22,7 @@ plugins {
   id("com.android.library")
   id("kotlin-android")
   id("kotlin-kapt")
-  id("realm-android")
 }
-
-
 
 android {
   namespace = "${BuildConfig.packageName}.indexing.api"
@@ -36,7 +33,6 @@ dependencies {
   implementation(libs.google.auto.service.annotations)
 
   api(projects.core.common)
-  api(projects.core.database)
   api(projects.core.projects)
   api(projects.logging.logger)
   api(projects.utilities.shared)

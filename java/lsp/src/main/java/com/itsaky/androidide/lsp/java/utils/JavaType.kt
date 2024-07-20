@@ -15,38 +15,17 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.indexing.classfile
-
-import com.google.common.base.Objects
-import com.itsaky.androidide.lsp.java.indexing.ISharedJavaIndexable
-import com.itsaky.androidide.models.ICloneable
-import io.realm.annotations.Index
-import io.realm.annotations.PrimaryKey
-import io.realm.annotations.RealmClass
-import io.realm.annotations.RealmField
-import io.realm.annotations.Required
+package com.itsaky.androidide.lsp.java.utils
 
 /**
  * @author Akash Yadav
  */
+open class JavaType {
 
-@RealmClass
-open class JavaType : ISharedJavaIndexable, ICloneable {
-
-  @Required
-  @PrimaryKey
-  @RealmField("id")
-  override var id: Int? = null
-
-  @Index
-  @Required
-  @RealmField("name")
   var name: String? = null
 
-  @RealmField("kind")
   var kind: Int = KIND_UNKNOWN
 
-  @RealmField("arrayDims")
   var arrayDims: Int = 0
 
   /**
@@ -76,14 +55,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
    */
   fun isPrimitive(): Boolean {
     return when (kind) {
-      KIND_BOOLEAN,
-      KIND_BYTE,
-      KIND_CHAR,
-      KIND_DOUBLE,
-      KIND_FLOAT,
-      KIND_INT,
-      KIND_LONG,
-      KIND_SHORT -> true
+      KIND_BOOLEAN, KIND_BYTE, KIND_CHAR, KIND_DOUBLE, KIND_FLOAT, KIND_INT, KIND_LONG, KIND_SHORT -> true
 
       else -> false
     }
@@ -117,14 +89,6 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     return name == CLASS.name
   }
 
-  override fun clone(): JavaType {
-    return newInstance(name = name, kind = kind, arrayDims = arrayDims)
-  }
-
-  override fun computeId() {
-    this.id = Objects.hashCode(this.kind, this.name, this.arrayDims)
-  }
-
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is JavaType) return false
@@ -144,7 +108,7 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
   }
 
   override fun toString(): String {
-    return "JavaType(id=$id, name=$name, kind=$kind, arrayDims=$arrayDims)"
+    return "JavaType(name=$name, kind=$kind, arrayDims=$arrayDims)"
   }
 
   companion object {
@@ -159,14 +123,6 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
     const val KIND_SHORT = 7
     const val KIND_VOID = 8
     const val KIND_REF = 9
-
-    // kind values used in IAnnotationElementValue
-    // defined here for convenience
-    internal const val __KIND_STRING = 10
-    internal const val __KIND_CLASS = 11
-    internal const val __KIND_ENUM = 12
-    internal const val __KIND_ANNOTATION = 13
-    internal const val __KIND_ARRAY = 14
 
     const val TYPE_BOOLEAN = 'Z'
     const val TYPE_BYTE = 'B'
@@ -264,7 +220,6 @@ open class JavaType : ISharedJavaIndexable, ICloneable {
         this.name = name
         this.kind = kind
         this.arrayDims = arrayDims
-        this.computeId()
       }
     }
 

@@ -42,11 +42,6 @@ configurations.api {
 
 dependencies {
 
-  // compileOnly so that we can provide the APIs for the related test rules
-  // if a module needs to use those APIs, it needs to explicitly add the database module as a
-  // dependency
-  compileOnly(projects.core.database)
-
   api(libs.google.protobuf)
   api(libs.tests.androidx.espresso.core)
   api(libs.tests.androidx.espresso.contrib)

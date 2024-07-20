@@ -116,6 +116,7 @@
       <module name="AndroidIDE.colorschemes" target="11" />
       <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.common" target="17" />
+      <module name="AndroidIDE.core.database" target="17" />
       <module name="AndroidIDE.core.di" target="17" />
       <module name="AndroidIDE.core.indexing" target="17" />
       <module name="AndroidIDE.editor-api" target="17" />
@@ -272,6 +273,7 @@
       <module name="AndroidIDE.uidesigner" target="17" />
       <module name="AndroidIDE.xml-inflater" target="17" />
       <module name="AndroidIDE.xml.resources-api.test" target="11" />
+      <module name="AndroidIDE.xml.resources-indexing" target="17" />
       <module name="ATS.android-tree-sitter" target="17" />
       <module name="ATS.app" target="17" />
       <module name="ATS.tree-sitter-aidl" target="17" />

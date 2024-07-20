@@ -25,7 +25,7 @@ import com.itsaky.androidide.lsp.java.indexing.classfile.ClassAnnotationElementV
 import com.itsaky.androidide.lsp.java.indexing.classfile.EnumAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.IAnnotationElementValue
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaConstant
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.utils.JavaType
 import com.itsaky.androidide.lsp.java.indexing.classfile.PrimitiveAnnotationElementValue
 import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
 import io.realm.RealmAny

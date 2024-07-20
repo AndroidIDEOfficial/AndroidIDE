@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java.indexing
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaClass
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaField
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaMethod
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.utils.JavaType
 import io.realm.RealmList
 import openjdk.tools.classfile.AccessFlags
 

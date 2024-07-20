@@ -126,7 +126,6 @@ include(
   ":core:actions",
   ":core:app",
   ":core:common",
-  ":core:database",
   ":core:indexing-api",
   ":core:indexing-core",
   ":core:lsp-api",

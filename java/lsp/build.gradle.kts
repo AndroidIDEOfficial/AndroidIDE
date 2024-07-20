@@ -22,10 +22,7 @@ plugins {
   id("com.android.library")
   id("kotlin-android")
   id("kotlin-kapt")
-  id("realm-android")
 }
-
-
 
 android {
   namespace = "${BuildConfig.packageName}.lsp.java"

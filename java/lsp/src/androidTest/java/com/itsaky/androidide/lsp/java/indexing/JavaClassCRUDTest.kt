@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java.indexing
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.indexing.classfile.JavaClass
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.utils.JavaType
 import com.itsaky.androidide.testing.android.rules.RealmDBTestRule
 import io.realm.RealmList
 import io.realm.RealmObject

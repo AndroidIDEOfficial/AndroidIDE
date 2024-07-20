@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.indexing
 
-import com.itsaky.androidide.db.IRealmProvider
-
 /**
  * An index of symbols of type [IndexableT].
  *
@@ -27,6 +25,8 @@ import com.itsaky.androidide.db.IRealmProvider
 interface IIndex<IndexableT : IIndexable> {
 
   companion object {
+
+    const val PATH_SEPARATOR = '/'
 
     /**
      * The default batch size for indexing.
@@ -44,7 +44,7 @@ interface IIndex<IndexableT : IIndexable> {
      * Create an index path.
      */
     fun createIndexPath(parentPath: String, name: String): String =
-      "${parentPath}${IRealmProvider.PATH_SEPARATOR}${name}"
+      "${parentPath}${PATH_SEPARATOR}${name}"
   }
 
   /**

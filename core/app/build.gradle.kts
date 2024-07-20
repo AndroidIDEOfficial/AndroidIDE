@@ -28,7 +28,6 @@ plugins {
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
-  id("realm-android")
   id("androidx.navigation.safeargs.kotlin")
   id("com.itsaky.androidide.desugaring")
 }

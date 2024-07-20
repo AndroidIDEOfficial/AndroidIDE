@@ -161,8 +161,6 @@ tooling-builderModel = { module = "com.android.tools.build:builder-model", versi
 tooling-gradleApi = { module = "com.itsaky.androidide.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
 tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.12" }
 
-realm-gradle-plugin = { module = "io.realm:realm-gradle-plugin", version.ref = "realm" }
-
 # Classpaths
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

@@ -58,7 +58,6 @@ import com.itsaky.androidide.utils.flashError
 import com.termux.app.TermuxApplication
 import com.termux.shared.reflection.ReflectionUtils
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import io.realm.Realm
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -109,8 +108,6 @@ class IDEApplication : TermuxApplication() {
       .installDefaultEventBus(true)
 
     EventBus.getDefault().register(this)
-
-    Realm.init(this)
 
     AppCompatDelegate.setDefaultNightMode(GeneralPreferences.uiMode)
 

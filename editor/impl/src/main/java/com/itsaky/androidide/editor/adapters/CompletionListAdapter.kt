@@ -27,7 +27,7 @@ import android.widget.TextView
 import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.lsp.java.indexing.classfile.JavaType
+import com.itsaky.androidide.lsp.java.utils.JavaType
 import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR

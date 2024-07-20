@@ -17,11 +17,9 @@
 
 package com.itsaky.androidide.indexing
 
-import io.realm.RealmModel
-
 /**
  * An indexable object.
  *
  * @author Akash Yadav
  */
-interface IIndexable : RealmModel
+interface IIndexable
