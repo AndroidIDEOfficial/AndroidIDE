@@ -156,7 +156,7 @@ class ResourceTableRegistryTest {
     }
 
     resourceTable!!.findResource(
-      com.android.aaptcompiler.ResourceName(
+      ResourceName(
         pck = "android",
         type = STRING,
         entry = "ok"
@@ -169,7 +169,7 @@ class ResourceTableRegistryTest {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isNotNull()
         this.value.apply {
-          assertThat(this).isInstanceOf(com.android.aaptcompiler.BasicString::class.java)
+          assertThat(this).isInstanceOf(BasicString::class.java)
           assertThat(this.toString()).isEqualTo("OK")
         }
       }
@@ -177,7 +177,7 @@ class ResourceTableRegistryTest {
 
     resourceTable
       .findResource(
-        com.android.aaptcompiler.ResourceName(
+        ResourceName(
           pck = "android",
           type = STRING,
           entry = "cancel"
@@ -191,7 +191,7 @@ class ResourceTableRegistryTest {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isNotNull()
           this.value.apply {
-            assertThat(this).isInstanceOf(com.android.aaptcompiler.BasicString::class.java)
+            assertThat(this).isInstanceOf(BasicString::class.java)
             assertThat(this.toString()).isEqualTo("Cancel")
           }
         }
@@ -199,7 +199,7 @@ class ResourceTableRegistryTest {
 
     resourceTable
       .findResource(
-        com.android.aaptcompiler.ResourceName(
+        ResourceName(
           pck = "android",
           type = COLOR,
           entry = "holo_red_dark"

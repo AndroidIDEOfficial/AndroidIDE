@@ -25,5 +25,6 @@ import com.android.aaptcompiler.ResourceConfigValue
  */
 interface IResourceEntry {
   val name: String
+  val values: Collection<ResourceConfigValue>
   fun findValue(config: ConfigDescription, product: String = ""): ResourceConfigValue?
 }

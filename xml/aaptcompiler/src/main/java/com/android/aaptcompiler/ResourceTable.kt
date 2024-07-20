@@ -775,7 +775,7 @@ class ResourceEntry(override val name: String) : IResourceEntry {
   var allowNew: AllowNew? = null
   var overlayable: OverlayableItem? = null
 
-  val values = mutableListOf<ResourceConfigValue>()
+  override val values = mutableListOf<ResourceConfigValue>()
 
   override fun findValue(config: ConfigDescription, product: String): ResourceConfigValue? {
     return values.find { it.config == config && it.product == product }

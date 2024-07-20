@@ -23,8 +23,6 @@ plugins {
     id("kotlin-kapt")
 }
 
-
-
 dependencies {
     kapt(libs.google.auto.service)
 
