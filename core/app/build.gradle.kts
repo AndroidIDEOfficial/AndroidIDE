@@ -43,8 +43,6 @@ buildscript {
   }
 }
 
-
-
 android {
   namespace = BuildConfig.packageName
 
@@ -107,6 +105,10 @@ dependencies {
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)
   implementation(libs.google.guava)
+
+  // JNA
+  implementation(libs.jna.core)
+  implementation(libs.jna.platform)
 
   // Git
   implementation(libs.git.jgit)

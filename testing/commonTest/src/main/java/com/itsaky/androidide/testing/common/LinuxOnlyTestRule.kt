@@ -15,25 +15,27 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.itsaky.androidide.testing.common
 
-import com.itsaky.androidide.build.config.BuildConfig
+import com.sun.jna.Platform
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
+/**
+ * A [TestRule] which runs the tests only in a Linux environment.
+ *
+ * @author Akash Yadav
+ */
+class LinuxOnlyTestRule : TestRule {
 
-android {
-    namespace = "com.termux.view"
-    ndkVersion = BuildConfig.ndkVersion
-}
+  override fun apply(base: Statement, description: Description?): Statement {
+    if (Platform.isLinux()) {
+      return base
+    }
 
-dependencies {
-    api(projects.termux.emulator)
-
-    implementation(libs.androidx.annotation)
-
-    implementation(projects.core.resources)
-
-    testImplementation(projects.testing.unitTest)
+    return object : Statement() {
+      override fun evaluate() {}
+    }
+  }
 }

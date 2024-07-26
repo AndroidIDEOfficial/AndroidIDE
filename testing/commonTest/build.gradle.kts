@@ -30,7 +30,9 @@ dependencies {
   api(libs.google.auto.service.annotations)
 
   api(libs.tests.junit)
-  api(projects.logging.logger)
+  api(libs.jna.core)
+  api(libs.jna.platform)
 
+  api(projects.logging.logger)
   api(projects.tooling.impl)
 }

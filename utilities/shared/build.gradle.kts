@@ -22,9 +22,17 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
 }
 
-
+tasks.withType<Test> {
+    jvmArgs("--add-opens", "java.base/java.io=ALL-UNNAMED")
+}
 
 dependencies {
+
+    // this is compileOnly in order to allow different variants of the library
+    // in Android and JVM environments.
+    compileOnly(libs.jna.core)
+    compileOnly(libs.jna.platform)
+
     api(libs.androidx.annotation)
     api(libs.androidx.collection)
 
@@ -36,4 +44,8 @@ dependencies {
 
     testImplementation(libs.tests.google.truth)
     testImplementation(libs.tests.junit)
+    testImplementation(libs.jna.core)
+    testImplementation(libs.jna.platform)
+
+    testImplementation(projects.testing.commonTest)
 }

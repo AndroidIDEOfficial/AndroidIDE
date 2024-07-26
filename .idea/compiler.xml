@@ -271,6 +271,7 @@
       <module name="AndroidIDE.treesitter.test" target="1.7" />
       <module name="AndroidIDE.treeview" target="17" />
       <module name="AndroidIDE.uidesigner" target="17" />
+      <module name="AndroidIDE.utilities.level-hash.test" target="11" />
       <module name="AndroidIDE.xml-inflater" target="17" />
       <module name="AndroidIDE.xml.resources-api.test" target="11" />
       <module name="AndroidIDE.xml.resources-indexing" target="17" />

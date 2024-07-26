@@ -18,9 +18,9 @@ retrofit = "2.9.0"
 markwon = "4.6.2"
 maven-publish-plugin = "0.27.0"
 logback = "1.5.3"
-realm = "10.18.0"
 benchmark = "1.2.4"
 benchmark-junit4 = "1.2.4"
+jna = "5.14.0"
 
 [libraries]
 
@@ -160,6 +160,10 @@ tests-barista = { module = "com.adevinta.android:barista", version = "4.3.0" }
 tooling-builderModel = { module = "com.android.tools.build:builder-model", version.ref = "agp-tooling" }
 tooling-gradleApi = { module = "com.itsaky.androidide.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
 tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.12" }
+
+#JNA
+jna-core = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
 
 # Classpaths
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

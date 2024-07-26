@@ -15,25 +15,28 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.itsaky.androidide.levelhash.internal
 
-import com.itsaky.androidide.build.config.BuildConfig
+import com.itsaky.androidide.levelhash.LevelBucket
+import com.itsaky.androidide.levelhash.LevelSlot
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
+/**
+ * @author Akash Yadav
+ */
+internal class InMemoryLevelBucket<K : Any, V : Any?> internal constructor(
+  private val size: Int,
+) : LevelBucket<K, V> {
 
-android {
-    namespace = "com.termux.view"
-    ndkVersion = BuildConfig.ndkVersion
-}
+  private val slots = Array(size) {
+    InMemoryLevelSlot.newInstance<K, V>()
+  }
 
-dependencies {
-    api(projects.termux.emulator)
+  override fun getSlot(index: Int): LevelSlot<K, V> {
+    checkIndex(index)
+    return slots[index]
+  }
 
-    implementation(libs.androidx.annotation)
-
-    implementation(projects.core.resources)
-
-    testImplementation(projects.testing.unitTest)
+  private fun checkIndex(index: Int) {
+    require(index in 0..<size) { "Index must be in [0, $size)" }
+  }
 }

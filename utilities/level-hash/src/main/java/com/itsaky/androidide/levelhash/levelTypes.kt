@@ -15,25 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.itsaky.androidide.levelhash
 
-import com.itsaky.androidide.build.config.BuildConfig
+/**
+ * The result of a hashing operation. This is defined as a 64-bit unsigned long
+ * as the value must always be positive in order to compute the bucket index
+ * correctly.
+ */
+typealias HashT = ULong
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
+/**
+ * A function which computes the hash of a given key.
+ */
+typealias LevelHashFn<K> = (key: K, seed: HashT) -> HashT
 
-android {
-    namespace = "com.termux.view"
-    ndkVersion = BuildConfig.ndkVersion
-}
-
-dependencies {
-    api(projects.termux.emulator)
-
-    implementation(libs.androidx.annotation)
-
-    implementation(projects.core.resources)
-
-    testImplementation(projects.testing.unitTest)
-}
+/**
+ * A function which generates two seed values for the random generator.
+ */
+typealias SeedGeneratorFn = () -> Pair<HashT, HashT>

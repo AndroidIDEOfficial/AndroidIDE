@@ -15,25 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.itsaky.androidide.levelhash
 
-import com.itsaky.androidide.build.config.BuildConfig
+/**
+ * A bucket in [LevelHash].
+ *
+ * @author Akash Yadav
+ */
+interface LevelBucket<K, V> {
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
-
-android {
-    namespace = "com.termux.view"
-    ndkVersion = BuildConfig.ndkVersion
-}
-
-dependencies {
-    api(projects.termux.emulator)
-
-    implementation(libs.androidx.annotation)
-
-    implementation(projects.core.resources)
-
-    testImplementation(projects.testing.unitTest)
+  /**
+   * Get the slot at the given index.
+   *
+   * @param index The index of the slot to retrieve.
+   */
+  fun getSlot(index: Int): LevelSlot<K, V>
 }

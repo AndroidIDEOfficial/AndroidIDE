@@ -15,25 +15,38 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.itsaky.androidide.levelhash
 
-import com.itsaky.androidide.build.config.BuildConfig
+/**
+ * A slot in a [LevelBucket].
+ *
+ * @author Akash Yadav
+ */
+interface LevelSlot<K, V> {
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
+  /**
+   * The key for this slot.
+   */
+  val key: K
 
-android {
-    namespace = "com.termux.view"
-    ndkVersion = BuildConfig.ndkVersion
-}
+  /**
+   * The value for this slot.
+   */
+  val value: V?
 
-dependencies {
-    api(projects.termux.emulator)
+  /**
+   * Whether the slot is occupied.
+   */
+  fun isOccupied(): Boolean
 
-    implementation(libs.androidx.annotation)
-
-    implementation(projects.core.resources)
-
-    testImplementation(projects.testing.unitTest)
+  /**
+   * Reset the value of this entry.
+   *
+   * @param key The new key.
+   * @param value The new value.
+   */
+  fun reset(
+    key: K? = null,
+    value: V? = null,
+  )
 }
