@@ -17,11 +17,10 @@
 
 package com.itsaky.androidide.levelhash.internal
 
-import com.itsaky.androidide.jna.Falloc
-import com.itsaky.androidide.jna.LibC
 import com.itsaky.androidide.levelhash.DataExternalizer
-import com.itsaky.androidide.levelhash.HashT
-import com.itsaky.androidide.levelhash.RandomAccessIO
+import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_HEADER_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_MAX_SEGMENTS
+import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_SEGMENT_SIZE_BYTES
 import com.itsaky.androidide.levelhash.seekBoolean
 import com.itsaky.androidide.levelhash.seekInt
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_BOOLEAN
@@ -29,14 +28,9 @@ import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
 import com.itsaky.androidide.levelhash.util.FileUtils
 import com.itsaky.androidide.levelhash.util.MappedRandomAccessIO
-import com.itsaky.androidide.utils.FDUtils
-import com.sun.jna.Native
 import org.slf4j.LoggerFactory
-import java.io.DataInput
-import java.io.DataOutput
 import java.io.File
 import java.io.RandomAccessFile
-import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
 
@@ -56,13 +50,13 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *
  * ## Keymap
  *
- * - The keymap file header occupies [PersistentLevelHashIO.KEYMAP_HEADER_SIZE_BYTES]
+ * - The keymap file header occupies [PersistentKeymapIO.KEYMAP_HEADER_SIZE_BYTES]
  *    bytes.
- * - Each segment is occupies [PersistentLevelHashIO.KEYMAP_SEGMENT_SIZE_BYTES]
+ * - Each segment is occupies [PersistentKeymapIO.KEYMAP_SEGMENT_SIZE_BYTES]
  *    bytes.
- * - There can be at most [PersistentLevelHashIO.KEYMAP_MAX_SEGMENTS] segments in
+ * - There can be at most [PersistentKeymapIO.KEYMAP_MAX_SEGMENTS] segments in
  *    the keymap file.
- * - Each segment can store at most [PersistentLevelHashIO.KEYMAP_ENTRIES_PER_SEGMENT]
+ * - Each segment can store at most [PersistentKeymapIO.KEYMAP_ENTRIES_PER_SEGMENT]
  *    key-value pairs.
  *
  * Considering the default values, a keymap file can:
@@ -127,16 +121,10 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   // as the values file is randomly accessed, and by multiple functions, or
   // even multiple threads, the current position cannot be determined
 
+  private val keymapIo = PersistentKeymapIO(indexFile)
+
   private val raIndexFile by lazy {
     RandomAccessFile(indexFile, "rw")
-  }
-
-  private val keymapFile by lazy {
-    File(indexFile.parentFile, "${indexFile.name}._i")
-  }
-
-  private val raKeymapFile by lazy {
-    RandomAccessFile(keymapFile, "rw")
   }
 
   private val metaFile by lazy {
@@ -146,24 +134,6 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   private val raMetaFile by lazy {
     RandomAccessFile(metaFile, "rw")
   }
-
-  private val segmentCount by lazy {
-    if (!keymapFile.exists() || !keymapFile.isFile || keymapFile.length() <= KEYMAP_HEADER_SIZE_BYTES) {
-      // there should be 1 segment initially
-      return@lazy 1
-    }
-
-    raKeymapFile.seek(KEYMAP_HEADER_SIZE_BYTES.toLong())
-    val count = raKeymapFile.readLong()
-    raKeymapFile.seek(0)
-    return@lazy count
-  }
-
-  // TODO(itsaky): use LFU cache to limit the number of segments mapped in memory at once.
-  /**
-   * The segments for the keymap file.
-   */
-  private val keymapSegments = arrayOfNulls<KeymapSegment>(KEYMAP_MAX_SEGMENTS)
 
   private var valuesFirstEntryAt = 0L
   private var valuesLastEntryAt = 0L
@@ -200,35 +170,6 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   private fun getValuesRealOffset(offset: Long) =
     VALUES_HEADER_SIZE_BYTES + offset
 
-  private fun getSegmentOffset(index: Int): Long {
-    return KEYMAP_HEADER_SIZE_BYTES + index * KEYMAP_SEGMENT_SIZE_BYTES
-  }
-
-  /**
-   * Get or create a segment for the keymap file.
-   */
-  private fun getOrCreateSegment(index: Int): KeymapSegment {
-    var segment = keymapSegments[index]
-    if (segment == null) {
-      segment = KeymapSegment.create(getSegmentOffset(index), raKeymapFile,
-        keymapFile.canonicalPath)
-      keymapSegments[index] = segment
-    }
-    return segment
-  }
-
-  private fun segmentAndPosForPos(
-    levelIdx: Int,
-    bucketIdx: Int,
-    slotIdx: Int,
-  ): Pair<KeymapSegment, Long> {
-    val hash = hash(levelIdx, bucketIdx, slotIdx)
-    val segmentIdx = segmentIndex(hash)
-    val positionInSegment = positionInSegment(hash)
-    val segment = getOrCreateSegment(segmentIdx)
-    return segment to positionInSegment
-  }
-
   /**
    * Get the address of the value entry in the values for the given slot
    * position.
@@ -242,8 +183,8 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): Long {
-    val (segment, positionInSegment) = segmentAndPosForPos(levelIdx, bucketIdx,
-      slotIdx)
+    val (segment, positionInSegment) = keymapIo.segmentAndPosForPos(levelIdx,
+      bucketIdx, slotIdx)
     segment.position(positionInSegment)
     return segment.readLong().also { address ->
       check(
@@ -379,8 +320,8 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
     key: K?,
     value: V?,
   ) {
-    val (segment, positionInSegment) = segmentAndPosForPos(levelNum, bucketIdx,
-      slotIdx)
+    val (segment, positionInSegment) = keymapIo.segmentAndPosForPos(levelNum,
+      bucketIdx, slotIdx)
 
     if (key == null) {
       // delete entry
@@ -428,7 +369,7 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return null
     }
 
-    FileUtils.deallocate(raKeymapFile, positionInSegment, SIZE_LONG)
+    keymapIo.deallocate(segment, positionInSegment, SIZE_LONG)
 
     valuesIo.position(valueAddr - 1)
 
@@ -474,10 +415,10 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   fun clear() {
-    // TODO: This should not clear the header data in the files
-    FileUtils.deallocate(raKeymapFile, 0, KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS)
-    FileUtils.deallocate(raIndexFile, 0, valuesMapSize + VALUES_HEADER_SIZE_BYTES)
-//    FileUtils.deallocate(raMetaFile)
+    keymapIo.deallocate(KEYMAP_HEADER_SIZE_BYTES,
+      KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS)
+
+    FileUtils.deallocate(raIndexFile, VALUES_HEADER_SIZE_BYTES, valuesMapSize)
   }
 
   fun tryMoveToInterim(
@@ -516,24 +457,17 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   override fun close() {
-    keymapSegments.forEach { segment ->
-      try {
-        segment?.unmap()
-      } catch (err: Throwable) {
-        logger.error("Failed to unmap segment", err)
-      }
+
+    try {
+      keymapIo.close()
+    } catch (e: Throwable) {
+      log.error("Failed to close keymap file", e)
     }
 
     try {
       raIndexFile.close()
     } catch (e: Throwable) {
       logger.error("Failed to close index file", e)
-    }
-
-    try {
-      raKeymapFile.close()
-    } catch (e: Throwable) {
-      logger.error("Failed to close keymap file", e)
     }
 
     try {
@@ -564,67 +498,17 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
      * The number of bytes it takes to store the magic number of the keymap/values
      * file.
      */
-    private const val MAGIC_NUMBER_SIZE_BYTES = SIZE_LONG
-
-    /**
-     * The number of bytes in the header of the keymap file that is used to store
-     * the segment count.
-     */
-    private const val KEYMAP_HEADER_SEGCOUNT_BYTES = SIZE_INT
-
-    /**
-     * The number of bytes in the header of the keymap file that is used to store
-     * the size of the segment structures.
-     */
-    private const val KEYMAP_HEADER_SEGSIZE_BYTES = SIZE_LONG
-
-    /**
-     * The number of bytes used to store the header of the keymap file.
-     */
-    private const val KEYMAP_HEADER_SIZE_BYTES: Long =
-      MAGIC_NUMBER_SIZE_BYTES + KEYMAP_HEADER_SEGCOUNT_BYTES + KEYMAP_HEADER_SEGSIZE_BYTES
-
-    /**
-     * The size of one segment in the key map file.
-     */
-    private const val KEYMAP_SEGMENT_SIZE_BYTES: Long = 1024 * 1024 // 1MB
-
-    /**
-     * The number of bytes that are used to store an entry in a key map file.
-     */
-    private const val KEYMAP_ENTRY_BYTES: Long = SIZE_LONG
-
-    /**
-     * The number of entries that can be stored in a segment in the key map file.
-     */
-    private const val KEYMAP_ENTRIES_PER_SEGMENT =
-      KEYMAP_SEGMENT_SIZE_BYTES / KEYMAP_ENTRY_BYTES
-
-    /**
-     * The maximum number of segments that can be stored for an index.
-     */
-    private const val KEYMAP_MAX_SEGMENTS = 100
-
-    /**
-     * The maximum number of entries that can be stored in all of the keymap segments combined.
-     */
-    const val KEYMAP_MAX_ENTRIES =
-      KEYMAP_MAX_SEGMENTS * KEYMAP_ENTRIES_PER_SEGMENT
-
-    /**
-     * Magic number that is used as the file signature to identify the keymap file.
-     */
-    private const val KEYMAP_MAGIC_NUMBER = 0x414944584B
+    internal const val MAGIC_NUMBER_SIZE_BYTES = SIZE_LONG
 
     /**
      * Magic number that is used as the file signature to identify the values file.
      */
-    private const val VALUES_MAGIC_NUMBER = 0x4149445856
+    internal const val VALUES_MAGIC_NUMBER = 0x4149445856
 
     /**
      * The size of the header (bytes) in the values file.
      */
-    private const val VALUES_HEADER_SIZE_BYTES: Long =
+    internal const val VALUES_HEADER_SIZE_BYTES: Long =
       MAGIC_NUMBER_SIZE_BYTES + SIZE_LONG + // first entry address
         SIZE_LONG   // next entry address
 
@@ -632,126 +516,7 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
      * The maximum size of the region of the values file that can be mapped into
      * memory at a given time.
      */
-    private const val VALUES_MAX_MAP_SIZE_BYTES = 512L * 1024L;
-
-    /**
-     * Get the ID of the segment that should be used to store the store the
-     * given position hash.
-     */
-    private fun segmentIndex(positionHash: HashT): Int {
-      return (positionHash % KEYMAP_MAX_SEGMENTS.toULong()).toInt()
-    }
-
-    /**
-     * Get the position of the entry in the segment where the entry should be
-     * written. The returned position is in bytes from the beginning of the
-     * segment.
-     */
-    private fun positionInSegment(positionHash: HashT): Long {
-      return ((positionHash % KEYMAP_ENTRIES_PER_SEGMENT.toULong()).toLong() * KEYMAP_ENTRY_BYTES)
-    }
-
-    /**
-     * Get the hash of the position coordinates.
-     */
-    private fun hash(levelNum: Int, bucketIdx: Int, slotIdx: Int
-    ): HashT {
-      var hash = 17L
-      hash = 31L * hash + levelNum
-      hash = 31L * hash + bucketIdx
-      hash = 31L * hash + slotIdx
-      return hash.toULong()
-    }
+    internal const val VALUES_MAX_MAP_SIZE_BYTES = 512L * 1024L;
   }
 
-  /**
-   * A segment of the key map file.
-   */
-  private class KeymapSegment(
-    val file: RandomAccessFile,
-    val path: String,
-    private val segmentOffset: Long,
-    private val segmentLength: Long,
-    private val io: MappedRandomAccessIO = MappedRandomAccessIO(),
-  ) : DataInput by io, DataOutput by io, RandomAccessIO by io, AutoCloseable {
-
-    lateinit var mappedBuffer: MappedByteBuffer
-
-    init {
-      remap(segmentOffset, segmentLength, true)
-    }
-
-    /**
-     * Map a region of the backing file into memory, unmapping previous mappings,
-     * if any.
-     */
-    @Suppress("SameParameterValue")
-    private fun remap(position: Long, size: Long, forceRemap: Boolean = false
-    ) {
-      if (!forceRemap && (segmentOffset == position && segmentLength == size)) {
-        // the given region is already mapped into memory
-        return
-      }
-
-      unmap()
-
-      this.mappedBuffer =
-        file.channel.map(FileChannel.MapMode.READ_WRITE, segmentOffset,
-          segmentLength)
-      this.io.reset(mappedBuffer, segmentOffset, segmentLength)
-    }
-
-    /**
-     * Unmap the memory mapped region, if mapped.
-     */
-
-    override fun close() {
-      unmap()
-    }
-
-    /**
-     * Unmap the memory mapped buffer. This [KeymapSegment] becomes invalid after
-     * this operation and must not be used further unless remapped.
-     *
-     * @return `true` if the unmapping request was successful, `false` otherwise.
-     */
-    fun unmap(): Boolean {
-      if (!::mappedBuffer.isInitialized) {
-        return false
-      }
-
-      try {
-        val cleanerF = mappedBuffer.javaClass.getDeclaredField("cleaner")
-        cleanerF.isAccessible = true
-        val cleaner = cleanerF.get(mappedBuffer)
-
-        val cleanM = cleaner.javaClass.getDeclaredMethod("clean")
-        cleanM.isAccessible = true
-
-        cleanM.invoke(cleaner)
-        return true
-      } catch (err: Throwable) {
-        logger.error(
-          "Failed to unmap keymap segment. file={}, offset={}, size={}", path,
-          segmentOffset, segmentLength, err)
-        return false
-      }
-    }
-
-    companion object {
-
-      /**
-       * Create a new segment.
-       *
-       * @param offset The offset of the segment in the keymap file.
-       * @param file The file to create the segment in.
-       * @param path The path of the file (used for debugging).
-       */
-      fun create(offset: Long, file: RandomAccessFile, path: String
-      ): KeymapSegment {
-        return KeymapSegment(file = file, path = path, segmentOffset = offset,
-          segmentLength = KEYMAP_SEGMENT_SIZE_BYTES.toLong())
-      }
-    }
-  }
 }
