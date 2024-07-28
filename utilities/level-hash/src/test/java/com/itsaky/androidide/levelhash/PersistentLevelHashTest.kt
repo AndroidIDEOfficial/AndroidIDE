@@ -20,6 +20,7 @@ package com.itsaky.androidide.levelhash
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.levelhash.LevelHash.OverflowException
 import com.itsaky.androidide.levelhash.util.DataExternalizers
+import com.itsaky.androidide.levelhash.util.nullable
 import com.itsaky.androidide.testing.common.LinuxOnlyTestRule
 import org.junit.Rule
 import org.junit.Test
@@ -38,20 +39,21 @@ class PersistentLevelHashTest {
   @Rule
   val linuxOnlyTestRule = LinuxOnlyTestRule()
 
-  private fun persistentStringHash(
-    fileName: String,
-    conf: PersistentHashBuilder<String, String>.() -> Unit = {}
-  ): LevelHash<String, String> {
+  private inline fun <V : String?> persistentStringHash(fileName: String,
+                                                        valueExternalizer: DataExternalizer<V>,
+                                                        conf: PersistentHashBuilder<String, V>.() -> Unit = {}
+  ): LevelHash<String, V> {
     val indexFile = File("./build/sample-index/${fileName}.storage")
     if (indexFile.parentFile!!.exists()) {
       indexFile.parentFile!!.deleteRecursively()
     }
 
     indexFile.parentFile!!.mkdirs()
+    indexFile.createNewFile()
 
-    val hash = LevelHash.persistentHashBuilder<String, String>()
+    val hash = LevelHash.persistentHashBuilder<String, V>()
       .keyExternalizer(DataExternalizers.STRING)
-      .valueExternalizer(DataExternalizers.STRING)
+      .valueExternalizer(valueExternalizer)
       .indexFile(indexFile)
       .apply(conf)
       .levelSize(2)
@@ -61,6 +63,12 @@ class PersistentLevelHashTest {
     assertThat(hash).isNotNull()
 
     return hash
+  }
+
+  private inline fun persistentStringHash(fileName: String,
+                                          conf: PersistentHashBuilder<String, String>.() -> Unit = {}
+  ): LevelHash<String, String> {
+    return persistentStringHash(fileName, DataExternalizers.STRING, conf)
   }
 
   @Test
@@ -108,5 +116,41 @@ class PersistentLevelHashTest {
     hash.clear()
 
     assertThat(hash.findSlot("key")).isNull()
+  }
+
+  @Test(expected = LevelHash.EntryNotFoundException::class)
+  fun `test value update for non-existing entry`() {
+    val hash = persistentStringHash("update-non-existing-entry")
+
+    assertThat(hash.insert("k", "v")).isTrue()
+
+    val slot = hash.findSlot("k")
+    assertThat(slot).isNotNull()
+    assertThat(slot!!.key).isEqualTo("k")
+    assertThat(slot.value).isEqualTo("v")
+
+    assertThat(hash.set("kk", "newV")).isNull()
+  }
+
+  @Test
+  fun `test value update for existing entry with null value`() {
+    val hash = persistentStringHash(
+      fileName = "update-existing-with-null-value",
+      valueExternalizer = DataExternalizers.STRING.nullable()
+    )
+
+    assertThat(hash.insert("k", null)).isTrue()
+
+    var slot = hash.findSlot("k")
+    assertThat(slot).isNotNull()
+    assertThat(slot!!.key).isEqualTo("k")
+    assertThat(slot.value).isNull()
+
+    assertThat(hash.set("k", "newV")).isNull()
+
+    slot = hash.findSlot("k")
+    assertThat(slot).isNotNull()
+    assertThat(slot!!.key).isEqualTo("k")
+    assertThat(slot.value).isEqualTo("newV")
   }
 }

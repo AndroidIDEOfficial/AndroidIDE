@@ -57,8 +57,8 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
       override val key: K
         get() = checkNotNull(io.readKey(levelIdx, bucketIdx, slotIdx))
 
-      override val value: V
-        get() = checkNotNull(io.readValue(levelIdx, bucketIdx, slotIdx))
+      override val value: V?
+        get() = io.readValue(levelIdx, bucketIdx, slotIdx)
 
       override fun isOccupied(): Boolean {
         return io.isOccupied(levelIdx, bucketIdx, slotIdx)

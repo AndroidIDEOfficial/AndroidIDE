@@ -25,7 +25,6 @@ import com.itsaky.androidide.levelhash.seekFloat
 import com.itsaky.androidide.levelhash.seekInt
 import com.itsaky.androidide.levelhash.seekLong
 import com.itsaky.androidide.levelhash.seekShort
-import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_BYTE
 import java.io.DataInput
 import java.io.DataInputStream
 import java.io.DataOutput
@@ -46,16 +45,16 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO {
 
   private lateinit var buffer: MappedByteBuffer
 
-  fun reset(buffer: MappedByteBuffer, offset: Long, length: Long) {
-    this.buffer = buffer
-    this.position = offset
-    this.size = length
+  internal fun buf(): MappedByteBuffer = buf(this.position)
+
+  internal fun buf(position: Long): MappedByteBuffer {
+    return this.buffer.apply { position(position.toInt()) }
   }
 
-  private fun buf(): MappedByteBuffer = buf(this.position)
-
-  private fun buf(position: Long): MappedByteBuffer {
-    return this.buffer.apply { position(position.toInt()) }
+  fun reset(buffer: MappedByteBuffer, position: Long, length: Long) {
+    this.buffer = buffer
+    this.position = position
+    this.size = length
   }
 
   override fun position(position: Long) {
@@ -101,9 +100,7 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO {
   }
 
   override fun readByte(): Byte {
-    return buf(position).get().also {
-      position += SIZE_BYTE
-    }
+    return buf(position).get().also { seekByte() }
   }
 
   override fun readUnsignedByte(): Int {

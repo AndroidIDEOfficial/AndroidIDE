@@ -18,6 +18,7 @@
 package com.itsaky.androidide.levelhash.util
 
 import com.itsaky.androidide.levelhash.DataExternalizer
+import com.itsaky.androidide.utils.uncheckedCast
 import java.io.DataInput
 import java.io.DataOutput
 
@@ -177,6 +178,35 @@ object DataExternalizers {
 
     override fun write(out: DataOutput, data: String) {
       out.writeUTF(data)
+    }
+  }
+}
+
+/**
+ * Create a [DataExternalizer] for nullable type [T]. An extra byte before the
+ * actual data is used to represent the null state.
+ */
+fun <T> DataExternalizer<T>.nullable(): DataExternalizer<T?> {
+  if (this is NullableDataExternalizer<*>) {
+    return uncheckedCast(this)
+  }
+  return NullableDataExternalizer(this)
+}
+
+private class NullableDataExternalizer<T>(
+  private val self: DataExternalizer<T>
+) : DataExternalizer<T?> {
+  override fun read(input: DataInput): T? {
+    if (input.readBoolean()) {
+      return null
+    }
+    return self.read(input)
+  }
+
+  override fun write(out: DataOutput, data: T?) {
+    out.writeBoolean(data == null)
+    if (data != null) {
+      self.write(out, data)
     }
   }
 }

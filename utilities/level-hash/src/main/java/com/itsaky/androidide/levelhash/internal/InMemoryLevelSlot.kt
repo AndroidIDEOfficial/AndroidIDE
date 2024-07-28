@@ -57,8 +57,8 @@ internal class InMemoryLevelSlot<K, V> private constructor(
    */
   override fun reset(key: K?, value: V?) {
     lock.writeLock().withLock {
-      _key = key ?: _key
-      _value = value ?: _value
+      _key = key
+      _value = value
     }
   }
 }

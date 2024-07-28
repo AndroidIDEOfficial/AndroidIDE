@@ -37,7 +37,7 @@ internal class PersistentKeymapIO(indexFile: File
    */
   private val keymapSegments = arrayOfNulls<KeymapSegment>(KEYMAP_MAX_SEGMENTS)
   private val keymapFile = File(indexFile.parentFile, "${indexFile.name}._i")
-  private val raKeymapFile = RandomAccessFile(keymapFile, "rw")
+  private val raKeymapFile by lazy { RandomAccessFile(keymapFile, "rw") }
 
   private val segmentCount by lazy {
     if (!keymapFile.exists() || !keymapFile.isFile || keymapFile.length() <= KEYMAP_HEADER_SIZE_BYTES) {
@@ -45,25 +45,25 @@ internal class PersistentKeymapIO(indexFile: File
       return@lazy 1
     }
 
-    raKeymapFile.seek(KEYMAP_HEADER_SIZE_BYTES.toLong())
+    raKeymapFile.seek(KEYMAP_HEADER_SIZE_BYTES)
     val count = raKeymapFile.readLong()
     raKeymapFile.seek(0)
     return@lazy count
   }
 
-  override fun close() {
-    keymapSegments.forEach { segment ->
-      try {
-        segment?.unmap()
-      } catch (err: Throwable) {
-        log.error("Failed to unmap segment", err)
-      }
-    }
+  init {
+    BinaryFileUtils.initSparseFile(
+      file = keymapFile,
+      magicNumber = KEYMAP_MAGIC_NUMBER,
+      maxLength = KEYMAP_HEADER_SIZE_BYTES + KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS
+    ) { raf ->
+      var position = MAGIC_NUMBER_SIZE_BYTES
+      raf.seek(position)
+      raf.writeInt(0)
+      position += SIZE_INT
 
-    try {
-      raKeymapFile.close()
-    } catch (e: Throwable) {
-      log.error("Failed to close keymap file", e)
+      raf.seek(position)
+      raf.writeLong(KEYMAP_SEGMENT_SIZE_BYTES)
     }
   }
 
@@ -96,19 +96,31 @@ internal class PersistentKeymapIO(indexFile: File
     return segment to positionInSegment
   }
 
-  fun deallocate(
-    offset: Long,
-    len: Long
+  fun deallocate(offset: Long, len: Long
   ) {
     FileUtils.deallocate(raKeymapFile, offset, len)
   }
 
-  fun deallocate(
-    segment: KeymapSegment,
-    positionInSegment: Long,
-    len: Long
+  fun deallocate(segment: KeymapSegment, positionInSegment: Long, len: Long
   ) {
-    FileUtils.deallocate(raKeymapFile, segment.segmentOffset + positionInSegment, len)
+    FileUtils.deallocate(raKeymapFile,
+      segment.segmentOffset + positionInSegment, len)
+  }
+
+  override fun close() {
+    keymapSegments.forEach { segment ->
+      try {
+        segment?.unmap()
+      } catch (err: Throwable) {
+        log.error("Failed to unmap segment", err)
+      }
+    }
+
+    try {
+      raKeymapFile.close()
+    } catch (e: Throwable) {
+      log.error("Failed to close keymap file", e)
+    }
   }
 
   companion object {

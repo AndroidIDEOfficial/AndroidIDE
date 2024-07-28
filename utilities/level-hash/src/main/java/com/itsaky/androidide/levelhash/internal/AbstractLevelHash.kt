@@ -195,15 +195,14 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
   }
 
   override fun remove(key: K): V? {
-    return findSlot(key).let { slot ->
-      if (slot != null) {
-        val oldValue = slot.value
-        slot.reset(null, null)
-        return@let oldValue
-      }
-
-      return@let null
+    val slot = findSlot(key)
+    if (slot != null) {
+      val oldValue = slot.value
+      slot.reset(null, null)
+      return oldValue
     }
+
+    return null
   }
 
   override fun findSlot(key: K): LevelSlot<K, V>? {

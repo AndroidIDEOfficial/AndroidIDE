@@ -23,16 +23,17 @@ import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEY
 import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_SEGMENT_SIZE_BYTES
 import com.itsaky.androidide.levelhash.seekBoolean
 import com.itsaky.androidide.levelhash.seekInt
+import com.itsaky.androidide.levelhash.seekShort
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_BOOLEAN
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
+import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_SHORT
 import com.itsaky.androidide.levelhash.util.FileUtils
 import com.itsaky.androidide.levelhash.util.MappedRandomAccessIO
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
-
 
 private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 
@@ -67,6 +68,7 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *
  * ```
  * keymap {
+ *   u64 magic_number;
  *   u32 segment_count;
  *   u64 segment_size;
  *   segment segments[segment_count];
@@ -100,6 +102,7 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *
  *    value {
  *      u8 is_occupied;
+ *      u16 entry_size;
  *      u32 key_size;
  *      u8 key[key_size];
  *      u32 value_size;
@@ -109,8 +112,8 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * ```
  * @author Akash Yadav
  */
-class PersistentLevelHashIO<K : Any, V : Any?>(
-  private val indexFile: File,
+internal class PersistentLevelHashIO<K : Any, V : Any?>(
+  indexFile: File,
   private val keyExternalizer: DataExternalizer<K>,
   private val valueExternalizer: DataExternalizer<V>,
 ) : AutoCloseable {
@@ -123,52 +126,50 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
 
   private val keymapIo = PersistentKeymapIO(indexFile)
 
-  private val raIndexFile by lazy {
-    RandomAccessFile(indexFile, "rw")
-  }
+  private val metaFile = File(indexFile.parentFile, "${indexFile.name}._meta")
+  private val raMetaFile by lazy { RandomAccessFile(metaFile, "rw") }
+  private val raIndexFile by lazy { RandomAccessFile(indexFile, "rw") }
 
-  private val metaFile by lazy {
-    File(indexFile.parentFile, "${indexFile.name}._meta")
-  }
-
-  private val raMetaFile by lazy {
-    RandomAccessFile(metaFile, "rw")
-  }
-
-  private var valuesFirstEntryAt = 0L
-  private var valuesLastEntryAt = 0L
-  private var valuesWriteAt = 0L
-  private var valuesMapSize = 0L
-  private var valuesIo = MappedRandomAccessIO()
+  private var valFirstEntryPos = 0L
+  private var valNxtEntryPos = 0L
+  private var valIdxSize = 0L
+  private var valIo = MappedRandomAccessIO()
 
   init {
-    if (indexFile.exists()) {
-      if (indexFile.isDirectory) {
-        indexFile.deleteRecursively()
-      } else if (indexFile.isFile && indexFile.length() < VALUES_HEADER_SIZE_BYTES) {
-        indexFile.delete()
-      }
-    } else {
-      indexFile.createNewFile()
+    BinaryFileUtils.initSparseFile(
+      file = indexFile,
+      magicNumber = VALUES_MAGIC_NUMBER,
+      maxLength = VALUES_HEADER_SIZE_BYTES + valIdxSize
+    ) { raf ->
+      var position = MAGIC_NUMBER_SIZE_BYTES
+      raf.seek(position)
+      raf.writeLong(0) // first entry
+      position += SIZE_LONG
+
+      raf.seek(position)
+      raf.writeLong(0) // next entry
     }
 
-    // TODO(itsaky): Load the below values from file when the file already exists
+    // TODO: Load the below values from file when the file already exists
 
-    valuesLastEntryAt = -1
-    valuesWriteAt = 0
-    valuesFirstEntryAt = VALUES_HEADER_SIZE_BYTES
-    valuesMapSize = VALUES_MAX_MAP_SIZE_BYTES
+    valNxtEntryPos = 0
+    valFirstEntryPos = VALUES_HEADER_SIZE_BYTES
+    valIdxSize = VALUES_MAX_MAP_SIZE_BYTES
 
     // the header region is not memory mapped
     log.debug("mmap values file: offset={}, size={}", VALUES_HEADER_SIZE_BYTES,
-      valuesMapSize)
+      valIdxSize)
     val buffer = raIndexFile.channel.map(FileChannel.MapMode.READ_WRITE,
-      VALUES_HEADER_SIZE_BYTES, valuesMapSize)
-    valuesIo.reset(buffer, 0L, valuesMapSize)
+      VALUES_HEADER_SIZE_BYTES, valIdxSize)
+    valIo.reset(buffer, 0L, valIdxSize)
   }
 
   private fun getValuesRealOffset(offset: Long) =
     VALUES_HEADER_SIZE_BYTES + offset
+
+  private fun valuesDeallocate(offset: Long, len: Long) {
+    FileUtils.deallocate(raIndexFile, getValuesRealOffset(offset), len)
+  }
 
   /**
    * Get the address of the value entry in the values for the given slot
@@ -192,23 +193,6 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
     }
   }
 
-  fun isOccupied(
-    levelNum: Int,
-    bucketIdx: Int,
-    slotIdx: Int,
-  ): Boolean {
-    val valueAddr = valueAddressForPos(levelNum, bucketIdx, slotIdx)
-    if (valueAddr == 0L) {
-      // 0 == no value entry
-      return false
-    }
-
-    valuesIo.position(valueAddr - 1)
-
-    // token must be set and key size must be > 0
-    return valuesIo.readBoolean() && valuesIo.readInt() > 0
-  }
-
   private fun moveToSlot(
     levelNum: Int,
     bucketIdx: Int,
@@ -220,8 +204,21 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return false
     }
 
-    valuesIo.position(valueAddr - 1)
+    valIo.position(valueAddr - 1)
     return true
+  }
+
+  fun isOccupied(
+    levelNum: Int,
+    bucketIdx: Int,
+    slotIdx: Int,
+  ): Boolean {
+    if (!moveToSlot(levelNum, bucketIdx, slotIdx)) {
+      return false
+    }
+
+    // token must be set and key size must be > 0
+    return valIo.readBoolean() && valIo.readInt() > 0
   }
 
   /**
@@ -238,24 +235,31 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return null
     }
 
-    val isOccupied = valuesIo.readBoolean()
+    val isOccupied = valIo.readBoolean()
 
     if (!isOccupied) {
       return null
     }
 
-    val keySize = valuesIo.readInt()
+    if (valIo.readUnsignedShort() <= 0L) {
+      // entry size is 0, so the slot is empty
+      return null
+    }
+
+    val keySize = valIo.readInt()
     if (keySize == 0) {
       if (readKey) {
-        logReadFailure("key", "key size is 0", levelNum, bucketIdx, slotIdx)
+        log.info(
+          "Cannot read 'key' at slot (key size is 0): level={}, bucket={}, slot={}",
+          levelNum, bucketIdx, slotIdx)
       }
       return null
     }
 
     if (readKey) {
-      val keyAddr = valuesIo.position()
-      val key = keyExternalizer.read(valuesIo)
-      val readBytes = (valuesIo.position() - keyAddr).toInt()
+      val keyAddr = valIo.position()
+      val key = keyExternalizer.read(valIo)
+      val readBytes = (valIo.position() - keyAddr).toInt()
       check(readBytes == keySize) {
         "Key size mismatch. Expected to read $keySize bytes, but $readBytes bytes were read."
       }
@@ -264,7 +268,7 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     if (keySize > 0) {
-      valuesIo.skipBytes(keySize)
+      valIo.skipBytes(keySize)
     }
 
     return null to keySize
@@ -297,15 +301,14 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return null
     }
 
-    val valueSize = valuesIo.readInt()
+    val valueSize = valIo.readInt()
     if (valueSize == 0) {
-      logReadFailure("value", "value size is 0", levelNum, bucketIdx, slotIdx)
       return null
     }
 
-    val valAddr = valuesIo.position()
-    val value = valueExternalizer.read(valuesIo)
-    val readBytes = (valuesIo.position() - valAddr).toInt()
+    val valAddr = valIo.position()
+    val value = valueExternalizer.read(valIo)
+    val readBytes = (valIo.position() - valAddr).toInt()
     check(readBytes == valueSize) {
       "Value size mismatch. Expected to read $valueSize bytes, but $readBytes bytes were read."
     }
@@ -329,32 +332,59 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return
     }
 
-    // TODO(itsaky): Punch holes in the region of the existing entry on update
-    //   to ensure the disk space is released
+    segment.position(positionInSegment)
+    val existingValueAddr = segment.readLong()
+    val (isUpdate, existingEntrySize) = run {
+      if (existingValueAddr > 0L) {
+        valIo.position(existingValueAddr - 1)
+        valIo.readBoolean() to valIo.readUnsignedShort().toLong()
+      } else {
+        false to 0L
+      }
+    }
 
-    // leave space for the 'is_occupied' token
-    val tokenAddr = valuesWriteAt
-    valuesIo.position(tokenAddr)
-    valuesIo.seekBoolean()
+    val tokenAddr = valNxtEntryPos
+    valIo.position(tokenAddr)
+
+    // leave space for isOccupied token and entry size
+    valIo.seekBoolean()
+    valIo.seekShort()
+
+    val keyValPos = valIo.position()
 
     // write key and value
     writeSlotKeyOrVal(key, keyExternalizer)
     writeSlotKeyOrVal(value, valueExternalizer)
 
-    val finalAddr = valuesIo.position()
+    val finalAddr = valIo.position()
+    val entrySize = finalAddr - keyValPos
+    check(entrySize <= Short.MAX_VALUE) {
+      "Entry size is too large: $entrySize"
+    }
 
     // then set the token
-    valuesIo.position(tokenAddr)
-    valuesIo.writeBoolean(true)
+    valIo.position(tokenAddr)
+    valIo.writeBoolean(true)
+    valIo.writeShort((entrySize and 0xFFFF).toInt())
 
     // reset to the final position
-    valuesIo.position(finalAddr)
+    valIo.position(finalAddr)
 
     // then update the address in the keymap
     segment.position(positionInSegment)
     segment.writeLong(tokenAddr + 1)
 
-    valuesWriteAt = finalAddr
+    valNxtEntryPos = finalAddr
+
+    if (isUpdate) {
+      var size: Long = SIZE_BOOLEAN + SIZE_SHORT
+      if (existingEntrySize > 0L) {
+        size += existingEntrySize
+      }
+
+      // deallocate the region which contains the existing entry
+      valuesDeallocate(existingValueAddr - 1, size)
+    }
   }
 
   private fun deleteEntry(
@@ -369,47 +399,48 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       return null
     }
 
+    // reading this region again will return 0, which is considered
+    // a null pointer
     keymapIo.deallocate(segment, positionInSegment, SIZE_LONG)
 
-    valuesIo.position(valueAddr - 1)
+    valIo.position(valueAddr - 1)
 
     var entrySize = 0L
 
-    if (!valuesIo.readBoolean()) {
+    if (!valIo.readBoolean()) {
       // slot is not occupied
       return null
     }
 
     entrySize += SIZE_BOOLEAN // isOccupied
+    entrySize += SIZE_SHORT // entrySize
 
-    val keySize = valuesIo.readInt()
+    val keySize = valIo.readInt()
     entrySize += SIZE_INT
     entrySize += keySize
 
     if (keySize > 0) {
-      valuesIo.seekRelative(keySize)
+      valIo.seekRelative(keySize)
     }
 
-    val valueSize = valuesIo.readInt()
+    val valueSize = valIo.readInt()
     entrySize += SIZE_INT
     entrySize += valueSize
 
     var value: V? = null
     if (readValue && valueSize > 0) {
-      val valAddr = valuesIo.position()
-      value = valueExternalizer.read(valuesIo)
+      val valAddr = valIo.position()
+      value = valueExternalizer.read(valIo)
 
       // ensure that the externalizer read exactly the expected bytes
-      check((valuesIo.position() - valAddr).toInt() == valueSize)
+      check((valIo.position() - valAddr).toInt() == valueSize)
     } else if (valueSize > 0) {
-      valuesIo.seekRelative(valueSize)
+      valIo.seekRelative(valueSize)
     }
 
     // punch holes in the file
-    FileUtils.deallocate(raIndexFile, getValuesRealOffset(valueAddr - 1),
-      entrySize)
+    valuesDeallocate(valueAddr - 1, entrySize)
 
-    // TODO(itsaky): When deleting an entry, update the corresponding keymap entry with -1
     // TODO(itsaky): When an entry is deleted, update valueFirstEntryAt and valueLastEntryAt accordingly
     return value
   }
@@ -417,10 +448,10 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
   fun clear() {
     keymapIo.deallocate(KEYMAP_HEADER_SIZE_BYTES,
       KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS)
-
-    FileUtils.deallocate(raIndexFile, VALUES_HEADER_SIZE_BYTES, valuesMapSize)
+    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, valIdxSize)
   }
 
+  @Suppress("UNUSED", "UNUSED_PARAMETER")
   fun tryMoveToInterim(
     levelNum: Int,
     bucketIdx: Int,
@@ -437,22 +468,22 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
       // obj is not null
       // leave space for the obj size and write the key
       // then write the number of bytes written for obj to the sizeAddr
-      val sizeAddr = valuesIo.position()
-      valuesIo.seekInt()
+      val sizeAddr = valIo.position()
+      valIo.seekInt()
 
-      val valueAddr = valuesIo.position()
-      externalizer.write(valuesIo, obj)
+      val valueAddr = valIo.position()
+      externalizer.write(valIo, obj)
 
-      val finalAddr = valuesIo.position()
-      valuesIo.position(sizeAddr)
-      valuesIo.writeInt((finalAddr - valueAddr).toInt().also {
+      val finalAddr = valIo.position()
+      valIo.position(sizeAddr)
+      valIo.writeInt((finalAddr - valueAddr).toInt().also {
         check(it > 0) { "Key/Value must be at least 1 byte in size" }
       })
-      valuesIo.position(finalAddr)
+      valIo.position(finalAddr)
     } else {
       // object is null, write the size of the obj as 0
       // since obj size is 0, we don't need to write the obj
-      valuesIo.writeInt(0)
+      valIo.writeInt(0)
     }
   }
 
@@ -475,18 +506,6 @@ class PersistentLevelHashIO<K : Any, V : Any?>(
     } catch (e: Throwable) {
       logger.error("Failed to close meta file", e)
     }
-  }
-
-  private fun logReadFailure(
-    what: String,
-    reason: String,
-    levelNum: Int,
-    bucketIdx: Int,
-    slotIdx: Int,
-  ) {
-    log.info(
-      "Cannot read '$what' at slot ($reason): level={}, bucket={}, slot={}",
-      levelNum, bucketIdx, slotIdx)
   }
 
 
