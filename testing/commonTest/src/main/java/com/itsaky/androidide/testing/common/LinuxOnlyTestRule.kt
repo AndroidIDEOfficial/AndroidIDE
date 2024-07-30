@@ -18,6 +18,7 @@
 package com.itsaky.androidide.testing.common
 
 import com.sun.jna.Platform
+import org.junit.Assume
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -30,12 +31,7 @@ import org.junit.runners.model.Statement
 class LinuxOnlyTestRule : TestRule {
 
   override fun apply(base: Statement, description: Description?): Statement {
-    if (Platform.isLinux()) {
-      return base
-    }
-
-    return object : Statement() {
-      override fun evaluate() {}
-    }
+    Assume.assumeTrue(Platform.isLinux())
+    return base
   }
 }
