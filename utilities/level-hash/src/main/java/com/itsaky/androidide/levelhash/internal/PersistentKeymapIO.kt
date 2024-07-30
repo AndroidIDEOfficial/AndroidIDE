@@ -54,8 +54,7 @@ internal class PersistentKeymapIO(indexFile: File
   init {
     BinaryFileUtils.initSparseFile(
       file = keymapFile,
-      magicNumber = KEYMAP_MAGIC_NUMBER,
-      maxLength = KEYMAP_HEADER_SIZE_BYTES + KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS
+      magicNumber = KEYMAP_MAGIC_NUMBER
     ) { raf ->
       var position = MAGIC_NUMBER_SIZE_BYTES
       raf.seek(position)

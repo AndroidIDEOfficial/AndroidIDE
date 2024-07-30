@@ -41,15 +41,16 @@ class PersistentLevelHashTest {
 
   private inline fun <V : String?> persistentStringHash(fileName: String,
                                                         valueExternalizer: DataExternalizer<V>,
+                                                        createNew: Boolean = true,
                                                         conf: PersistentHashBuilder<String, V>.() -> Unit = {}
   ): LevelHash<String, V> {
-    val indexFile = File("./build/sample-index/${fileName}.storage")
-    if (indexFile.parentFile!!.exists()) {
+    val indexFile =
+      File("build/level-index/hash-${fileName}/${fileName}.storage")
+    if (indexFile.parentFile!!.exists() && createNew) {
       indexFile.parentFile!!.deleteRecursively()
+    } else {
+      indexFile.parentFile!!.mkdirs()
     }
-
-    indexFile.parentFile!!.mkdirs()
-    indexFile.createNewFile()
 
     val hash = LevelHash.persistentHashBuilder<String, V>()
       .keyExternalizer(DataExternalizers.STRING)
@@ -66,45 +67,49 @@ class PersistentLevelHashTest {
   }
 
   private inline fun persistentStringHash(fileName: String,
+                                          createNew: Boolean = true,
                                           conf: PersistentHashBuilder<String, String>.() -> Unit = {}
   ): LevelHash<String, String> {
-    return persistentStringHash(fileName, DataExternalizers.STRING, conf)
+    return persistentStringHash(fileName, DataExternalizers.STRING, createNew,
+      conf)
   }
 
   @Test
   fun testInsertion() {
-    val hash = persistentStringHash("insert")
+    persistentStringHash("insert").use { hash ->
+      val key = "key"
+      val value = "value"
+      assertThat(hash.insert(key, value)).isTrue()
 
-    val key = "key"
-    val value = "value"
-    assertThat(hash.insert(key, value)).isTrue()
-
-    val slot = hash.findSlot(key)
-    assertThat(slot).isNotNull()
-    assertThat(slot!!.value).isEqualTo(value)
+      val slot = hash.findSlot(key)
+      assertThat(slot).isNotNull()
+      assertThat(slot!!.value).isEqualTo(value)
+    }
   }
 
   @Test(expected = OverflowException::class)
   fun testOverflow() {
-    val hash = persistentStringHash("overflow") { autoExpand(false) }
-    for (i in 0..<hash.totalSlotCount) {
-      val key = "key${i}"
-      val value = "value${i}"
-      assertThat(hash.insert(key, value)).isTrue()
-    }
+    persistentStringHash("overflow") { autoExpand(false) }.use { hash ->
+      for (i in 0..<hash.totalSlotCount) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
 
-    assertThat(hash.insert("k", "v")).isFalse()
+      assertThat(hash.insert("k", "v")).isFalse()
+    }
   }
 
   @Test
   fun testRemoval() {
-    val hash = persistentStringHash("remove")
-    assertThat(hash.insert("key", "value")).isTrue()
-    assertThat(hash.findSlot("key")).isNotNull()
-    assertThat(hash.findSlot("key")?.value).isEqualTo("value")
+    persistentStringHash("remove").use { hash ->
+      assertThat(hash.insert("key", "value")).isTrue()
+      assertThat(hash.findSlot("key")).isNotNull()
+      assertThat(hash.findSlot("key")?.value).isEqualTo("value")
 
-    assertThat(hash.remove("key")).isEqualTo("value")
-    assertThat(hash.findSlot("key")).isNull()
+      assertThat(hash.remove("key")).isEqualTo("value")
+      assertThat(hash.findSlot("key")).isNull()
+    }
   }
 
   @Test
@@ -120,37 +125,62 @@ class PersistentLevelHashTest {
 
   @Test(expected = LevelHash.EntryNotFoundException::class)
   fun `test value update for non-existing entry`() {
-    val hash = persistentStringHash("update-non-existing-entry")
+    persistentStringHash("update-non-existing-entry").use { hash ->
+      assertThat(hash.insert("k", "v")).isTrue()
 
-    assertThat(hash.insert("k", "v")).isTrue()
+      val slot = hash.findSlot("k")
+      assertThat(slot).isNotNull()
+      assertThat(slot!!.key).isEqualTo("k")
+      assertThat(slot.value).isEqualTo("v")
 
-    val slot = hash.findSlot("k")
-    assertThat(slot).isNotNull()
-    assertThat(slot!!.key).isEqualTo("k")
-    assertThat(slot.value).isEqualTo("v")
-
-    assertThat(hash.set("kk", "newV")).isNull()
+      assertThat(hash.set("kk", "newV")).isNull()
+    }
   }
 
   @Test
   fun `test value update for existing entry with null value`() {
-    val hash = persistentStringHash(
-      fileName = "update-existing-with-null-value",
+    persistentStringHash(fileName = "update-existing-with-null-value",
+      valueExternalizer = DataExternalizers.STRING.nullable()).use { hash ->
+      assertThat(hash.insert("k", null)).isTrue()
+
+      var slot = hash.findSlot("k")
+      assertThat(slot).isNotNull()
+      assertThat(slot!!.key).isEqualTo("k")
+      assertThat(slot.value).isNull()
+
+      assertThat(hash.set("k", "newV")).isNull()
+
+      slot = hash.findSlot("k")
+      assertThat(slot).isNotNull()
+      assertThat(slot!!.key).isEqualTo("k")
+      assertThat(slot.value).isEqualTo("newV")
+    }
+
+  }
+
+  @Test
+  fun `test existing level init`() {
+    persistentStringHash(
+      fileName = "init-existing",
       valueExternalizer = DataExternalizers.STRING.nullable()
-    )
+    ).use { hash ->
+      hash.insert("key", "value")
+      hash.insert("null", null)
+      hash.insert("long", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    assertThat(hash.insert("k", null)).isTrue()
+      assertThat(hash["key"]).isEqualTo("value")
+      assertThat(hash["null"]).isEqualTo(null)
+      assertThat(hash["long"]).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    }
 
-    var slot = hash.findSlot("k")
-    assertThat(slot).isNotNull()
-    assertThat(slot!!.key).isEqualTo("k")
-    assertThat(slot.value).isNull()
-
-    assertThat(hash.set("k", "newV")).isNull()
-
-    slot = hash.findSlot("k")
-    assertThat(slot).isNotNull()
-    assertThat(slot!!.key).isEqualTo("k")
-    assertThat(slot.value).isEqualTo("newV")
+    persistentStringHash(
+      fileName = "init-existing",
+      valueExternalizer = DataExternalizers.STRING.nullable(),
+      createNew = false
+    ).use { hash ->
+      assertThat(hash["key"]).isEqualTo("value")
+      assertThat(hash["null"]).isEqualTo(null)
+      assertThat(hash["long"]).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    }
   }
 }

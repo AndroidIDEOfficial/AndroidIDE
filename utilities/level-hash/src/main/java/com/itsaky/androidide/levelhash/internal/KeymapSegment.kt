@@ -96,6 +96,7 @@ internal class KeymapSegment(
     } catch (err: Throwable) {
       log.error("Failed to unmap keymap segment. file={}, offset={}, size={}",
         path, segmentOffset, segmentLength, err)
+      err.printStackTrace()
       return false
     }
   }

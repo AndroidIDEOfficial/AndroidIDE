@@ -74,6 +74,10 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
     this.io.clear()
   }
 
+  override fun close() {
+    io.close()
+  }
+
   private var interimBucketCount = -1
   override fun prepareExpansion(bucketCount: Int) {
     check(this.interimBucketCount == -1)

@@ -28,7 +28,11 @@ android {
 }
 
 tasks.withType<Test> {
-  jvmArgs("--add-opens", "java.base/java.io=ALL-UNNAMED")
+  jvmArgs(
+    "--add-opens", "java.base/java.io=ALL-UNNAMED", // For FileDescriptor.fd
+    "--add-opens", "java.base/java.nio=ALL-UNNAMED", // For DirectByteBuffer.cleaner
+    "--add-opens", "java.base/jdk.internal.ref=ALL-UNNAMED", // For Cleaner.clean
+  )
 }
 
 dependencies {

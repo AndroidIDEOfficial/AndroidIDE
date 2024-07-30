@@ -24,7 +24,7 @@ package com.itsaky.androidide.levelhash
  * @param K The key type.
  * @param V The value type.
  */
-interface LevelHash<K : Any, V : Any?> {
+interface LevelHash<K : Any, V : Any?> : AutoCloseable {
 
   /**
    * The size of the level size. This is `log2(addrCapacity)`.

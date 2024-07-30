@@ -123,4 +123,8 @@ internal class InMemoryLevelHash<K : Any, V : Any?>(
     this.levels[Level.TOP.index] = checkNotNull(this.interimLevel)
     this.interimLevel = null
   }
+
+  override fun close() {
+    clear()
+  }
 }

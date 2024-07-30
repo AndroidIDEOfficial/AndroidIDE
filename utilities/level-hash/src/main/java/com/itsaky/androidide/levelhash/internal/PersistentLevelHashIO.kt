@@ -69,8 +69,6 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * ```
  * keymap {
  *   u64 magic_number;
- *   u32 segment_count;
- *   u64 segment_size;
  *   segment segments[segment_count];
  *
  *   segment {
@@ -96,8 +94,6 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * ```
  * values {
  *    u64 magic_number;
- *    u64 first_entry;
- *    u64 next_entry;
  *    value values[];
  *
  *    value {
@@ -110,6 +106,47 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *    }
  * }
  * ```
+ *
+ * The `values` structure constains fields :
+ * - `magic_number` - A magic number that is used to identify the values file.
+ * - `values` - The value entries.
+ *
+ * Each `value` entry contains fields :
+ * - `is_occupied` - A 1-byte boolean value (0=false or 1=true) that indicates
+ *    if the entry is occupied or not.
+ * - `entry_size` - The size of the entry in bytes (excluding the size of
+ *    `is_occupied` and `entry_size` itself).
+ * - `key_size` - The size of the key in bytes.
+ * - `key` - The key of `key_size` bytes.
+ * - `value_size` - The size of the value in bytes.
+ * - `value` - The value of `value_size` bytes.
+ *
+ *
+ * ## Metadata
+ *
+ * Structure of the metadata file :
+ *
+ * ```
+ * meta {
+ *    u32 values_version;
+ *    u32 keymap_version;
+ *    u64 values_first_entry;
+ *    u64 values_next_entry;
+ *    u64 values_file_size_bytes;
+ *    u32 km_segment_count;
+ *    u64 km_segment_size;
+ * }
+ * ```
+ *
+ * The `meta` structure contains the fields :
+ * - `values_version` - The version of the values file.
+ * - `keymap_version` - The version of the keymap file.
+ * - `values_first_entry` - The address of the first entry in the values file.
+ * - `values_next_entry` - The address of the next entry in the values file.
+ * - `values_file_size_bytes` - The (occupied) size of the values file in bytes.
+ * - `km_segment_count` - The number of segments in the keymap file.
+ * - `km_segment_size` - The size of each segment in the keymap file.
+ *
  * @author Akash Yadav
  */
 internal class PersistentLevelHashIO<K : Any, V : Any?>(
@@ -124,44 +161,25 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   // as the values file is randomly accessed, and by multiple functions, or
   // even multiple threads, the current position cannot be determined
 
+  private val metaIo =
+    PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"))
   private val keymapIo = PersistentKeymapIO(indexFile)
-
-  private val metaFile = File(indexFile.parentFile, "${indexFile.name}._meta")
-  private val raMetaFile by lazy { RandomAccessFile(metaFile, "rw") }
   private val raIndexFile by lazy { RandomAccessFile(indexFile, "rw") }
 
-  private var valFirstEntryPos = 0L
-  private var valNxtEntryPos = 0L
-  private var valIdxSize = 0L
   private var valIo = MappedRandomAccessIO()
 
   init {
     BinaryFileUtils.initSparseFile(
       file = indexFile,
-      magicNumber = VALUES_MAGIC_NUMBER,
-      maxLength = VALUES_HEADER_SIZE_BYTES + valIdxSize
-    ) { raf ->
-      var position = MAGIC_NUMBER_SIZE_BYTES
-      raf.seek(position)
-      raf.writeLong(0) // first entry
-      position += SIZE_LONG
-
-      raf.seek(position)
-      raf.writeLong(0) // next entry
-    }
-
-    // TODO: Load the below values from file when the file already exists
-
-    valNxtEntryPos = 0
-    valFirstEntryPos = VALUES_HEADER_SIZE_BYTES
-    valIdxSize = VALUES_MAX_MAP_SIZE_BYTES
+      magicNumber = VALUES_MAGIC_NUMBER
+    )
 
     // the header region is not memory mapped
     log.debug("mmap values file: offset={}, size={}", VALUES_HEADER_SIZE_BYTES,
-      valIdxSize)
+      metaIo.valuesFileSize)
     val buffer = raIndexFile.channel.map(FileChannel.MapMode.READ_WRITE,
-      VALUES_HEADER_SIZE_BYTES, valIdxSize)
-    valIo.reset(buffer, 0L, valIdxSize)
+      VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
+    valIo.reset(buffer, 0L, metaIo.valuesFileSize)
   }
 
   private fun getValuesRealOffset(offset: Long) =
@@ -343,7 +361,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       }
     }
 
-    val tokenAddr = valNxtEntryPos
+    val tokenAddr = metaIo.valuesNextEntry
     valIo.position(tokenAddr)
 
     // leave space for isOccupied token and entry size
@@ -374,7 +392,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     segment.position(positionInSegment)
     segment.writeLong(tokenAddr + 1)
 
-    valNxtEntryPos = finalAddr
+    metaIo.valuesNextEntry = finalAddr
 
     if (isUpdate) {
       var size: Long = SIZE_BOOLEAN + SIZE_SHORT
@@ -452,7 +470,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   fun clear() {
     keymapIo.deallocate(KEYMAP_HEADER_SIZE_BYTES,
       KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS)
-    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, valIdxSize)
+    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
   }
 
   @Suppress("UNUSED", "UNUSED_PARAMETER")
@@ -500,15 +518,15 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     try {
-      raIndexFile.close()
+      metaIo.close()
     } catch (e: Throwable) {
-      logger.error("Failed to close index file", e)
+      log.error("Failed to close meta file", e)
     }
 
     try {
-      raMetaFile.close()
+      raIndexFile.close()
     } catch (e: Throwable) {
-      logger.error("Failed to close meta file", e)
+      logger.error("Failed to close index file", e)
     }
   }
 
@@ -531,15 +549,16 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     /**
      * The size of the header (bytes) in the values file.
      */
-    internal const val VALUES_HEADER_SIZE_BYTES: Long =
-      MAGIC_NUMBER_SIZE_BYTES + SIZE_LONG + // first entry address
-        SIZE_LONG   // next entry address
+    internal const val VALUES_HEADER_SIZE_BYTES: Long = MAGIC_NUMBER_SIZE_BYTES
 
     /**
      * The maximum size of the region of the values file that can be mapped into
      * memory at a given time.
      */
-    internal const val VALUES_MAX_MAP_SIZE_BYTES = 512L * 1024L;
+    internal const val VALUES_INITIAL_SIZE_BYTES = 512L * 1024L
+
+    internal const val LEVEL_VALUES_VERSION = 1
+    internal const val LEVEL_KEYMAP_VERSION = 1
   }
 
 }
