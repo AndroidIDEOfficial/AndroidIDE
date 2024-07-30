@@ -413,6 +413,10 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     entrySize += SIZE_BOOLEAN // isOccupied
+
+    // seek over entrySize
+    valIo.seekShort()
+
     entrySize += SIZE_SHORT // entrySize
 
     val keySize = valIo.readInt()
