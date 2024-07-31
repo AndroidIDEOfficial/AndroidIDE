@@ -18,13 +18,9 @@
 package com.itsaky.androidide.levelhash.internal
 
 import com.itsaky.androidide.levelhash.DataExternalizer
-import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_HEADER_SIZE_BYTES
-import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_MAX_SEGMENTS
-import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_SEGMENT_SIZE_BYTES
-import com.itsaky.androidide.levelhash.seekBoolean
+import com.itsaky.androidide.levelhash.LevelHash.ResizeFailure
 import com.itsaky.androidide.levelhash.seekInt
 import com.itsaky.androidide.levelhash.seekShort
-import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_BOOLEAN
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_SHORT
@@ -34,6 +30,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
+import kotlin.math.pow
 
 private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 
@@ -51,41 +48,45 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *
  * ## Keymap
  *
- * - The keymap file header occupies [PersistentKeymapIO.KEYMAP_HEADER_SIZE_BYTES]
- *    bytes.
- * - Each segment is occupies [PersistentKeymapIO.KEYMAP_SEGMENT_SIZE_BYTES]
- *    bytes.
- * - There can be at most [PersistentKeymapIO.KEYMAP_MAX_SEGMENTS] segments in
- *    the keymap file.
- * - Each segment can store at most [PersistentKeymapIO.KEYMAP_ENTRIES_PER_SEGMENT]
- *    key-value pairs.
- *
- * Considering the default values, a keymap file can:
- * - be `8 + 4 + 1024 * 1024 * 100 = ~100 MB` in size.
- * - hold `(1024 * 1024 * 100) / 16 = 6553600 entries`
- *
  * Structure of the keymap file:
  *
  * ```
  * keymap {
  *   u64 magic_number;
- *   segment segments[segment_count];
+ *   level levels[2];
+ *   level interim_level?;
+ * }
  *
- *   segment {
- *       u64 value_address[];
- *   }
+ * level {
+ *    bucket buckets[2^(level_size-level_idx)];
+ * }
+ *
+ * bucket {
+ *    u64 slots[bucket_size];
  * }
  * ```
  *
- * - `segment_count` - The number of segments in the file.
- * - `segment_size` - The size of each segment.
- * - `segments` - The segments of the file. There are `segment_count` entries,
- *    each of exactly `segment_size` bytes.
- * - `value_address` - A 1-based 64-bit offset pointing the value entry in the values
- *    file. Note that the offset is 1-based because 0 is considered as an invalid
- *    value for the address. This helps in recognizing if an entry in the keymap
- *    points to a valid address or not. We can't really fill up the keymap entries
- *    with a negative offset as that would just take up unnecessary space.
+ * The `keymap` struct contains fields :
+ * - `magic_number` - Magic number for uniquely identifying the keymap file.
+ * - `levels` - The levels of the keymap. There are 2 levels, the top level (index 0)
+ *    and the bottom level (index 1).
+ * - `interim_level` - The temporary level that is used to move the slots from
+ *    the bottom level to the yet-to-be top level during expansion process.
+ *
+ * The `level` struct contains fields :
+ * - `buckets` - The buckets of the level. The number of buckets depends on the
+ *    index of the level and can be calculated using `2^(level_size-level_idx)`
+ *    where `level_size` is the size of the level hash and `level_idx` is the
+ *    index of the current level.
+ *
+ * The `bucket` struct contains fields :
+ * - `slots` - An array of size `bucket_size` that contains the 1-based, 64-bit
+ *    address of the the value entry in the values file. Note that the offset is
+ *    1-based because 0 is considered as an invalid value for the address (hence,
+ *    if the value is 0, then that slot is considered as an empty slot). This
+ *    helps in recognizing if an entry in the keymap points to a valid address
+ *    or not. We can't really fill up the keymap entries with a negative offset
+ *    as that would just take up unnecessary space.
  *
  * ## Values
  *
@@ -97,7 +98,6 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *    value values[];
  *
  *    value {
- *      u8 is_occupied;
  *      u16 entry_size;
  *      u32 key_size;
  *      u8 key[key_size];
@@ -112,15 +112,12 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * - `values` - The value entries.
  *
  * Each `value` entry contains fields :
- * - `is_occupied` - A 1-byte boolean value (0=false or 1=true) that indicates
- *    if the entry is occupied or not.
- * - `entry_size` - The size of the entry in bytes (excluding the size of
- *    `is_occupied` and `entry_size` itself).
+ * - `entry_size` - The size of the entry in bytes (excluding the size of this
+ *    `entry_size` field).
  * - `key_size` - The size of the key in bytes.
  * - `key` - The key of `key_size` bytes.
  * - `value_size` - The size of the value in bytes.
  * - `value` - The value of `value_size` bytes.
- *
  *
  * ## Metadata
  *
@@ -133,8 +130,10 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *    u64 values_first_entry;
  *    u64 values_next_entry;
  *    u64 values_file_size_bytes;
- *    u32 km_segment_count;
- *    u64 km_segment_size;
+ *    u32 km_level_size;
+ *    u32 km_bucket_size;
+ *    u64 km_l0_addr;
+ *    u64 km_l1_addr;
  * }
  * ```
  *
@@ -144,13 +143,17 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * - `values_first_entry` - The address of the first entry in the values file.
  * - `values_next_entry` - The address of the next entry in the values file.
  * - `values_file_size_bytes` - The (occupied) size of the values file in bytes.
- * - `km_segment_count` - The number of segments in the keymap file.
- * - `km_segment_size` - The size of each segment in the keymap file.
+ * - `km_level_size` - The level size of the level hash.
+ * - `km_bucket_size` - The bucket size of the level hash.
+ * - `km_l0_addr` - Address of the level 0 (top level) in the keymap.
+ * - `km_l1_addr` - Address of the level 1 (bottom level) in the keymap.
  *
  * @author Akash Yadav
  */
 internal class PersistentLevelHashIO<K : Any, V : Any?>(
   indexFile: File,
+  levelSize: Int,
+  bucketSize: Int,
   private val keyExternalizer: DataExternalizer<K>,
   private val valueExternalizer: DataExternalizer<V>,
 ) : AutoCloseable {
@@ -161,32 +164,67 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   // as the values file is randomly accessed, and by multiple functions, or
   // even multiple threads, the current position cannot be determined
 
-  private val metaIo =
-    PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"))
-  private val keymapIo = PersistentKeymapIO(indexFile)
+  internal val metaIo =
+    PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"), levelSize, bucketSize)
+  private val keymapFile = File(indexFile.parentFile, "${indexFile.name}._i")
+  private val raKeymapFile by lazy { RandomAccessFile(keymapFile, "rw") }
   private val raIndexFile by lazy { RandomAccessFile(indexFile, "rw") }
 
+  private val keymapIo = MappedRandomAccessIO()
   private var valIo = MappedRandomAccessIO()
 
+  private val topLevelBucketCount: Long
+    get() = 2.0.pow(metaIo.levelSize).toLong()
+
+  private val topLevelSizeBytes: Long
+    get() = topLevelBucketCount * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+
+  private val totalBucketCount: Long
+    get() = topLevelBucketCount + (topLevelBucketCount shr 1)
+
+  private val totalSlotCount: Long
+    get() = totalBucketCount * metaIo.bucketSize
+
   init {
-    BinaryFileUtils.initSparseFile(
-      file = indexFile,
-      magicNumber = VALUES_MAGIC_NUMBER
-    )
+    BinaryFileUtils.initSparseFile(file = keymapFile,
+      magicNumber = KEYMAP_MAGIC_NUMBER)
+    BinaryFileUtils.initSparseFile(file = indexFile,
+      magicNumber = VALUES_MAGIC_NUMBER)
 
     // the header region is not memory mapped
-    log.debug("mmap values file: offset={}, size={}", VALUES_HEADER_SIZE_BYTES,
-      metaIo.valuesFileSize)
-    val buffer = raIndexFile.channel.map(FileChannel.MapMode.READ_WRITE,
+    var buffer = raIndexFile.channel.map(FileChannel.MapMode.READ_WRITE,
       VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
     valIo.reset(buffer, 0L, metaIo.valuesFileSize)
+
+    val keymapSize = metaIo.keymapSize
+    buffer = raKeymapFile.channel.map(FileChannel.MapMode.READ_WRITE,
+      KEYMAP_HEADER_SIZE_BYTES, keymapSize)
+    keymapIo.reset(buffer, 0L, keymapSize)
   }
 
-  private fun getValuesRealOffset(offset: Long) =
-    VALUES_HEADER_SIZE_BYTES + offset
+  private fun realValueOffset(offset: Long) = VALUES_HEADER_SIZE_BYTES + offset
 
-  private fun valuesDeallocate(offset: Long, len: Long) {
-    FileUtils.deallocate(raIndexFile, getValuesRealOffset(offset), len)
+  private fun realKeymapOffset(offset: Long) = KEYMAP_HEADER_SIZE_BYTES + offset
+
+  private fun valuesDeallocate(offset: Long, len: Long) =
+    FileUtils.deallocate(raIndexFile, realValueOffset(offset), len)
+
+  private fun keymapDeallocate(offset: Long, len: Long) =
+    FileUtils.deallocate(raKeymapFile, realKeymapOffset(offset), len)
+
+  private fun slotAddress(
+    levelIdx: Int,
+    bucketIdx: Int,
+    slotIdx: Int,
+  ): Long {
+    val levelPos = when (levelIdx) {
+      0 -> metaIo.l0Addr
+      1 -> metaIo.l1Addr
+      else -> throw IllegalArgumentException("Invalid level index: $levelIdx")
+    }
+
+    return levelPos + (KEYMAP_ENTRY_SIZE_BYTES * metaIo.bucketSize * bucketIdx) +
+      (KEYMAP_ENTRY_SIZE_BYTES * slotIdx)
   }
 
   /**
@@ -202,12 +240,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): Long {
-    val (segment, positionInSegment) = keymapIo.segmentAndPosForPos(levelIdx,
-      bucketIdx, slotIdx)
-    segment.position(positionInSegment)
-    return segment.readLong().also { address ->
+    val slotAddr = slotAddress(levelIdx, bucketIdx, slotIdx)
+    keymapIo.position(slotAddr)
+    return keymapIo.readLong().also { address ->
       check(
-        address >= 0) { "Invalid value address in keymap at $positionInSegment: $address" }
+        address >= 0) { "Invalid value address in keymap at $slotAddr: $address" }
     }
   }
 
@@ -231,12 +268,8 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): Boolean {
-    if (!moveToSlot(levelNum, bucketIdx, slotIdx)) {
-      return false
-    }
-
-    // token must be set and key size must be > 0
-    return valIo.readBoolean() && valIo.readInt() > 0
+    // 0 == no value entry
+    return valueAddressForPos(levelNum, bucketIdx, slotIdx) > 0L
   }
 
   /**
@@ -250,12 +283,6 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
                              readKey: Boolean = false
   ): Pair<K?, Int>? {
     if (!moveToSlot(levelNum, bucketIdx, slotIdx)) {
-      return null
-    }
-
-    val isOccupied = valIo.readBoolean()
-
-    if (!isOccupied) {
       return null
     }
 
@@ -341,21 +368,21 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     key: K?,
     value: V?,
   ) {
-    val (segment, positionInSegment) = keymapIo.segmentAndPosForPos(levelNum,
-      bucketIdx, slotIdx)
+    // TODO: expand values file in case of buffer overflow
+    val slotAddr = slotAddress(levelNum, bucketIdx, slotIdx)
 
     if (key == null) {
       // delete entry
-      deleteEntry(segment, positionInSegment)
+      deleteEntry(slotAddr)
       return
     }
 
-    segment.position(positionInSegment)
-    val existingValueAddr = segment.readLong()
+    keymapIo.position(slotAddr)
+    val existingValueAddr = keymapIo.readLong()
     val (isUpdate, existingEntrySize) = run {
       if (existingValueAddr > 0L) {
         valIo.position(existingValueAddr - 1)
-        valIo.readBoolean() to valIo.readUnsignedShort().toLong()
+        true to valIo.readUnsignedShort().toLong()
       } else {
         false to 0L
       }
@@ -364,8 +391,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     val tokenAddr = metaIo.valuesNextEntry
     valIo.position(tokenAddr)
 
-    // leave space for isOccupied token and entry size
-    valIo.seekBoolean()
+    // leave space for entry size
     valIo.seekShort()
 
     val keyValPos = valIo.position()
@@ -382,20 +408,19 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
     // then set the token
     valIo.position(tokenAddr)
-    valIo.writeBoolean(true)
     valIo.writeShort((entrySize and 0xFFFF).toInt())
 
     // reset to the final position
     valIo.position(finalAddr)
 
     // then update the address in the keymap
-    segment.position(positionInSegment)
-    segment.writeLong(tokenAddr + 1)
+    keymapIo.position(slotAddr)
+    keymapIo.writeLong(tokenAddr + 1)
 
     metaIo.valuesNextEntry = finalAddr
 
     if (isUpdate) {
-      var size: Long = SIZE_BOOLEAN + SIZE_SHORT
+      var size: Long = SIZE_SHORT
       if (existingEntrySize > 0L) {
         size += existingEntrySize
       }
@@ -406,12 +431,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   private fun deleteEntry(
-    segment: KeymapSegment,
-    positionInSegment: Long,
+    slotAddr: Long,
     readValue: Boolean = false,
   ): V? {
-    segment.position(positionInSegment)
-    val valueAddr = segment.readLong()
+    keymapIo.position(slotAddr)
+    val valueAddr = keymapIo.readLong()
 
     if (valueAddr == 0L) {
       return null
@@ -419,23 +443,12 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
     // reading this region again will return 0, which is considered
     // a null pointer
-    keymapIo.deallocate(segment, positionInSegment, SIZE_LONG)
+    keymapDeallocate(slotAddr, SIZE_LONG)
 
     valIo.position(valueAddr - 1)
+    valIo.seekShort() // seek over entrySize
 
-    var entrySize = 0L
-
-    if (!valIo.readBoolean()) {
-      // slot is not occupied
-      return null
-    }
-
-    entrySize += SIZE_BOOLEAN // isOccupied
-
-    // seek over entrySize
-    valIo.seekShort()
-
-    entrySize += SIZE_SHORT // entrySize
+    var entrySize = SIZE_SHORT
 
     val keySize = valIo.readInt()
     entrySize += SIZE_INT
@@ -468,20 +481,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   fun clear() {
-    keymapIo.deallocate(KEYMAP_HEADER_SIZE_BYTES,
-      KEYMAP_SEGMENT_SIZE_BYTES * KEYMAP_MAX_SEGMENTS)
-    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
-  }
+    var keymapSize = topLevelSizeBytes
+    keymapSize += topLevelSizeBytes shr 1
 
-  @Suppress("UNUSED", "UNUSED_PARAMETER")
-  fun tryMoveToInterim(
-    levelNum: Int,
-    bucketIdx: Int,
-    slotIdx: Int,
-    key: K?,
-    value: V?,
-  ): V? {
-    TODO()
+    keymapDeallocate(KEYMAP_HEADER_SIZE_BYTES, keymapSize)
+    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
   }
 
   private fun <T> writeSlotKeyOrVal(obj: T?, externalizer: DataExternalizer<T>
@@ -510,28 +514,20 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   override fun close() {
-
-    try {
-      keymapIo.close()
-    } catch (e: Throwable) {
-      log.error("Failed to close keymap file", e)
-    }
-
-    try {
-      metaIo.close()
-    } catch (e: Throwable) {
-      log.error("Failed to close meta file", e)
-    }
-
-    try {
-      raIndexFile.close()
-    } catch (e: Throwable) {
-      logger.error("Failed to close index file", e)
-    }
+    closeAndLogErrs(metaIo, keymapIo, valIo, raKeymapFile, raIndexFile)
   }
 
-
   companion object {
+
+    private fun closeAndLogErrs(vararg closeable: AutoCloseable) {
+      closeable.forEachIndexed { index, autoCloseable ->
+        try {
+          autoCloseable.close()
+        } catch (e: Throwable) {
+          logger.error("Failed to close [{}]", index, e)
+        }
+      }
+    }
 
     private val log = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 
@@ -557,8 +553,32 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
      */
     internal const val VALUES_INITIAL_SIZE_BYTES = 512L * 1024L
 
+    /**
+     * The number of bytes used to store the header of the keymap file.
+     */
+    internal const val KEYMAP_HEADER_SIZE_BYTES: Long = MAGIC_NUMBER_SIZE_BYTES
+
+    /**
+     * The number of bytes that are used to store an entry in a key map file.
+     */
+    internal const val KEYMAP_ENTRY_SIZE_BYTES: Long = SIZE_LONG
+
+    /**
+     * Magic number that is used as the file signature to identify the keymap file.
+     */
+    internal const val KEYMAP_MAGIC_NUMBER = 0x414944584B
+
     internal const val LEVEL_VALUES_VERSION = 1
     internal const val LEVEL_KEYMAP_VERSION = 1
   }
 
+  /**
+   * Thrown during a move operation when the destination slot is already occupied.
+   */
+  class DestinationOccupiedException(
+    levelIdx: Int,
+    bucketIdx: Int,
+    slotIdx: Int,
+  ) : ResizeFailure(
+    "Destination slot is already occupied: levelIdx=$levelIdx, bucketIdx=$bucketIdx, slotIdx=$slotIdx")
 }

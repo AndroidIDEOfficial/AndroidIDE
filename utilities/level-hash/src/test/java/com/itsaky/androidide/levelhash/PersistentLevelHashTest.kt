@@ -56,9 +56,9 @@ class PersistentLevelHashTest {
       .keyExternalizer(DataExternalizers.STRING)
       .valueExternalizer(valueExternalizer)
       .indexFile(indexFile)
-      .apply(conf)
       .levelSize(2)
       .hashFn(::stringHash)
+      .apply { conf(this as PersistentHashBuilder<String, V>) }
       .build()
 
     assertThat(hash).isNotNull()
@@ -97,6 +97,17 @@ class PersistentLevelHashTest {
       }
 
       assertThat(hash.insert("k", "v")).isFalse()
+    }
+  }
+
+  @Test
+  fun `test values file expands and remaps in case of buffer overflow`() {
+    persistentStringHash("huge") { autoExpand(false).levelSize(15).bucketSize(10) }.use { hash ->
+      for (i in 0..<hash.totalSlotCount) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
     }
   }
 
@@ -181,6 +192,30 @@ class PersistentLevelHashTest {
       assertThat(hash["key"]).isEqualTo("value")
       assertThat(hash["null"]).isEqualTo(null)
       assertThat(hash["long"]).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    }
+  }
+
+  @Test
+  fun `test level hash expand`() {
+    persistentStringHash(
+      fileName = "expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()
+    ).use { hash ->
+      for (i in 0..<hash.totalSlotCount) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
+
+      // expand the level hash
+      hash.expand(1)
+
+      // then check that all existing entries are still present
+      for (i in 0..<hash.totalSlotCount) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash[key]).isEqualTo(value)
+      }
     }
   }
 }

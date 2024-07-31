@@ -42,7 +42,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
   protected val seeds: Pair<HashT, HashT>,
 ) : LevelHash<K, V> {
 
-  final override var levelSize: Int = levelSize
+  override var levelSize: Int = levelSize
     set(value) {
       require(value <= 30) { "Level size must be <= 30" }
       field = value
@@ -119,13 +119,13 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
 
   override fun insert(key: K, value: V): Boolean {
 
-    if (this.levelItemCounts.sum() == this.totalSlotCount) {
+    if (this.levelItemCounts[0] == this.topLevelBucketCount * this.bucketSize) {
       if (autoExpand) {
         check(expand(1)) {
           "Failed to expand the level hash"
         }
       } else {
-        throw OverflowException()
+        throw OverflowException(this.totalSlotCount, this.levelItemCounts.sum())
       }
     }
 
@@ -266,33 +266,39 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
     for (oldBuckIdx in 0..<(this.topLevelBucketCount shr 1)) {
       for (oldSlotIdx in 0..<this.bucketSize) {
         val oldSlot = getSlot(Level.BOTTOM, oldBuckIdx, oldSlotIdx)
-        if (oldSlot.isOccupied()) {
-          val fhash = fhash(oldSlot.key)
-          val shash = shash(oldSlot.key)
-          val fidx = buckIdxCap(fhash, newTopLevelCapacity)
-          val sidx = buckIdxCap(shash, newTopLevelCapacity)
-
-          var insertSuccess = false
-          for (newSlotIdx in 0..<this.bucketSize) {
-            if (tryMoveToInterim(oldSlot, fidx, newSlotIdx) || tryMoveToInterim(
-                oldSlot, sidx, newSlotIdx)
-            ) {
-              insertSuccess = true
-              newLevelItemCount++
-              break
-            }
-          }
-
-          if (!insertSuccess) {
-            throw ResizeFailure("Failed to move slot to the interim level")
-          }
-
-          oldSlot.reset(null, null)
+        if (!oldSlot.isOccupied()) {
+          continue
         }
+
+        val fhash = fhash(oldSlot.key)
+        val shash = shash(oldSlot.key)
+        val fidx = buckIdxCap(fhash, newTopLevelCapacity)
+        val sidx = buckIdxCap(shash, newTopLevelCapacity)
+
+        var insertSuccess = false
+        for (newSlotIdx in 0..<this.bucketSize) {
+          if (moveForExpansion(oldSlot, fidx, newSlotIdx) || moveForExpansion(
+              oldSlot, sidx, newSlotIdx)
+          ) {
+            insertSuccess = true
+            newLevelItemCount++
+            break
+          }
+        }
+
+        if (!insertSuccess) {
+          throw ResizeFailure("Failed to move slot to the interim level")
+        }
+
+        oldSlot.reset(null, null)
       }
     }
 
+    this.levelSize = levelSize
+    this.topLevelBucketCount = 2.0.pow(levelSize).toInt()
+
     onExpand(levelSize, newLevelItemCount)
+
     this.levelItemCounts[1] = this.levelItemCounts[0]
     this.levelItemCounts[0] = newLevelItemCount
     this.expandCount++
@@ -306,7 +312,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
    *
    * @param bucketCount The bucket count of the interim level.
    */
-  protected abstract fun prepareExpansion(bucketCount: Int)
+  protected open fun prepareExpansion(bucketCount: Int) {}
 
   /**
    * Called to notify that the expand operation was successful.
@@ -315,8 +321,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
    * @param interimItemCount The number of slot that are occupied in the
    * interim level.
    */
-  protected abstract fun onExpand(newLevelSize: Int, interimItemCount: Int
-  )
+  protected open fun onExpand(newLevelSize: Int, interimItemCount: Int) {}
 
   /**
    * Move the given slot to the interim level at the given slot in the given bucket.
@@ -330,8 +335,8 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
    * slot should be moved.
    * @return Whether the slot was moved to the interim level.
    */
-  protected abstract fun tryMoveToInterim(slot: LevelSlot<K, V>,
-                                          bucketIdx: Int, slotIdx: Int
+  protected abstract fun moveForExpansion(slot: LevelSlot<K, V>,
+                                  bucketIdx: Int, slotIdx: Int
   ): Boolean
 
   /**

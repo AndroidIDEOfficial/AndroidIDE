@@ -18,13 +18,20 @@
 package com.itsaky.androidide.levelhash
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO
+import com.itsaky.androidide.levelhash.LevelHash.Companion.BUCKET_SIZE_DEFAULT
+import com.itsaky.androidide.levelhash.LevelHash.Companion.LEVEL_SIZE_DEFAULT
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_KEYMAP_VERSION
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_VALUES_VERSION
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_HEADER_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_INITIAL_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentMetaIO
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.File
+import kotlin.math.pow
 
 /**
  * @author Akash Yadav
@@ -43,40 +50,36 @@ class PersistentMetaIOTest {
       metaFile.parentFile!!.mkdirs()
     }
 
-    return PersistentMetaIO(metaFile)
+    return PersistentMetaIO(metaFile = metaFile,
+      levelSize = LEVEL_SIZE_DEFAULT,
+      bucketSize = BUCKET_SIZE_DEFAULT)
   }
 
   @Test
   fun `test meta init with default values`() {
     val io = createMetaIo("init-with-default")
-    assertThat(io.valuesVersion).isEqualTo(PersistentLevelHashIO.LEVEL_VALUES_VERSION)
-    assertThat(io.keymapVersion).isEqualTo(PersistentLevelHashIO.LEVEL_KEYMAP_VERSION)
-    assertThat(io.valuesFirstEntry).isEqualTo(PersistentLevelHashIO.VALUES_HEADER_SIZE_BYTES)
-    assertThat(io.valuesNextEntry).isEqualTo(PersistentLevelHashIO.VALUES_HEADER_SIZE_BYTES)
-    assertThat(io.valuesFileSize).isEqualTo(PersistentLevelHashIO.VALUES_INITIAL_SIZE_BYTES)
-    assertThat(io.keymapSegmentCount).isEqualTo(1)
-    assertThat(io.keymapSegmentSize).isEqualTo(PersistentKeymapIO.KEYMAP_SEGMENT_SIZE_BYTES)
+    assertThat(io.valuesVersion).isEqualTo(LEVEL_VALUES_VERSION)
+    assertThat(io.keymapVersion).isEqualTo(LEVEL_KEYMAP_VERSION)
+    assertThat(io.valuesFirstEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
+    assertThat(io.valuesNextEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
+    assertThat(io.valuesFileSize).isEqualTo(VALUES_INITIAL_SIZE_BYTES)
+    assertThat(io.levelSize).isEqualTo(LEVEL_SIZE_DEFAULT)
+    assertThat(io.bucketSize).isEqualTo(BUCKET_SIZE_DEFAULT)
+    assertThat(io.l0Addr).isEqualTo(0L)
+    assertThat(io.l1Addr).isEqualTo(2.0.pow(LEVEL_SIZE_DEFAULT).toLong() * BUCKET_SIZE_DEFAULT * KEYMAP_ENTRY_SIZE_BYTES)
   }
 
   @Test
   fun `test meta init with existing file`() {
     createMetaIo(name = "init-with-existing").use { io ->
-      assertThat(io.valuesVersion).isEqualTo(PersistentLevelHashIO.LEVEL_VALUES_VERSION)
-      assertThat(io.keymapVersion).isEqualTo(PersistentLevelHashIO.LEVEL_KEYMAP_VERSION)
-      assertThat(io.valuesFirstEntry).isEqualTo(PersistentLevelHashIO.VALUES_HEADER_SIZE_BYTES)
-      assertThat(io.valuesNextEntry).isEqualTo(PersistentLevelHashIO.VALUES_HEADER_SIZE_BYTES)
-      assertThat(io.valuesFileSize).isEqualTo(PersistentLevelHashIO.VALUES_INITIAL_SIZE_BYTES)
-      assertThat(io.keymapSegmentCount).isEqualTo(1)
-      assertThat(io.keymapSegmentSize).isEqualTo(PersistentKeymapIO.KEYMAP_SEGMENT_SIZE_BYTES)
-
       io.valuesVersion = 2
       io.keymapVersion = 3
       io.valuesFirstEntry = 100
       io.valuesNextEntry = 200
       io.valuesFileSize = 1024
 
-      io.keymapSegmentCount = 10
-      io.keymapSegmentSize = 1024
+      io.levelSize = 10
+      io.bucketSize = 20
     }
 
     createMetaIo(name = "init-with-existing", createNew = false).use { io ->
@@ -85,8 +88,10 @@ class PersistentMetaIOTest {
       assertThat(io.valuesFirstEntry).isEqualTo(100)
       assertThat(io.valuesNextEntry).isEqualTo(200)
       assertThat(io.valuesFileSize).isEqualTo(1024)
-      assertThat(io.keymapSegmentCount).isEqualTo(10)
-      assertThat(io.keymapSegmentSize).isEqualTo(1024)
+      assertThat(io.levelSize).isEqualTo(10)
+      assertThat(io.bucketSize).isEqualTo(20)
+      assertThat(io.l0Addr).isEqualTo(0L)
+      assertThat(io.l1Addr).isEqualTo(2.0.pow(io.levelSize).toLong() * io.bucketSize * KEYMAP_ENTRY_SIZE_BYTES)
     }
   }
 }

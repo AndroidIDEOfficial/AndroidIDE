@@ -21,8 +21,28 @@ package com.itsaky.androidide.levelhash
  * Level hash is a write-optimized and high-performance hashing index scheme with cost-efficient
  * resizing and low-overhead consistency guarantee for persistent memory.
  *
+ * **Level size and bucket size**
+ *
+ * The level size is used to determine the total capacity of the level hash,
+ * while the bucket size is the number of slots in each bucket. These two
+ * properties define the overall performance (load factor) of the level hash
+ * (in terms of hash collisions and insertion failures). As a result, the values
+ * for these properties must be chosen carefully.
+ *
+ * ```
+ * Load factor = occupied slots / total slots
+ * ```
+ *
+ * When the load factor of the level hash increases, the hash collisions increase
+ * as well. This results in decreased access performance and insertion failures.
+ * It is **recommended** to enable [AbstractLevelHashBuilder.autoExpand] which
+ * will automatically expand the level hash when the load factor reaches a certain
+ * threshold (specifically, when the top level is full).
+ *
  * @param K The key type.
  * @param V The value type.
+ *
+ * @author Akash Yadav
  */
 interface LevelHash<K : Any, V : Any?> : AutoCloseable {
 
@@ -130,6 +150,11 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
     /**
      * The default level size.
      */
+    const val LEVEL_SIZE_DEFAULT = 3
+
+    /**
+     * The default level size.
+     */
     const val BUCKET_SIZE_DEFAULT = 4
 
     /**
@@ -163,12 +188,12 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
    * An [InsertionError] which is thrown when the level hash is full and unable
    * to insert new values.
    */
-  class OverflowException : InsertionError("Level hash has reached is capacity")
+  class OverflowException(capacity: Int, occupied: Int) : InsertionError("Level hash has reached is capacity. cap=$capacity occ=$occupied")
 
   /**
    * Thrown when the level hash cannot be resized.
    */
-  class ResizeFailure(msg: String) : InsertionError(msg)
+  open class ResizeFailure(msg: String) : InsertionError(msg)
 
   /**
    * Thrown when *update* operation fails to find the slot in a [LevelHash].

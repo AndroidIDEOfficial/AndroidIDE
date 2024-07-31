@@ -25,6 +25,7 @@ import com.itsaky.androidide.levelhash.seekFloat
 import com.itsaky.androidide.levelhash.seekInt
 import com.itsaky.androidide.levelhash.seekLong
 import com.itsaky.androidide.levelhash.seekShort
+import org.slf4j.LoggerFactory
 import java.io.DataInput
 import java.io.DataInputStream
 import java.io.DataOutput
@@ -38,12 +39,17 @@ import kotlin.math.min
  *
  * @author Akash Yadav
  */
-internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO {
+internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, AutoCloseable {
 
+  private var positionOffset = 0L
   private var position = 0L
   private var size = 0L
 
   private lateinit var buffer: MappedByteBuffer
+
+  companion object {
+    private val log = LoggerFactory.getLogger(MappedRandomAccessIO::class.java)
+  }
 
   internal fun buf(): MappedByteBuffer = buf(this.position)
 
@@ -51,19 +57,26 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO {
     return this.buffer.apply { position(position.toInt()) }
   }
 
-  fun reset(buffer: MappedByteBuffer, position: Long, length: Long) {
+  fun reset(buffer: MappedByteBuffer, position: Long, length: Long, positionOffset: Long = 0L) {
     this.buffer = buffer
     this.position = position
     this.size = length
+    this.positionOffset = positionOffset
+  }
+
+  override fun close() {
+    try {
+      buffer.unmap()
+    } catch (err: Throwable) {
+      log.error("Failed to close memory-mapped buffer", err)
+    }
   }
 
   override fun position(position: Long) {
     val currentPos = position()
     if (currentPos == position) return
     require(position >= 0L) { "position must be >= 0, position=$position" }
-    require(
-      position < size) { "position must be < size:$size, position=$position" }
-    this.position = position
+    this.position = this.positionOffset + position
   }
 
   override fun position(): Long {

@@ -95,8 +95,8 @@ internal class InMemoryLevelHash<K : Any, V : Any?>(
     this.interimLevel = List(bucketCount) { InMemoryLevelBucket(bucketSize) }
   }
 
-  override fun tryMoveToInterim(slot: LevelSlot<K, V>, bucketIdx: Int,
-                                slotIdx: Int
+  override fun moveForExpansion(slot: LevelSlot<K, V>, bucketIdx: Int,
+                        slotIdx: Int
   ): Boolean {
     val interimLevel = checkNotNull(interimLevel)
     slot as InMemoryLevelSlot<K, V>
@@ -113,9 +113,6 @@ internal class InMemoryLevelHash<K : Any, V : Any?>(
   }
 
   override fun onExpand(newLevelSize: Int, interimItemCount: Int) {
-    this.levelSize = newLevelSize
-    this.topLevelBucketCount = 2.0.pow(newLevelSize).toInt()
-
     // after expand, interim level becomes the new top level
     // and the current top level becomes the new bottom level
     // the current bottom level is released

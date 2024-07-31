@@ -22,7 +22,6 @@ import com.itsaky.androidide.levelhash.HashT
 import com.itsaky.androidide.levelhash.LevelHashFn
 import com.itsaky.androidide.levelhash.LevelSlot
 import java.io.File
-import kotlin.math.pow
 
 /**
  * An file-based persistent implementation of [AbstractLevelHash].
@@ -39,35 +38,22 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
   keyExternalizer: DataExternalizer<K>,
   valueExternalizer: DataExternalizer<V>,
   indexFile: File,
-) : AbstractLevelHash<K, V>(
-  levelSize = levelSize,
-  bucketSize = bucketSize,
-  uniqueKeys = uniqueKeys,
-  autoExpand = autoExpand,
-  levelHashFn = levelHashFn,
-  seeds = seeds
-) {
+) : AbstractLevelHash<K, V>(levelSize = levelSize, bucketSize = bucketSize,
+  uniqueKeys = uniqueKeys, autoExpand = autoExpand, levelHashFn = levelHashFn,
+  seeds = seeds) {
 
-  private val io =
-    PersistentLevelHashIO(indexFile, keyExternalizer, valueExternalizer)
+  private val io = PersistentLevelHashIO(indexFile, levelSize, bucketSize, keyExternalizer,
+    valueExternalizer)
+
+  override var levelSize: Int
+    get() = io.metaIo.levelSize
+    set(value) {
+      io.metaIo.levelSize = value
+    }
 
   override fun getSlot(levelIdx: Int, bucketIdx: Int, slotIdx: Int
   ): LevelSlot<K, V> {
-    return object : LevelSlot<K, V> {
-      override val key: K
-        get() = checkNotNull(io.readKey(levelIdx, bucketIdx, slotIdx))
-
-      override val value: V?
-        get() = io.readValue(levelIdx, bucketIdx, slotIdx)
-
-      override fun isOccupied(): Boolean {
-        return io.isOccupied(levelIdx, bucketIdx, slotIdx)
-      }
-
-      override fun reset(key: K?, value: V?) {
-        io.writeEntry(levelIdx, bucketIdx, slotIdx, key, value)
-      }
-    }
+    return PersistentLevelSlot(levelIdx, bucketIdx, slotIdx, io)
   }
 
   override fun clear() {
@@ -78,22 +64,31 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
     io.close()
   }
 
-  private var interimBucketCount = -1
-  override fun prepareExpansion(bucketCount: Int) {
-    check(this.interimBucketCount == -1)
-    this.interimBucketCount = bucketCount
-  }
-
-  override fun tryMoveToInterim(
-    slot: LevelSlot<K, V>,
-    bucketIdx: Int,
-    slotIdx: Int
+  override fun moveForExpansion(slot: LevelSlot<K, V>, bucketIdx: Int,
+                                slotIdx: Int
   ): Boolean {
-    TODO()
+    slot as PersistentLevelSlot<K, V>
+    return false
   }
 
-  override fun onExpand(newLevelSize: Int, interimItemCount: Int) {
-    this.levelSize = newLevelSize
-    this.topLevelBucketCount = 2.0.pow(newLevelSize).toInt()
+  private class PersistentLevelSlot<K : Any, V : Any?>(
+    val levelIdx: Int,
+    val bucketIdx: Int,
+    val slotIdx: Int,
+    private val io: PersistentLevelHashIO<K, V>,
+  ) : LevelSlot<K, V> {
+
+    override val key: K
+      get() = checkNotNull(io.readKey(levelIdx, bucketIdx, slotIdx))
+
+    override val value: V?
+      get() = io.readValue(levelIdx, bucketIdx, slotIdx)
+
+    override fun isOccupied(): Boolean =
+      io.isOccupied(levelIdx, bucketIdx, slotIdx)
+
+    override fun reset(key: K?, value: V?) {
+      io.writeEntry(levelIdx, bucketIdx, slotIdx, key, value)
+    }
   }
 }

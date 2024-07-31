@@ -18,7 +18,8 @@
 package com.itsaky.androidide.levelhash.internal
 
 import androidx.collection.MutableLongLongMap
-import com.itsaky.androidide.levelhash.internal.PersistentKeymapIO.Companion.KEYMAP_SEGMENT_SIZE_BYTES
+import com.itsaky.androidide.levelhash.LevelHash
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_KEYMAP_VERSION
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_VALUES_VERSION
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_HEADER_SIZE_BYTES
@@ -29,70 +30,67 @@ import org.slf4j.LoggerFactory
 import java.io.EOFException
 import java.io.File
 import java.io.RandomAccessFile
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * @author Akash Yadav
  */
-internal class PersistentMetaIO(private val metaFile: File
+internal class PersistentMetaIO(private val metaFile: File,
+                                levelSize: Int,
+                                bucketSize: Int,
 ) : AutoCloseable {
 
   private val raFile by lazy { RandomAccessFile(metaFile, "rw") }
   private val cache = MutableLongLongMap(META__FIELD_COUNT)
 
   var valuesVersion: Int
-    get() {
-      return readInt(VAL__VERSION__OFFSET)
-    }
-    set(value) {
-      writeInt(VAL__VERSION__OFFSET, value)
-    }
+    get() = readInt(VAL__VERSION__OFFSET)
+    set(value) = writeInt(VAL__VERSION__OFFSET, value)
 
   var keymapVersion: Int
-    get() {
-      return readInt(KM__VERSION__OFFSET)
-    }
-    set(value) {
-      writeInt(KM__VERSION__OFFSET, value)
-    }
+    get() = readInt(KM__VERSION__OFFSET)
+    set(value) = writeInt(KM__VERSION__OFFSET, value)
 
   var valuesFirstEntry: Long
-    get() {
-      return readLong(VAL__FIRST_ENTRY__OFFSET)
-    }
-    set(value) {
-      writeLong(VAL__FIRST_ENTRY__OFFSET, value)
-    }
+    get() = readLong(VAL__FIRST_ENTRY__OFFSET)
+    set(value) = writeLong(VAL__FIRST_ENTRY__OFFSET, value)
 
   var valuesNextEntry: Long
-    get() {
-      return readLong(VAL__NEXT_ENTRY__OFFSET)
-    }
-    set(value) {
-      writeLong(VAL__NEXT_ENTRY__OFFSET, value)
-    }
+    get() = readLong(VAL__NEXT_ENTRY__OFFSET)
+    set(value) = writeLong(VAL__NEXT_ENTRY__OFFSET, value)
 
   var valuesFileSize: Long
-    get() {
-      return readLong(VAL__VAL_SIZE__OFFSET)
-    }
-    set(value) {
-      writeLong(VAL__VAL_SIZE__OFFSET, value)
-    }
+    get() = readLong(VAL__VAL_SIZE__OFFSET)
+    set(value) = writeLong(VAL__VAL_SIZE__OFFSET, value)
 
-  var keymapSegmentCount: Int
-    get() {
-      return readInt(KM__SEGMENT_COUNT__OFFSET)
-    }
-    set(value) {
-      writeInt(KM__SEGMENT_COUNT__OFFSET, value)
-    }
+  var levelSize: Int
+    get() = readInt(KM__LEVEL_SIZE__OFFSET)
+    set(value) = writeInt(KM__LEVEL_SIZE__OFFSET, value)
 
-  var keymapSegmentSize: Long
+  var bucketSize: Int
+    get() = readInt(KM__BUCKET_SIZE__OFFSET)
+    set(value) = writeInt(KM__BUCKET_SIZE__OFFSET, value)
+
+  var l0Addr: Long
+    get() = readLong(KM__L0_ADDR__OFFSET)
+    set(value) { writeLong(KM__L0_ADDR__OFFSET, value) }
+
+  var l1Addr: Long
+    get() = readLong(KM__L1_ADDR__OFFSET)
+    set(value) { writeLong(KM__L1_ADDR__OFFSET, value) }
+
+  val keymapSize: Long
     get() {
-      return readLong(KM__SEGMENT_SIZE__OFFSET)
-    }
-    set(value) {
-      writeLong(KM__SEGMENT_SIZE__OFFSET, value)
+      // for this to work, l0 and l1 must be in a contiguosly allocated space
+      // in the keymap file
+      val l0Addr = this.l0Addr
+      val l1Addr = this.l1Addr
+      val l0SizeBytes = 2.0.pow(levelSize).toLong() * bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+      var size = min(l0Addr, l1Addr)
+      size += l0SizeBytes
+      size += l0SizeBytes shr 1
+      return size
     }
 
   init {
@@ -110,17 +108,21 @@ internal class PersistentMetaIO(private val metaFile: File
       valuesFileSize = VALUES_INITIAL_SIZE_BYTES
     }
     if (valuesFirstEntry == 0L) {
-      valuesFirstEntry = VALUES_HEADER_SIZE_BYTES
+      valuesFirstEntry = 0
     }
     if (valuesNextEntry == 0L) {
-      valuesNextEntry = valuesFirstEntry
+      valuesNextEntry = 0
     }
-    if (keymapSegmentCount == 0) {
-      // initially, there should be at least one segment
-      keymapSegmentCount = 1
+    if (this.levelSize != levelSize) {
+      this.levelSize = levelSize
     }
-    if (keymapSegmentSize == 0L) {
-      keymapSegmentSize = KEYMAP_SEGMENT_SIZE_BYTES
+    if (this.bucketSize != bucketSize) {
+      this.bucketSize = bucketSize
+    }
+    // default value of l0Addr is 0
+    // only the value of l1Addr should be updated
+    if (this.l1Addr == 0L) {
+      this.l1Addr = 2.0.pow(levelSize).toLong() * bucketSize * KEYMAP_ENTRY_SIZE_BYTES
     }
   }
 
@@ -223,26 +225,34 @@ internal class PersistentMetaIO(private val metaFile: File
       VAL__NEXT_ENTRY__OFFSET + VAL__NEXT_ENTRY__SIZE_BYTES
     private const val VAL__VAL_SIZE__SIZE_BYTES = SIZE_LONG
 
-    private const val KM__SEGMENT_COUNT__OFFSET =
+    private const val KM__LEVEL_SIZE__OFFSET =
       VAL__VAL_SIZE__OFFSET + VAL__VAL_SIZE__SIZE_BYTES
-    private const val KM__SEGMENT_COUNT__SIZE_BYTES = SIZE_INT
+    private const val KM__LEVEL_SIZE__SIZE_BYTES = SIZE_INT
 
-    private const val KM__SEGMENT_SIZE__OFFSET =
-      KM__SEGMENT_COUNT__OFFSET + KM__SEGMENT_COUNT__SIZE_BYTES
-    private const val KM__SEGMENT_SIZE__SIZE_BYTES = SIZE_LONG
+    private const val KM__BUCKET_SIZE__OFFSET =
+      KM__LEVEL_SIZE__OFFSET + KM__LEVEL_SIZE__SIZE_BYTES
+    private const val KM__BUCKET_SIZE__SIZE_BYTES = SIZE_INT
+
+    private const val KM__L0_ADDR__OFFSET =
+      KM__BUCKET_SIZE__OFFSET + KM__BUCKET_SIZE__SIZE_BYTES
+    private const val KM__L0_ADDR__SIZE_BYTES = SIZE_LONG
+
+    private const val KM__L1_ADDR__OFFSET =
+      KM__L0_ADDR__OFFSET + KM__L0_ADDR__SIZE_BYTES
+    private const val KM__L1_ADDR__SIZE_BYTES = SIZE_LONG
 
     // TODO: The properties below must be updated when a new field is added to the meta file
 
     /**
      * The number of fields in the meta file.
      */
-    private const val META__FIELD_COUNT = 7
+    private const val META__FIELD_COUNT = 9
 
     /**
      * The size of the meta file in bytes.
      */
     // Offset of the last field + its size
     private const val META__SIZE_BYTES =
-      KM__SEGMENT_SIZE__OFFSET + KM__SEGMENT_SIZE__SIZE_BYTES
+      KM__L1_ADDR__OFFSET + KM__L1_ADDR__SIZE_BYTES
   }
 }
