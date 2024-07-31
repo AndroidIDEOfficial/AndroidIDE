@@ -18,12 +18,10 @@
 package com.itsaky.androidide.levelhash.internal
 
 import androidx.collection.MutableLongLongMap
-import com.itsaky.androidide.levelhash.LevelHash
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_KEYMAP_VERSION
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_VALUES_VERSION
-import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_HEADER_SIZE_BYTES
-import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_INITIAL_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_SEGMENT_SIZE_BYTES
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
 import org.slf4j.LoggerFactory
@@ -105,7 +103,7 @@ internal class PersistentMetaIO(private val metaFile: File,
       keymapVersion = LEVEL_KEYMAP_VERSION
     }
     if (valuesFileSize == 0L) {
-      valuesFileSize = VALUES_INITIAL_SIZE_BYTES
+      valuesFileSize = VALUES_SEGMENT_SIZE_BYTES
     }
     if (valuesFirstEntry == 0L) {
       valuesFirstEntry = 0

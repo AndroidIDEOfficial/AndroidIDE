@@ -106,7 +106,10 @@ class PersistentLevelHashTest {
       for (i in 0..<hash.totalSlotCount) {
         val key = "key${i}"
         val value = "value${i}"
-        assertThat(hash.insert(key, value)).isTrue()
+        if (!hash.insert(key, value)) {
+          println("key: $key, value: $value, load=${hash.loadFactor()}")
+          assert(false)
+        }
       }
     }
   }

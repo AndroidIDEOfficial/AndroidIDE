@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.levelhash
 
+import androidx.annotation.FloatRange
+
 /**
  * Level hash is a write-optimized and high-performance hashing index scheme with cost-efficient
  * resizing and low-overhead consistency guarantee for persistent memory.
@@ -135,6 +137,17 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
    * level size.
    */
   fun expand(addtionalLevelSize: Int): Boolean
+
+  /**
+   * Get the load factor of the level hash.
+   *
+   * @return The load factor. Load factor is a measure of how full the level
+   * hash is. It is calculated as the ratio of the number of occupied slots to
+   * the total number of slots in the level hash. Return value lies between 0.0
+   * and 1.0.
+   */
+  @FloatRange(from = 0.0, to = 1.0)
+  fun loadFactor(): Float
 
   /**
    * The two levels in a [LevelHash].

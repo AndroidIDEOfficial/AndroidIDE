@@ -56,6 +56,13 @@ interface RandomAccessIO {
   fun position(position: Long)
 
   /**
+   * Try to move to the given position.
+   *
+   * @return `true` if the position was moved successfully, `false` otherwise.
+   */
+  fun tryPosition(position: Long): Boolean
+
+  /**
    * Seek the position by given count.
    */
   fun seekRelative(count: Int) {

@@ -20,10 +20,8 @@ package com.itsaky.androidide.levelhash.internal
 import com.itsaky.androidide.levelhash.DataExternalizer
 import com.itsaky.androidide.levelhash.LevelHash.ResizeFailure
 import com.itsaky.androidide.levelhash.seekInt
-import com.itsaky.androidide.levelhash.seekShort
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
-import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_SHORT
 import com.itsaky.androidide.levelhash.util.FileUtils
 import com.itsaky.androidide.levelhash.util.MappedRandomAccessIO
 import org.slf4j.LoggerFactory
@@ -98,7 +96,7 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *    value values[];
  *
  *    value {
- *      u16 entry_size;
+ *      u32 entry_size;
  *      u32 key_size;
  *      u8 key[key_size];
  *      u32 value_size;
@@ -165,10 +163,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   // even multiple threads, the current position cannot be determined
 
   internal val metaIo =
-    PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"), levelSize, bucketSize)
+    PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"),
+      levelSize, bucketSize)
   private val keymapFile = File(indexFile.parentFile, "${indexFile.name}._i")
   private val raKeymapFile by lazy { RandomAccessFile(keymapFile, "rw") }
-  private val raIndexFile by lazy { RandomAccessFile(indexFile, "rw") }
+  private val raValuesFile by lazy { RandomAccessFile(indexFile, "rw") }
 
   private val keymapIo = MappedRandomAccessIO()
   private var valIo = MappedRandomAccessIO()
@@ -192,14 +191,8 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       magicNumber = VALUES_MAGIC_NUMBER)
 
     // the header region is not memory mapped
-    var buffer = raIndexFile.channel.map(FileChannel.MapMode.READ_WRITE,
-      VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
-    valIo.reset(buffer, 0L, metaIo.valuesFileSize)
-
-    val keymapSize = metaIo.keymapSize
-    buffer = raKeymapFile.channel.map(FileChannel.MapMode.READ_WRITE,
-      KEYMAP_HEADER_SIZE_BYTES, keymapSize)
-    keymapIo.reset(buffer, 0L, keymapSize)
+    valuesRemap(size = metaIo.valuesFileSize)
+    keymapResize(newSize = metaIo.keymapSize)
   }
 
   private fun realValueOffset(offset: Long) = VALUES_HEADER_SIZE_BYTES + offset
@@ -207,10 +200,44 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   private fun realKeymapOffset(offset: Long) = KEYMAP_HEADER_SIZE_BYTES + offset
 
   private fun valuesDeallocate(offset: Long, len: Long) =
-    FileUtils.deallocate(raIndexFile, realValueOffset(offset), len)
+    FileUtils.deallocate(raValuesFile, realValueOffset(offset), len)
 
   private fun keymapDeallocate(offset: Long, len: Long) =
     FileUtils.deallocate(raKeymapFile, realKeymapOffset(offset), len)
+
+  /**
+   * Resize the values file so that its size becomes [newSize] in bytes. This is
+   * risky and should be used carefully. Resizing the file incorrectly may lead
+   * to data loss. The [valIo] is reset to position 0 after this operation.
+   *
+   * @param newSize The new size of the values file, in bytes.
+   */
+  private fun valuesResize(newSize: Long)  {
+    metaIo.valuesFileSize = newSize
+    raValuesFile.setLength(newSize)
+    valuesRemap(newSize)
+  }
+
+  private fun keymapResize(newSize: Long)  {
+    if (raKeymapFile.length() != newSize) {
+      raKeymapFile.setLength(newSize)
+    }
+    keymapRemap(newSize)
+  }
+
+  private fun valuesRemap(size: Long, offset: Long = VALUES_HEADER_SIZE_BYTES) =
+    fileRemap(raValuesFile, valIo, size, offset)
+
+  private fun keymapRemap(size: Long, offset: Long = KEYMAP_HEADER_SIZE_BYTES) =
+    fileRemap(raKeymapFile, keymapIo, size, offset)
+
+  private fun fileRemap(file: RandomAccessFile, io: MappedRandomAccessIO,
+                        size: Long, offset: Long = 0L
+  ) {
+    val buffer = file.channel.map(FileChannel.MapMode.READ_WRITE, offset, size)
+    io.close()
+    io.reset(buffer, 0L, size)
+  }
 
   private fun slotAddress(
     levelIdx: Int,
@@ -223,8 +250,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       else -> throw IllegalArgumentException("Invalid level index: $levelIdx")
     }
 
-    return levelPos + (KEYMAP_ENTRY_SIZE_BYTES * metaIo.bucketSize * bucketIdx) +
-      (KEYMAP_ENTRY_SIZE_BYTES * slotIdx)
+    return levelPos + // start position of level
+      (KEYMAP_ENTRY_SIZE_BYTES * metaIo.bucketSize * bucketIdx) + // bucket position
+      (KEYMAP_ENTRY_SIZE_BYTES * slotIdx) // slot position in bucket
   }
 
   /**
@@ -269,7 +297,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     slotIdx: Int,
   ): Boolean {
     // 0 == no value entry
-    return valueAddressForPos(levelNum, bucketIdx, slotIdx) > 0L
+    return valueAddressForPos(levelNum, bucketIdx, slotIdx).let { valAddr ->
+      valAddr > 0L && valIo.tryPosition(valAddr - 1) && valIo.readInt() > 0
+    }
   }
 
   /**
@@ -286,7 +316,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       return null
     }
 
-    if (valIo.readUnsignedShort() <= 0L) {
+    if (valIo.readInt() <= 0L) {
       // entry size is 0, so the slot is empty
       return null
     }
@@ -361,6 +391,8 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     return value
   }
 
+
+
   fun writeEntry(
     levelNum: Int,
     bucketIdx: Int,
@@ -368,7 +400,6 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     key: K?,
     value: V?,
   ) {
-    // TODO: expand values file in case of buffer overflow
     val slotAddr = slotAddress(levelNum, bucketIdx, slotIdx)
 
     if (key == null) {
@@ -382,17 +413,23 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     val (isUpdate, existingEntrySize) = run {
       if (existingValueAddr > 0L) {
         valIo.position(existingValueAddr - 1)
-        true to valIo.readUnsignedShort().toLong()
+        true to valIo.readInt().toLong()
       } else {
         false to 0L
       }
     }
 
-    val tokenAddr = metaIo.valuesNextEntry
-    valIo.position(tokenAddr)
+    val thisValueAddr = metaIo.valuesNextEntry
+    if (thisValueAddr + 4 * KB_1 > metaIo.valuesFileSize) {
+      valuesResize(thisValueAddr + VALUES_SEGMENT_SIZE_BYTES)
+    }
 
-    // leave space for entry size
-    valIo.seekShort()
+    // valuesResize will reset the position to 0
+    valIo.position(thisValueAddr)
+
+    if (valIo.readInt() > 0) {
+      return
+    }
 
     val keyValPos = valIo.position()
 
@@ -402,25 +439,25 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
     val finalAddr = valIo.position()
     val entrySize = finalAddr - keyValPos
-    check(entrySize <= Short.MAX_VALUE) {
+    check(entrySize <= Int.MAX_VALUE) {
       "Entry size is too large: $entrySize"
     }
 
     // then set the token
-    valIo.position(tokenAddr)
-    valIo.writeShort((entrySize and 0xFFFF).toInt())
+    valIo.position(thisValueAddr)
+    valIo.writeInt(entrySize.toInt())
 
     // reset to the final position
     valIo.position(finalAddr)
 
     // then update the address in the keymap
     keymapIo.position(slotAddr)
-    keymapIo.writeLong(tokenAddr + 1)
+    keymapIo.writeLong(thisValueAddr + 1)
 
     metaIo.valuesNextEntry = finalAddr
 
     if (isUpdate) {
-      var size: Long = SIZE_SHORT
+      var size = SIZE_INT
       if (existingEntrySize > 0L) {
         size += existingEntrySize
       }
@@ -437,18 +474,18 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     keymapIo.position(slotAddr)
     val valueAddr = keymapIo.readLong()
 
-    if (valueAddr == 0L) {
-      return null
-    }
-
     // reading this region again will return 0, which is considered
     // a null pointer
     keymapDeallocate(slotAddr, SIZE_LONG)
 
-    valIo.position(valueAddr - 1)
-    valIo.seekShort() // seek over entrySize
+    if (valueAddr == 0L) {
+      return null
+    }
 
-    var entrySize = SIZE_SHORT
+    valIo.position(valueAddr - 1)
+    valIo.seekInt() // seek over entrySize
+
+    var entrySize = SIZE_INT
 
     val keySize = valIo.readInt()
     entrySize += SIZE_INT
@@ -514,7 +551,41 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   override fun close() {
-    closeAndLogErrs(metaIo, keymapIo, valIo, raKeymapFile, raIndexFile)
+    closeAndLogErrs(metaIo, keymapIo, valIo, raKeymapFile, raValuesFile)
+  }
+
+  internal fun dmpSlotAddrs(
+    levelNum: Int,
+    bucketIdx: Int,
+    slotIdx: Int,
+  ) {
+    val sb = StringBuilder()
+    sb.append("level: ")
+    sb.appendLine(levelNum)
+    sb.append("bucket: ")
+    sb.appendLine(bucketIdx)
+    sb.append("slot: ")
+    sb.appendLine(slotIdx)
+
+    val slotAddr = slotAddress(levelNum, bucketIdx, slotIdx)
+    sb.append("keymapAddr: ")
+    appendAddress(sb, slotAddr)
+
+    keymapIo.position(slotAddr)
+
+    val valueAddr = keymapIo.readLong()
+    sb.append("valueAddr: ")
+    appendAddress(sb, valueAddr)
+
+    println(sb.toString())
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  private fun appendAddress(sb: StringBuilder, value: Long) {
+    sb.append(value)
+    sb.append(" [")
+    sb.append(value.toHexString(HexFormat.UpperCase))
+    sb.appendLine("]")
   }
 
   companion object {
@@ -530,6 +601,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     private val log = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
+
+    /**
+     * 1 Kilobyte.
+     */
+    internal const val KB_1 = 1024
 
     /**
      * The number of bytes it takes to store the magic number of the keymap/values
@@ -548,10 +624,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     internal const val VALUES_HEADER_SIZE_BYTES: Long = MAGIC_NUMBER_SIZE_BYTES
 
     /**
-     * The maximum size of the region of the values file that can be mapped into
-     * memory at a given time.
+     * The size of one segment region in the values file.
      */
-    internal const val VALUES_INITIAL_SIZE_BYTES = 512L * 1024L
+    internal const val VALUES_SEGMENT_SIZE_BYTES = 512L * 1024L
 
     /**
      * The number of bytes used to store the header of the keymap file.

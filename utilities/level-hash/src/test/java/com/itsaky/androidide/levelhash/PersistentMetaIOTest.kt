@@ -20,12 +20,11 @@ package com.itsaky.androidide.levelhash
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.levelhash.LevelHash.Companion.BUCKET_SIZE_DEFAULT
 import com.itsaky.androidide.levelhash.LevelHash.Companion.LEVEL_SIZE_DEFAULT
-import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_KEYMAP_VERSION
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_VALUES_VERSION
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_HEADER_SIZE_BYTES
-import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_INITIAL_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.VALUES_SEGMENT_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentMetaIO
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,7 +61,7 @@ class PersistentMetaIOTest {
     assertThat(io.keymapVersion).isEqualTo(LEVEL_KEYMAP_VERSION)
     assertThat(io.valuesFirstEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
     assertThat(io.valuesNextEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
-    assertThat(io.valuesFileSize).isEqualTo(VALUES_INITIAL_SIZE_BYTES)
+    assertThat(io.valuesFileSize).isEqualTo(VALUES_SEGMENT_SIZE_BYTES)
     assertThat(io.levelSize).isEqualTo(LEVEL_SIZE_DEFAULT)
     assertThat(io.bucketSize).isEqualTo(BUCKET_SIZE_DEFAULT)
     assertThat(io.l0Addr).isEqualTo(0L)

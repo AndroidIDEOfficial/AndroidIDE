@@ -102,6 +102,10 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
     return getSlot(level.index, bucketIdx, slotIdx)
   }
 
+  override fun loadFactor(): Float {
+    return levelItemCounts.sum() / totalSlotCount.toFloat()
+  }
+
   override fun get(key: K): V? {
     return findSlot(key)?.value
   }
@@ -186,7 +190,6 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
         val emptySlot = getSlot(Level.TOP, sidx, emptyLocation)
         emptySlot.reset(key, value)
         levelItemCounts[Level.TOP.index]++
-
         return true
       }
     }
@@ -201,7 +204,6 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
       slot.reset(null, null)
       return oldValue
     }
-
     return null
   }
 

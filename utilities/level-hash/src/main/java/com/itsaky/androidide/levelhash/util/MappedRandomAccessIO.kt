@@ -65,6 +65,10 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
   }
 
   override fun close() {
+    if (!::buffer.isInitialized) {
+      return
+    }
+
     try {
       buffer.unmap()
     } catch (err: Throwable) {
@@ -73,10 +77,23 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
   }
 
   override fun position(position: Long) {
-    val currentPos = position()
-    if (currentPos == position) return
     require(position >= 0L) { "position must be >= 0, position=$position" }
+    require(position < buffer.limit()) {
+      "position must be < buffer.limit(), position=$position buffer.limit=${buffer.limit()}"
+    }
+    tryPosition(position)
+  }
+
+  override fun tryPosition(position: Long): Boolean {
+    if (position < 0L || position >= buffer.limit()) {
+      return false
+    }
+    val currentPos = position()
+    if (currentPos == position) {
+      return true
+    }
     this.position = this.positionOffset + position
+    return true
   }
 
   override fun position(): Long {
