@@ -31,6 +31,7 @@ import java.io.DataInputStream
 import java.io.DataOutput
 import java.io.EOFException
 import java.nio.MappedByteBuffer
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -43,7 +44,6 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
 
   private var positionOffset = 0L
   private var position = 0L
-  private var size = 0L
 
   private lateinit var buffer: MappedByteBuffer
 
@@ -57,10 +57,9 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
     return this.buffer.apply { position(position.toInt()) }
   }
 
-  fun reset(buffer: MappedByteBuffer, position: Long, length: Long, positionOffset: Long = 0L) {
+  fun reset(buffer: MappedByteBuffer, position: Long = 0L, positionOffset: Long = 0L) {
     this.buffer = buffer
     this.position = position
-    this.size = length
     this.positionOffset = positionOffset
   }
 
@@ -76,16 +75,25 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
     }
   }
 
+  override fun seekRelative(count: Long) {
+    if (count == 0L) {
+      return
+    }
+    var pos = position() + count
+    pos = max(0L, min(size().toLong(), pos))
+    position(pos)
+  }
+
   override fun position(position: Long) {
     require(position >= 0L) { "position must be >= 0, position=$position" }
-    require(position < buffer.limit()) {
-      "position must be < buffer.limit(), position=$position buffer.limit=${buffer.limit()}"
+    require(position <= size()) {
+      "position must be < buffer.limit(), position=$position buffer.limit=${size()}"
     }
-    tryPosition(position)
+    check(tryPosition(position))
   }
 
   override fun tryPosition(position: Long): Boolean {
-    if (position < 0L || position >= buffer.limit()) {
+    if (position < 0L || position > size()) {
       return false
     }
     val currentPos = position()
@@ -100,7 +108,7 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
     return this.position
   }
 
-  fun size() = this.size
+  fun size() = buffer.limit()
 
   override fun readFully(bytes: ByteArray) {
     if (bytes.isEmpty()) return
@@ -130,7 +138,7 @@ internal class MappedRandomAccessIO : DataInput, DataOutput, RandomAccessIO, Aut
   }
 
   override fun readByte(): Byte {
-    return buf(position).get().also { seekByte() }
+    return buf().get().also { seekByte() }
   }
 
   override fun readUnsignedByte(): Int {

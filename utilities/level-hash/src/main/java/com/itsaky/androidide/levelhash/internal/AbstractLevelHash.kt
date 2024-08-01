@@ -123,14 +123,14 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
 
   override fun insert(key: K, value: V): Boolean {
 
-    if (this.levelItemCounts[0] == this.topLevelBucketCount * this.bucketSize) {
-      if (autoExpand) {
-        check(expand(1)) {
-          "Failed to expand the level hash"
-        }
-      } else {
-        throw OverflowException(this.totalSlotCount, this.levelItemCounts.sum())
+    if (loadFactor() >= 0.92 && autoExpand) {
+      check(expand()) {
+        "Failed to expand the level hash"
       }
+    }
+
+    if (loadFactor() == 1f) {
+      throw OverflowException(totalSlotCount, levelItemCounts.sum())
     }
 
     val insertFn =
@@ -245,15 +245,14 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
     return null
   }
 
-  override fun expand(addtionalLevelSize: Int): Boolean {
+  override fun expand(): Boolean {
     check(this.resizeState == RESIZE_STATE_NOT_RESIZING) {
       "Level hash is already being resized. Maybe on a different thread?"
     }
-    require(addtionalLevelSize > 0) { "levelSize must be > 0" }
 
     try {
       this.resizeState = RESIZE_STATE_EXPANDING
-      return doExpand(this.levelSize + addtionalLevelSize)
+      return doExpand(this.levelSize + 1)
     } finally {
       this.resizeState = RESIZE_STATE_NOT_RESIZING
     }

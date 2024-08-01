@@ -19,6 +19,8 @@ package com.itsaky.androidide.levelhash
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.levelhash.LevelHash.OverflowException
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHash
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
 import com.itsaky.androidide.levelhash.util.DataExternalizers
 import com.itsaky.androidide.levelhash.util.nullable
 import com.itsaky.androidide.testing.common.LinuxOnlyTestRule
@@ -75,7 +77,7 @@ class PersistentLevelHashTest {
   }
 
   @Test
-  fun testInsertion() {
+  fun `test insertion`() {
     persistentStringHash("insert").use { hash ->
       val key = "key"
       val value = "value"
@@ -88,7 +90,7 @@ class PersistentLevelHashTest {
   }
 
   @Test(expected = OverflowException::class)
-  fun testOverflow() {
+  fun `test overflow`() {
     persistentStringHash("overflow") { autoExpand(false) }.use { hash ->
       for (i in 0..<hash.totalSlotCount) {
         val key = "key${i}"
@@ -102,7 +104,11 @@ class PersistentLevelHashTest {
 
   @Test
   fun `test values file expands and remaps in case of buffer overflow`() {
-    persistentStringHash("huge") { autoExpand(false).levelSize(15).bucketSize(10) }.use { hash ->
+    persistentStringHash("huge") {
+      autoExpand(true)
+      levelSize(15)
+      bucketSize(10)
+    }.use { hash ->
       for (i in 0..<hash.totalSlotCount) {
         val key = "key${i}"
         val value = "value${i}"
@@ -115,7 +121,7 @@ class PersistentLevelHashTest {
   }
 
   @Test
-  fun testRemoval() {
+  fun `test removal`() {
     persistentStringHash("remove").use { hash ->
       assertThat(hash.insert("key", "value")).isTrue()
       assertThat(hash.findSlot("key")).isNotNull()
@@ -203,22 +209,91 @@ class PersistentLevelHashTest {
     persistentStringHash(
       fileName = "expand",
       valueExternalizer = DataExternalizers.STRING.nullable()
-    ).use { hash ->
-      for (i in 0..<hash.totalSlotCount) {
+    ) {
+      levelSize(5)
+      bucketSize(10)
+      autoExpand(false)
+    }.use { hash ->
+      val slots = hash.totalSlotCount - hash.bucketSize
+      for (i in 0..<slots) {
         val key = "key${i}"
         val value = "value${i}"
         assertThat(hash.insert(key, value)).isTrue()
       }
 
       // expand the level hash
-      hash.expand(1)
+      hash.expand()
 
       // then check that all existing entries are still present
-      for (i in 0..<hash.totalSlotCount) {
+      for (i in 0..<slots) {
         val key = "key${i}"
         val value = "value${i}"
         assertThat(hash[key]).isEqualTo(value)
       }
+    }
+  }
+
+  @Test
+  fun `test expansion with huge slot count`() {
+    persistentStringHash(
+      fileName = "huge-expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()
+    ){
+      levelSize(15)
+      bucketSize(10)
+      autoExpand(false)
+    }.use { hash ->
+      var i = 0
+      while(hash.insert("key${i}", "value${i}")) {
+        i++
+      }
+
+      hash.expand()
+
+      for (j in 0..<i) {
+        val key = "key${j}"
+        val value = "value${j}"
+        assertThat(hash[key]).isEqualTo(value)
+      }
+    }
+  }
+
+  @Test
+  fun `test meta after expansion`() {
+    persistentStringHash(
+      fileName = "expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()
+    ) {
+      levelSize(5)
+      bucketSize(10)
+      autoExpand(false)
+    }.use { hash ->
+      hash as PersistentLevelHash<String, String?>
+
+      val l0Size =
+        hash.topLevelBucketCount * hash.io.metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+
+      assertThat(hash.io.metaIo.levelSize).isEqualTo(5)
+      assertThat(hash.io.metaIo.bucketSize).isEqualTo(10)
+      assertThat(hash.io.metaIo.l0Addr).isEqualTo(0)
+      assertThat(hash.io.metaIo.l1Addr).isEqualTo(l0Size)
+
+      hash.expand()
+
+      // clear cache so we read values directly from the file
+      hash.io.metaIo.clearCache()
+
+      assertThat(hash.io.metaIo.levelSize).isEqualTo(6)
+      assertThat(hash.io.metaIo.bucketSize).isEqualTo(10)
+
+      // top level (l0) is moved after the bottom level (l1)
+      // the bottom level used to span from `l0Size` to `l0Size + l0Size / 2`
+      // and the interim level was added AFTER the previous bottom level
+      assertThat(hash.io.metaIo.l0Addr).isEqualTo(l0Size + (l0Size shr 1))
+
+      // previous top level, which used to be located at 0,
+      // becomes the new bottom level
+      assertThat(hash.io.metaIo.l1Addr).isEqualTo(0L)
     }
   }
 }

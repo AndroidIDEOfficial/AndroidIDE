@@ -126,17 +126,11 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
   fun findSlot(key: K): LevelSlot<K, V>?
 
   /**
-   * Expand the level hash by the given ADDITIONAL level size.
-   *
-   * @param addtionalLevelSize The additional level size of the level hash. If this is
-   * less than the current level size, an exception is thrown. If this is equal
-   * to the current level size, this function has no effect.
+   * Expand the level hash, doubling its capacity.
    *
    * @return Whether the level hash was resized.
-   * @throws IllegalArgumentException If the level size if less than the current
-   * level size.
    */
-  fun expand(addtionalLevelSize: Int): Boolean
+  fun expand(): Boolean
 
   /**
    * Get the load factor of the level hash.
@@ -201,7 +195,7 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
    * An [InsertionError] which is thrown when the level hash is full and unable
    * to insert new values.
    */
-  class OverflowException(capacity: Int, occupied: Int) : InsertionError("Level hash has reached is capacity. cap=$capacity occ=$occupied")
+  class OverflowException(capacity: Int, occupied: Int) : InsertionError("Level hash needs to be expanded. cap=$capacity occ=$occupied")
 
   /**
    * Thrown when the level hash cannot be resized.

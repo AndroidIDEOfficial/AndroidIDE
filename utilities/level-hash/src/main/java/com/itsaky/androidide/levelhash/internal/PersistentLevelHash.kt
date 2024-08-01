@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.levelhash.internal
 
+import androidx.annotation.VisibleForTesting
 import com.itsaky.androidide.levelhash.DataExternalizer
 import com.itsaky.androidide.levelhash.HashT
 import com.itsaky.androidide.levelhash.LevelHashFn
@@ -42,13 +43,14 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
   uniqueKeys = uniqueKeys, autoExpand = autoExpand, levelHashFn = levelHashFn,
   seeds = seeds) {
 
-  private val io = PersistentLevelHashIO(indexFile, levelSize, bucketSize, keyExternalizer,
+  @VisibleForTesting
+  internal val io = PersistentLevelHashIO(indexFile, levelSize, bucketSize, keyExternalizer,
     valueExternalizer)
 
   override var levelSize: Int
-    get() = io.metaIo.levelSize
+    get() = io.levelSize
     set(value) {
-      io.metaIo.levelSize = value
+      io.levelSize = value
     }
 
   override fun getSlot(levelIdx: Int, bucketIdx: Int, slotIdx: Int
@@ -64,11 +66,21 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
     io.close()
   }
 
+  override fun prepareExpansion(bucketCount: Int) {
+    super.prepareExpansion(bucketCount)
+    io.prepareInterimLevel(bucketCount)
+  }
+
   override fun moveForExpansion(slot: LevelSlot<K, V>, bucketIdx: Int,
                                 slotIdx: Int
   ): Boolean {
     slot as PersistentLevelSlot<K, V>
-    return false
+    return io.moveToInterim(slot.levelIdx, slot.bucketIdx, slot.slotIdx, bucketIdx, slotIdx)
+  }
+
+  override fun onExpand(newLevelSize: Int, interimItemCount: Int) {
+    super.onExpand(newLevelSize, interimItemCount)
+    io.finalizeExpansion()
   }
 
   private class PersistentLevelSlot<K : Any, V : Any?>(

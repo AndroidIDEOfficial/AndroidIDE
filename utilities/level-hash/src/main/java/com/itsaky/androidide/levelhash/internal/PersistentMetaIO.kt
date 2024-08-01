@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.levelhash.internal
 
+import androidx.annotation.VisibleForTesting
 import androidx.collection.MutableLongLongMap
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.LEVEL_KEYMAP_VERSION
@@ -78,14 +79,15 @@ internal class PersistentMetaIO(private val metaFile: File,
     get() = readLong(KM__L1_ADDR__OFFSET)
     set(value) { writeLong(KM__L1_ADDR__OFFSET, value) }
 
+  val kmStartAddr: Long
+    get() = min(l0Addr, l1Addr)
+
   val keymapSize: Long
     get() {
       // for this to work, l0 and l1 must be in a contiguosly allocated space
       // in the keymap file
-      val l0Addr = this.l0Addr
-      val l1Addr = this.l1Addr
       val l0SizeBytes = 2.0.pow(levelSize).toLong() * bucketSize * KEYMAP_ENTRY_SIZE_BYTES
-      var size = min(l0Addr, l1Addr)
+      var size = kmStartAddr
       size += l0SizeBytes
       size += l0SizeBytes shr 1
       return size
@@ -104,12 +106,6 @@ internal class PersistentMetaIO(private val metaFile: File,
     }
     if (valuesFileSize == 0L) {
       valuesFileSize = VALUES_SEGMENT_SIZE_BYTES
-    }
-    if (valuesFirstEntry == 0L) {
-      valuesFirstEntry = 0
-    }
-    if (valuesNextEntry == 0L) {
-      valuesNextEntry = 0
     }
     if (this.levelSize != levelSize) {
       this.levelSize = levelSize
@@ -168,11 +164,16 @@ internal class PersistentMetaIO(private val metaFile: File,
 
   override fun close() {
     try {
-      cache.clear()
+      clearCache()
       raFile.close()
     } catch (e: Exception) {
       log.error("Failed to close meta file", e)
     }
+  }
+
+  @VisibleForTesting
+  internal fun clearCache() {
+    this.cache.clear()
   }
 
   private inline fun <reified T : Number> readOrDefault(default: T,

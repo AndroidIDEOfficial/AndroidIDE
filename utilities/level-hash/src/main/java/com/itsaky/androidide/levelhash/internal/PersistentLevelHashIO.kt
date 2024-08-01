@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.levelhash.internal
 
+import androidx.annotation.VisibleForTesting
 import com.itsaky.androidide.levelhash.DataExternalizer
 import com.itsaky.androidide.levelhash.LevelHash.ResizeFailure
 import com.itsaky.androidide.levelhash.seekInt
@@ -31,6 +32,16 @@ import java.nio.channels.FileChannel
 import kotlin.math.pow
 
 private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
+
+// TODO: Update valuesFirstEntry and valuesNxtEntry whenever an entry is added or deleted
+// TODO: Entries in the values file are always appended at the end. When an entry
+//    is to be deleted, we simply use fallocate with FALLOC_FL_PUNCH_HOLE to deallocate
+//    the disk space occupied by that entry. However, this may result in the region
+//    at the start of the values file become empty. In that case, we might consider
+//    moving the entries at the start of the file. This may (or may not) result in
+//    improved performance when seeking through the file.
+// TODO: The above is also applicable for the keymap file when the level hash is
+//    expanded and new regions for the levels are allocated.
 
 /**
  * This class is responsible for performing the IO operations for the level hash
@@ -162,9 +173,11 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   // as the values file is randomly accessed, and by multiple functions, or
   // even multiple threads, the current position cannot be determined
 
+  @VisibleForTesting
   internal val metaIo =
     PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"),
       levelSize, bucketSize)
+
   private val keymapFile = File(indexFile.parentFile, "${indexFile.name}._i")
   private val raKeymapFile by lazy { RandomAccessFile(keymapFile, "rw") }
   private val raValuesFile by lazy { RandomAccessFile(indexFile, "rw") }
@@ -172,17 +185,18 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   private val keymapIo = MappedRandomAccessIO()
   private var valIo = MappedRandomAccessIO()
 
+  private var interimLvlAddr: Long? = null
+
   private val topLevelBucketCount: Long
-    get() = 2.0.pow(metaIo.levelSize).toLong()
+    get() = 2.0.pow(metaIo.levelSize)
+      .toLong()
 
   private val topLevelSizeBytes: Long
     get() = topLevelBucketCount * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
 
-  private val totalBucketCount: Long
-    get() = topLevelBucketCount + (topLevelBucketCount shr 1)
-
-  private val totalSlotCount: Long
-    get() = totalBucketCount * metaIo.bucketSize
+  internal var levelSize: Int
+    get() = metaIo.levelSize
+    set(value) { metaIo.levelSize = value }
 
   init {
     BinaryFileUtils.initSparseFile(file = keymapFile,
@@ -196,8 +210,8 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   private fun realValueOffset(offset: Long) = VALUES_HEADER_SIZE_BYTES + offset
-
   private fun realKeymapOffset(offset: Long) = KEYMAP_HEADER_SIZE_BYTES + offset
+  private fun keymapBufOffset(offset: Long) = offset - KEYMAP_HEADER_SIZE_BYTES
 
   private fun valuesDeallocate(offset: Long, len: Long) =
     FileUtils.deallocate(raValuesFile, realValueOffset(offset), len)
@@ -212,13 +226,13 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
    *
    * @param newSize The new size of the values file, in bytes.
    */
-  private fun valuesResize(newSize: Long)  {
+  private fun valuesResize(newSize: Long) {
     metaIo.valuesFileSize = newSize
     raValuesFile.setLength(newSize)
     valuesRemap(newSize)
   }
 
-  private fun keymapResize(newSize: Long)  {
+  private fun keymapResize(newSize: Long) {
     if (raKeymapFile.length() != newSize) {
       raKeymapFile.setLength(newSize)
     }
@@ -236,7 +250,7 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   ) {
     val buffer = file.channel.map(FileChannel.MapMode.READ_WRITE, offset, size)
     io.close()
-    io.reset(buffer, 0L, size)
+    io.reset(buffer)
   }
 
   private fun slotAddress(
@@ -244,13 +258,21 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): Long {
-    val levelPos = when (levelIdx) {
+    val levelAddr = when (levelIdx) {
       0 -> metaIo.l0Addr
       1 -> metaIo.l1Addr
       else -> throw IllegalArgumentException("Invalid level index: $levelIdx")
     }
 
-    return levelPos + // start position of level
+    return slotAddrForLvlAddr(levelAddr, bucketIdx, slotIdx)
+  }
+
+  private fun slotAddrForLvlAddr(
+    lvlAddr: Long,
+    bucketIdx: Int,
+    slotIdx: Int,
+  ): Long {
+    return lvlAddr + // start position of level
       (KEYMAP_ENTRY_SIZE_BYTES * metaIo.bucketSize * bucketIdx) + // bucket position
       (KEYMAP_ENTRY_SIZE_BYTES * slotIdx) // slot position in bucket
   }
@@ -391,8 +413,6 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     return value
   }
 
-
-
   fun writeEntry(
     levelNum: Int,
     bucketIdx: Int,
@@ -518,11 +538,17 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   }
 
   fun clear() {
-    var keymapSize = topLevelSizeBytes
-    keymapSize += topLevelSizeBytes shr 1
+    metaIo.valuesFirstEntry = 0L
+    metaIo.valuesNextEntry = 0L
+    metaIo.l0Addr = 0
+    metaIo.l1Addr = 2.0.pow(metaIo.levelSize).toLong() * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+    val kmSize = metaIo.l1Addr + (metaIo.l1Addr shr 1)
 
-    keymapDeallocate(KEYMAP_HEADER_SIZE_BYTES, keymapSize)
-    valuesDeallocate(VALUES_HEADER_SIZE_BYTES, metaIo.valuesFileSize)
+    keymapResize(realKeymapOffset(kmSize))
+    keymapDeallocate(0, kmSize)
+
+    valuesResize(realValueOffset(VALUES_SEGMENT_SIZE_BYTES))
+    valuesDeallocate(0, VALUES_SEGMENT_SIZE_BYTES)
   }
 
   private fun <T> writeSlotKeyOrVal(obj: T?, externalizer: DataExternalizer<T>
@@ -548,6 +574,72 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       // since obj size is 0, we don't need to write the obj
       valIo.writeInt(0)
     }
+  }
+
+  internal fun prepareInterimLevel(bucketCount: Int) {
+    check(interimLvlAddr == null) {
+      "Interim level address must be null. Is the level hash being resized on multiple threads?"
+    }
+
+    val interimSize = bucketCount * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+    val start = metaIo.kmStartAddr
+    if (realKeymapOffset(interimSize) < start) {
+      // we can reuse the empty space at the beginning of the file
+      interimLvlAddr = 0L
+    } else {
+      // ensure the keymap can accommodate the interim level
+      val length = raKeymapFile.length()
+      keymapResize(length + interimSize)
+      interimLvlAddr = keymapBufOffset(length)
+    }
+  }
+
+  internal fun moveToInterim(
+    levelNum: Int,
+    bucketIdx: Int,
+    slotIdx: Int,
+    interimBucketIdx: Int,
+    interimSlotIdx: Int,
+  ): Boolean {
+    // current (source) slot
+    val sSlotAddr = slotAddress(levelNum, bucketIdx, slotIdx)
+
+    // destination slot
+    val dSlotAddr =
+      slotAddrForLvlAddr(interimLvlAddr!!, interimBucketIdx, interimSlotIdx)
+
+    keymapIo.position(dSlotAddr)
+    val dValAddr = keymapIo.readLong()
+    if (dValAddr > 0) {
+      // interim (destination) slot is occupied
+      return false
+    }
+
+    // interim slot is not occupied
+    // as the values in the keymap are just pointers to the actual value entries
+    // in the values file, we just need to update destination slot to point
+    // where the source slot points
+
+    // 1. read the address where the source slot points
+    keymapIo.position(sSlotAddr)
+    val eValAddr = keymapIo.readLong()
+
+    // 2. move the destination slot and write the address of the source slot's value
+    keymapIo.position(dSlotAddr)
+    keymapIo.writeLong(eValAddr)
+
+    // 3. deallocate the space occupied by the source slot
+    keymapDeallocate(sSlotAddr, KEYMAP_HEADER_SIZE_BYTES)
+
+    return true
+  }
+
+  internal fun finalizeExpansion() {
+    // current top level becomes the bottom level
+    // and interim level becomes the new top level
+    metaIo.l1Addr = metaIo.l0Addr
+    metaIo.l0Addr = interimLvlAddr!!
+    interimLvlAddr = null
   }
 
   override fun close() {
