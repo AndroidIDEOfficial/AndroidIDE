@@ -34,10 +34,18 @@ internal class InMemoryLevelHash<K : Any, V : Any?>(
   bucketSize: Int,
   uniqueKeys: Boolean,
   autoExpand: Boolean,
+  loadFactorForAutoExpand: Float,
   levelHashFn: LevelHashFn<K>,
   seeds: Pair<HashT, HashT>,
-) : AbstractLevelHash<K, V>(levelSize, bucketSize, uniqueKeys, autoExpand,
-  levelHashFn, seeds) {
+) : AbstractLevelHash<K, V>(
+  levelSize,
+  bucketSize,
+  uniqueKeys,
+  autoExpand,
+  loadFactorForAutoExpand,
+  levelHashFn,
+  seeds
+) {
 
   private val levels = Array(LEVEL_COUNT) { levelIndex ->
     allocateLevel(levelSize, levelIndex, bucketSize)

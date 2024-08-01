@@ -38,6 +38,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
   final override val bucketSize: Int,
   protected val uniqueKeys: Boolean,
   protected val autoExpand: Boolean,
+  protected val loadFactorForAutoExpand: Float,
   protected val levelHashFn: LevelHashFn<K>,
   protected val seeds: Pair<HashT, HashT>,
 ) : LevelHash<K, V> {
@@ -123,7 +124,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
 
   override fun insert(key: K, value: V): Boolean {
 
-    if (loadFactor() >= 0.92 && autoExpand) {
+    if (loadFactor() >= loadFactorForAutoExpand && autoExpand) {
       check(expand()) {
         "Failed to expand the level hash"
       }

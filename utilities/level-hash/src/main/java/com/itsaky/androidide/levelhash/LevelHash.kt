@@ -39,7 +39,7 @@ import androidx.annotation.FloatRange
  * as well. This results in decreased access performance and insertion failures.
  * It is **recommended** to enable [AbstractLevelHashBuilder.autoExpand] which
  * will automatically expand the level hash when the load factor reaches a certain
- * threshold (specifically, when the top level is full).
+ * threshold ([LevelHash.loadFactor]).
  *
  * @param K The key type.
  * @param V The value type.
@@ -163,6 +163,11 @@ interface LevelHash<K : Any, V : Any?> : AutoCloseable {
      * The default level size.
      */
     const val BUCKET_SIZE_DEFAULT = 4
+
+    /**
+     * Default load factor threshold for auto expand.
+     */
+    const val AUTO_EXPAND_LOAD_FACTOR_THRESHOLD: Float = 0.92f
 
     /**
      * Build an in-memory level hash.

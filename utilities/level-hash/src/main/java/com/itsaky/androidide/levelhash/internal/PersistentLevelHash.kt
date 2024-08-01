@@ -34,14 +34,21 @@ internal class PersistentLevelHash<K : Any, V : Any?>(
   bucketSize: Int,
   uniqueKeys: Boolean,
   autoExpand: Boolean,
+  loadFactorForAutoExpand: Float,
   levelHashFn: LevelHashFn<K>,
   seeds: Pair<HashT, HashT>,
   keyExternalizer: DataExternalizer<K>,
   valueExternalizer: DataExternalizer<V>,
   indexFile: File,
-) : AbstractLevelHash<K, V>(levelSize = levelSize, bucketSize = bucketSize,
-  uniqueKeys = uniqueKeys, autoExpand = autoExpand, levelHashFn = levelHashFn,
-  seeds = seeds) {
+) : AbstractLevelHash<K, V>(
+  levelSize = levelSize,
+  bucketSize = bucketSize,
+  uniqueKeys = uniqueKeys,
+  autoExpand = autoExpand,
+  loadFactorForAutoExpand = loadFactorForAutoExpand,
+  levelHashFn = levelHashFn,
+  seeds = seeds
+) {
 
   @VisibleForTesting
   internal val io = PersistentLevelHashIO(indexFile, levelSize, bucketSize, keyExternalizer,

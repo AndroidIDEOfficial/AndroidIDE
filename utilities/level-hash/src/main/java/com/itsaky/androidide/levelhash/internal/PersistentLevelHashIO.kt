@@ -42,6 +42,7 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 //    improved performance when seeking through the file.
 // TODO: The above is also applicable for the keymap file when the level hash is
 //    expanded and new regions for the levels are allocated.
+// TODO: Allow concurrent access to the level hash.
 
 /**
  * This class is responsible for performing the IO operations for the level hash

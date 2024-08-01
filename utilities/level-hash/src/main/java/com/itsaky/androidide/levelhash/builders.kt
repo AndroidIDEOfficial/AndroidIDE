@@ -33,6 +33,7 @@ abstract class AbstractLevelHashBuilder<K : Any, V : Any?> {
   protected var hashFn: LevelHashFn<K>? = null
   protected var uniqueKeys = false
   protected var autoExpand = true
+  protected var loadFactorForAutoExpand = LevelHash.AUTO_EXPAND_LOAD_FACTOR_THRESHOLD
   protected var seedGenerator: SeedGeneratorFn = ::levelHashDefaultSeeds
 
   /**
@@ -112,7 +113,8 @@ class InMemoryHashBuilder<K : Any, V : Any?> :
       levelHashFn = hashFn!!,
       seeds = seedGenerator(),
       uniqueKeys = uniqueKeys,
-      autoExpand = autoExpand
+      autoExpand = autoExpand,
+      loadFactorForAutoExpand = loadFactorForAutoExpand,
     )
   }
 }
@@ -170,6 +172,7 @@ class PersistentHashBuilder<K : Any, V : Any?> :
       bucketSize = bucketSize,
       uniqueKeys = uniqueKeys,
       autoExpand = autoExpand,
+      loadFactorForAutoExpand = loadFactorForAutoExpand,
       levelHashFn = hashFn!!,
       seeds = seeds,
       keyExternalizer = keyExternalizer,
