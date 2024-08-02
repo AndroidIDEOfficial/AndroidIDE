@@ -98,7 +98,7 @@ internal abstract class AbstractLevelHash<K : Any, V : Any?> internal constructo
   /**
    * Get the slot for the given slot position.
    */
-  fun getSlot(level: Level, bucketIdx: Int, slotIdx: Int
+  private fun getSlot(level: Level, bucketIdx: Int, slotIdx: Int
   ): LevelSlot<K, V> {
     return getSlot(level.index, bucketIdx, slotIdx)
   }

@@ -38,8 +38,7 @@ import kotlin.math.min
 class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOverloads constructor(
   private val capacity: Int = CAPACITY_DEFAULT,
   private val objFactory: Factory<RecyclableT>,
-  private val metricsEnabled: Boolean = true,
-  fillFirst: Int = 0,
+  private val metricsEnabled: Boolean = true, fillFirst: Int = 0,
   klass: Class<RecyclableT>
 ) {
 
@@ -89,6 +88,40 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     val count = min(n, capacity)
     for (i in 1..count) {
       cache.offer(objFactory.create())
+    }
+  }
+
+  /**
+   * Obtain an instance of the [RecyclableT] from the pool, use the instance and
+   * recycle the instance. This can be useful for cases where an instance is only
+   * required temporarily.
+   *
+   * @param configure Configure the [RecyclableT] instance.
+   * @param action The action to be performed on the [RecyclableT] instance.
+   */
+  inline fun <T> useAndRecycle(configure: (RecyclableT) -> Unit = {},
+                               action: (RecyclableT) -> T
+  ): T {
+    val recyclable = obtain()
+    return try {
+      recyclable.also(configure).let(action)
+    } finally {
+      recycle(recyclable)
+    }
+  }
+
+  /**
+   * Obtain an instance of the [RecyclableT] from the pool, use the instance and
+   * recycle the instance. This can be useful for cases where an instance is only
+   * required temporarily.
+   *
+   * @param action The action to be performed on the [RecyclableT] instance.
+   */
+  inline fun <T> useAndRecycle(obj: RecyclableT, action: (RecyclableT) -> T) : T {
+    return try {
+      obj.let(action)
+    } finally {
+      recycle(obj)
     }
   }
 
@@ -167,7 +200,8 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     val cacheHit = IntPair.getSecond(acc)
     val cacheHitRate = cacheHitRate()
 
-    val simpleName = objName.let { if (it.contains('.')) it.substringAfterLast('.') else it }
+    val simpleName =
+      objName.let { if (it.contains('.')) it.substringAfterLast('.') else it }
     log.debug("{}: {}({})", javaClass.simpleName, simpleName, objName)
     log.debug("    Recycle count          : {}", rec)
     log.debug("    Access count           : {}", access)
@@ -184,8 +218,11 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
       // something might be wrong
       // log an error
       log.error("!!!!!!!!!!!!!!!!!!!!! CRITICAL ERROR !!!!!!!!!!!!!!!!!!!!!")
-      log.error("Cache-hit rate for '{}' is less than {}%!!", simpleName, CACHE_HIT_WARNING_THRESHOLD)
-      log.error("Make sure that instances of {} are obtained using the object pool", objName)
+      log.error("Cache-hit rate for '{}' is less than {}%!!", simpleName,
+        CACHE_HIT_WARNING_THRESHOLD)
+      log.error(
+        "Make sure that instances of {} are obtained using the object pool",
+        objName)
       log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     }
 

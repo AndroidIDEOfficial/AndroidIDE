@@ -51,7 +51,8 @@ class PersistentMetaIOTest {
 
     return PersistentMetaIO(metaFile = metaFile,
       levelSize = LEVEL_SIZE_DEFAULT,
-      bucketSize = BUCKET_SIZE_DEFAULT)
+      bucketSize = BUCKET_SIZE_DEFAULT
+    )
   }
 
   @Test
@@ -59,8 +60,8 @@ class PersistentMetaIOTest {
     val io = createMetaIo("init-with-default")
     assertThat(io.valuesVersion).isEqualTo(LEVEL_VALUES_VERSION)
     assertThat(io.keymapVersion).isEqualTo(LEVEL_KEYMAP_VERSION)
-    assertThat(io.valuesFirstEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
-    assertThat(io.valuesNextEntry).isEqualTo(VALUES_HEADER_SIZE_BYTES)
+    assertThat(io.valuesHeadAddr).isEqualTo(0)
+    assertThat(io.valuesTailAddr).isEqualTo(0)
     assertThat(io.valuesFileSize).isEqualTo(VALUES_SEGMENT_SIZE_BYTES)
     assertThat(io.levelSize).isEqualTo(LEVEL_SIZE_DEFAULT)
     assertThat(io.bucketSize).isEqualTo(BUCKET_SIZE_DEFAULT)
@@ -73,8 +74,8 @@ class PersistentMetaIOTest {
     createMetaIo(name = "init-with-existing").use { io ->
       io.valuesVersion = 2
       io.keymapVersion = 3
-      io.valuesFirstEntry = 100
-      io.valuesNextEntry = 200
+      io.valuesHeadAddr = 200
+      io.valuesTailAddr = 300
       io.valuesFileSize = 1024
 
       io.levelSize = 10
@@ -84,8 +85,8 @@ class PersistentMetaIOTest {
     createMetaIo(name = "init-with-existing", createNew = false).use { io ->
       assertThat(io.valuesVersion).isEqualTo(2)
       assertThat(io.keymapVersion).isEqualTo(3)
-      assertThat(io.valuesFirstEntry).isEqualTo(100)
-      assertThat(io.valuesNextEntry).isEqualTo(200)
+      assertThat(io.valuesHeadAddr).isEqualTo(200)
+      assertThat(io.valuesTailAddr).isEqualTo(300)
       assertThat(io.valuesFileSize).isEqualTo(1024)
       assertThat(io.levelSize).isEqualTo(10)
       assertThat(io.bucketSize).isEqualTo(20)

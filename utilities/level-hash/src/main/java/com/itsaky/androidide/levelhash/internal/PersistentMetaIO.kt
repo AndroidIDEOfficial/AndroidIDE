@@ -51,13 +51,13 @@ internal class PersistentMetaIO(private val metaFile: File,
     get() = readInt(KM__VERSION__OFFSET)
     set(value) = writeInt(KM__VERSION__OFFSET, value)
 
-  var valuesFirstEntry: Long
-    get() = readLong(VAL__FIRST_ENTRY__OFFSET)
-    set(value) = writeLong(VAL__FIRST_ENTRY__OFFSET, value)
+  var valuesHeadAddr: Long
+    get() = readLong(VAL__HEAD_ENTRY__OFFSET)
+    set(value) = writeLong(VAL__HEAD_ENTRY__OFFSET, value)
 
-  var valuesNextEntry: Long
-    get() = readLong(VAL__NEXT_ENTRY__OFFSET)
-    set(value) = writeLong(VAL__NEXT_ENTRY__OFFSET, value)
+  var valuesTailAddr: Long
+    get() = readLong(VAL__TAIL_ENTRY__OFFSET)
+    set(value) = writeLong(VAL__TAIL_ENTRY__OFFSET, value)
 
   var valuesFileSize: Long
     get() = readLong(VAL__VAL_SIZE__OFFSET)
@@ -212,16 +212,16 @@ internal class PersistentMetaIO(private val metaFile: File,
       VAL__VERSION__OFFSET + VAL__VERSION__SIZE_BYTES
     private const val KM__VERSION__SIZE_BYTES = SIZE_INT
 
-    private const val VAL__FIRST_ENTRY__OFFSET =
+    private const val VAL__HEAD_ENTRY__OFFSET =
       KM__VERSION__OFFSET + KM__VERSION__SIZE_BYTES
-    private const val VAL__FIRST_ENTRY__SIZE_BYTES = SIZE_LONG
+    private const val VAL__HEAD_ENTRY__SIZE_BYTES = SIZE_LONG
 
-    private const val VAL__NEXT_ENTRY__OFFSET =
-      VAL__FIRST_ENTRY__OFFSET + VAL__FIRST_ENTRY__SIZE_BYTES
-    private const val VAL__NEXT_ENTRY__SIZE_BYTES = SIZE_LONG
+    private const val VAL__TAIL_ENTRY__OFFSET =
+      VAL__HEAD_ENTRY__OFFSET + VAL__HEAD_ENTRY__SIZE_BYTES
+    private const val VAL__TAIL_ENTRY__SIZE_BYTES = SIZE_LONG
 
     private const val VAL__VAL_SIZE__OFFSET =
-      VAL__NEXT_ENTRY__OFFSET + VAL__NEXT_ENTRY__SIZE_BYTES
+      VAL__TAIL_ENTRY__OFFSET + VAL__TAIL_ENTRY__SIZE_BYTES
     private const val VAL__VAL_SIZE__SIZE_BYTES = SIZE_LONG
 
     private const val KM__LEVEL_SIZE__OFFSET =

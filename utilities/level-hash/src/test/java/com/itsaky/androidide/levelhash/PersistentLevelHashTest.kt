@@ -17,10 +17,13 @@
 
 package com.itsaky.androidide.levelhash
 
+import com.google.common.io.ByteStreams
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.levelhash.LevelHash.OverflowException
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHash
+import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO
 import com.itsaky.androidide.levelhash.internal.PersistentLevelHashIO.Companion.KEYMAP_ENTRY_SIZE_BYTES
+import com.itsaky.androidide.levelhash.internal.PersistentMetaIO
 import com.itsaky.androidide.levelhash.util.DataExternalizers
 import com.itsaky.androidide.levelhash.util.nullable
 import com.itsaky.androidide.testing.common.LinuxOnlyTestRule
@@ -28,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.io.ByteArrayInputStream
 import java.io.File
 
 /**
@@ -180,36 +184,33 @@ class PersistentLevelHashTest {
 
   @Test
   fun `test existing level init`() {
-    persistentStringHash(
-      fileName = "init-existing",
-      valueExternalizer = DataExternalizers.STRING.nullable()
-    ).use { hash ->
+    persistentStringHash(fileName = "init-existing",
+      valueExternalizer = DataExternalizers.STRING.nullable()).use { hash ->
       hash.insert("key", "value")
       hash.insert("null", null)
-      hash.insert("long", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+      hash.insert("long",
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
       assertThat(hash["key"]).isEqualTo("value")
       assertThat(hash["null"]).isEqualTo(null)
-      assertThat(hash["long"]).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+      assertThat(hash["long"]).isEqualTo(
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
     }
 
-    persistentStringHash(
-      fileName = "init-existing",
+    persistentStringHash(fileName = "init-existing",
       valueExternalizer = DataExternalizers.STRING.nullable(),
-      createNew = false
-    ).use { hash ->
+      createNew = false).use { hash ->
       assertThat(hash["key"]).isEqualTo("value")
       assertThat(hash["null"]).isEqualTo(null)
-      assertThat(hash["long"]).isEqualTo("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+      assertThat(hash["long"]).isEqualTo(
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
     }
   }
 
   @Test
   fun `test level hash expand`() {
-    persistentStringHash(
-      fileName = "expand",
-      valueExternalizer = DataExternalizers.STRING.nullable()
-    ) {
+    persistentStringHash(fileName = "expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()) {
       levelSize(5)
       bucketSize(10)
       autoExpand(false)
@@ -235,16 +236,14 @@ class PersistentLevelHashTest {
 
   @Test
   fun `test expansion with huge slot count`() {
-    persistentStringHash(
-      fileName = "huge-expand",
-      valueExternalizer = DataExternalizers.STRING.nullable()
-    ){
+    persistentStringHash(fileName = "huge-expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()) {
       levelSize(15)
       bucketSize(10)
       autoExpand(false)
     }.use { hash ->
       var i = 0
-      while(hash.insert("key${i}", "value${i}")) {
+      while (hash.insert("key${i}", "value${i}")) {
         i++
       }
 
@@ -260,10 +259,8 @@ class PersistentLevelHashTest {
 
   @Test
   fun `test meta after expansion`() {
-    persistentStringHash(
-      fileName = "expand",
-      valueExternalizer = DataExternalizers.STRING.nullable()
-    ) {
+    persistentStringHash(fileName = "expand",
+      valueExternalizer = DataExternalizers.STRING.nullable()) {
       levelSize(5)
       bucketSize(10)
       autoExpand(false)
@@ -294,6 +291,172 @@ class PersistentLevelHashTest {
       // previous top level, which used to be located at 0,
       // becomes the new bottom level
       assertThat(hash.io.metaIo.l1Addr).isEqualTo(0L)
+    }
+  }
+
+  @Test
+  fun `test values file binary repr`() {
+    val fileName = "values-binary-repr"
+    persistentStringHash(fileName) {
+      autoExpand(false)
+    }.use { hash ->
+      // since all the key-value pairs here have fixed size (key[0-9], value[0-9]),
+      // the entry size should be constant
+      val entrySize = // space allocated for the 'entrySize' field itself is not considered
+        8 + // prevEntry
+        8 + // nextEntry
+        4 + // keySize
+        2 + // 2 bytes written by writeUTF
+        4 + // actual key
+        4 + // valueSize
+        2 + // 2 bytes written by writeUTF
+        6   // actual value
+
+      for (i in 0..<10) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
+
+      val indexFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage")
+      assertThat(indexFile.exists()).isTrue()
+
+      val binaryRepr = indexFile.readBytes()
+      val inputStream =
+        RandomAccessByteArrayInputStream(binaryRepr)
+      val input = ByteStreams.newDataInput(inputStream)
+
+      assertThat(input.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+      var prevEntry = 0L
+      for (i in 0 ..< 10) {
+
+        // - 8 -> size of magic number
+        val pos = inputStream.position() - 8
+
+        // entrySize
+        assertThat(input.readInt()).isEqualTo(entrySize)
+
+        // prevEntry
+        // + 1 -> prevEntry is 1-based
+        assertThat(input.readLong()).isEqualTo(prevEntry)
+
+        // nextEntry
+        // + 4 -> size of entrySize field
+        // + 1 -> nextEntry is 1-based
+        assertThat(input.readLong()).isEqualTo(pos + entrySize + 4 + 1)
+
+        // keySize
+        assertThat(input.readInt()).isEqualTo(6)
+
+        // key
+        assertThat(input.readUTF()).isEqualTo("key${i}")
+
+        // valueSize
+        assertThat(input.readInt()).isEqualTo(8)
+
+        // value
+        assertThat(input.readUTF()).isEqualTo("value${i}")
+
+        prevEntry = pos + 1
+      }
+    }
+  }
+
+  @Test
+  fun `test values file binary repr when head is removed`() {
+    val fileName = "values-binary-repr"
+    persistentStringHash(fileName) {
+      autoExpand(false)
+    }.use { hash ->
+
+      val entrySize = 38
+      val count = 10
+
+      for (i in 0..<count) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
+
+      val indexFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage")
+      assertThat(indexFile.exists()).isTrue()
+
+      val metaFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage._meta")
+      assertThat(metaFile.exists()).isTrue()
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(1L)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 1)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+        valIs.seekInt()
+
+        // no previous entry
+        assertThat(valIp.readLong()).isEqualTo(0L)
+
+        // next entry
+        assertThat(valIp.readLong()).isEqualTo(entrySize + 4 + 1)
+      }
+
+      // remove head
+      hash.remove("key0")
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(entrySize + 4 + 1)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 1)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+        // check that the first entry has been deallocated
+        val bytes = ByteArray(entrySize + 4) { 0 }
+        valIp.readFully(bytes)
+        assertThat(bytes.sum()).isEqualTo(0)
+
+        // head entry
+        assertThat(valIs.position()).isEqualTo(entrySize + 4 + 8)
+
+        assertThat(valIp.readInt()).isEqualTo(entrySize)
+
+        // no previous entry
+        assertThat(valIp.readLong()).isEqualTo(0L)
+
+        // nextEntry
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * 2) + 1)
+      }
+    }
+  }
+
+  private class RandomAccessByteArrayInputStream(
+    buf: ByteArray,
+    pos: Int = 0,
+    len: Int = buf.size
+  ) : ByteArrayInputStream(buf, pos, len), RandomAccessIO {
+
+    override fun position(position: Long) {
+      this.pos = position.toInt()
+    }
+
+    override fun tryPosition(position: Long): Boolean {
+      this.position(position)
+      return true
+    }
+
+    override fun position(): Long {
+      return this.pos.toLong()
     }
   }
 }

@@ -20,11 +20,13 @@ package com.itsaky.androidide.levelhash.internal
 import androidx.annotation.VisibleForTesting
 import com.itsaky.androidide.levelhash.DataExternalizer
 import com.itsaky.androidide.levelhash.LevelHash.ResizeFailure
+import com.itsaky.androidide.levelhash.internal.PersistentValueEntry.Companion.useAndRecycle
 import com.itsaky.androidide.levelhash.seekInt
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_INT
 import com.itsaky.androidide.levelhash.util.DataExternalizers.SIZE_LONG
 import com.itsaky.androidide.levelhash.util.FileUtils
 import com.itsaky.androidide.levelhash.util.MappedRandomAccessIO
+import com.itsaky.androidide.utils.uncheckedCast
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.RandomAccessFile
@@ -33,15 +35,15 @@ import kotlin.math.pow
 
 private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 
-// TODO: Update valuesFirstEntry and valuesNxtEntry whenever an entry is added or deleted
-// TODO: Entries in the values file are always appended at the end. When an entry
-//    is to be deleted, we simply use fallocate with FALLOC_FL_PUNCH_HOLE to deallocate
-//    the disk space occupied by that entry. However, this may result in the region
-//    at the start of the values file become empty. In that case, we might consider
-//    moving the entries at the start of the file. This may (or may not) result in
-//    improved performance when seeking through the file.
-// TODO: The above is also applicable for the keymap file when the level hash is
-//    expanded and new regions for the levels are allocated.
+// TODO: Now that the entries in the values file are stored in a bi-directional
+//  linked list, we can determine if there is enough space available in the
+//  previously deallocated regions. We can use this information to store
+//  new entries in these regions, thus reusing the space and avoid resizing.
+// TODO: When the level hash is expanded, region for the new level in keymap file
+//  is allocated at the end of the file and the region at the beginning is
+//  deallocated. When there is enough space at the beginning of the file for the
+//  new level, we can reuse the space at the beginning of the file. Or, maybe we
+//  can move the levels towards the beginning of the file when idle.
 // TODO: Allow concurrent access to the level hash.
 
 /**
@@ -109,6 +111,8 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  *
  *    value {
  *      u32 entry_size;
+ *      u64 prev_entry;
+ *      u64 next_entry;
  *      u32 key_size;
  *      u8 key[key_size];
  *      u32 value_size;
@@ -124,6 +128,8 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * Each `value` entry contains fields :
  * - `entry_size` - The size of the entry in bytes (excluding the size of this
  *    `entry_size` field).
+ * - `prev_entry` - The address of the previous entry in the values file.
+ * - `next_entry` - The address of the next entry in the values file.
  * - `key_size` - The size of the key in bytes.
  * - `key` - The key of `key_size` bytes.
  * - `value_size` - The size of the value in bytes.
@@ -137,8 +143,8 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * meta {
  *    u32 values_version;
  *    u32 keymap_version;
- *    u64 values_first_entry;
- *    u64 values_next_entry;
+ *    u64 values_head_entry;
+ *    u64 values_tail_entry;
  *    u64 values_file_size_bytes;
  *    u32 km_level_size;
  *    u32 km_bucket_size;
@@ -150,8 +156,8 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * The `meta` structure contains the fields :
  * - `values_version` - The version of the values file.
  * - `keymap_version` - The version of the keymap file.
- * - `values_first_entry` - The address of the first entry in the values file.
- * - `values_next_entry` - The address of the next entry in the values file.
+ * - `values_head_entry` - The address of the first entry in the values file.
+ * - `values_tail_entry` - The address of the next entry in the values file.
  * - `values_file_size_bytes` - The (occupied) size of the values file in bytes.
  * - `km_level_size` - The level size of the level hash.
  * - `km_bucket_size` - The bucket size of the level hash.
@@ -168,12 +174,6 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
   private val valueExternalizer: DataExternalizer<V>,
 ) : AutoCloseable {
 
-  // IMPLEMENTATION NOTE
-  // Whenever you access the valuesIo property, you must ensure that the
-  // position is set to the desired location in the values file.
-  // as the values file is randomly accessed, and by multiple functions, or
-  // even multiple threads, the current position cannot be determined
-
   @VisibleForTesting
   internal val metaIo =
     PersistentMetaIO(File(indexFile.parentFile, "${indexFile.name}._meta"),
@@ -181,23 +181,17 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
   private val keymapFile = File(indexFile.parentFile, "${indexFile.name}._i")
   private val raKeymapFile by lazy { RandomAccessFile(keymapFile, "rw") }
-  private val raValuesFile by lazy { RandomAccessFile(indexFile, "rw") }
-
   private val keymapIo = MappedRandomAccessIO()
+  private val raValuesFile by lazy { RandomAccessFile(indexFile, "rw") }
   private var valIo = MappedRandomAccessIO()
 
   private var interimLvlAddr: Long? = null
 
-  private val topLevelBucketCount: Long
-    get() = 2.0.pow(metaIo.levelSize)
-      .toLong()
-
-  private val topLevelSizeBytes: Long
-    get() = topLevelBucketCount * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
-
   internal var levelSize: Int
     get() = metaIo.levelSize
-    set(value) { metaIo.levelSize = value }
+    set(value) {
+      metaIo.levelSize = value
+    }
 
   init {
     BinaryFileUtils.initSparseFile(file = keymapFile,
@@ -299,19 +293,27 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
   }
 
-  private fun moveToSlot(
-    levelNum: Int,
+  private fun valuesEntryAt(addr: Long): PersistentValueEntry<K, V> {
+    return uncheckedCast<PersistentValueEntry<K, V>>(
+      PersistentValueEntry.OBJECT_POOL.obtain()).also {
+      it._addr = addr
+      it._io = valIo
+      it._keyExternalizer = keyExternalizer
+      it._valueExternalizer = valueExternalizer
+    }
+  }
+
+  private fun valuesEntryForSlot(
+    levelIdx: Int,
     bucketIdx: Int,
     slotIdx: Int,
-  ): Boolean {
-    val valueAddr = valueAddressForPos(levelNum, bucketIdx, slotIdx)
-    if (valueAddr == 0L) {
-      // 0 == no value entry
-      return false
+  ): PersistentValueEntry<K, V>? {
+    val addr = valueAddressForPos(levelIdx, bucketIdx, slotIdx)
+    if (addr == POSITION_INVALID) {
+      return null
     }
 
-    valIo.position(valueAddr - 1)
-    return true
+    return valuesEntryAt(addr - 1)
   }
 
   fun isOccupied(
@@ -319,57 +321,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): Boolean {
-    // 0 == no value entry
-    return valueAddressForPos(levelNum, bucketIdx, slotIdx).let { valAddr ->
-      valAddr > 0L && valIo.tryPosition(valAddr - 1) && valIo.readInt() > 0
-    }
-  }
-
-  /**
-   * Visits the key region for the given slot position.
-   *
-   * @return - `null` - If the slot at the given position is not occupied.
-   *         - `null to <keySize>` - If [readKey] is `false`.
-   *         - `key to keySize` - If [readKey] is `true`.
-   */
-  private fun visitKeyRegion(levelNum: Int, bucketIdx: Int, slotIdx: Int,
-                             readKey: Boolean = false
-  ): Pair<K?, Int>? {
-    if (!moveToSlot(levelNum, bucketIdx, slotIdx)) {
-      return null
-    }
-
-    if (valIo.readInt() <= 0L) {
-      // entry size is 0, so the slot is empty
-      return null
-    }
-
-    val keySize = valIo.readInt()
-    if (keySize == 0) {
-      if (readKey) {
-        log.info(
-          "Cannot read 'key' at slot (key size is 0): level={}, bucket={}, slot={}",
-          levelNum, bucketIdx, slotIdx)
-      }
-      return null
-    }
-
-    if (readKey) {
-      val keyAddr = valIo.position()
-      val key = keyExternalizer.read(valIo)
-      val readBytes = (valIo.position() - keyAddr).toInt()
-      check(readBytes == keySize) {
-        "Key size mismatch. Expected to read $keySize bytes, but $readBytes bytes were read."
-      }
-
-      return key to keySize
-    }
-
-    if (keySize > 0) {
-      valIo.skipBytes(keySize)
-    }
-
-    return null to keySize
+    return valuesEntryForSlot(levelNum, bucketIdx, slotIdx)?.useAndRecycle {
+      entrySize > 0
+    } ?: false
   }
 
   /**
@@ -380,8 +334,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): K? {
-    return visitKeyRegion(levelNum = levelNum, bucketIdx = bucketIdx,
-      slotIdx = slotIdx, readKey = true)?.first
+    return valuesEntryForSlot(levelNum, bucketIdx, slotIdx)?.useAndRecycle {
+      key
+    }
   }
 
   /**
@@ -392,26 +347,9 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     bucketIdx: Int,
     slotIdx: Int,
   ): V? {
-    if (visitKeyRegion(levelNum = levelNum, bucketIdx = bucketIdx,
-        slotIdx = slotIdx, readKey = false)?.second == null
-    ) {
-      // if the key is empty (specifically, keySize == 0), then this slot is empty
-      return null
+    return valuesEntryForSlot(levelNum, bucketIdx, slotIdx)?.useAndRecycle {
+      value
     }
-
-    val valueSize = valIo.readInt()
-    if (valueSize == 0) {
-      return null
-    }
-
-    val valAddr = valIo.position()
-    val value = valueExternalizer.read(valIo)
-    val readBytes = (valIo.position() - valAddr).toInt()
-    check(readBytes == valueSize) {
-      "Value size mismatch. Expected to read $valueSize bytes, but $readBytes bytes were read."
-    }
-
-    return value
   }
 
   fun writeEntry(
@@ -425,70 +363,94 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
     if (key == null) {
       // delete entry
-      deleteEntry(slotAddr)
+      deleteEntryAtSlot(slotAddr)
       return
     }
 
     keymapIo.position(slotAddr)
     val existingValueAddr = keymapIo.readLong()
-    val (isUpdate, existingEntrySize) = run {
-      if (existingValueAddr > 0L) {
-        valIo.position(existingValueAddr - 1)
-        true to valIo.readInt().toLong()
-      } else {
-        false to 0L
-      }
+    val isUpdate = existingValueAddr > POSITION_INVALID
+
+    val tailAddr = metaIo.valuesTailAddr
+    val tail = if (tailAddr > POSITION_INVALID) {
+      valuesEntryAt(tailAddr - 1)
+    } else {
+      // this may be the first entry in the values file
+      null
     }
 
-    val thisValueAddr = metaIo.valuesNextEntry
+    val thisValueAddr = tail?.nextEntry ?: 1 // nextEntry is 1-based
     if (thisValueAddr + 4 * KB_1 > metaIo.valuesFileSize) {
-      valuesResize(thisValueAddr + VALUES_SEGMENT_SIZE_BYTES)
+      valuesResize(thisValueAddr - 1 + VALUES_SEGMENT_SIZE_BYTES)
     }
 
-    // valuesResize will reset the position to 0
-    valIo.position(thisValueAddr)
+    // valuesResize call above will reset the position to 0
+    // so we need to call position(...) here
+    valIo.position(thisValueAddr - 1)
 
     if (valIo.readInt() > 0) {
+      // entrySize > 0
+      // entry is occupied
+      tail?.also { PersistentValueEntry.recycle(it) }
       return
     }
 
-    val keyValPos = valIo.position()
+    val entryStart = valIo.position()
+
+    // seek over prevEntry and nextEntry
+    valIo.seekRelative(SIZE_ADDR + SIZE_ADDR)
 
     // write key and value
     writeSlotKeyOrVal(key, keyExternalizer)
     writeSlotKeyOrVal(value, valueExternalizer)
 
-    val finalAddr = valIo.position()
-    val entrySize = finalAddr - keyValPos
+    val entryEnd = valIo.position()
+    val entrySize = entryEnd - entryStart
     check(entrySize <= Int.MAX_VALUE) {
       "Entry size is too large: $entrySize"
     }
 
-    // then set the token
-    valIo.position(thisValueAddr)
+    if (tail != null) {
+      // make current_tail.next -> this_entry
+      valIo.position(tail.addr)
+      valIo.seekRelative(PersistentValueEntry.OFF_NEXT_ENTRY)
+      valIo.writeLong(thisValueAddr)
+    }
+
+    // then this_entry.prev -> current_tail
+    valIo.position(thisValueAddr - 1)
     valIo.writeInt(entrySize.toInt())
+    valIo.writeLong(tailAddr)
+    valIo.writeLong(entryEnd + 1)
 
-    // reset to the final position
-    valIo.position(finalAddr)
+    // finally, current_tail = this_entry
+    metaIo.valuesTailAddr = thisValueAddr
 
-    // then update the address in the keymap
+    if (metaIo.valuesHeadAddr == POSITION_INVALID) {
+      // this is the first entry to be added in the value file
+      metaIo.valuesHeadAddr = metaIo.valuesTailAddr
+    }
+
+    // update the address in the keymap
     keymapIo.position(slotAddr)
-    keymapIo.writeLong(thisValueAddr + 1)
-
-    metaIo.valuesNextEntry = finalAddr
+    keymapIo.writeLong(thisValueAddr)
 
     if (isUpdate) {
-      var size = SIZE_INT
-      if (existingEntrySize > 0L) {
-        size += existingEntrySize
-      }
-
-      // deallocate the region which contains the existing entry
-      valuesDeallocate(existingValueAddr - 1, size)
+      deleteEntryAt(valueAddr = existingValueAddr, readValue = false)
     }
+
+    tail?.let { PersistentValueEntry.recycle(it) }
   }
 
-  private fun deleteEntry(
+  /**
+   * Delete the entry at the values file address pointed to by given slot address.
+   *
+   * @param slotAddr The 0-based address of the slot which points to the value entry in the values file.
+   * @param readValue Whether the value of the entry being deleted must be read
+   * and returned.
+   * @return The value of the deleted entry, if the entry exists and [readValue] is `true`.
+   */
+  private fun deleteEntryAtSlot(
     slotAddr: Long,
     readValue: Boolean = false,
   ): V? {
@@ -497,16 +459,60 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
 
     // reading this region again will return 0, which is considered
     // a null pointer
-    keymapDeallocate(slotAddr, SIZE_LONG)
+    keymapDeallocate(slotAddr, SIZE_ADDR)
+    return deleteEntryAt(valueAddr, readValue)
+  }
 
-    if (valueAddr == 0L) {
+  /**
+   * Delete the entry at the given address in the values file.
+   *
+   * @param valueAddr The 1-based address of the value entry.
+   * @param readValue Whether the value of the entry being deleted must be read
+   * and returned.
+   * @return The value of the deleted entry, if the entry exists and [readValue] is `true`.
+   */
+  private fun deleteEntryAt(valueAddr: Long, readValue: Boolean
+  ): V? {
+    if (valueAddr == POSITION_INVALID) {
       return null
     }
 
-    valIo.position(valueAddr - 1)
-    valIo.seekInt() // seek over entrySize
+    val current = valuesEntryAt(valueAddr - 1)
+    if (current.prevEntry == 4486112473) {
+      print("break")
+    }
+    val prev = current.prevEntry // 1-based
+    val next = current.nextEntry // 1-based
 
-    var entrySize = SIZE_INT
+    // if this entry has a previous entry, then,
+    // update the 'next' of previous entry to point to the 'next' of this entry
+    if (prev > POSITION_INVALID) {
+      valIo.position(prev - 1 + PersistentValueEntry.OFF_NEXT_ENTRY)
+      valIo.writeLong(next) // 1-based
+    }
+
+    // if this entry has a next entry, then,
+    // update the 'prev' of next entry to point to the 'prev' of this entry
+    if (next > POSITION_INVALID) {
+      valIo.position(next - 1 + PersistentValueEntry.OFF_PREV_ENTRY)
+      valIo.writeLong(prev) // 1-based
+    }
+
+    if (metaIo.valuesHeadAddr == valueAddr) {
+      metaIo.valuesHeadAddr =
+        if (next > POSITION_INVALID) next else POSITION_INVALID
+    }
+    if (metaIo.valuesTailAddr == valueAddr) {
+      metaIo.valuesTailAddr =
+        if (prev > POSITION_INVALID) prev else POSITION_INVALID
+    }
+
+    valIo.position(current.addr)
+
+    var entrySize = SIZE_INT + SIZE_ADDR + SIZE_ADDR
+
+    // seek entrySize
+    valIo.seekRelative(entrySize)
 
     val keySize = valIo.readInt()
     entrySize += SIZE_INT
@@ -531,18 +537,20 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
       valIo.seekRelative(valueSize)
     }
 
-    // punch holes in the file
-    valuesDeallocate(valueAddr - 1, entrySize)
+    // punch holes in the file in order to deallocate space occupied by current entry
+    valuesDeallocate(current.addr, entrySize)
 
-    // TODO(itsaky): When an entry is deleted, update valueFirstEntryAt and valueLastEntryAt accordingly
+    PersistentValueEntry.recycle(current)
+
     return value
   }
 
   fun clear() {
-    metaIo.valuesFirstEntry = 0L
-    metaIo.valuesNextEntry = 0L
+    metaIo.valuesHeadAddr = 0
+    metaIo.valuesTailAddr = 0
     metaIo.l0Addr = 0
-    metaIo.l1Addr = 2.0.pow(metaIo.levelSize).toLong() * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
+    metaIo.l1Addr = 2.0.pow(metaIo.levelSize)
+      .toLong() * metaIo.bucketSize * KEYMAP_ENTRY_SIZE_BYTES
     val kmSize = metaIo.l1Addr + (metaIo.l1Addr shr 1)
 
     keymapResize(realKeymapOffset(kmSize))
@@ -694,6 +702,13 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     private val log = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
+
+    internal const val POSITION_INVALID = 0L
+
+    /**
+     * The size of the address values in bytes.
+     */
+    internal const val SIZE_ADDR = SIZE_LONG
 
     /**
      * 1 Kilobyte.
