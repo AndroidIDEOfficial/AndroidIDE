@@ -42,8 +42,9 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
 // TODO: When the level hash is expanded, region for the new level in keymap file
 //  is allocated at the end of the file and the region at the beginning is
 //  deallocated. When there is enough space at the beginning of the file for the
-//  new level, we can reuse the space at the beginning of the file. Or, maybe we
-//  can move the levels towards the beginning of the file when idle.
+//  new level, we reuse the space at the beginning of the file. Maybe we
+//  can move the levels towards the beginning of the file when we have enough space
+//  and the level hash is idle.
 // TODO: Allow concurrent access to the level hash.
 
 /**
@@ -157,7 +158,7 @@ private val logger = LoggerFactory.getLogger(PersistentLevelHashIO::class.java)
  * - `values_version` - The version of the values file.
  * - `keymap_version` - The version of the keymap file.
  * - `values_head_entry` - The address of the first entry in the values file.
- * - `values_tail_entry` - The address of the next entry in the values file.
+ * - `values_tail_entry` - The address of the last entry in the values file.
  * - `values_file_size_bytes` - The (occupied) size of the values file in bytes.
  * - `km_level_size` - The level size of the level hash.
  * - `km_bucket_size` - The bucket size of the level hash.
@@ -478,17 +479,25 @@ internal class PersistentLevelHashIO<K : Any, V : Any?>(
     }
 
     val current = valuesEntryAt(valueAddr - 1)
-    if (current.prevEntry == 4486112473) {
-      print("break")
-    }
     val prev = current.prevEntry // 1-based
     val next = current.nextEntry // 1-based
 
     // if this entry has a previous entry, then,
     // update the 'next' of previous entry to point to the 'next' of this entry
     if (prev > POSITION_INVALID) {
+      var addr = next
+      if (next > POSITION_INVALID) {
+        valIo.position(next - 1)
+        if (valIo.readInt() <= 0) {
+          // 'nextEntry' points to an address which is not occupied
+          // in this case, the 'next' of previous entry should point to this
+          // (current) entry so the next time an entry will be written, it
+          // overwrites this region
+          addr = valueAddr
+        }
+      }
       valIo.position(prev - 1 + PersistentValueEntry.OFF_NEXT_ENTRY)
-      valIo.writeLong(next) // 1-based
+      valIo.writeLong(addr) // 1-based
     }
 
     // if this entry has a next entry, then,

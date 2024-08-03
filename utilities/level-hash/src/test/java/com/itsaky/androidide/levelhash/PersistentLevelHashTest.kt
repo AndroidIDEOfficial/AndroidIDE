@@ -33,6 +33,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.ByteArrayInputStream
 import java.io.File
+import kotlin.random.Random
 
 /**
  * @author Akash Yadav
@@ -339,7 +340,6 @@ class PersistentLevelHashTest {
         assertThat(input.readInt()).isEqualTo(entrySize)
 
         // prevEntry
-        // + 1 -> prevEntry is 1-based
         assertThat(input.readLong()).isEqualTo(prevEntry)
 
         // nextEntry
@@ -359,6 +359,7 @@ class PersistentLevelHashTest {
         // value
         assertThat(input.readUTF()).isEqualTo("value${i}")
 
+        // + 1 -> prevEntry is 1-based
         prevEntry = pos + 1
       }
     }
@@ -366,7 +367,7 @@ class PersistentLevelHashTest {
 
   @Test
   fun `test values file binary repr when head is removed`() {
-    val fileName = "values-binary-repr"
+    val fileName = "values-binary-repr-rem-head"
     persistentStringHash(fileName) {
       autoExpand(false)
     }.use { hash ->
@@ -436,6 +437,156 @@ class PersistentLevelHashTest {
 
         // nextEntry
         assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * 2) + 1)
+      }
+    }
+  }
+
+  @Test
+  fun `test values file binary repr when tail is removed`() {
+    val fileName = "values-binary-repr-rem-tail"
+    persistentStringHash(fileName) {
+      autoExpand(false)
+    }.use { hash ->
+
+      val entrySize = 38
+      val count = 10
+
+      for (i in 0..<count) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
+
+      val indexFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage")
+      assertThat(indexFile.exists()).isTrue()
+
+      val metaFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage._meta")
+      assertThat(metaFile.exists()).isTrue()
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(1L)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 1)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+        valIs.position((entrySize + 4L) * (count - 1) + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(entrySize)
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * (count - 2)) + 1)
+
+        // 'nextEntry' of last entry points to the location where new entry
+        // should be added
+        assertThat(valIp.readLong()).isEqualTo((entrySize + 4L) * count + 1)
+      }
+
+      // remove head
+      hash.remove("key9")
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(1L)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 2)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+        valIs.position((entrySize + 4L) * (count - 1) + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(0) // no 'key9' entry as it was removed
+
+        valIs.position((entrySize + 4L) * (count - 2) + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(entrySize) // tail entry is 'key8'
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * (count - 3)) + 1)
+
+        // 'nextEntry' of last entry points to the location where new entry
+        // should be added
+        assertThat(valIp.readLong()).isEqualTo((entrySize + 4L) * (count - 1) + 1)
+      }
+    }
+  }
+
+  @Test
+  fun `test values file binary repr when entry is removed at random pos in the middle`() {
+    val fileName = "values-binary-repr-rem-tail"
+    persistentStringHash(fileName) {
+      autoExpand(false)
+    }.use { hash ->
+
+      val entrySize = 38
+      val count = 10
+
+      for (i in 0..<count) {
+        val key = "key${i}"
+        val value = "value${i}"
+        assertThat(hash.insert(key, value)).isTrue()
+      }
+
+      val indexFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage")
+      assertThat(indexFile.exists()).isTrue()
+
+      val metaFile =
+        File("build/level-index/hash-${fileName}/${fileName}.storage._meta")
+      assertThat(metaFile.exists()).isTrue()
+
+      val toRemoveIdx = Random.nextInt(1, count - 1)
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(1L)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 1)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+        valIs.position((entrySize + 4L) * toRemoveIdx + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(entrySize)
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * (toRemoveIdx - 1)) + 1)
+        assertThat(valIp.readLong()).isEqualTo((entrySize + 4L) * (toRemoveIdx + 1) + 1)
+        assertThat(valIp.readInt()).isEqualTo(6)
+        assertThat(valIp.readUTF()).isEqualTo("key${toRemoveIdx}")
+      }
+
+      hash.remove("key${toRemoveIdx}")
+
+      run {
+        val valIs =
+          RandomAccessByteArrayInputStream(indexFile.readBytes())
+        val valIp = ByteStreams.newDataInput(valIs)
+
+        val metaIo = PersistentMetaIO(metaFile, hash.levelSize, hash.bucketSize)
+        assertThat(metaIo.valuesHeadAddr).isEqualTo(1L)
+        assertThat(metaIo.valuesTailAddr).isEqualTo(((entrySize + 4) * (count - 1)) + 1)
+
+        assertThat(valIp.readLong()).isEqualTo(PersistentLevelHashIO.VALUES_MAGIC_NUMBER)
+
+        valIs.position((entrySize + 4L) * toRemoveIdx + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(0) // no 'key9' entry as it was removed
+
+        valIs.position((entrySize + 4L) * (toRemoveIdx - 1) + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(entrySize)
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * (toRemoveIdx - 2)) + 1)
+        assertThat(valIp.readLong()).isEqualTo((entrySize + 4L) * toRemoveIdx + 1)
+        assertThat(valIp.readInt()).isEqualTo(6)
+        assertThat(valIp.readUTF()).isEqualTo("key${toRemoveIdx - 1}")
+
+        valIs.position((entrySize + 4L) * (toRemoveIdx + 1) + 8L) // +8 -> size of magic number
+        assertThat(valIp.readInt()).isEqualTo(entrySize)
+        assertThat(valIp.readLong()).isEqualTo(((entrySize + 4) * (toRemoveIdx - 1)) + 1)
+        assertThat(valIp.readLong()).isEqualTo((entrySize + 4L) * toRemoveIdx + 2)
+        assertThat(valIp.readInt()).isEqualTo(6)
+        assertThat(valIp.readUTF()).isEqualTo("key${toRemoveIdx + 1}")
       }
     }
   }
