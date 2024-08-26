@@ -142,7 +142,7 @@ git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "6.8.0.2023
 tests-junit = { module = "junit:junit", version = "4.13.2" }
 tests-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 tests-junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
-tests-google-truth = { module = "com.google.truth:truth", version = "1.4.1" }
+tests-google-truth = { module = "com.google.truth:truth", version = "1.4.4" }
 tests-robolectric = { module = "org.robolectric:robolectric", version = "4.11.1" }
 tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
 tests-androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
