@@ -21,7 +21,6 @@ import com.itsaky.androidide.build.config.BuildConfig
 import com.itsaky.androidide.desugaring.utils.JavaIOReplacements.applyJavaIOReplacements
 import com.itsaky.androidide.plugins.AndroidIDEAssetsPlugin
 
-
 plugins {
   id("com.itsaky.androidide.core-app")
   id("com.android.application")
@@ -42,8 +41,6 @@ buildscript {
     classpath(libs.composite.desugaringCore)
   }
 }
-
-
 
 android {
   namespace = BuildConfig.packageName

@@ -256,6 +256,7 @@
       <module name="AndroidIDE.testing.android" target="17" />
       <module name="AndroidIDE.testing.android.test" target="11" />
       <module name="AndroidIDE.testing.benchmark" target="17" />
+      <module name="AndroidIDE.testing.benchmarks-manual" target="17" />
       <module name="AndroidIDE.testing.common" target="11" />
       <module name="AndroidIDE.testing.common.main" target="11" />
       <module name="AndroidIDE.testing.common.test" target="11" />
@@ -271,6 +272,7 @@
       <module name="AndroidIDE.treesitter.test" target="1.7" />
       <module name="AndroidIDE.treeview" target="17" />
       <module name="AndroidIDE.uidesigner" target="17" />
+      <module name="AndroidIDE.utilities.level-hash" target="17" />
       <module name="AndroidIDE.xml-inflater" target="17" />
       <module name="AndroidIDE.xml.resources-api.test" target="11" />
       <module name="AndroidIDE.xml.resources-indexing" target="17" />

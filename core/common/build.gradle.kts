@@ -23,8 +23,6 @@ plugins {
     id("kotlin-android")
 }
 
-
-
 android {
     namespace = "${BuildConfig.packageName}.common"
 }

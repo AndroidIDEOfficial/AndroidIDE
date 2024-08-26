@@ -18,26 +18,30 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
-import com.blankj.utilcode.util.FileIOUtils;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.configuration.IDEBuildConfigProvider;
 import com.itsaky.androidide.app.configuration.IJdkDistributionProvider;
 import com.itsaky.androidide.utils.Environment;
+
+import org.jetbrains.annotations.Contract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+
 import kotlin.io.ConstantsKt;
 import kotlin.io.FilesKt;
-import org.jetbrains.annotations.Contract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ToolsManager {
 
@@ -202,10 +206,14 @@ public class ToolsManager {
   }
 
   private static void writeInitScript() {
-    if (Environment.INIT_SCRIPT.exists()) {
-      FileUtils.delete(Environment.INIT_SCRIPT);
+    final var initScript = Environment.INIT_SCRIPT;
+    final var initScriptBak = new File(initScript.getParentFile(), initScript.getName() + ".bak");
+    final var contents = readInitScript();
+
+    FilesKt.writeText(initScriptBak, contents, StandardCharsets.UTF_8);
+    if (!initScript.exists()) {
+      FilesKt.writeText(initScript, contents, StandardCharsets.UTF_8);
     }
-    FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
   }
 
   @NonNull
