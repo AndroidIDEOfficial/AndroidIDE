@@ -116,7 +116,7 @@ internal class JavaProjectImpl(
     }
 
     jar =
-      File(metadata.buildDir, "libs").listFiles()?.first { metadata.name?.let(it.name::startsWith) ?: false }
+      File(metadata.buildDir, "libs").listFiles()?.firstOrNull { metadata.name?.let(it.name::startsWith) ?: false }
         ?: File("module-jar-does-not-exist.jar")
 
     return jar
