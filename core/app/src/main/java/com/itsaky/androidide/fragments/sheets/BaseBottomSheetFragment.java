@@ -20,6 +20,8 @@ package com.itsaky.androidide.fragments.sheets;
 import android.app.Dialog;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment {
@@ -30,6 +32,10 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     mDialog = super.onCreateDialog(savedInstanceState);
+
+    var behavior = ((BottomSheetDialog) mDialog).getBehavior();
+    behavior.setPeekHeight(BottomSheetBehavior.PEEK_HEIGHT_AUTO);
+    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     return mDialog;
   }
 
