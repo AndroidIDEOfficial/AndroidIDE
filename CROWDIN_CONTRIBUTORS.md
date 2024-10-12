@@ -18,7 +18,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
           <br />
           <sub><b>zhiq liu (liziq)</b></sub></a>
         <br />
-        <sub><b>7367 words</b></sub>
+        <sub><b>7432 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/esalessandrx"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15563911/medium/a2262fe354d51d9c991d06fcace20b7a.jpg" />
@@ -32,7 +32,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
           <br />
           <sub><b>Andi Hasan A (andihasan97)</b></sub></a>
         <br />
-        <sub><b>5867 words</b></sub>
+        <sub><b>5880 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/smith8h"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550455/medium/9c5a3d089c209487340abb35d74b5b7c.jpg" />
@@ -79,6 +79,13 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <sub><b>1813 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Pixie_Kevin"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15346332/medium/d50d7916e6920d66b9958414f505ab25.jpg" />
+          <br />
+          <sub><b>☆Pixie Kevin☆ (Pixie_Kevin)</b></sub></a>
+        <br />
+        <sub><b>1720 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/selyanlian17516"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15547677/medium/f9e760635fee6bdc359732233aea790d.jpeg" />
           <br />
           <sub><b>Selyan Lian (selyanlian17516)</b></sub></a>
@@ -90,7 +97,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
           <br />
           <sub><b>Marvin Stelter (TheDonMarv)</b></sub></a>
         <br />
-        <sub><b>1673 words</b></sub>
+        <sub><b>1756 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/ranjitsingha"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16160248/medium/fc57448235af07fb7198e51157bd3d9b.jpeg" />
@@ -104,7 +111,23 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
           <br />
           <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
         <br />
-        <sub><b>1439 words</b></sub>
+        <sub><b>1523 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/maulana_m_i"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16003447/medium/0185bb530d4a005ddaf2317fe5006396.jpg" />
+          <br />
+          <sub><b>Maulana (maulana_m_i)</b></sub></a>
+        <br />
+        <sub><b>953 words</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/tct123"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15267698/medium/322d599848cfa45502662989d2208a22.jpg" />
+          <br />
+          <sub><b>tct123</b></sub></a>
+        <br />
+        <sub><b>918 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/friostd"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg" />
@@ -114,20 +137,32 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <sub><b>543 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/sb-codz"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15917451/medium/0c662ef3e0d22b939bc5fa42db83f174.png" />
+          <br />
+          <sub><b>sb-codz</b></sub></a>
+        <br />
+        <sub><b>343 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/hassanowo013"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16205550/medium/75073a2fde9eb6735fae539714cda4e1.jpeg" />
           <br />
           <sub><b>HASSAN OWO (hassanowo013)</b></sub></a>
         <br />
         <sub><b>285 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Marcus_Jeeves"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15930373/medium/64fdfbf36048d06fa800c60cfc455cba_default.png" />
           <br />
           <sub><b>Владислав Сухов (Marcus_Jeeves)</b></sub></a>
         <br />
         <sub><b>279 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/hamanndenny29"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16533621/medium/6dbc7a6b570d254d96b84b93fe7cb4aa.png" />
+          <br />
+          <sub><b>Denny Hamann (hamanndenny29)</b></sub></a>
+        <br />
+        <sub><b>276 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Tanya7z"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/14307200/medium/1f9dbd438be62b9ca369cb2220f413bd.jpg" />
@@ -143,12 +178,21 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>131 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/mhyh7466"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16152462/medium/f8348371b20dbd6826c0a0f41b99754e.jpeg" />
           <br />
           <sub><b>Pixel Line (mhyh7466)</b></sub></a>
         <br />
         <sub><b>114 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/teixeira0x"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/16084126/medium/b92af4747ac373ef9b79713a37f42774.jpg" />
+          <br />
+          <sub><b>Felipe Teixeira (teixeira0x)</b></sub></a>
+        <br />
+        <sub><b>112 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/n7800"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15765973/medium/579634adb79b475504794d7e4806d3d8_default.png" />

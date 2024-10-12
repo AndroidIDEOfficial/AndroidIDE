@@ -66,7 +66,7 @@
     "username": "liziq",
     "name": "zhiq liu (liziq)",
     "translated": 4163,
-    "approved": 3204,
+    "approved": 3269,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15757161/medium/f3903c160404f095de68760f81609430.jpeg",
     "languages": [
       {
@@ -94,7 +94,7 @@
     "username": "andihasan97",
     "name": "Andi Hasan A (andihasan97)",
     "translated": 3664,
-    "approved": 2203,
+    "approved": 2216,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png",
     "languages": [
       {
@@ -188,6 +188,20 @@
     ]
   },
   {
+    "id": "15346332",
+    "username": "Pixie_Kevin",
+    "name": "☆Pixie Kevin☆ (Pixie_Kevin)",
+    "translated": 1720,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15346332/medium/d50d7916e6920d66b9958414f505ab25.jpg",
+    "languages": [
+      {
+        "id": "es-ES",
+        "name": "Spanish"
+      }
+    ]
+  },
+  {
     "id": "15547677",
     "username": "selyanlian17516",
     "name": "Selyan Lian (selyanlian17516)",
@@ -205,7 +219,7 @@
     "id": "15549947",
     "username": "TheDonMarv",
     "name": "Marvin Stelter (TheDonMarv)",
-    "translated": 1491,
+    "translated": 1574,
     "approved": 182,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15549947/medium/7e2d0178f0ff00eba107fac474caa6a2.png",
     "languages": [
@@ -234,7 +248,7 @@
     "username": "deepkrg17",
     "name": "Deep Kr. Ghosh (deepkrg17)",
     "translated": 984,
-    "approved": 455,
+    "approved": 539,
     "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png",
     "languages": [
       {
@@ -244,6 +258,34 @@
       {
         "id": "tr",
         "name": "Turkish"
+      }
+    ]
+  },
+  {
+    "id": "16003447",
+    "username": "maulana_m_i",
+    "name": "Maulana (maulana_m_i)",
+    "translated": 953,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16003447/medium/0185bb530d4a005ddaf2317fe5006396.jpg",
+    "languages": [
+      {
+        "id": "id",
+        "name": "Indonesian"
+      }
+    ]
+  },
+  {
+    "id": "15267698",
+    "username": "tct123",
+    "name": "tct123",
+    "translated": 918,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15267698/medium/322d599848cfa45502662989d2208a22.jpg",
+    "languages": [
+      {
+        "id": "de",
+        "name": "German"
       }
     ]
   },
@@ -258,6 +300,24 @@
       {
         "id": "pt-PT",
         "name": "Portuguese"
+      }
+    ]
+  },
+  {
+    "id": "15917451",
+    "username": "sb-codz",
+    "name": "sb-codz",
+    "translated": 343,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/15917451/medium/0c662ef3e0d22b939bc5fa42db83f174.png",
+    "languages": [
+      {
+        "id": "bn-IN",
+        "name": "Bengali, India"
+      },
+      {
+        "id": "hi",
+        "name": "Hindi"
       }
     ]
   },
@@ -286,6 +346,20 @@
       {
         "id": "ru",
         "name": "Russian"
+      }
+    ]
+  },
+  {
+    "id": "16533621",
+    "username": "hamanndenny29",
+    "name": "Denny Hamann (hamanndenny29)",
+    "translated": 276,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16533621/medium/6dbc7a6b570d254d96b84b93fe7cb4aa.png",
+    "languages": [
+      {
+        "id": "de",
+        "name": "German"
       }
     ]
   },
@@ -328,6 +402,24 @@
       {
         "id": "ar",
         "name": "Arabic"
+      }
+    ]
+  },
+  {
+    "id": "16084126",
+    "username": "teixeira0x",
+    "name": "Felipe Teixeira (teixeira0x)",
+    "translated": 112,
+    "approved": 0,
+    "picture": "https://crowdin-static.downloads.crowdin.com/avatar/16084126/medium/b92af4747ac373ef9b79713a37f42774.jpg",
+    "languages": [
+      {
+        "id": "pt-PT",
+        "name": "Portuguese"
+      },
+      {
+        "id": "pt-BR",
+        "name": "Portuguese, Brazilian"
       }
     ]
   },
