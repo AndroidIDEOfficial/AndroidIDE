@@ -42,6 +42,7 @@ import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.CodeEditor
+import jdkx.lang.model.SourceVersion
 import jdkx.lang.model.element.ElementKind
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.Modifier
@@ -249,7 +250,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
         sb.append("\n")
 
         newImports.removeIf {
-          it.startsWith("java.lang.") || it.startsWith(filePackage) || fileImports.contains(it)
+          it.startsWith("java.lang.") || it.startsWith(filePackage) || SourceVersion.isKeyword(it) || fileImports.contains(it)
         }
 
         imports.addAll(newImports)
