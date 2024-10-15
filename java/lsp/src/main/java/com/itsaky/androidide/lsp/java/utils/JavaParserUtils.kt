@@ -195,7 +195,7 @@ object JavaParserUtils {
     method: ExecutableElement,
   ) {
     val overrideAnnotation = methodDeclaration.getAnnotationByClass(Override::class.java)
-    if (!overrideAnnotation.isPresend) {
+    if (!overrideAnnotation.isPresent) {
       methodDeclaration.addMarkerAnnotation(Override::class.java)
     }
 
