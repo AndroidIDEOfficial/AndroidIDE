@@ -29,7 +29,9 @@
   <a href="https://t.me/androidide_discussions">Join us on Telegram</a>
 </p>
 
-> **We are looking for contributors/maintainers to help keep the project alive and speed up the development. You can help by fixing bugs, implementing & improving features, writing documentation, etc.**
+> [!WARNING]
+> 
+> THIS PROJECT IS NOT MAINTAINED ANYMORE.
 
 ## Features
 
