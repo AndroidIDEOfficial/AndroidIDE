@@ -194,7 +194,11 @@ object JavaParserUtils {
     methodDeclaration: MethodDeclaration,
     method: ExecutableElement,
   ) {
-    methodDeclaration.addMarkerAnnotation(Override::class.java)
+    val overrideAnnotation = methodDeclaration.getAnnotationByClass(Override::class.java)
+    if (!overrideAnnotation.isPresent) {
+      methodDeclaration.addMarkerAnnotation(Override::class.java)
+    }
+
     val recentlyNonNull = methodDeclaration.getAnnotationByName("RecentlyNonNull")
     if (recentlyNonNull.isPresent) {
       methodDeclaration.remove(recentlyNonNull.get())
